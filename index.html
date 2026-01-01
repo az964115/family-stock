@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f0a500">
+  <title>🐷豬豬e網 2026🐷</title>
+  
+  <style>
+    /* --- 基礎樣式 --- */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0; padding: 20px;
+      max-width: 900px; margin: auto;
+      background-color: #fdf6e3; color: #333;
+      transition: background-color 0.4s, color 0.4s;
+    }
+    .container {
+      background: #fff3e0; border-radius: 10px; padding: 20px;
+      margin-bottom: 25px; box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+    }
+    h1, h2, h3 { margin-top: 0; color: #d88e00; }
+    
+    /* --- 按鈕與輸入框 --- */
+    button {
+      cursor: pointer; padding: 8px 14px; border-radius: 5px; border: none;
+      background-color: #f0a500; color: #fff; font-weight: bold;
+      transition: background-color 0.3s; margin: 4px 2px;
+    }
+    button:hover { background-color: #d88e00; }
+    input, select, textarea {
+      padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px;
+      width: 100%; box-sizing: border-box;
+    }
+
+    /* --- 功能元件 --- */
+    .announcement {
+      background-color: #fff8dc; border-left: 5px solid #f0a500;
+      padding: 12px 15px; font-weight: bold; border-radius: 6px; margin-bottom: 15px;
+    }
+    .stat-box {
+      background: #fff7cc; padding: 15px; border-radius: 8px;
+      box-shadow: inset 0 0 6px #f0a500aa; margin-top: 10px;
+    }
+    .flex-row { display: flex; gap: 15px; flex-wrap: wrap; }
+    .flex-grow { flex-grow: 1; min-width: 200px; }
+    
+    /* --- 列表樣式 --- */
+    ul { list-style: none; padding: 0; background: #fff; border-radius: 6px; }
+    ul li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    
+    /* --- 圖表容器 --- */
+    .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
+
+    /* --- 頁首按鈕 --- */
+    .top-right { position: sticky; top: 10px; display: flex; justify-content: flex-end; gap: 8px; z-index: 100; margin-bottom: 10px; }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div id="loginSection" class="container" style="max-width:400px; margin: 100px auto;">
+  <h2 style="text-align: center;">👤 使用者登入</h2>
+  <label>誰要登入？</label>
+  <select id="loginUser">
+    <option value="mom">媽媽</option>
+    <option value="dad">爸爸</option>
+    <option value="debby">妹妹</option>
+    <option value="jason">Jason</option>
+  </select>
+  <label>密碼</label>
+  <input type="password" id="loginPassword" placeholder="輸入密碼" />
+  <button onclick="login()" style="width: 100%; padding: 12px;">登入</button>
+</div>
+
+<div id="mainContent" style="display:none;">
+  <div class="top-right">
+    <button onclick="logout()">🚪 登出</button>
+  </div>
+
+  <div class="header">
+    <h1>🐷 豬豬e網 2026</h1>
+    <div class="announcement">📢 記帳與投資追蹤系統已就緒</div>
+  </div>
+
+  <div id="milestoneAlert" class="announcement" style="display:none; background:#e1f5fe; border-left-color:#03a9f4;">
+    🎯 <b>目標達成提醒：</b><span id="milestoneText"></span>
+  </div>
+
+  <section class="container">
+    <h2>💬 家庭留言板</h2>
+    <div id="boardMessages" style="max-height:150px; overflow-y:auto; margin-bottom:10px; background:white; padding:10px; border-radius:5px;"></div>
+    <div class="flex-row">
+      <input type="text" id="boardInput" placeholder="想說什麼..." style="flex:1;">
+      <button onclick="postMessage()">送出</button>
+    </div>
+  </section>
+
+  <section class="container">
+    <h2>📉 2026 資產快照</h2>
+    <div class="stat-box">
+      <p>💰 當前資產總現值：<span id="currentNetWorth" style="font-size:1.5em; color:#f0a500; font-weight:bold;">0</span> 元</p>
+      <div class="flex-row" style="margin-top:10px;">
+        <div class="flex-grow">🚀 今年賺最多：<br><small id="maxGainDay">讀取中...</small></div>
+        <div class="flex-grow">📉 今年最慘日：<br><small id="maxLossDay">讀取中...</small></div>
+      </div>
+    </div>
+    
+    <div class="chart-container">
+      <canvas id="profitTrendChart"></canvas>
+    </div>
+
+    <h3 style="margin-top:20px;">📋 持股清單</h3>
+    <ul id="portfolioList"><li>載入中...</li></ul>
+    
+    <details style="margin-top:10px;">
+      <summary>➕ 新增持股/今日盈虧</summary>
+      <div class="flex-row" style="margin-top:10px;">
+        <input type="text" id="pfSymbol" placeholder="代號" style="width:80px;">
+        <input type="number" id="pfShares" placeholder="股數">
+        <input type="number" id="pfCost" placeholder="成本">
+        <button onclick="addPortfolio()">新增持股</button>
+      </div>
+      <hr>
+      <div class="flex-row">
+        <input type="number" id="dailyProfitInput" placeholder="今日總盈虧金額 (如:+5000)">
+        <button onclick="saveDailyProfit()">紀錄今日盈虧</button>
+      </div>
+    </details>
+  </section>
+
+  <section class="container">
+    <h2>🔔 2026 達標提醒設定</h2>
+    <div class="flex-row">
+      <input type="text" id="targetLabel" placeholder="目標名稱 (如: 0050 存滿 10 張)">
+      <input type="number" id="targetValue" placeholder="目標總現值金額">
+      <button onclick="setMilestone()">設定目標</button>
+    </div>
+  </section>
+</div>
+
+<script>
+  // --- Firebase 配置 ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg",
+    authDomain: "piggynet-93c33.firebaseapp.com",
+    databaseURL: "https://piggynet-93c33-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "piggynet-93c33",
+    storageBucket: "piggynet-93c33.appspot.com",
+    messagingSenderId: "65171780729",
+    appId: "1:65171780729:web:ce5f7272f25a75f43490a8"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const USERS = { mom: "me", dad: "dt", debby: "dua", jason: "952" };
+  
+  let profitChart = null;
+
+  // --- 登入邏輯 ---
+  async function login() {
+    const user = document.getElementById('loginUser').value;
+    const pass = document.getElementById('loginPassword').value.trim();
+    const snap = await db.ref(`users/${user}/password`).get();
+    const correctPass = snap.exists() ? snap.val() : USERS[user];
+
+    if (pass === correctPass) {
+      localStorage.setItem('currentUser', user);
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+      startSystem(user);
+    } else {
+      alert('密碼錯誤！');
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('currentUser');
+    location.reload();
+  }
+
+  // --- 系統啟動 ---
+  function startSystem(user) {
+    loadBoard();
+    loadPortfolio();
+    loadAnnualReview();
+    calculateNetWorth();
+    // 每 10 分鐘自動更新一次現值
+    setInterval(calculateNetWorth, 600000);
+  }
+
+  // --- 留言板功能 ---
+  function loadBoard() {
+    db.ref("family/board").limitToLast(10).on("value", snap => {
+      const box = document.getElementById("boardMessages");
+      box.innerHTML = "";
+      snap.forEach(child => {
+        const m = child.val();
+        box.innerHTML += `<div><b>${m.user}:</b> ${m.msg} <small style="color:#999">${new Date(m.time).toLocaleTimeString()}</small></div>`;
+      });
+      box.scrollTop = box.scrollHeight;
+    });
+  }
+
+  function postMessage() {
+    const msg = document.getElementById("boardInput").value.trim();
+    if (!msg) return;
+    db.ref("family/board").push({
+      user: localStorage.getItem("currentUser"),
+      msg: msg,
+      time: Date.now()
+    });
+    document.getElementById("boardInput").value = "";
+  }
+
+  // --- 投資功能 ---
+  async function calculateNetWorth() {
+    const user = localStorage.getItem('currentUser');
+    const snap = await db.ref(`users/${user}/portfolio`).get();
+    const data = snap.val() || {};
+    let total = 0;
+
+    for (const [code, info] of Object.entries(data)) {
+      try {
+        const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
+        const stock = await res.json();
+        if (stock.stat === "OK") {
+          const price = parseFloat(stock.data[stock.data.length - 1][6].replace(/,/g, ""));
+          total += (price * info.shares);
+        }
+      } catch (e) { console.error(e); }
+    }
+    document.getElementById("currentNetWorth").textContent = Math.round(total).toLocaleString();
+    checkMilestones(total);
+  }
+
+  function loadPortfolio() {
+    const user = localStorage.getItem('currentUser');
+    db.ref(`users/${user}/portfolio`).on("value", snap => {
+      const list = document.getElementById("portfolioList");
+      list.innerHTML = "";
+      snap.forEach(child => {
+        const code = child.key;
+        const info = child.val();
+        list.innerHTML += `<li><b>${code}</b> ｜ ${info.shares}股 ｜ 成本:${info.cost} <button onclick="removePortfolio('${code}')">刪除</button></li>`;
+      });
+    });
+  }
+
+  function addPortfolio() {
+    const user = localStorage.getItem('currentUser');
+    const code = document.getElementById('pfSymbol').value;
+    const shares = document.getElementById('pfShares').value;
+    const cost = document.getElementById('pfCost').value;
+    if(!code || !shares) return;
+    db.ref(`users/${user}/portfolio/${code}`).set({ shares: parseInt(shares), cost: parseFloat(cost) });
+  }
+
+  function removePortfolio(code) {
+    const user = localStorage.getItem('currentUser');
+    if(confirm('確定刪除？')) db.ref(`users/${user}/portfolio/${code}`).remove();
+  }
+
+  // --- 盈虧紀錄與圖表 ---
+  function saveDailyProfit() {
+    const user = localStorage.getItem('currentUser');
+    const profit = parseFloat(document.getElementById('dailyProfitInput').value);
+    const today = new Date().toISOString().split('T')[0];
+    if (isNaN(profit)) return;
+    db.ref(`users/${user}/dailyProfit/${today}`).set(profit).then(() => alert('紀錄成功'));
+  }
+
+  function loadAnnualReview() {
+    const user = localStorage.getItem('currentUser');
+    db.ref(`users/${user}/dailyProfit`).on('value', snap => {
+      const data = snap.val() || {};
+      const entries = Object.entries(data).sort((a, b) => new Date(a[0]) - new Date(b[0]));
+      if (entries.length === 0) return;
+
+      const maxGain = entries.reduce((prev, curr) => curr[1] > prev[1] ? curr : prev);
+      const maxLoss = entries.reduce((prev, curr) => curr[1] < prev[1] ? curr : prev);
+      document.getElementById("maxGainDay").textContent = `${maxGain[0]} (+$${maxGain[1]})`;
+      document.getElementById("maxLossDay").textContent = `${maxLoss[0]} ($${maxLoss[1]})`;
+
+      updateChart(entries);
+    });
+  }
+
+  function updateChart(entries) {
+    const ctx = document.getElementById('profitTrendChart').getContext('2d');
+    if (profitChart) profitChart.destroy();
+    profitChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: entries.map(e => e[0]),
+        datasets: [{ label: '每日盈虧', data: entries.map(e => e[1]), borderColor: '#f0a500', fill: false }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+
+  // --- 目標提醒 ---
+  function setMilestone() {
+    const user = localStorage.getItem('currentUser');
+    const label = document.getElementById('targetLabel').value;
+    const target = parseFloat(document.getElementById('targetValue').value);
+    db.ref(`users/${user}/milestones`).set({ label, target });
+    alert('目標已設定！');
+  }
+
+  function checkMilestones(currentTotal) {
+    const user = localStorage.getItem('currentUser');
+    db.ref(`users/${user}/milestones`).once('value', snap => {
+      const goal = snap.val();
+      if (goal && currentTotal >= goal.target) {
+        document.getElementById("milestoneAlert").style.display = "block";
+        document.getElementById("milestoneText").textContent = goal.label;
+      }
+    });
+  }
+</script>
+</body>
+</html>
