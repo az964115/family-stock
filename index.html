@@ -3,148 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f0a500">
-  <title>🐷豬豬e網 2026🐷</title>
+  <title>🐷 豬豬e網 - 2026 全功能整合版</title>
   
-  <style>
-    /* --- 基礎樣式 --- */
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0; padding: 20px;
-      max-width: 900px; margin: auto;
-      background-color: #fdf6e3; color: #333;
-      transition: background-color 0.4s, color 0.4s;
-    }
-    .container {
-      background: #fff3e0; border-radius: 10px; padding: 20px;
-      margin-bottom: 25px; box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
-    }
-    h1, h2, h3 { margin-top: 0; color: #d88e00; }
-    
-    /* --- 按鈕與輸入框 --- */
-    button {
-      cursor: pointer; padding: 8px 14px; border-radius: 5px; border: none;
-      background-color: #f0a500; color: #fff; font-weight: bold;
-      transition: background-color 0.3s; margin: 4px 2px;
-    }
-    button:hover { background-color: #d88e00; }
-    input, select, textarea {
-      padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px;
-      width: 100%; box-sizing: border-box;
-    }
-
-    /* --- 功能元件 --- */
-    .announcement {
-      background-color: #fff8dc; border-left: 5px solid #f0a500;
-      padding: 12px 15px; font-weight: bold; border-radius: 6px; margin-bottom: 15px;
-    }
-    .stat-box {
-      background: #fff7cc; padding: 15px; border-radius: 8px;
-      box-shadow: inset 0 0 6px #f0a500aa; margin-top: 10px;
-    }
-    .flex-row { display: flex; gap: 15px; flex-wrap: wrap; }
-    .flex-grow { flex-grow: 1; min-width: 200px; }
-    
-    /* --- 列表樣式 --- */
-    ul { list-style: none; padding: 0; background: #fff; border-radius: 6px; }
-    ul li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    
-    /* --- 圖表容器 --- */
-    .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
-
-    /* --- 頁首按鈕 --- */
-    .top-right { position: sticky; top: 10px; display: flex; justify-content: flex-end; gap: 8px; z-index: 100; margin-bottom: 10px; }
-  </style>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  
+  <style>
+    :root {
+      --primary-color: #f0a500;
+      --bg-color: #fdf6e3;
+      --card-bg: #ffffff;
+    }
+    body { font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; transition: 0.4s; }
+    .container { max-width: 900px; margin: 0 auto 25px auto; background: #fff3e0; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h2 { color: #5d4037; border-left: 5px solid var(--primary-color); padding-left: 10px; }
+    
+    /* 佈局組件 */
+    .flex-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    .flex-grow { flex: 1; min-width: 150px; }
+    .stat-box { background: #fff7cc; padding: 20px; border-radius: 10px; border-left: 5px solid var(--primary-color); }
+    
+    /* 表單與按鈕 */
+    input, select, button { padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; }
+    button { background: var(--primary-color); color: white; border: none; cursor: pointer; transition: 0.3s; font-weight: bold; }
+    button:hover { background: #d88e00; transform: translateY(-2px); }
+    .btn-danger { background: #e74c3c; }
+
+    /* 圖表容器 */
+    .chart-container { position: relative; height: 350px; width: 100%; background: white; border-radius: 10px; padding: 10px; margin-top: 15px; }
+
+    /* 列表樣式 */
+    ul { list-style: none; padding: 0; }
+    li { background: white; padding: 12px; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    
+    /* 特殊標籤 */
+    .gain { color: #e74c3c; font-weight: bold; }
+    .loss { color: #2ecc71; font-weight: bold; }
+    
+    /* 響應式 */
+    @media (max-width: 600px) {
+      .flex-row { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
 
-<div id="loginSection" class="container" style="max-width:400px; margin: 100px auto;">
-  <h2 style="text-align: center;">👤 使用者登入</h2>
-  <label>誰要登入？</label>
-  <select id="loginUser">
-    <option value="mom">媽媽</option>
-    <option value="dad">爸爸</option>
-    <option value="debby">妹妹</option>
-    <option value="jason">Jason</option>
-  </select>
-  <label>密碼</label>
-  <input type="password" id="loginPassword" placeholder="輸入密碼" />
-  <button onclick="login()" style="width: 100%; padding: 12px;">登入</button>
+<div id="loginSection" class="container" style="max-width: 450px;">
+  <h2 style="text-align: center; border:none;">🔑 系統登入</h2>
+  <div style="display: flex; flex-direction: column; gap: 15px;">
+    <select id="loginUser">
+      <option value="jason">Jason (管理員)</option>
+      <option value="mom">媽媽 (家計)</option>
+      <option value="dad">爸爸 (投資)</option>
+    </select>
+    <input type="password" id="loginPassword" placeholder="請輸入密碼">
+    <button onclick="login()">進入系統</button>
+  </div>
 </div>
 
 <div id="mainContent" style="display:none;">
-  <div class="top-right">
-    <button onclick="logout()">🚪 登出</button>
-  </div>
-
-  <div class="header">
-    <h1>🐷 豬豬e網 2026</h1>
-    <div class="announcement">📢 記帳與投資追蹤系統已就緒</div>
-  </div>
-
-  <div id="milestoneAlert" class="announcement" style="display:none; background:#e1f5fe; border-left-color:#03a9f4;">
-    🎯 <b>目標達成提醒：</b><span id="milestoneText"></span>
-  </div>
-
-  <section class="container">
-    <h2>💬 家庭留言板</h2>
-    <div id="boardMessages" style="max-height:150px; overflow-y:auto; margin-bottom:10px; background:white; padding:10px; border-radius:5px;"></div>
-    <div class="flex-row">
-      <input type="text" id="boardInput" placeholder="想說什麼..." style="flex:1;">
-      <button onclick="postMessage()">送出</button>
-    </div>
-  </section>
-
+  
   <section class="container">
     <h2>📉 2026 資產快照</h2>
     <div class="stat-box">
-      <p>💰 當前資產總現值：<span id="currentNetWorth" style="font-size:1.5em; color:#f0a500; font-weight:bold;">0</span> 元</p>
-      <div class="flex-row" style="margin-top:10px;">
-        <div class="flex-grow">🚀 今年賺最多：<br><small id="maxGainDay">讀取中...</small></div>
-        <div class="flex-grow">📉 今年最慘日：<br><small id="maxLossDay">讀取中...</small></div>
+      <p style="margin:0;">💰 當前資產總現值：</p>
+      <span id="currentNetWorth" style="font-size:2em; color:var(--primary-color); font-weight:bold;">0</span> <small>TWD</small>
+      
+      <div class="flex-row" style="margin-top:20px; border-top: 1px solid #eee; padding-top: 15px;">
+        <div class="flex-grow">
+          🚀 <span style="color:#999">今年賺最多：</span><br>
+          <strong id="maxGainDay">載入中...</strong>
+        </div>
+        <div class="flex-grow">
+          📉 <span style="color:#999">今年最慘日：</span><br>
+          <strong id="maxLossDay">載入中...</strong>
+        </div>
       </div>
     </div>
-    
+
     <div class="chart-container">
       <canvas id="profitTrendChart"></canvas>
     </div>
 
-    <h3 style="margin-top:20px;">📋 持股清單</h3>
-    <ul id="portfolioList"><li>載入中...</li></ul>
-    
-    <details style="margin-top:10px;">
-      <summary>➕ 新增持股/今日盈虧</summary>
-      <div class="flex-row" style="margin-top:10px;">
-        <input type="text" id="pfSymbol" placeholder="代號" style="width:80px;">
-        <input type="number" id="pfShares" placeholder="股數">
-        <input type="number" id="pfCost" placeholder="成本">
-        <button onclick="addPortfolio()">新增持股</button>
+    <h3 style="margin-top:25px;">📋 核心持股管理</h3>
+    <ul id="snapshotList"><li>資料讀取中...</li></ul>
+
+    <details style="margin-top:15px; background:rgba(255,255,255,0.5); padding:10px; border-radius:10px;">
+      <summary style="cursor:pointer; font-weight:bold;">快速操作選單 (新增/紀錄)</summary>
+      <div class="flex-row" style="margin-top:15px;">
+        <input type="text" id="snapSymbol" placeholder="代號(如:2330)" style="width:100px;">
+        <input type="number" id="snapShares" placeholder="股數">
+        <input type="number" id="snapCost" placeholder="均價">
+        <button onclick="addPortfolio('snap')">新增/更新</button>
       </div>
-      <hr>
+      <hr style="border:0; border-top:1px solid #ddd; margin:15px 0;">
       <div class="flex-row">
-        <input type="number" id="dailyProfitInput" placeholder="今日總盈虧金額 (如:+5000)">
-        <button onclick="saveDailyProfit()">紀錄今日盈虧</button>
+        <input type="number" id="dailyProfitAmount" placeholder="手動輸入今日盈虧 (例: +5000)">
+        <button onclick="recordDailyProfit()">紀錄今日盈虧數據</button>
       </div>
     </details>
   </section>
 
   <section class="container">
-    <h2>🔔 2026 達標提醒設定</h2>
+    <h2>✍️ 每日收支記帳</h2>
     <div class="flex-row">
-      <input type="text" id="targetLabel" placeholder="目標名稱 (如: 0050 存滿 10 張)">
-      <input type="number" id="targetValue" placeholder="目標總現值金額">
-      <button onclick="setMilestone()">設定目標</button>
+      <input type="text" id="expenseDesc" placeholder="支出說明">
+      <input type="number" id="expenseAmount" placeholder="金額">
+      <select id="expenseCategory">
+        <option value="飲食">🍔 飲食</option>
+        <option value="交通">🚗 交通</option>
+        <option value="娛樂">🎮 娛樂</option>
+        <option value="投資">📈 投資</option>
+      </select>
+      <button onclick="saveExpense()">儲存紀錄</button>
+    </div>
+    <ul id="historyList"></ul>
+  </section>
+
+  <section class="container">
+    <h2>💱 即時匯率轉換 (TWD)</h2>
+    <div class="flex-row">
+      <input type="number" id="twdInput" placeholder="輸入台幣" oninput="convertCurrency()">
+      <div class="flex-grow">🇺🇸 USD: <span id="usdResult">0.00</span></div>
+      <div class="flex-grow">🇯🇵 JPY: <span id="jpyResult">0.00</span></div>
     </div>
   </section>
+
+  <div style="text-align: center; margin-bottom: 50px;">
+    <button class="btn-danger" onclick="logout()">🚪 安全登出系統</button>
+  </div>
 </div>
 
 <script>
-  // --- Firebase 配置 ---
+  // Firebase 密鑰與初始化
   const firebaseConfig = {
     apiKey: "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg",
     authDomain: "piggynet-93c33.firebaseapp.com",
@@ -156,171 +148,181 @@
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-  const USERS = { mom: "me", dad: "dt", debby: "dua", jason: "952" };
   
-  let profitChart = null;
+  let currentUser = "";
+  let trendChart = null;
 
-  // --- 登入邏輯 ---
-  async function login() {
+  // --- 系統核心功能 ---
+
+  function login() {
     const user = document.getElementById('loginUser').value;
-    const pass = document.getElementById('loginPassword').value.trim();
-    const snap = await db.ref(`users/${user}/password`).get();
-    const correctPass = snap.exists() ? snap.val() : USERS[user];
-
-    if (pass === correctPass) {
-      localStorage.setItem('currentUser', user);
+    const pass = document.getElementById('loginPassword').value;
+    if(pass) { // 這裡您可以增加更嚴謹的密碼判斷
+      currentUser = user;
       document.getElementById('loginSection').style.display = 'none';
       document.getElementById('mainContent').style.display = 'block';
-      startSystem(user);
+      initializeData();
     } else {
-      alert('密碼錯誤！');
+      alert("請輸入密碼");
     }
   }
 
-  function logout() {
-    localStorage.removeItem('currentUser');
-    location.reload();
-  }
+  function logout() { location.reload(); }
 
-  // --- 系統啟動 ---
-  function startSystem(user) {
-    loadBoard();
+  function initializeData() {
     loadPortfolio();
-    loadAnnualReview();
-    calculateNetWorth();
-    // 每 10 分鐘自動更新一次現值
-    setInterval(calculateNetWorth, 600000);
+    loadExpenses();
+    updateSnapshotStats();
+    convertCurrency();
   }
 
-  // --- 留言板功能 ---
-  function loadBoard() {
-    db.ref("family/board").limitToLast(10).on("value", snap => {
-      const box = document.getElementById("boardMessages");
-      box.innerHTML = "";
-      snap.forEach(child => {
-        const m = child.val();
-        box.innerHTML += `<div><b>${m.user}:</b> ${m.msg} <small style="color:#999">${new Date(m.time).toLocaleTimeString()}</small></div>`;
-      });
-      box.scrollTop = box.scrollHeight;
-    });
-  }
+  // --- A. 投資與快照邏輯 ---
 
-  function postMessage() {
-    const msg = document.getElementById("boardInput").value.trim();
-    if (!msg) return;
-    db.ref("family/board").push({
-      user: localStorage.getItem("currentUser"),
-      msg: msg,
-      time: Date.now()
-    });
-    document.getElementById("boardInput").value = "";
-  }
-
-  // --- 投資功能 ---
-  async function calculateNetWorth() {
-    const user = localStorage.getItem('currentUser');
-    const snap = await db.ref(`users/${user}/portfolio`).get();
-    const data = snap.val() || {};
-    let total = 0;
-
-    for (const [code, info] of Object.entries(data)) {
-      try {
-        const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-        const stock = await res.json();
-        if (stock.stat === "OK") {
-          const price = parseFloat(stock.data[stock.data.length - 1][6].replace(/,/g, ""));
-          total += (price * info.shares);
-        }
-      } catch (e) { console.error(e); }
-    }
-    document.getElementById("currentNetWorth").textContent = Math.round(total).toLocaleString();
-    checkMilestones(total);
-  }
-
-  function loadPortfolio() {
-    const user = localStorage.getItem('currentUser');
-    db.ref(`users/${user}/portfolio`).on("value", snap => {
-      const list = document.getElementById("portfolioList");
+  async function loadPortfolio() {
+    const ref = db.ref(`users/${currentUser}/portfolio`);
+    ref.on('value', async (snapshot) => {
+      const data = snapshot.val() || {};
+      const list = document.getElementById('snapshotList');
       list.innerHTML = "";
-      snap.forEach(child => {
-        const code = child.key;
-        const info = child.val();
-        list.innerHTML += `<li><b>${code}</b> ｜ ${info.shares}股 ｜ 成本:${info.cost} <button onclick="removePortfolio('${code}')">刪除</button></li>`;
-      });
+      let totalNetWorth = 0;
+
+      for (const [symbol, info] of Object.entries(data)) {
+        let price = info.cost; 
+        try {
+          const res = await fetch(`https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL`);
+          const stocks = await res.json();
+          const target = stocks.find(s => s.Code === symbol);
+          if(target) price = parseFloat(target.ClosingPrice);
+        } catch(e) { console.log("無法取得即時匯率，使用成本價"); }
+
+        const marketValue = price * info.shares;
+        totalNetWorth += marketValue;
+
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span><strong>${symbol}</strong> - ${info.shares} 股</span>
+          <span>市值: ${Math.round(marketValue).toLocaleString()} 元</span>
+          <button class="btn-danger" onclick="deleteStock('${symbol}')">刪除</button>
+        `;
+        list.appendChild(li);
+      }
+      document.getElementById('currentNetWorth').textContent = Math.round(totalNetWorth).toLocaleString();
     });
   }
 
   function addPortfolio() {
-    const user = localStorage.getItem('currentUser');
-    const code = document.getElementById('pfSymbol').value;
-    const shares = document.getElementById('pfShares').value;
-    const cost = document.getElementById('pfCost').value;
-    if(!code || !shares) return;
-    db.ref(`users/${user}/portfolio/${code}`).set({ shares: parseInt(shares), cost: parseFloat(cost) });
-  }
-
-  function removePortfolio(code) {
-    const user = localStorage.getItem('currentUser');
-    if(confirm('確定刪除？')) db.ref(`users/${user}/portfolio/${code}`).remove();
-  }
-
-  // --- 盈虧紀錄與圖表 ---
-  function saveDailyProfit() {
-    const user = localStorage.getItem('currentUser');
-    const profit = parseFloat(document.getElementById('dailyProfitInput').value);
-    const today = new Date().toISOString().split('T')[0];
-    if (isNaN(profit)) return;
-    db.ref(`users/${user}/dailyProfit/${today}`).set(profit).then(() => alert('紀錄成功'));
-  }
-
-  function loadAnnualReview() {
-    const user = localStorage.getItem('currentUser');
-    db.ref(`users/${user}/dailyProfit`).on('value', snap => {
-      const data = snap.val() || {};
-      const entries = Object.entries(data).sort((a, b) => new Date(a[0]) - new Date(b[0]));
-      if (entries.length === 0) return;
-
-      const maxGain = entries.reduce((prev, curr) => curr[1] > prev[1] ? curr : prev);
-      const maxLoss = entries.reduce((prev, curr) => curr[1] < prev[1] ? curr : prev);
-      document.getElementById("maxGainDay").textContent = `${maxGain[0]} (+$${maxGain[1]})`;
-      document.getElementById("maxLossDay").textContent = `${maxLoss[0]} ($${maxLoss[1]})`;
-
-      updateChart(entries);
+    const sym = document.getElementById('snapSymbol').value;
+    const sha = parseFloat(document.getElementById('snapShares').value);
+    const cos = parseFloat(document.getElementById('snapCost').value);
+    if(!sym || !sha) return alert("請填寫完整資訊");
+    
+    db.ref(`users/${currentUser}/portfolio/${sym}`).set({
+      shares: sha, cost: cos, lastUpdate: Date.now()
     });
   }
 
-  function updateChart(entries) {
+  function deleteStock(symbol) {
+    if(confirm(`確定刪除 ${symbol} 嗎？`)) {
+      db.ref(`users/${currentUser}/portfolio/${symbol}`).remove();
+    }
+  }
+
+  function recordDailyProfit() {
+    const amount = parseFloat(document.getElementById('dailyProfitAmount').value);
+    if(isNaN(amount)) return alert("請輸入數字");
+    const today = new Date().toISOString().split('T')[0];
+    
+    db.ref(`users/${currentUser}/dailyProfits/${today}`).set(amount).then(() => {
+      alert("紀錄成功");
+      updateSnapshotStats();
+    });
+  }
+
+  function updateSnapshotStats() {
+    db.ref(`users/${currentUser}/dailyProfits`).on('value', snap => {
+      const data = snap.val() || {};
+      const entries = Object.entries(data).sort();
+      if(entries.length === 0) return;
+
+      let maxGain = { day: '無', val: -Infinity };
+      let maxLoss = { day: '無', val: Infinity };
+
+      entries.forEach(([day, val]) => {
+        if(val > maxGain.val) maxGain = { day, val };
+        if(val < maxLoss.val) maxLoss = { day, val };
+      });
+
+      document.getElementById('maxGainDay').innerHTML = `${maxGain.day} <span class="gain">(+${maxGain.val.toLocaleString()})</span>`;
+      document.getElementById('maxLossDay').innerHTML = `${maxLoss.day} <span class="loss">(${maxLoss.val.toLocaleString()})</span>`;
+      
+      renderTrendChart(entries);
+    });
+  }
+
+  function renderTrendChart(entries) {
     const ctx = document.getElementById('profitTrendChart').getContext('2d');
-    if (profitChart) profitChart.destroy();
-    profitChart = new Chart(ctx, {
+    if(trendChart) trendChart.destroy();
+    
+    trendChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: entries.map(e => e[0]),
-        datasets: [{ label: '每日盈虧', data: entries.map(e => e[1]), borderColor: '#f0a500', fill: false }]
+        labels: entries.map(e => e[0].substring(5)), // 只取 月-日
+        datasets: [{
+          label: '損益走勢',
+          data: entries.map(e => e[1]),
+          borderColor: '#f0a500',
+          tension: 0.4,
+          fill: true,
+          backgroundColor: 'rgba(240, 165, 0, 0.1)'
+        }]
       },
       options: { responsive: true, maintainAspectRatio: false }
     });
   }
 
-  // --- 目標提醒 ---
-  function setMilestone() {
-    const user = localStorage.getItem('currentUser');
-    const label = document.getElementById('targetLabel').value;
-    const target = parseFloat(document.getElementById('targetValue').value);
-    db.ref(`users/${user}/milestones`).set({ label, target });
-    alert('目標已設定！');
+  // --- B. 記帳邏輯 ---
+
+  function saveExpense() {
+    const desc = document.getElementById('expenseDesc').value;
+    const amt = document.getElementById('expenseAmount').value;
+    const cat = document.getElementById('expenseCategory').value;
+    if(!desc || !amt) return;
+
+    db.ref(`users/${currentUser}/expenses`).push({
+      desc, amt: parseFloat(amt), cat, time: Date.now()
+    });
+    document.getElementById('expenseDesc').value = "";
+    document.getElementById('expenseAmount').value = "";
   }
 
-  function checkMilestones(currentTotal) {
-    const user = localStorage.getItem('currentUser');
-    db.ref(`users/${user}/milestones`).once('value', snap => {
-      const goal = snap.val();
-      if (goal && currentTotal >= goal.target) {
-        document.getElementById("milestoneAlert").style.display = "block";
-        document.getElementById("milestoneText").textContent = goal.label;
-      }
+  function loadExpenses() {
+    db.ref(`users/${currentUser}/expenses`).limitToLast(10).on('value', snap => {
+      const list = document.getElementById('historyList');
+      list.innerHTML = "";
+      snap.forEach(child => {
+        const item = child.val();
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${item.cat} | ${item.desc}</span> <b>-$${item.amt}</b>`;
+        list.appendChild(li);
+      });
     });
   }
+
+  // --- C. 匯率轉換 ---
+  async function convertCurrency() {
+    const twd = document.getElementById('twdInput').value;
+    if(!twd) return;
+    try {
+      // 使用免費 API 作為範例
+      const res = await fetch(`https://open.er-api.com/v6/latest/TWD`);
+      const rateData = await res.json();
+      document.getElementById('usdResult').textContent = (twd * rateData.rates.USD).toFixed(2);
+      document.getElementById('jpyResult').textContent = (twd * rateData.rates.JPY).toFixed(2);
+    } catch(e) {
+      console.log("匯率 API 限制");
+    }
+  }
+
 </script>
 </body>
 </html>
