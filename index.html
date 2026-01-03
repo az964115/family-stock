@@ -283,7 +283,6 @@
 
   <div class="header" style="display:flex;justify-content:space-between;align-items:center;">
     <h1 style="margin:0">🐷 豬豬e網</h1>
-    <div id="familyRank" style="font-size:0.9em;background:#fff3e0;padding:6px 10px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);white-space:nowrap;">🏆 家庭排行：計算中...</div>
     <div class="announcement">📢 記帳區上線啦！請媽媽和妹妹給我一百萬</div>
   </div>
 
@@ -461,11 +460,6 @@
   <div class="chart-container">
     <canvas id="profitTrendChart"></canvas>
   </div>
-
-  <h3 style="margin-top:20px;">📋 快照持股清單</h3>
-  <ul id="snapshotPortfolioList">
-    <li>載入中...</li>
-  </ul>
 </section>
 
   <section class="container">
@@ -641,6 +635,19 @@ document.getElementById('endDate').value = today;
     }
 
     window.addEventListener("load", loadBoard);
+    window.addEventListener("load", () => {
+  loadBoard();
+  
+  // --- 新增這段：檢查瀏覽器是否存有登入資訊 ---
+  const savedUser = localStorage.getItem('currentUser');
+  if (savedUser) {
+    // 如果有存過使用者，直接顯示主畫面並初始化
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    initForUser(savedUser);
+  }
+  // ------------------------------------------
+});
 
     function loadPortfolio() {
       if (!pfRef) return;
@@ -674,29 +681,31 @@ document.getElementById('endDate').value = today;
         if (list.innerHTML === "") list.innerHTML = "<li>暫無資料</li>";
       });
     }
-    async function updateTodayProfit() {
-      if (!pfRef) return;
-      const snapshot = await pfRef.get();
-      const data = snapshot.val() || {};
-      let totalProfit = 0;
+async function updateTodayProfit() {
+  if (!pfRef) return;
+  const snapshot = await pfRef.get();
+  const data = snapshot.val() || {};
+  let totalProfit = 0;
 
-      for (const [code, { shares, cost }] of Object.entries(data)) {
-        try {
-          const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-          const stockData = await res.json();
-          if (stockData.stat === "OK" && stockData.data.length > 0) {
-            const lastPrice = parseFloat(stockData.data[stockData.data.length - 1][6].replace(/,/g, ""));
-            const profit = (lastPrice - cost) * shares;
-            totalProfit += profit;
-          }
-        } catch (e) {
-          console.error(`無法取得 ${code} 的資料`, e);
-        }
+  for (const [code, { shares, cost }] of Object.entries(data)) {
+    try {
+      const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
+      const stockData = await res.json();
+      if (stockData.stat === "OK" && stockData.data.length > 0) {
+        const lastPrice = parseFloat(stockData.data[stockData.data.length - 1][6].replace(/,/g, ""));
+        totalProfit += (lastPrice - cost) * shares;
       }
+    } catch (e) { console.error(e); }
+  }
 
-      document.getElementById("todayTotalProfit").textContent = totalProfit.toFixed(2);
-      const el=document.getElementById("todayTotalProfit"); el.className = totalProfit>=0 ? "profit-positive" : "profit-negative";
-    }
+  const formattedProfit = totalProfit.toFixed(2);
+  document.getElementById("todayTotalProfit").textContent = formattedProfit;
+  // 【連動修改】同步更新 2026 資產快照的數字
+  document.getElementById("currentNetWorth").textContent = parseFloat(formattedProfit).toLocaleString();
+  
+  const el = document.getElementById("todayTotalProfit");
+  el.className = totalProfit >= 0 ? "profit-positive" : "profit-negative";
+}
 
     function addPortfolio() {
       const code = document.getElementById('pfSymbol').value.trim();
@@ -1649,7 +1658,38 @@ async function postMusicComment(key) {
   el.value = '';
   loadMusicComments(key);
 }
+// 自動將當前的總損益 A 點紀錄到資料庫，供快照分析使用
+function syncFamilyProfitToSnapshot() {
+  const user = localStorage.getItem("currentUser");
+  const profitText = document.getElementById("todayTotalProfit").textContent;
+  const profit = parseFloat(profitText);
+  if (!user || isNaN(profit)) return;
 
+  const today = new Date().toISOString().split("T")[0];
+
+  // 1. 紀錄每日歷史，用來算「今年賺最多/最慘日」
+  firebase.database().ref(`family/investSnapshot/${user}/${today}`).set({
+    profit: profit,
+    time: Date.now()
+  });
+
+  // 2. 更新當前現值（供 calculateNetWorth 讀取）
+  firebase.database().ref(`family/currentNetWorth/${user}`).set({
+    value: profit,
+    time: Date.now()
+  });
+}
+
+// 每 1 分鐘自動跑一次紀錄，確保資料是最新的
+setInterval(syncFamilyProfitToSnapshot, 60000);
+
+// 網頁開啟時也立刻執行一次計算與分析
+window.addEventListener("load", () => {
+    setTimeout(() => {
+        calculateNetWorth(); // 你的檔案末端有這個函式
+        loadAnnualReview();  // 你的檔案末端有這個函式
+    }, 2000); // 延遲兩秒等數據抓完
+});
 async function loadMusicComments(key) {
   const container = document.getElementById('comments_' + key);
   if (!container) return;
@@ -1770,7 +1810,16 @@ window.notifyEpisodeUpdate = async function(showName,newEp){
   const msg = `📺 你追的 ${showName} 更新到第 ${newEp} 集！`;
   await pushLine(msg);
 };
-
+window.addEventListener("load", () => {
+  loadBoard();
+  const savedUser = localStorage.getItem('currentUser');
+  if (savedUser) {
+    // 如果有存過使用者，直接顯示主畫面並初始化
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    initForUser(savedUser);
+  }
+});
 window.addEventListener("load", ()=>{
   if (Notification.permission !== 'granted'){
     Notification.requestPermission();
@@ -1935,25 +1984,14 @@ document.addEventListener('DOMContentLoaded', ()=> {
 // ===== 自動同步 family 持股總損益 → 資產快照（最終版） =====
 function syncFamilyProfitToSnapshot() {
   const user = localStorage.getItem("currentUser");
-  if (!user) return;
-
-  // 嘗試從 family 頁面已顯示的「總損益」抓數字
-  const profitEl = document.querySelector("[data-total-profit], #totalProfit, .total-profit");
-  if (!profitEl) return;
-
-  const raw = profitEl.textContent.replace(/[^0-9\-\.]/g, "");
-  const profit = parseFloat(raw);
-  if (isNaN(profit)) return;
+  const profitText = document.getElementById("todayTotalProfit").textContent;
+  const profit = parseFloat(profitText);
+  if (!user || isNaN(profit)) return;
 
   const today = new Date().toISOString().split("T")[0];
-
+  // 記錄每日損益到 Firebase，供「賺最多/最慘日」計算
   firebase.database().ref(`family/investSnapshot/${user}/${today}`).set({
     profit: profit,
-    time: Date.now()
-  });
-
-  firebase.database().ref(`family/currentNetWorth/${user}`).set({
-    value: profit,
     time: Date.now()
   });
 }
@@ -1992,3 +2030,4 @@ function loadAnnualReview() {
     updateChart(entries);
   });
 }
+
