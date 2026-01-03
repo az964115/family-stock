@@ -482,6 +482,7 @@
       <h3 style="margin-top:15px;">📋 我的持股列表 資產快照: https://az964115.github.io/family-stock/ </h3>
       <div id="totalProfitSection">
         📈 最新收盤價(上一個1330)總損益：<span id="todayTotalProfit">0</span> 元
+        <button onclick="updateTodayProfit()" style="margin-left: 10px; padding: 4px 8px; font-size: 14px;">🔄 手動更新</button>
       </div>
       <ul id="portfolioList"><li>暫無資料</li></ul>
     </section>
@@ -649,62 +650,99 @@ document.getElementById('endDate').value = today;
   // ------------------------------------------
 });
 
-    function loadPortfolio() {
-      if (!pfRef) return;
-      pfRef.on("value", async snap => {
-        const data = snap.val() || {};
-        const list = document.getElementById("portfolioList");
-        list.innerHTML = "";
+// 宣告一個全域變數來追蹤請求次數
+let portfolioLoadCount = 0;
 
-        for (const [code, info] of Object.entries(data)) {
-          try {
-            const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-            const stock = await res.json();
-            let price = 0;
-            if (stock.stat === "OK" && stock.data.length > 0) {
-              const last = stock.data[stock.data.length - 1];
-              price = parseFloat(last[6].replace(/,/g, ""));
-            }
-            const gain = ((price - info.cost) * info.shares).toFixed(2);
-            const color = gain >= 0 ? "red" : "green";
-            const li = document.createElement("li");
-            li.innerHTML = `
-              <b>${code}</b>｜${info.shares}股｜成本 ${info.cost}｜現價 ${price.toFixed(2)}｜
-              <span style="color:${color}; font-weight:bold;">損益 ${gain}</span>
-              <button onclick="removePortfolio('${code}')" style="margin-left:8px;">刪除</button>
-            `;
-            list.appendChild(li);
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        if (list.innerHTML === "") list.innerHTML = "<li>暫無資料</li>";
-      });
+function loadPortfolio() {
+  if (!pfRef) return;
+  
+  // 監聽即時變動
+  pfRef.on("value", async snap => {
+    // 每次觸發時增加計數，用來識別這是否為「最新」的一次觸發
+    const currentRequestID = ++portfolioLoadCount;
+    const list = document.getElementById("portfolioList");
+    
+    const data = snap.val() || {};
+    if (Object.keys(data).length === 0) {
+      list.innerHTML = "<li>暫無資料</li>";
+      return;
     }
+
+    // 先暫存結果，不要直接 appendChild，避免畫面閃爍
+    let htmlBuffer = ""; 
+
+    // 將物件轉成陣列處理
+    const entries = Object.entries(data);
+
+    for (const [code, info] of entries) {
+      // 如果在抓取過程中，已經有新的觸發了，就停止舊的執行
+      if (currentRequestID !== portfolioLoadCount) return;
+
+      try {
+        const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
+        const stock = await res.json();
+        let price = 0;
+        if (stock.stat === "OK" && stock.data.length > 0) {
+          const last = stock.data[stock.data.length - 1];
+          price = parseFloat(last[6].replace(/,/g, ""));
+        }
+        const gain = ((price - info.cost) * info.shares).toFixed(2);
+        const color = gain >= 0 ? "red" : "green";
+        
+        htmlBuffer += `
+          <li>
+            <b>${code}</b>｜${info.shares}股｜成本 ${info.cost}｜現價 ${price.toFixed(2)}｜
+            <span style="color:${color}; font-weight:bold;">損益 ${gain}</span>
+            <button onclick="removePortfolio('${code}')" style="margin-left:8px;">刪除</button>
+          </li>
+        `;
+      } catch (e) {
+        console.error(`抓取股票 ${code} 失敗:`, e);
+      }
+    }
+
+    // 最後一次性更新 UI，確保這仍是最新的請求
+    if (currentRequestID === portfolioLoadCount) {
+      list.innerHTML = htmlBuffer;
+    }
+  });
+}
+
 async function updateTodayProfit() {
   if (!pfRef) return;
   const snapshot = await pfRef.get();
   const data = snapshot.val() || {};
+  
   let totalProfit = 0;
+  let totalNetWorth = 0;
 
   for (const [code, { shares, cost }] of Object.entries(data)) {
     try {
+      // 抓取證交所即時數據
       const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
       const stockData = await res.json();
+      
       if (stockData.stat === "OK" && stockData.data.length > 0) {
         const lastPrice = parseFloat(stockData.data[stockData.data.length - 1][6].replace(/,/g, ""));
         totalProfit += (lastPrice - cost) * shares;
+        totalNetWorth += lastPrice * shares;
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(`抓取 ${code} 失敗`, e);
+    }
   }
 
-  const formattedProfit = totalProfit.toFixed(2);
-  document.getElementById("todayTotalProfit").textContent = formattedProfit;
-  // 【連動修改】同步更新 2026 資產快照的數字
-  document.getElementById("currentNetWorth").textContent = parseFloat(formattedProfit).toLocaleString();
-  
-  const el = document.getElementById("todayTotalProfit");
-  el.className = totalProfit >= 0 ? "profit-positive" : "profit-negative";
+  // 更新介面數字
+  document.getElementById("todayTotalProfit").textContent = totalProfit.toLocaleString(undefined, {minimumFractionDigits: 0});
+  document.getElementById("currentNetWorth").textContent = totalNetWorth.toLocaleString();
+
+  // 1. 同步到資料庫快照
+  const currentUser = localStorage.getItem('currentUser');
+  await syncFamilyProfitToSnapshot(currentUser, totalProfit);
+
+  // 2. 重新讀取回顧資料（更新賺最多/最慘日與圖表）
+  loadAnnualReview(); 
+  alert("資產數據已更新！");
 }
 
     function addPortfolio() {
@@ -1971,6 +2009,18 @@ function randomFX() {
   const pick = fxScenes[Math.floor(Math.random()*fxScenes.length)];
   applyFX(pick);
 }
+async function syncFamilyProfitToSnapshot(user, totalProfit) {
+  if (!user) return;
+  // 取得台灣時間日期 (YYYY-MM-DD)
+  const now = new Date();
+  const dateStr = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+  
+  // 存入快照區，用於統計和圖表
+  await firebase.database().ref(`family/investSnapshot/${user}/${dateStr}`).set({
+    profit: totalProfit,
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  });
+}
 
 /* ensure buttons show current selection briefly */
 document.addEventListener('DOMContentLoaded', ()=> {
@@ -1981,23 +2031,24 @@ document.addEventListener('DOMContentLoaded', ()=> {
   applyWeather('sunny');
 });
 
-// ===== 自動同步 family 持股總損益 → 資產快照（最終版） =====
-function syncFamilyProfitToSnapshot() {
-  const user = localStorage.getItem("currentUser");
-  const profitText = document.getElementById("todayTotalProfit").textContent;
-  const profit = parseFloat(profitText);
-  if (!user || isNaN(profit)) return;
+function syncFamilyProfitToSnapshot(user, profit) {
+  if (!user) return;
+  const now = new Date();
+  // 取得台灣時間日期 (YYYY-MM-DD)
+  const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split("T")[0];
 
-  const today = new Date().toISOString().split("T")[0];
-  // 記錄每日損益到 Firebase，供「賺最多/最慘日」計算
+  // 紀錄每日損益快照
   firebase.database().ref(`family/investSnapshot/${user}/${today}`).set({
     profit: profit,
     time: Date.now()
   });
-}
 
-// 每 30 秒嘗試同步一次（不影響效能）
-setInterval(syncFamilyProfitToSnapshot, 30000);
+  // 紀錄當前總現值（供 calculateNetWorth 使用）
+  firebase.database().ref(`family/currentNetWorth/${user}`).set({
+    value: profit, // 這裡建議存 totalNetWorth，如果你想顯示 179萬那種數字
+    time: Date.now()
+  });
+}
 
 // 資產快照讀取 family 資料
 function calculateNetWorth() {
@@ -2009,25 +2060,65 @@ function calculateNetWorth() {
   });
 }
 
+let profitChart = null; // 全域變數儲存圖表實例
+
 function loadAnnualReview() {
   const user = localStorage.getItem("currentUser");
-  firebase.database().ref(`family/investSnapshot/${user}`).on("value", snap => {
+  if (!user) return;
+
+  firebase.database().ref(`family/investSnapshot/${user}`).once("value", snap => {
     const data = snap.val();
-    if (!data) return;
+    if (!data) {
+      document.getElementById("maxGainDay").textContent = "尚無資料";
+      document.getElementById("maxLossDay").textContent = "尚無資料";
+      return;
+    }
 
+    // 轉換為陣列並按日期排序
     const entries = Object.entries(data)
-      .map(([d, v]) => [d, v.profit])
-      .sort((a, b) => new Date(a[0]) - new Date(b[0]));
+      .map(([date, val]) => ({ date, profit: val.profit }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    const maxGain = entries.reduce((a, b) => b[1] > a[1] ? b : a);
-    const maxLoss = entries.reduce((a, b) => b[1] < a[1] ? b : a);
+    if (entries.length === 0) return;
 
-    document.getElementById("maxGainDay").textContent =
-      `${maxGain[0]} (+${maxGain[1].toLocaleString()})`;
-    document.getElementById("maxLossDay").textContent =
-      `${maxLoss[0]} (${maxLoss[1].toLocaleString()})`;
+    // 找出最大與最小損益
+    const maxRecord = entries.reduce((prev, curr) => (curr.profit > prev.profit) ? curr : prev);
+    const minRecord = entries.reduce((prev, curr) => (curr.profit < prev.profit) ? curr : prev);
 
-    updateChart(entries);
+    // 更新顯示文字
+    document.getElementById("maxGainDay").innerHTML = 
+      `${maxRecord.date} <span style="color:red;">+${maxRecord.profit.toLocaleString()}</span>`;
+    document.getElementById("maxLossDay").innerHTML = 
+      `${minRecord.date} <span style="color:green;">${minRecord.profit.toLocaleString()}</span>`;
+
+    // 生成圖表
+    renderProfitChart(entries);
   });
 }
+function renderProfitChart(entries) {
+  const ctx = document.getElementById('profitTrendChart').getContext('2d');
+  
+  if (profitChart) profitChart.destroy(); // 如果已有圖表則銷毀重建
 
+  profitChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: entries.map(e => e.date),
+      datasets: [{
+        label: '每日總損益走勢',
+        data: entries.map(e => e.profit),
+        borderColor: '#f0a500',
+        backgroundColor: 'rgba(240, 165, 0, 0.1)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: false }
+      }
+    }
+  });
+}
