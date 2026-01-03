@@ -1,494 +1,105 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#f0a500">
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🐷豬豬e網🐷</title>
   <style>
+    /* --- 基礎樣式 --- */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0; padding: 20px;
-      max-width: 900px;
-      background-color: #fdf6e3;
-      color: #333;
+      margin: 0; padding: 20px; max-width: 900px;
+      background-color: #fdf6e3; color: #333;
       transition: background-color 0.4s, color 0.4s;
     }
-    h1,h2,h3,h4 { margin-top: 0; }
-    button {
-      cursor: pointer; padding: 8px 14px; font-size: 16px;
-      border-radius: 5px; border: none;
-      background-color: #f0a500; color: #fff;
-      box-shadow: 0 3px 6px rgb(0 0 0 / 0.15);
-      transition: background-color 0.3s;
-    }
-    ul li button {
-      background-color: #e74c3c;
-      color: white;
-      padding: 4px 8px;
-      font-size: 14px;
-      border-radius: 4px;
-      margin-left: 10px;
-    }
-    ul li button:hover {
-      background-color: #c0392b;
-    }
-    button:hover { background-color: #d88e00; }
-    input, select, textarea {
-      padding: 8px; font-size: 16px;
-      border: 1px solid #ccc; border-radius: 5px;
-      width: 100%; box-sizing: border-box;
-      transition: border-color 0.3s;
-    }
-    input:focus, select:focus, textarea:focus { border-color: #f0a500; outline: none; }
-    textarea { resize: vertical; }
-    ul {
-      padding-left: 15px; list-style: none; margin: 8px 0;
-      max-height: 160px; overflow-y: auto;
-      border-radius: 6px; box-shadow: inset 0 0 5px #ccc; background: #fff;
-    }
-    ul li {
-      padding: 8px 12px; border-bottom: 1px solid #eee;
-      cursor: pointer; transition: background-color 0.2s;
-    }
-    ul li:hover { background-color: #ffe8a3; }
     .container {
       background: #fff3e0; border-radius: 10px; padding: 20px;
       margin-bottom: 25px; box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
     }
-    .header { text-align: center; margin-bottom: 20px; }
-    .announcement {
-      background-color: #fff8dc; border-left: 5px solid #f0a500;
-      padding: 12px 15px; font-weight: bold; font-size: 1.1em;
-      border-radius: 6px; box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    button {
+      cursor: pointer; padding: 8px 14px; font-size: 16px;
+      border-radius: 5px; border: none; background-color: #f0a500; color: #fff;
+      transition: 0.3s;
     }
-    .flex-row { display: flex; gap: 20px; flex-wrap: wrap; }
-    .flex-grow { flex-grow: 1; min-width: 250px; }
-    label { font-weight: 600; display: block; margin-bottom: 6px; }
-    .small-note { font-size: 0.85em; color: #666; }
+    button:hover { background-color: #d88e00; }
+    input, select, textarea {
+      padding: 8px; font-size: 16px; border: 1px solid #ccc; 
+      border-radius: 5px; width: 100%; box-sizing: border-box;
+    }
+    .flex-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; }
+    .flex-grow { flex-grow: 1; min-width: 200px; }
     .stat-box {
-      background: #fff7cc; padding: 12px; border-radius: 8px;
-      margin-top: 10px; box-shadow: inset 0 0 6px #f0a500aa;
-      font-weight: 600;
+      background: #fff7cc; padding: 15px; border-radius: 8px;
+      margin-top: 10px; box-shadow: inset 0 0 6px #f0a500aa; font-weight: 600;
     }
-    body.theme-day { background-color: #fdf6e3; color: #333; }
-    body.theme-day .container { background: #fff3e0; color: #333; }
-    body.theme-day .announcement { background-color: #fff8dc; border-left-color: #f0a500; color: #444; }
+    ul { list-style: none; padding: 0; background: #fff; border-radius: 6px; }
+    ul li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    
+    /* --- 特殊區塊樣式 --- */
+    iframe { width: 100%; height: 500px; border: 2px solid #f0a500; border-radius: 10px; margin-top: 10px; }
     body.theme-night { background-color: #121212; color: #eee; }
     body.theme-night .container { background: #1e1e1e; color: #eee; }
-    body.theme-night .announcement { background-color: #2a2a2a; border-left-color: #ffa500; color: #eee; }
-    body.theme-night button { background-color: #ffa500; color: #222; box-shadow: 0 3px 6px rgb(255 165 0 / 0.6); }
-    body.theme-night input, body.theme-night select, body.theme-night textarea { background: #333; border-color: #555; color: #eee; }
-    body.theme-night ul { background: #1a1a1a; box-shadow: inset 0 0 5px #ffa500aa; color: #eee; }
-    body.theme-night .small-note,
-    body.theme-night ul,
-    body.theme-night ul li,
-    body.theme-night .stat-box,
-    body.theme-night .announcement {
-      color: #000 !important;
-    }
-
-    body.theme-forest { background-color: #1e2f1e; color: #000; }
-    body.theme-forest .container { background: #2e4d2e; color: #000; }
-    body.theme-forest .announcement { background-color: #3a6e3a; border-left-color: #aed581; color: #dcedc8; }
-    body.theme-forest button { background-color: #aed581; color: #2e4d2e; }
-    body.theme-forest input, body.theme-forest select, body.theme-forest textarea { background: #486b48; border-color: #aed581; color: #e8f5e9; }
-    #chart { max-width: 100%; height: 300px; margin-top: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgb(0 0 255 / 0.15); background-color: white; }
-    .top-right { position: fixed; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 999; }
-    .small-note { font-size: 0.85em; color: #777; }
-    #showList {
-    max-height: none !important;
-    overflow-y: visible !important;
-    background: #fff;
-    box-shadow: inset 0 0 5px #ccc;
-    border-radius: 6px;
-  }
-  
-    #portfolioList, #showList {
-      max-height: none !important;
-      overflow-y: visible !important;
-      background: #fff;
-      box-shadow: inset 0 0 5px #ccc;
-      border-radius: 6px;
-      padding: 6px;
-      margin: 6px 0;
-    }
-    #portfolioList li, #showList li { border-bottom: 1px solid #eee; padding:6px 8px; }
-
-  
-/* --- Super Effects (lightweight CSS + JS) --- */
-#weather-bg {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  transition: opacity 0.8s ease, filter 0.8s ease;
-}
-/* base overlay so body themes still visible */
-#weather-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  transition: opacity 0.8s ease;
-}
-
-/* Sunny */
-.w-sunny {
-  background: linear-gradient(180deg, #87ceeb 0%, #fdf6e3 60%);
-  filter: brightness(1.03);
-}
-
-/* Cloudy */
-.w-cloudy {
-  background: linear-gradient(180deg, #dfe9f3 0%, #cfd8dc 60%);
-}
-
-/* Night */
-.w-night {
-  background: radial-gradient(circle at 20% 10%, #1b2b4a 0%, #071024 60%);
-}
-
-/* Rain layer (subtle animated raindrops using pseudo-elements) */
-.rain-layer {
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(transparent 60%, rgba(255,255,255,0.03) 61%), linear-gradient(transparent 60%, rgba(255,255,255,0.02) 61%);
-  background-size: 2px 60px, 3px 80px;
-  opacity: 0.7;
-  animation: rainMove 0.9s linear infinite;
-}
-@keyframes rainMove {
-  from { transform: translateY(0) skewY(-10deg); }
-  to { transform: translateY(60px) skewY(-10deg); }
-}
-
-/* Lightning flash */
-.lightning-flash {
-  position: absolute; inset: 0; background: rgba(255,255,255,0.0);
-  animation: flash 4.5s linear infinite;
-  pointer-events: none;
-}
-@keyframes flash {
-  0%, 93%, 100% { opacity: 0; }
-  94% { opacity: 0.85; }
-  95% { opacity: 0; }
-  97% { opacity: 0.6; }
-}
-
-/* --- FX animations --- */
-/* clouds */
-.fx-clouds { }
-.fx-clouds .cloud {
-  position: absolute;
-  top: 10%;
-  width: 220px; height: 70px;
-  background: rgba(255,255,255,0.85);
-  border-radius: 50px;
-  filter: blur(6px);
-  opacity: 0.9;
-  animation: cloudFloat 20s linear infinite;
-}
-.fx-clouds .cloud.c2 { top: 30%; left: -200px; width: 360px; height: 90px; animation-duration: 30s; opacity: 0.7; filter: blur(8px); }
-@keyframes cloudFloat { from { transform: translateX(-10%); } to { transform: translateX(120%); } }
-
-/* stars twinkle */
-.fx-stars { }
-.fx-stars::before {
-  content: "";
-  position: absolute; inset: 0;
-  background-image: radial-gradient(#ffffffaa 1px, transparent 2px);
-  background-size: 6px 6px;
-  opacity: 0.85;
-  animation: twinkle 3s linear infinite;
-  filter: blur(0.6px);
-}
-@keyframes twinkle { 0%{opacity:0.6}50%{opacity:1}100%{opacity:0.6} }
-
-/* meteors: small streaks */
-.fx-meteors { overflow: visible; }
-.fx-meteors .meteor {
-  position: absolute; width: 2px; height: 60px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0));
-  transform: rotate(25deg);
-  opacity: 0.0;
-  animation: meteorAnim 2s linear infinite;
-}
-@keyframes meteorAnim {
-  0% { opacity: 0; transform: translate(-10vw,-10vh) rotate(25deg) scale(0.2); }
-  10% { opacity: 1; }
-  100% { opacity: 0; transform: translate(110vw,70vh) rotate(25deg) scale(0.6); }
-}
-
-/* particles (gentle floating dots) */
-.fx-particles { }
-.fx-particles .p {
-  position: absolute; width:8px;height:8px;border-radius:50%;
-  background: radial-gradient(circle,#fff 0%, rgba(255,255,255,0.6) 60%);
-  opacity: 0.9; filter: blur(1px);
-  animation: floaty 8s linear infinite;
-}
-@keyframes floaty { 0%{transform:translateY(0)}50%{transform:translateY(-30px)}100%{transform:translateY(0)} }
-
-/* fireworks (subtle bursts) */
-.fx-fireworks .burst {
-  position: absolute; width: 6px; height: 6px; border-radius: 50%;
-  box-shadow: 0 0 10px 3px rgba(255,200,80,0.9);
-  opacity: 0; animation: firework 1.2s linear infinite;
-}
-@keyframes firework {
-  0% { transform: scale(0.2); opacity: 1; }
-  70% { transform: scale(1.6); opacity: 0.9; }
-  100% { transform: scale(2.4); opacity: 0; }
-}
-
-/* ensure content above effects stays readable */
-.container, .header, .top-right, .announcement, #mainContent, #loginSection {
-  position: relative;
-  z-index: 10;
-}
-
-</style>
+    body.theme-night .stat-box { color: #333; }
+    .chart-container { position: relative; height: 250px; width: 100%; margin-top: 15px; }
+  </style>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <div id="weather-bg"></div>
 
-  <div id="loginSection" class="container" style="max-width:400px; margin:auto;">
-  <h2>👤 使用者登入</h2>
-  <label>使用者名稱</label>
-  <select id="loginUser">
-    <option value="mom">媽媽</option>
-    <option value="dad">爸爸</option>
-    <option value="debby">妹妹</option>
-    <option value="jason">Jason</option>
-  </select>
-
-  <label>密碼</label>
-  <input type="password" id="loginPassword" placeholder="輸入密碼" />
-  <button onclick="login()">登入</button>
-</div>
-<div id="mainContent" style="display:none;">
-  <div class="top-right">
-    <button onclick="setTheme('day')">🌞 白天</button>
-    <button id="weatherBtn" onclick="randomWeather()">⛅ 天氣</button>
-    <button id="fxBtn" onclick="randomFX()">✨ 動畫</button>
-    <button onclick="changePassword()">🔐 修改密碼</button>
-    <button onclick="logout()">🚪 登出</button>
+  <div id="loginSection" class="container" style="max-width:400px; margin: 40px auto;">
+    <h2>👤 使用者登入</h2>
+    <select id="loginUser">
+      <option value="mom">媽媽</option>
+      <option value="dad">爸爸</option>
+      <option value="debby">妹妹</option>
+      <option value="jason">Jason</option>
+    </select>
+    <input type="password" id="loginPassword" placeholder="輸入密碼" style="margin-top:10px;">
+    <button onclick="login()" style="width:100%; margin-top:15px;">登入</button>
   </div>
 
-  <div class="header" style="display:flex;justify-content:space-between;align-items:center;">
-    <h1 style="margin:0">🐷 豬豬e網</h1>
-    <div class="announcement">📢 記帳區上線啦！請媽媽和妹妹給我一百萬</div>
-  </div>
+  <div id="mainContent" style="display:none;">
+    <div style="text-align: right; margin-bottom: 10px;">
+      <button onclick="setTheme('day')">🌞 白天</button>
+      <button onclick="setTheme('night')">🌙 黑夜</button>
+      <button onclick="logout()">🚪 登出</button>
+    </div>
 
-  <div style="margin-bottom: 20px;">
     <section class="container">
-      <h2>💬 家庭公告板</h2>
-      <div id="boardMessages" style="background:#fff; padding:10px; border-radius:8px; max-height:200px; overflow-y:auto; box-shadow:inset 0 0 5px #ccc;"></div>
-      <div style="margin-top:10px;">
-        <textarea id="boardInput" placeholder="輸入留言..." rows="2"></textarea>
-        <button onclick="postMessage()">發佈留言</button>
+      <h2>📉 2026 資產快照</h2>
+      <div class="stat-box">
+        <p>💰 當前資產現值：<span id="currentNetWorth" style="font-size:1.5em;color:#f0a500;">0</span> 元</p>
+        <div class="flex-row">
+          <div class="flex-grow">🚀 今年賺最多：<br><small id="maxGainDay">讀取中...</small></div>
+          <div class="flex-grow">📉 今年最慘日：<br><small id="maxLossDay">讀取中...</small></div>
+        </div>
       </div>
+      <div class="chart-container"><canvas id="profitTrendChart"></canvas></div>
     </section>
 
-    <h3>🧩 新電影區 https://www.movieffm.net/home/</h3>
-
     <section class="container">
-      <h2>🎬 關注的節目</h2>
-      <div style="margin-bottom:10px;">
-        <input type="url" id="showUrlInput" placeholder="輸入節目網址，例如：https://www.movieffm.net/drama/372471/" />
-        <button id="addShowBtn">➕ 新增節目</button>
-        <button onclick="loadShows(true)">🔄 更新節目</button>
-        <small class="small-note">新增時會擷取該頁的標題、狀態與更新時間</small>
-      </div>
-      <ul id="showList"><li>尚未追蹤任何節目</li></ul>
-    </section>
-
-    <div style="overflow:hidden; border: 2px solid #f0a500; border-radius: 10px; height: 600px;">
-      <iframe src="https://www.movieffm.net/movies/?genres&region&dtyear&cats&orderby=date&tvtype"
-        width="100%" height="600" style="transform:scale(1); transform-origin: 0 0; border:none;">
-      </iframe>
-    </div>
-
-    <h3>🧩 免費貼圖區(更多)</h3>
-    <div style="overflow:hidden; border: 2px solid #f0a500; border-radius: 10px; height: 600px;">
-      <iframe src="https://giftshop-campaign.landpress.line.me/sticker/?utm_source=lineshopping&utm_medium=sticker_page&utm_campaign=2025.11"
-        width="100%" height="600" style="transform:scale(1); transform-origin: 0 0; border:none;">
-      </iframe>
-    </div>
-
-  
-
-    
-
-    <section class="container">
-      <h2>🎵 家庭音樂牆</h2>
-      <p class="small-note">每人可新增常聽的 Spotify/Youtube 曲目，也可留言呦~~~</p>
-      <div style="display:flex; gap:8px; margin-bottom:8px;">
-  <input id="musicInputTitle" placeholder="曲名或描述" style="flex:1;">
-  <input id="musicInputEmbed" placeholder="Spotify/Youtube 連結" style="flex:1;">
-  <select id="musicOwner" style="flex:1;">
-    <option value="mom">媽媽</option>
-    <option value="dad">爸爸</option>
-    <option value="debby">妹妹</option>
-    <option value="jason">Jason</option>
-  </select>
-  <button onclick="addMusicTrack()">➕ 新增</button>
-</div>
-
-      <div id="musicWallGrid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px;"></div>
-    </section>
-
-<section class="container">
-    <h2>📊 每日記帳</h2>
-
-    <div class="flex-row">
-      <div class="flex-grow">
-        <label>選擇記帳人</label>
-        <input type="text" id="roleSelect" readonly style="background:#eee; font-weight:bold;">
-        <small class="small-note">目前登入的使用者</small>
-
-        <small class="small-note">全家共用資料庫，角色只做分類用途。</small>
-      </div>
-      <div class="flex-grow">
-        <label>選擇類別</label>
-        <select id="categorySelect">
-          <option value="食物">🍔 食物</option>
-          <option value="交通">🚌 交通</option>
-          <option value="娛樂">🎮 娛樂</option>
-          <option value="其他">📝 其他</option>
-        </select>
-      </div>
-    </div>
-    <label>金額</label>
-    <input type="number" id="amountInput" min="0" step="0.01" placeholder="輸入金額" />
-
-    <label>描述</label>
-    <textarea id="descriptionInput" rows="2" placeholder="輸入描述"></textarea>
-
-    <button onclick="addRecord()">記錄支出</button>
-    <hr>
-
-    <hr>
-
-    <h3 style="display:flex;justify-content:space-between;align-items:center;">
-      📜 最近記帳紀錄
-      <span style="font-size:0.9em;">
-        <select id="filterYear" style="padding:4px;"></select>
-        <select id="filterMonth" style="padding:4px;"></select>
-        <button onclick="filterRecords()" style="padding:4px 8px;margin-left:6px;">篩選</button>
-        <button onclick="resetRecordFilter()" style="padding:4px 8px;margin-left:6px;">全部</button>
-      </span>
-    </h3>
-    <ul id="recordList"><li>暫無記錄</li></ul>
-
-    <hr>
-
-    <h3>📈 支出統計</h3>
-    <div id="statsBox" class="stat-box">
-      <p>今日總支出：<span id="todayTotal">0</span> 元</p>
-      <p>最近 7 天平均每日支出：<span id="avg7Days">0</span> 元</p>
-      <p>最近 30 天平均每日支出：<span id="avg30Days">0</span> 元</p>
-      <p>當月累計支出：<span id="monthTotal">0</span> 元</p>
-      <p id="warningMsg" style="color:#c0392b; font-weight:bold;"></p>
-    </div>
-    <section class="container">
-  <h2>💰 智慧理財顧問</h2>
-
-  <div style="margin-bottom: 10px;">
-    <label>月薪（元）</label>
-    <input type="number" id="salaryInput" placeholder="例如 50000" />
-    <button onclick="saveSalary()">💾 儲存月薪</button>
-    <span id="salaryStatus" style="margin-left:8px;color:green;"></span>
-  </div>
-
-  <details style="margin-bottom: 15px;">
-    <summary>⚙️ 自訂各類支出建議比例（%）</summary>
-    <div style="margin-top: 8px;">
-      <label>食物：</label><input type="number" id="limit_food" value="35" style="width:60px;">%
-      <label style="margin-left:10px;">交通：</label><input type="number" id="limit_transport" value="15" style="width:60px;">%
-      <label style="margin-left:10px;">娛樂：</label><input type="number" id="limit_entertainment" value="15" style="width:60px;">%
-      <label style="margin-left:10px;">其他：</label><input type="number" id="limit_other" value="20" style="width:60px;">%
-      <button onclick="saveLimits()" style="margin-left:10px;">💾 儲存</button>
-    </div>
-  </details>
-
-  <button onclick="analyzeFinance()">📊 分析本月理財建議</button>
-  <div id="financeAdvice" class="stat-box" style="margin-top:10px;">請輸入月薪並點擊分析</div>
-
-  <canvas id="financeChart" style="margin-top:20px;max-width:400px;"></canvas>
-</section>
-
-    <h3>📊 各類別支出統計</h3>
-    <label>開始日期</label>
-    <input type="date" id="startDate" />
-
-    <label>結束日期</label>
-    <input type="date" id="endDate" />
-    <button onclick="analyzeCategory()">查看統計</button>
-    <div id="categoryResult" class="stat-box">點擊查看統計資料</div>
-    <canvas id="categoryChart" style="margin-top: 15px;"></canvas>
-  </section>
-  <!-- ===== 📉 資產快照（整合最終版）===== -->
-<section class="container" id="assetSnapshotRoot">
-  <h2>📉 2026 資產快照</h2>
-
-  <div class="stat-box">
-    <p>
-      💰 當前資產總現值：
-      <span id="currentNetWorth"
-        style="font-size:1.5em;color:#f0a500;font-weight:bold;">0</span> 元
-    </p>
-
-    <div class="flex-row" style="margin-top:10px;">
-      <div class="flex-grow">
-        🚀 今年賺最多：<br>
-        <small id="maxGainDay">讀取中...</small>
-      </div>
-      <div class="flex-grow">
-        📉 今年最慘日：<br>
-        <small id="maxLossDay">讀取中...</small>
-      </div>
-    </div>
-  </div>
-
-  <div class="chart-container">
-    <canvas id="profitTrendChart"></canvas>
-  </div>
-</section>
-
-  <section class="container">
       <h2>💼 我的投資組合</h2>
       <div class="flex-row">
-        <div class="flex-grow">
-          <input type="text" id="pfSymbol" placeholder="例如 2330" />
-        </div>
-        <div class="flex-grow">
-          <label>持股數量</label>
-          <input type="number" id="pfShares" placeholder="100" />
-        </div>
-        <div class="flex-grow">
-          <label>成本價</label>
-          <input type="number" id="pfCost" placeholder="560" />
-        </div>
+        <input type="text" id="pfSymbol" placeholder="股號" style="flex:1">
+        <input type="number" id="pfShares" placeholder="股數" style="flex:1">
+        <input type="number" id="pfCost" placeholder="成本" style="flex:1">
         <button onclick="addPortfolio()">新增</button>
       </div>
-
-      <h3 style="margin-top:15px;">📋 我的持股列表 資產快照: https://az964115.github.io/family-stock/ </h3>
-      <div id="totalProfitSection">
-        📈 最新收盤價(上一個1330)總損益：<span id="todayTotalProfit">0</span> 元
-        <button onclick="updateTodayProfit()" style="margin-left: 10px; padding: 4px 8px; font-size: 14px;">🔄 手動更新</button>
+      <div style="margin: 10px 0;">
+        📈 損益：<span id="todayTotalProfit">0</span> 元
+        <button onclick="updateTodayProfit()" style="font-size: 12px; padding: 4px 8px;">🔄 刷新同步</button>
       </div>
-      <ul id="portfolioList"><li>暫無資料</li></ul>
+      <ul id="portfolioList"></ul>
     </section>
+  </div>
 
-</div>
   <script>
+    // --- Firebase 配置 ---
     const firebaseConfig = {
       apiKey: "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg",
       authDomain: "piggynet-93c33.firebaseapp.com",
@@ -500,1625 +111,155 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    let profitChartInstance = null;
 
-    let userRef = null;
-    let expenseRef = null;
-    let stockRef = null;
-    let pfRef = null;
-    let showRef = null;
-    const favRef = db.ref('favorites/stockList');
-
-    const roleSelect = document.getElementById('roleSelect');
-    const categorySelect = document.getElementById('categorySelect');
-    const amountInput = document.getElementById('amountInput');
-    const descriptionInput = document.getElementById('descriptionInput');
-    const recordList = document.getElementById('recordList');
-    const todayTotalEl = document.getElementById('todayTotal');
-    const avg7Days = document.getElementById('avg7Days');
-    const avg30Days = document.getElementById('avg30Days');
-    const monthTotalEl = document.getElementById('monthTotal');
-    const warningMsg = document.getElementById('warningMsg');
-    const salaryInput = document.getElementById('salaryInput');
-    const salaryStatus = document.getElementById('salaryStatus');
-    const startDateInput = document.getElementById('startDate');
-    const endDateInput = document.getElementById('endDate');
-    const symbolInput = document.getElementById('symbolInput');
-    const favoriteList = document.getElementById('favoriteList');
-    const newFavorite = document.getElementById('newFavorite');
-    const chartCanvas = document.getElementById('chart');
-
-    const USERS = {
-      mom: "me",
-      dad: "dt",
-      debby: "dua",
-      jason: "952"
-    };
-
-    function initForUser(user){
-      document.getElementById('roleSelect').value = user;
-
-      userRef = db.ref(`users/${user}/records`);
-      expenseRef = db.ref(`users/${user}/expenses`);
-      stockRef = db.ref(`users/${user}/stocks`);
-      pfRef = db.ref(`users/${user}/portfolio`);
-      showRef = db.ref(`users/${user}/shows`);
-db.ref(`users/${user}/profile/salary`).once('value').then(snap => {
-  if (snap.exists()) {
-    const salary = snap.val();
-    document.getElementById('salaryInput').value = salary;
-    document.getElementById('salaryStatus').textContent = `已載入 資料庫 月薪：${salary} 元`;
-  } else {
-    document.getElementById('salaryStatus').textContent = '尚未設定月薪';
-  }
-});
-const now = new Date();
-const year = now.getFullYear();
-const month = String(now.getMonth() + 1).padStart(2, '0');
-const firstDay = `${year}-${month}-01`; 
-const today = now.toISOString().split('T')[0]; 
-
-document.getElementById('startDate').value = firstDay;
-document.getElementById('endDate').value = today;
-
-      
-
-      loadRecentRecords();
-      updateStats();
-      loadPortfolio();
-      loadFavorites();
-      updateTodayProfit();
-
-      loadShows(true);
-      try {
-        const userShowsRef = db.ref(`users/${user}/shows`);
-        userShowsRef.on('child_changed', snap => {
-          const data = snap.val() || {};
-          if (data && data.lastChecked) {
-            notifyUpdate(data.title || data.url, data);
-          }
-        });
-      } catch(e){ console.warn('show change listener error', e); }
-    }
-
-    const boardRef = db.ref("family/board");
-    function loadBoard() {
-      boardRef.limitToLast(10).on("value", snap => {
-        const box = document.getElementById("boardMessages");
-        const data = snap.val();
-        const currentUser = localStorage.getItem("currentUser");
-        box.innerHTML = "";
-        if (!data) {
-          box.innerHTML = "<p>目前沒有留言。</p>";
-          return;
-        }
-        const entries = Object.entries(data)
-          .map(([key, val]) => ({ key, ...val }))
-          .sort((a,b)=>b.time-a.time);
-
-        entries.forEach(m => {
-          const t = new Date(m.time).toLocaleString('zh-TW');
-          const div = document.createElement('div');
-          div.style.borderBottom = "1px solid #eee";
-          div.style.padding = "6px 0";
-          div.innerHTML = `
-            <b>${m.user}</b>：${m.msg}
-            <span style="color:#777;font-size:0.85em;">(${t})</span>
-            ${m.user === currentUser ? `<button style="margin-left:10px;font-size:12px;" onclick="deleteBoardMessage('${m.key}')">🗑️ 刪除</button>` : ""}
-          `;
-          box.appendChild(div);
-        });
-      });
-    }
-    function delayInactivity(user) {
-  const dayMs = 86400000;
-  const newDelay = Date.now() + 2 * dayMs;
-  firebase.database().ref(`users/${user}/inactivityDelayUntil`).set(newDelay)
-    .then(() => {
-      alert("已延後兩天提醒！");
-      checkInactivity(); // 更新畫面
-    });
-}
-    function deleteBoardMessage(key) {
-      if (!confirm("確定要刪除此留言？")) return;
-      boardRef.child(key).remove()
-        .then(()=>alert("留言已刪除"))
-        .catch(e=>console.error(e));
-    }
-    function postMessage(){
-      const msg = document.getElementById("boardInput").value.trim();
-      if (!msg) return alert("請輸入內容");
-      boardRef.push({
-        user: localStorage.getItem("currentUser"),
-        msg,
-        time: Date.now()
-      });
-      document.getElementById("boardInput").value = "";
-    }
-
-    window.addEventListener("load", loadBoard);
-    window.addEventListener("load", () => {
-  loadBoard();
-  
-  // --- 新增這段：檢查瀏覽器是否存有登入資訊 ---
-  const savedUser = localStorage.getItem('currentUser');
-  if (savedUser) {
-    // 如果有存過使用者，直接顯示主畫面並初始化
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-    initForUser(savedUser);
-  }
-  // ------------------------------------------
-});
-
-// 宣告一個全域變數來追蹤請求次數
-let portfolioLoadCount = 0;
-
-function loadPortfolio() {
-  if (!pfRef) return;
-  
-  // 監聽即時變動
-  pfRef.on("value", async snap => {
-    // 每次觸發時增加計數，用來識別這是否為「最新」的一次觸發
-    const currentRequestID = ++portfolioLoadCount;
-    const list = document.getElementById("portfolioList");
-    
-    const data = snap.val() || {};
-    if (Object.keys(data).length === 0) {
-      list.innerHTML = "<li>暫無資料</li>";
-      return;
-    }
-
-    // 先暫存結果，不要直接 appendChild，避免畫面閃爍
-    let htmlBuffer = ""; 
-
-    // 將物件轉成陣列處理
-    const entries = Object.entries(data);
-
-    for (const [code, info] of entries) {
-      // 如果在抓取過程中，已經有新的觸發了，就停止舊的執行
-      if (currentRequestID !== portfolioLoadCount) return;
-
-      try {
-        const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-        const stock = await res.json();
-        let price = 0;
-        if (stock.stat === "OK" && stock.data.length > 0) {
-          const last = stock.data[stock.data.length - 1];
-          price = parseFloat(last[6].replace(/,/g, ""));
-        }
-        const gain = ((price - info.cost) * info.shares).toFixed(2);
-        const color = gain >= 0 ? "red" : "green";
-        
-        htmlBuffer += `
-          <li>
-            <b>${code}</b>｜${info.shares}股｜成本 ${info.cost}｜現價 ${price.toFixed(2)}｜
-            <span style="color:${color}; font-weight:bold;">損益 ${gain}</span>
-            <button onclick="removePortfolio('${code}')" style="margin-left:8px;">刪除</button>
-          </li>
-        `;
-      } catch (e) {
-        console.error(`抓取股票 ${code} 失敗:`, e);
-      }
-    }
-
-    // 最後一次性更新 UI，確保這仍是最新的請求
-    if (currentRequestID === portfolioLoadCount) {
-      list.innerHTML = htmlBuffer;
-    }
-  });
-}
-
-async function updateTodayProfit() {
-  if (!pfRef) return;
-  const snapshot = await pfRef.get();
-  const data = snapshot.val() || {};
-  
-  let totalProfit = 0;
-  let totalNetWorth = 0;
-
-  for (const [code, { shares, cost }] of Object.entries(data)) {
-    try {
-      // 抓取證交所即時數據
-      const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-      const stockData = await res.json();
-      
-      if (stockData.stat === "OK" && stockData.data.length > 0) {
-        const lastPrice = parseFloat(stockData.data[stockData.data.length - 1][6].replace(/,/g, ""));
-        totalProfit += (lastPrice - cost) * shares;
-        totalNetWorth += lastPrice * shares;
-      }
-    } catch (e) {
-      console.error(`抓取 ${code} 失敗`, e);
-    }
-  }
-
-  // 更新介面數字
-  document.getElementById("todayTotalProfit").textContent = totalProfit.toLocaleString(undefined, {minimumFractionDigits: 0});
-  document.getElementById("currentNetWorth").textContent = totalNetWorth.toLocaleString();
-
-  // 1. 同步到資料庫快照
-  const currentUser = localStorage.getItem('currentUser');
-  await syncFamilyProfitToSnapshot(currentUser, totalProfit);
-
-  // 2. 重新讀取回顧資料（更新賺最多/最慘日與圖表）
-  loadAnnualReview(); 
-  alert("資產數據已更新！");
-}
-
-    function addPortfolio() {
-      const code = document.getElementById('pfSymbol').value.trim();
-      const shares = parseFloat(document.getElementById('pfShares').value);
-      const cost = parseFloat(document.getElementById('pfCost').value);
-      if (!code || isNaN(shares) || isNaN(cost)) return alert("請輸入完整資料");
-      pfRef.child(code).set({ shares, cost });
-      document.getElementById('pfSymbol').value = document.getElementById('pfShares').value = document.getElementById('pfCost').value = "";
-    }
-
-    function removePortfolio(code) {
-      if (confirm("確定刪除這筆投資？")) pfRef.child(code).remove();
-    }
-
-    async function logout() {
-      localStorage.removeItem('currentUser');
-      document.getElementById('mainContent').style.display = 'none';
-      document.getElementById('loginSection').style.display = 'block';
-      recordList.innerHTML = '<li>暫無記錄</li>';
-      todayTotalEl.textContent = '0';
-      avg7Days.textContent = '0';
-      avg30Days.textContent = '0';
-      monthTotalEl.textContent = '0';
-      warningMsg.textContent = '';
-      alert('您已登出！');
-    }
-
-    async function changePassword() {
-      const user = localStorage.getItem('currentUser');
-      if (!user) return alert("請先登入");
-
-      const oldPass = prompt("請輸入舊密碼：");
-      if (!oldPass) return;
-
-      const snap = await db.ref(`users/${user}/password`).get();
-      const currentPass = snap.exists() ? snap.val() : USERS[user];
-
-      if (oldPass !== currentPass) {
-        alert("舊密碼錯誤！");
-        return;
-      }
-
-      const newPass = prompt("請輸入新密碼（至少3個字）");
-      if (!newPass || newPass.length < 3) {
-        alert("新密碼無效！");
-        return;
-      }
-
-      await db.ref(`users/${user}/password`).set(newPass);
-      USERS[user] = newPass;
-      localStorage.setItem('lastChangedPass', newPass);
-
-      alert("✅ 密碼修改成功，下次登入請使用新密碼！");
-    }
-
-    async function login(){
+    // --- 核心邏輯 ---
+    async function login() {
       const user = document.getElementById('loginUser').value;
       const pass = document.getElementById('loginPassword').value.trim();
-
-      const ref = db.ref(`users/${user}/password`);
-      const snap = await ref.get();
-      let storedPass;
-
-      if (snap.exists()) {
-        storedPass = snap.val();
-      } else {
-        storedPass = USERS[user];
-        await ref.set(storedPass);
-      }
-      if(pass === storedPass){
-        localStorage.setItem('currentUser', user);
-        alert(`歡迎回來，${user}!`);
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
-        initForUser(user);
-      } else {
-        alert("密碼錯誤！");
-        document.getElementById('loginPassword').value = "";
-      }
+      const snap = await db.ref(`users/${user}/password`).get();
+      const stored = snap.exists() ? snap.val() : "9527";
+      if (pass === stored) { localStorage.setItem('currentUser', user); location.reload(); }
+      else alert("密碼錯誤");
     }
 
-    window.login = login;
+    function logout() { localStorage.removeItem('currentUser'); location.reload(); }
 
-    function setTheme(mode){
-      document.body.classList.remove('theme-day','theme-night','theme-forest');
-      document.body.classList.add(`theme-${mode}`);
+    window.onload = () => {
+      const user = localStorage.getItem('currentUser');
+      if (user) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        initApp(user);
+      }
+    };
+
+    function initApp(user) {
+      loadBoard();
+      loadRecords(user);
+      loadPortfolio(user);
+      loadShows(user);
+      loadAnnualReview(user);
+    }
+
+    // --- 功能函式 ---
+    function postMessage() {
+      const msg = document.getElementById('boardInput').value;
+      if (!msg) return;
+      db.ref("family/board").push({ user: localStorage.getItem('currentUser'), msg, time: Date.now() });
+      document.getElementById('boardInput').value = "";
+    }
+
+    function loadBoard() {
+      db.ref("family/board").limitToLast(10).on("value", snap => {
+        const box = document.getElementById("boardMessages");
+        box.innerHTML = Object.values(snap.val() || {}).reverse().map(m => `<div><b>${m.user}</b>: ${m.msg}</div>`).join('');
+      });
+    }
+
+    function addRecord() {
+      const user = localStorage.getItem('currentUser');
+      const amount = parseFloat(document.getElementById('amountInput').value);
+      if (!amount) return;
+      db.ref(`users/${user}/records`).push({
+        amount, category: document.getElementById('categorySelect').value,
+        description: document.getElementById('descriptionInput').value,
+        date: new Date().toISOString().split('T')[0]
+      }).then(() => { location.reload(); });
+    }
+
+    function loadRecords(user) {
+      db.ref(`users/${user}/records`).limitToLast(5).once('value', snap => {
+        const list = document.getElementById('recordList');
+        list.innerHTML = Object.values(snap.val() || {}).reverse().map(r => `<li>${r.date} | ${r.amount}元 (${r.category})</li>`).join('');
+      });
+    }
+
+    // --- 關注節目邏輯 ---
+    function addShow() {
+      const user = localStorage.getItem('currentUser');
+      const url = document.getElementById('showUrlInput').value.trim();
+      if (!url) return;
+      db.ref(`users/${user}/shows`).push({ url, time: Date.now() });
+      document.getElementById('showUrlInput').value = "";
+    }
+
+    function loadShows(user) {
+      db.ref(`users/${user}/shows`).on('value', snap => {
+        const list = document.getElementById('showList');
+        const data = snap.val() || {};
+        list.innerHTML = Object.entries(data).map(([key, s]) => 
+          `<li><a href="${s.url}" target="_blank">點我查看節目</a> <button onclick="db.ref('users/${user}/shows/${key}').remove()">🗑️</button></li>`
+        ).join('');
+      });
+    }
+
+    // --- 投資與快照邏輯 ---
+    async function updateTodayProfit() {
+      const user = localStorage.getItem('currentUser');
+      const snap = await db.ref(`users/${user}/portfolio`).get();
+      if (!snap.exists()) return;
+      document.getElementById("todayTotalProfit").textContent = "更新中...";
+      let totalP = 0, totalN = 0;
+      for (const [code, info] of Object.entries(snap.val())) {
+        try {
+          const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo='+code)}`);
+          const json = await res.json();
+          const stock = JSON.parse(json.contents);
+          const price = parseFloat(stock.data.pop()[6].replace(/,/g, ""));
+          totalP += (price - info.cost) * info.shares;
+          totalN += price * info.shares;
+        } catch(e) {}
+      }
+      document.getElementById("todayTotalProfit").textContent = Math.round(totalP).toLocaleString();
+      document.getElementById("currentNetWorth").textContent = Math.round(totalN).toLocaleString();
+      db.ref(`family/investSnapshot/${user}/${new Date().toISOString().split('T')[0]}`).set({ profit: Math.round(totalP) });
+      loadAnnualReview(user);
+    }
+
+    function loadPortfolio(user) {
+      db.ref(`users/${user}/portfolio`).on('value', snap => {
+        document.getElementById('portfolioList').innerHTML = Object.entries(snap.val() || {}).map(([c, i]) => `<li><b>${c}</b> | ${i.shares}股 | 成本:${i.cost}</li>`).join('');
+      });
+    }
+
+    function addPortfolio() {
+      const user = localStorage.getItem('currentUser');
+      const code = document.getElementById('pfSymbol').value;
+      const shares = parseFloat(document.getElementById('pfShares').value);
+      const cost = parseFloat(document.getElementById('pfCost').value);
+      if(code && shares) db.ref(`users/${user}/portfolio/${code}`).set({ shares, cost });
+    }
+
+    function loadAnnualReview(user) {
+      db.ref(`family/investSnapshot/${user}`).once("value", snap => {
+        const entries = Object.entries(snap.val() || {}).map(([d,v])=>({date:d, profit:v.profit})).sort((a,b)=>new Date(a.date)-new Date(b.date));
+        if(!entries.length) return;
+        const max = entries.reduce((p,c)=>c.profit>p.profit?c:p);
+        const min = entries.reduce((p,c)=>c.profit<p.profit?p:c);
+        document.getElementById("maxGainDay").innerHTML = `${max.date}<br><span style="color:red;">$${max.profit}</span>`;
+        document.getElementById("maxLossDay").innerHTML = `${min.date}<br><span style="color:green;">$${min.profit}</span>`;
+        renderChart(entries);
+      });
+    }
+
+    function renderChart(entries) {
+      const ctx = document.getElementById('profitTrendChart').getContext('2d');
+      if (profitChartInstance) profitChartInstance.destroy();
+      profitChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: entries.slice(-7).map(e=>e.date.substring(5)),
+          datasets: [{ label:'損益', data: entries.slice(-7).map(e=>e.profit), borderColor:'#f0a500', fill:true }]
+        },
+        options: { responsive:true, maintainAspectRatio:false }
+      });
+    }
+
+    function setTheme(mode) {
+      document.body.className = 'theme-' + mode;
       localStorage.setItem('themeMode', mode);
     }
-    setTheme(localStorage.getItem('themeMode') || 'day');
-
-
-    function addRecord(){
-      const role = roleSelect.value;
-      const category = categorySelect.value;
-      const amount = parseFloat(amountInput.value);
-      const desc = descriptionInput.value.trim();
-      if(isNaN(amount)||amount<=0){ alert('請輸入有效金額'); return; }
-      const now = new Date();
-      const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-        .toISOString()
-        .slice(0, 10);
-      const record={role,category,amount,description:desc,timestamp:now.getTime(),date:localDate};
-      userRef.push(record,err=>{
-        if(err){alert('儲存失敗');console.error(err);}
-        else{alert('記帳成功');amountInput.value='';descriptionInput.value='';loadRecentRecords();updateStats();}
-      });
-    }
-
-    function loadRecentRecords(){
-      if (!userRef) return;
-      userRef.orderByChild('timestamp').limitToLast(20).once('value', snap => {
-        const records = snap.val(), list = recordList;
-        list.innerHTML = '';
-        if (!records) {
-          list.innerHTML = '<li>暫無記錄</li>';
-          return;
-        }
-        Object.entries(records)
-          .sort((a, b) => b[1].timestamp - a[1].timestamp)
-          .forEach(([key, r]) => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-              <div style="display:flex; justify-content: space-between; align-items: center;">
-                <span>${r.date} - ${r.role} - ${r.category} - ${r.amount} 元 - ${r.description}</span>
-                <button onclick="deleteRecord('${key}')">🗑️ 刪除</button>
-              </div>
-            `;
-            list.appendChild(li);
-          });
-      });
-    }
-
-    function deleteRecord(key) {
-      if (!confirm("確定要刪除這筆紀錄嗎？")) return;
-
-      userRef.child(key).remove(err => {
-        if (err) {
-          alert("刪除失敗！");
-          console.error(err);
-        } else {
-          alert("已刪除紀錄！");
-          loadRecentRecords();
-          updateStats();
-        }
-      });
-    }
-
-    async function updateStats(){
-      if (!userRef) {
-        todayTotalEl.textContent = '0';
-        avg7Days.textContent = '0';
-        avg30Days.textContent = '0';
-        monthTotalEl.textContent = '0';
-        warningMsg.textContent = '';
-        return;
-      }
-      const snap=await userRef.once('value');
-      const arrRaw = snap.val() || {};
-      const arr = Object.values(arrRaw);
-      const now=Date.now(),day=86400000;
-
-      const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .slice(0, 10);
-
-      if (arr.length === 0) {
-        todayTotalEl.textContent = '0.00';
-        avg7Days.textContent = '0.00';
-        avg30Days.textContent = '0.00';
-        monthTotalEl.textContent = '0.00';
-        warningMsg.textContent = '';
-        return;
-      }
-
-      const todayTotal = arr.filter(r=>r.date===today).reduce((s,r)=>s+ (parseFloat(r.amount)||0),0);
-      const arr7=arr.filter(r=>now - r.timestamp < 7*day);
-      const arr30 = arr.filter(r => now - r.timestamp < 30*day);
-
-      const sum7 = arr7.reduce((s,r)=>s + (parseFloat(r.amount)||0),0);
-      const sum30 = arr30.reduce((s,r)=>s + (parseFloat(r.amount)||0),0);
-
-      const avg7 = +(sum7 / 7);
-      const avg30 = +(sum30 / 30);
-      const month = today.slice(0,7);
-      const monthTotal = arr.filter(r=>r.date.startsWith(month)).reduce((s,r)=>s + (parseFloat(r.amount)||0),0);
-
-      warningMsg.textContent = todayTotal > 1000 ? "⚠️ 今日花太多啦！" : "";
-      todayTotalEl.textContent = todayTotal.toFixed(2);
-      avg7Days.textContent = avg7.toFixed(2);
-      avg30Days.textContent = avg30.toFixed(2);
-      monthTotalEl.textContent = monthTotal.toFixed(2);
-    }
-
-    function analyzeCategory() {
-      const start = startDateInput.value;
-      const end = endDateInput.value;
-
-      if (!start || !end) {
-        alert('請選擇完整的起訖日期');
-        return;
-      }
-      if (start > end) {
-        alert('起始日期不能晚於結束日期');
-        return;
-      }
-      userRef.once('value').then(snap => {
-        const records = Object.values(snap.val() || []);
-        if (records.length === 0) {
-          categoryResult.textContent = '暫無資料';
-          return;
-        }
-        const filtered = records.filter(r => r.date >= start && r.date <= end);
-        if (filtered.length === 0) {
-          categoryResult.textContent = '此區間無資料';
-          if (window.categoryChart) window.categoryChart.destroy();
-          return;
-        }
-        const categoryMap = {};
-        filtered.forEach(r => {
-          categoryMap[r.category] = (categoryMap[r.category] || 0) + (parseFloat(r.amount)||0);
-        });
-
-        const categories = Object.keys(categoryMap);
-        const values = categories.map(c => categoryMap[c]);
-
-        categoryResult.innerHTML = categories.map(c =>
-          `${c}: ${categoryMap[c].toFixed(2)} 元`
-        ).join('<br>');
-
-        if (window.categoryChart) window.categoryChart.destroy();
-        const ctx = document.getElementById('categoryChart').getContext('2d');
-        window.categoryChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: categories,
-            datasets: [{
-              label: '各類別支出總額',
-              data: values,
-              backgroundColor: ['#f39c12', '#3498db', '#2ecc71', '#9b59b6'],
-              borderRadius: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { color: getComputedStyle(document.body).color }
-              },
-              x: {
-                ticks: { color: getComputedStyle(document.body).color }
-              }
-            },
-            plugins: {
-              legend: {
-                labels: { color: getComputedStyle(document.body).color }
-              }
-            }
-          }
-        });
-      });
-    }
-
-    function saveSalary() {
-      const salary = parseFloat(salaryInput.value);
-      if (isNaN(salary) || salary <= 0) {
-        alert('請輸入有效的月薪金額');
-        return;
-      }
-      const currentUser = localStorage.getItem("currentUser");
-      if (!currentUser) { alert('請先登入'); return; }
-      localStorage.setItem(`${currentUser}_salary`, salary);
-      db.ref(`users/${currentUser}/profile/salary`).set(salary).catch(e=>console.error(e));
-      salaryStatus.textContent = `已儲存：${salary} 元`;
-    }
-
-    function saveLimits() {
-      const limits = {
-        food: parseFloat(document.getElementById('limit_food').value),
-        transport: parseFloat(document.getElementById('limit_transport').value),
-        entertainment: parseFloat(document.getElementById('limit_entertainment').value),
-        other: parseFloat(document.getElementById('limit_other').value)
-      };
-      const currentUser = localStorage.getItem('currentUser');
-      if (!currentUser) { alert('請先登入'); return; }
-      localStorage.setItem(`${currentUser}_limits`, JSON.stringify(limits));
-      alert('已儲存自訂支出比例設定！');
-    }
-
-    let financeChart;
-
-    function analyzeFinance() {
-      const salary = parseFloat(salaryInput.value);
-      if (isNaN(salary) || salary <= 0) {
-        alert('請輸入有效的月薪金額');
-        return;
-      }
-      const currentUser = localStorage.getItem('currentUser');
-      const limits = JSON.parse(localStorage.getItem(`${currentUser}_limits`) || '{}');
-      const limitDefaults = { food: 35, transport: 15, entertainment: 15, other: 20 };
-      const mergedLimits = { ...limitDefaults, ...limits };
-
-      userRef.once('value').then(snap => {
-        const records = Object.values(snap.val() || []);
-        if (records.length === 0) {
-          document.getElementById('financeAdvice').textContent = '暫無支出資料';
-          return;
-        }
-
-        const now = new Date();
-        const thisMonth = now.toISOString().slice(0, 7);
-        const monthRecords = records.filter(r => r.date.startsWith(thisMonth));
-
-        if (monthRecords.length === 0) {
-          document.getElementById('financeAdvice').textContent = `本月（${thisMonth}）尚無記帳資料`;
-          return;
-        }
-
-        const total = monthRecords.reduce((sum, r) => sum + (parseFloat(r.amount)||0), 0);
-        const categoryMap = {};
-        monthRecords.forEach(r => {
-          categoryMap[r.category] = (categoryMap[r.category] || 0) + (parseFloat(r.amount)||0);
-        });
-
-        let adviceText = `<p>📅 本月(${thisMonth})總支出：${total.toFixed(2)} 元（${(total/salary*100).toFixed(1)}% 月薪）</p><ul>`;
-        for (const [cat, amt] of Object.entries(categoryMap)) {
-          const pct = amt / salary * 100;
-          let limit = mergedLimits.other;
-          if (cat === '食物') limit = mergedLimits.food;
-          else if (cat === '交通') limit = mergedLimits.transport;
-          else if (cat === '娛樂') limit = mergedLimits.entertainment;
-
-          let msg = "";
-          if (pct > limit) msg = `⚠️ 超出建議 ${limit}% 上限，建議檢視支出。`;
-          else if (pct > limit * 0.8) msg = `⚠️ 接近上限 (${limit}%)，請留意控制。`;
-          else msg = `✅ 在合理範圍內。`;
-
-          adviceText += `<li>${cat}：${amt.toFixed(2)} 元（${pct.toFixed(1)}%）→ ${msg}</li>`;
-        }
-        adviceText += "</ul>";
-
-        if (total > salary * 0.9)
-          adviceText += `<p style="color:red;font-weight:bold;">🚨 本月支出已達月薪 90%，請立即檢視開銷！</p>`;
-        else if (total < salary * 0.6)
-          adviceText += `<p style="color:green;">🌱 儲蓄比例超過 40%，持續保持！</p>`;
-
-        document.getElementById('financeAdvice').innerHTML = adviceText;
-
-        const ctx = document.getElementById('financeChart').getContext('2d');
-        if (financeChart) financeChart.destroy();
-        financeChart = new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            labels: Object.keys(categoryMap),
-            datasets: [{
-              data: Object.values(categoryMap),
-              backgroundColor: ['#4CAF50', '#2196F3', '#FFC107', '#FF5722', '#9C27B0']
-            }]
-          },
-          options: {
-            plugins: {
-              title: { display: true, text: `各類支出佔比（共 ${total.toFixed(0)} 元）` },
-              legend: { position: 'bottom' }
-            }
-          }
-        });
-      });
-    }
-
-    async function loadFavorites() {
-      favRef.once('value', async snap => {
-        const favs = snap.val() || {};
-        const list = favoriteList;
-        list.innerHTML = '';
-        const codes = Object.keys(favs || {});
-        const seen = new Set();
-        if (codes.length === 0) {
-          favRef.update({ '2330': true, '0050': true });
-          return loadFavorites();
-        }
-
-        for (const code of codes) {
-          if (seen.has(code)) continue;
-          seen.add(code);
-
-          try {
-            const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-            const data = await res.json();
-            if (data.stat === "OK" && data.data.length > 1) {
-              const last = parseFloat(data.data[data.data.length - 1][6].replace(/,/g, ""));
-              const prev = parseFloat(data.data[data.data.length - 2][6].replace(/,/g, ""));
-              const diff = (last - prev).toFixed(2);
-              const color = diff >= 0 ? "red" : "green";
-              const li = document.createElement('li');
-              li.innerHTML = `${code} <span style="color:${color};">(${diff >= 0 ? '▲' : '▼'}${Math.abs(diff)})</span>`;
-              li.addEventListener('click', () => { symbolInput.value = code; loadStock(); });
-              list.appendChild(li);
-            } else {
-              const li = document.createElement('li');
-              li.textContent = code + '（無資料）';
-              list.appendChild(li);
-            }
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      });
-    }
-
-    function addFavorite(){
-      const code=newFavorite.value.trim();
-      if(!code.match(/^\d+$/)){alert('請輸入有效代碼');return;}
-      favRef.update({[code]:true});
-      newFavorite.value='';
-      loadFavorites();
-    }
-
-    const chartCtx=document.getElementById('chart').getContext('2d');
-    let stockChart=null;
-    async function loadStock(){
-      const symbol=symbolInput.value.trim();
-      if(!symbol.match(/^\d+$/)){alert('請輸入有效代碼');return;}
-      try{
-        const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${symbol}`);
-        const data = await res.json();
-        console.log("TWSE 回傳：", data);
-
-        if (data.stat !== "OK" || !data.data) {
-          alert('查詢失敗（代碼錯誤或暫無資料）');
-          return;
-        }
-        const labels = data.data.map(row => {
-          const parts = row[0].split('/');
-          const year = parseInt(parts[0]) + 1911;
-          return `${year}-${parts[1]}-${parts[2]}`;
-        });
-        const prices = data.data.map(row => parseFloat(row[6].replace(/,/g, '')));
-        if (stockChart) stockChart.destroy();
-        stockChart = new Chart(chartCtx, {
-          type: 'line',
-          data: {
-            labels,
-            datasets: [{
-              label: `${symbol} 收盤價`,
-              data: prices,
-              borderColor: 'rgba(240,165,0,0.9)',
-              backgroundColor: 'rgba(240,165,0,0.2)',
-              fill: true,
-              tension: 0.3
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { labels: { color: getComputedStyle(document.body).color } }
-            },
-            scales: {
-              x: { ticks: { color: getComputedStyle(document.body).color } },
-              y: { ticks: { color: getComputedStyle(document.body).color } }
-            }
-          }
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-async function addShow() {
-  const url = document.getElementById("showUrlInput").value.trim();
-  if (!url) return alert("請輸入節目網址");
-
-  const dramaMatch = url.match(/drama\/(\d+)/);
-  if (!dramaMatch) return alert("網址格式不正確");
-  const dramaId = dramaMatch[1];
-
-  try {
-    const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(`https://www.movieffm.net/drama/${dramaId}/`)}`;
-    const response = await fetch(proxyUrl);
-
-    if (!response.ok) throw new Error(`Proxy 請求失敗：${response.status}`);
-    const html = await response.text();
-
-    let title = "未知節目";
-    const titleMatch = html.match(/<title>(.*?)<\/title>/i);
-    if (titleMatch) {
-      title = titleMatch[1].replace(/- MovieFFM.*/i, "").trim();
-    }
-
-    let status = "";
-    const statusMatch = html.match(/狀態：<span>(.*?)<\/span>/i);
-    if (statusMatch) {
-      status = statusMatch[1].trim();
-    }
-
-    let updateTime = "";
-    const timeMatch = html.match(/更新時間：<span>(.*?)<\/span>/i);
-    if (timeMatch) {
-      updateTime = timeMatch[1].trim();
-    }
-
-    const user = localStorage.getItem("currentUser");
-    if (!user) return alert("請先登入");
-
-    const showRef = db.ref(`users/${user}/shows`);
-    const key = btoa(url); 
-
-    await showRef.child(key).set({
-      url,
-      title,
-      status,
-      updateTime,
-      addedAt: Date.now(),
-    });
-
-    document.getElementById("showUrlInput").value = "";
-    loadShows();
-
-  } catch (err) {
-    console.error("addShow error:", err);
-    alert("⚠️ 無法讀取節目內容（可能被網站防護擋下），請稍後再試或手動輸入節目名稱。");
-  }
-}
-
-
-
-
-    function loadShows(shouldUpdate = false) {
-  if (!showRef) return;
-  const list = document.getElementById("showList");
-
-  showRef.once("value").then((snap) => {
-    const data = snap.val() || {};
-    list.innerHTML = "";
-    const keys = Object.keys(data);
-    if (keys.length === 0) {
-      list.innerHTML = "<li>尚未追蹤任何節目</li>";
-      return;
-    }
-
-    const items = Object.entries(data).sort((a, b) => (b[1].addedAt || 0) - (a[1].addedAt || 0));
-    items.forEach(([k, s]) => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div style="max-width:78%;">
-            <a href="${s.url}" target="_blank" style="font-weight:bold; color:#f0a500;">${s.title || s.url}</a><br>
-            <span class="small-note">狀態：${s.status || '-'}｜更新時間：${s.updateTime || '-'}</span>
-          </div>
-          <div>
-            <button onclick="removeShow('${btoa(s.url)}')">🗑️ 刪除</button>
-          </div>
-        </div>`;
-      list.appendChild(li);
-
-      if (shouldUpdate) updateShowInfo(s.url, k);
-    });
-  });
-}
-
-
-async function updateShowInfo(url, key, shouldNotifyLine = false) {
-  const dramaMatch = url.match(/drama\/(\d+)/);
-  if (!dramaMatch) return;
-
-  const dramaId = dramaMatch[1];
-
-  try {
-    const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(`https://www.movieffm.net/drama/${dramaId}/`)}`;
-    const response = await fetch(proxyUrl);
-    if (!response.ok) throw new Error(`Proxy 請求失敗：${response.status}`);
-
-    const html = await response.text();
-
-    const statusMatch = html.match(/狀態：<span>(.*?)<\/span>/i);
-    const newStatus = statusMatch ? statusMatch[1].trim() : "未知";
-
-    const timeMatch = html.match(/更新時間：<span>(.*?)<\/span>/i);
-    const newUpdateTime = timeMatch ? timeMatch[1].trim() : "";
-
-    const user = localStorage.getItem("currentUser");
-    if (!user) return;
-
-    const showRef = db.ref(`users/${user}/shows/${key}`);
-    const oldSnap = await showRef.once("value");
-    const oldData = oldSnap.val() || {};
-    let hasNew = false;
-
-    if (oldData.status !== newStatus || oldData.updateTime !== newUpdateTime) {
-      hasNew = true;
-      await showRef.update({
-        status: newStatus,
-        updateTime: newUpdateTime,
-        lastChecked: Date.now()
-      });
-
-      if (shouldNotifyLine) {
-        pushLine(`📺 節目更新囉！\n${oldData.title || url}\n新狀態：${newStatus}\n更新時間：${newUpdateTime}`);
-      }
-    }
-
-    const list = document.getElementById("showList");
-    const li = [...list.querySelectorAll("li")].find(el => el.innerHTML.includes(url));
-    if (li) {
-      const titleTag = li.querySelector("a");
-      if (titleTag) {
-        if (hasNew) {
-          titleTag.innerHTML = `🆕有新集數😍😍 ${titleTag.textContent.replace(/^🆕\s*/, '')}`;
-        } else {
-          titleTag.innerHTML = titleTag.textContent.replace(/^🆕\s*/, '');
-        }
-      }
-      const note = li.querySelector(".small-note");
-      if (note) note.textContent = `狀態：${newStatus}｜更新時間：${newUpdateTime}`;
-    }
-
-  } catch (err) {
-    console.warn("更新節目資訊失敗：", url, err);
-  }
-}
-
-
-
-
-    function removeShow(key) {
-  if (!showRef) return;
-  if (confirm("確定要移除這個節目嗎？")) {
-    showRef.child(key).remove();
-  }
-}
-
-    document.addEventListener('click', (e) => {
-      if (e.target && e.target.id === 'addShowBtn') {
-        addShow();
-      }
-    });
-
-    window.addEventListener('load', () => {
-      const currentUser = localStorage.getItem('currentUser');
-
-      if (currentUser) {
-        userRef = db.ref(`users/${currentUser}/records`);
-        pfRef = db.ref(`users/${currentUser}/portfolio`);
-        document.getElementById('roleSelect').value = currentUser;
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
-        initForUser(currentUser);
-      } else {
-        document.getElementById('loginSection').style.display = 'block';
-        document.getElementById('mainContent').style.display = 'none';
-      }
-
-      const today = new Date().toISOString().split('T')[0];
-      if (document.getElementById('recordDate')) document.getElementById('recordDate').value = today;
-
-      if (currentUser) {
-        const savedSalary = localStorage.getItem(`${currentUser}_salary`);
-        if (savedSalary && !salaryInput.value) {
-          salaryInput.value = savedSalary;
-          salaryStatus.textContent = `已載入上次設定：${savedSalary} 元`;
-        }
-
-        const limits = JSON.parse(localStorage.getItem(`${currentUser}_limits`) || '{}');
-        for (const key of ['food', 'transport', 'entertainment', 'other']) {
-          if (limits[key]) {
-            const el = document.getElementById(`limit_${key}`);
-            if (el) el.value = limits[key];
-          }
-        }
-      }
-
-      loadFavorites();
-      if (symbolInput.value && symbolInput.value.trim().length>0) {
-        setTimeout(()=>{ 
-          try { loadStock(); } catch(e){ console.error(e); }
-        }, 300);
-      }
-
-      const savedTheme = localStorage.getItem('themeMode');
-      if (savedTheme) setTheme(savedTheme);
-
-      console.log("✅ 初始化完成");
-    });
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js')
-        .then(() => console.log("✅ Service Worker 註冊完成"))
-        .catch(err => console.error("❌ SW 註冊失敗", err));
-    }
-  
-    async function updateFamilyRank() {
-      try {
-        const users = ["mom","debby","jason"];
-        const names = { mom: "媽媽", dad: "爸爸", debby: "妹妹", jason: "Jason" };
-        const now = Date.now();
-        const day7 = 7 * 24 * 3600 * 1000;
-        const windowStart = now - day7;
-        const results = [];
-        for (const u of users) {
-          const snap = await db.ref(`users/${u}/records`).once('value');
-          const arr = Object.values(snap.val() || {});
-          const recent = arr.filter(r => (r.timestamp || 0) >= windowStart);
-          const total = recent.reduce((s,r)=>s + (parseFloat(r.amount)||0), 0);
-          results.push({ user: u, total, count: recent.length });
-        }
-        let mostSpend = results[0], mostFrugal = results[0];
-        for (const r of results) {
-          if (r.total > mostSpend.total) mostSpend = r;
-          if (r.total < mostFrugal.total) mostFrugal = r;
-        }
-        const allZero = results.every(r => r.total === 0);
-        const rankEl = document.getElementById('familyRank');
-        if (!rankEl) return;
-        if (allZero) {
-          rankEl.textContent = '🏆 每週排行：尚無支出紀錄';
-        } else {
-          rankEl.textContent = `🏆 每週排行：💰花最多 ${names[mostSpend.user]} ｜💡最節省 ${names[mostFrugal.user]}`;
-        }
-      } catch (e) {
-        console.error("updateFamilyRank error", e);
-      }
-    }
-
-    function scheduleDailyMidnightUpdate() {
-      const now = new Date();
-      const next = new Date();
-      next.setHours(24,0,5,0); 
-      const ms = next.getTime() - now.getTime();
-      setTimeout(() => {
-        updateFamilyRank();
-        setInterval(updateFamilyRank, 24 * 3600 * 1000);
-      }, ms);
-    }
-
-    function populateYearMonthSelectors() {
-      const yEl = document.getElementById('filterYear');
-      const mEl = document.getElementById('filterMonth');
-      if (!yEl || !mEl) return;
-      const now = new Date();
-      const thisYear = now.getFullYear();
-      yEl.innerHTML = '<option value="all">全部</option>';
-      for (let y=thisYear; y>=thisYear-4; y--) {
-        const opt = document.createElement('option');
-        opt.value = y;
-        opt.textContent = y;
-        yEl.appendChild(opt);
-      }
-      mEl.innerHTML = '<option value="all">全部</option>';
-      for (let i=1;i<=12;i++) {
-        const val = String(i).padStart(2,'0');
-        const opt = document.createElement('option');
-        opt.value = val;
-        opt.textContent = val;
-        mEl.appendChild(opt);
-      }
-      yEl.value = String(thisYear);
-      mEl.value = String(now.getMonth()+1).padStart(2,'0');
-    }
-
-    async function filterRecords() {
-      const y = document.getElementById('filterYear').value;
-      const m = document.getElementById('filterMonth').value;
-      const list = document.getElementById('recordList');
-      if (!userRef) { list.innerHTML = '<li>請先登入</li>'; return; }
-      if (y === 'all' && m === 'all') {
-        loadRecentRecords();
-        return;
-      }
-      const start = (y==='all'?'0000':y) + '-' + (m==='all'?'00':m);
-      const end = (y==='all'?'9999':y) + '-' + (m==='all'?'12':m);
-      try {
-        const snap = await userRef.orderByChild('date').once('value');
-        const data = snap.val() || {};
-        const arr = Object.entries(data).map(([k,v]) => ({ key:k, ...v })).sort((a,b)=>b.timestamp - a.timestamp);
-        const filtered = arr.filter(r => {
-          if (y === 'all' && m !== 'all') {
-            return r.date && r.date.slice(5,7) === m;
-          } else if (y !== 'all' && m === 'all') {
-            return r.date && r.date.startsWith(y+'-');
-          } else if (y !== 'all' && m !== 'all') {
-            return r.date && r.date.startsWith(y+'-'+m);
-          }
-          return true;
-        });
-        list.innerHTML = '';
-        if (filtered.length === 0) {
-          list.innerHTML = '<li>此月份無紀錄</li>';
-          return;
-        }
-        for (const r of filtered) {
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <div style="display:flex; justify-content: space-between; align-items: center;">
-              <span>${r.date} - ${r.role} - ${r.category} - ${r.amount} 元 - ${r.description || ''}</span>
-              <button onclick="deleteRecord('${r.key}')">🗑️ 刪除</button>
-            </div>`;
-          list.appendChild(li);
-        }
-      } catch (e) {
-        console.error('filterRecords error', e);
-        list.innerHTML = '<li>查詢失敗</li>';
-      }
-    }
-
-    function resetRecordFilter() {
-      populateYearMonthSelectors();
-      loadRecentRecords();
-    }
-
-    (function initExtraFeatures() {
-      try {
-        populateYearMonthSelectors();
-        updateFamilyRank();
-        scheduleDailyMidnightUpdate();
-
-        window.addEventListener('load', () => {
-          setTimeout(()=>{
-            try { filterRecords(); } catch(e){ console.warn(e); }
-          }, 500);
-        });
-      } catch (e) { console.error(e); }
-    })();
-
-function notifyUpdate(title, data) {
-  try {
-    let badge = document.getElementById('showUpdateBadge');
-    if (!badge) {
-      badge = document.createElement('div');
-      badge.id = 'showUpdateBadge';
-      badge.style.position = 'fixed';
-      badge.style.top = '15px';
-      badge.style.right = '110px';
-      badge.style.background = '#ff4757';
-      badge.style.color = '#fff';
-      badge.style.padding = '6px 10px';
-      badge.style.borderRadius = '18px';
-      badge.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
-      badge.style.zIndex = 9999;
-      badge.style.fontWeight = '700';
-      document.body.appendChild(badge);
-    }
-    badge.textContent = '🆕 節目更新：' + (title || '新節目');
-    setTimeout(()=>{ try { badge.style.opacity = '0.95'; } catch(e){} }, 100);
-    setTimeout(()=>{ try { badge.style.opacity = '0.6'; } catch(e){} }, 4000);
-    setTimeout(()=>{ try { badge.remove(); } catch(e){} }, 12000);
-
-    if (Notification && Notification.permission === 'granted') {
-      new Notification('🆕 節目更新', { body: title });
-    } else if (Notification && Notification.permission !== 'denied') {
-      Notification.requestPermission().then(p => {
-        if (p === 'granted') new Notification('🆕 節目更新', { body: title });
-      });
-    }
-  } catch(e){ console.error('notifyUpdate error', e); }
-}
-
-async function loadYTTrending() {
-  const grid = document.getElementById('ytTrendingGrid');
-  if (!grid) return;
-  grid.innerHTML = '<div class="card">載入中...</div>';
-  try {
-    const proxy = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent('https://charts.youtube.com/charts/TrendingTrailers/tw');
-    const resp = await fetch(proxy);
-    const html = await resp.text();
-    const matches = [...html.matchAll(/"videoId":"(.*?)".*?"title":"(.*?)"/g)];
-    grid.innerHTML = '';
-    matches.slice(0,12).forEach((m, idx) => {
-      const id = m[1];
-      let title = m[2];
-      try { title = JSON.parse('"' + title + '"'); } catch(e){}
-      const div = document.createElement('div');
-      div.className = 'card';
-      div.innerHTML = `<img src="https://img.youtube.com/vi/${id}/0.jpg" style="width:100%;border-radius:6px;cursor:pointer" onclick="window.open('https://www.youtube.com/watch?v=${id}','_blank')"><div style="margin-top:6px;font-weight:700">${title}</div>`;
-      grid.appendChild(div);
-    });
-  } catch (e) {
-    console.error('loadYTTrending error', e);
-    grid.innerHTML = '<div class="card">無法載入熱門影片（proxy 可能不穩定）</div>';
-  }
-}
-
-const musicRefRoot = db.ref('family/musicWall');
-async function addMusicTrack() {
-  const title = document.getElementById('musicInputTitle').value.trim();
-  const embed = document.getElementById('musicInputEmbed').value.trim();
-  const owner = document.getElementById('musicOwner').value;
-  if (!embed) return alert('請輸入 YouTube 影片 ID 或 Spotify embed URL');
-  let id = embed;
-  const ytMatch = embed.match(/(?:v=|youtu\.be\/|\/embed\/)([A-Za-z0-9_-]{6,})/);
-  if (ytMatch) id = ytMatch[1];
-  const track = { title: title || embed, embed: embed, youtubeId: ytMatch ? id : null, owner, addedAt: Date.now() };
-  musicRefRoot.push(track);
-  document.getElementById('musicInputTitle').value = '';
-  document.getElementById('musicInputEmbed').value = '';
-  loadMusicWall();
-}
-
-async function loadMusicWall() {
-  const grid = document.getElementById('musicWallGrid');
-  if (!grid) return;
-  grid.innerHTML = '<div class="card">載入中...</div>';
-  const snap = await musicRefRoot.orderByChild('addedAt').once('value');
-  const data = snap.val() || {};
-  grid.innerHTML = '';
-  const items = Object.entries(data).sort((a,b)=>b[1].addedAt - a[1].addedAt);
-  if (items.length === 0) { grid.innerHTML = '<div class="card">目前沒有曲目</div>'; return; }
-  for (const [k, t] of items) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    let iframeHTML = '';
-    if (t.youtubeId) {
-      iframeHTML = `<iframe width="100%" height="160" src="https://www.youtube.com/embed/${t.youtubeId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-    } else if (t.embed && t.embed.includes('spotify')) {
-      const src = t.embed.includes('embed') ? t.embed : t.embed.replace('open.spotify.com','open.spotify.com/embed');
-      iframeHTML = `<iframe src="${src}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
-    } else if (t.embed && t.embed.startsWith('http')) {
-      iframeHTML = `<iframe src="${t.embed}" width="100%" height="120" frameborder="0"></iframe>`;
-    } else {
-      iframeHTML = `<div class="small-note">無法解析的嵌入內容：${t.embed}</div>`;
-    }
-    card.innerHTML = `<div style="font-weight:700">${t.title} <span style="font-weight:600;color:#888">(${t.owner})</span></div>
-                      ${iframeHTML}
-                      <div style="margin-top:6px;"><input placeholder="留言..." id="c_${k}" style="width:70%"><button onclick="postMusicComment('${k}')">留言</button></div>
-                      <div id="comments_${k}" style="margin-top:8px;"></div>`;
-    grid.appendChild(card);
-    loadMusicComments(k);
-  }
-}
-    
-setInterval(() => {
-  console.log("⏰ 每小時自動檢查節目更新中...");
-  const user = localStorage.getItem("currentUser");
-  if (!user) return;
-
-  const showRef = firebase.database().ref(`users/${user}/shows`);
-  showRef.once("value").then(snap => {
-    const data = snap.val() || {};
-    Object.entries(data).forEach(([key, show]) => {
-      updateShowInfo(show.url, key, true);
-    });
-  });
-}, 3600 * 1000); 
-
-async function postMusicComment(key) {
-  const el = document.getElementById('c_' + key);
-  if (!el) return;
-  const text = el.value.trim();
-  if (!text) return alert('請輸入留言內容');
-  const cur = localStorage.getItem('currentUser') || 'guest';
-  await musicRefRoot.child(key).child('comments').push({ user: cur, text, time: Date.now() });
-  el.value = '';
-  loadMusicComments(key);
-}
-// 自動將當前的總損益 A 點紀錄到資料庫，供快照分析使用
-function syncFamilyProfitToSnapshot() {
-  const user = localStorage.getItem("currentUser");
-  const profitText = document.getElementById("todayTotalProfit").textContent;
-  const profit = parseFloat(profitText);
-  if (!user || isNaN(profit)) return;
-
-  const today = new Date().toISOString().split("T")[0];
-
-  // 1. 紀錄每日歷史，用來算「今年賺最多/最慘日」
-  firebase.database().ref(`family/investSnapshot/${user}/${today}`).set({
-    profit: profit,
-    time: Date.now()
-  });
-
-  // 2. 更新當前現值（供 calculateNetWorth 讀取）
-  firebase.database().ref(`family/currentNetWorth/${user}`).set({
-    value: profit,
-    time: Date.now()
-  });
-}
-
-// 每 1 分鐘自動跑一次紀錄，確保資料是最新的
-setInterval(syncFamilyProfitToSnapshot, 60000);
-
-// 網頁開啟時也立刻執行一次計算與分析
-window.addEventListener("load", () => {
-    setTimeout(() => {
-        calculateNetWorth(); // 你的檔案末端有這個函式
-        loadAnnualReview();  // 你的檔案末端有這個函式
-    }, 2000); // 延遲兩秒等數據抓完
-});
-async function loadMusicComments(key) {
-  const container = document.getElementById('comments_' + key);
-  if (!container) return;
-  container.innerHTML = '載入留言...';
-  const snap = await musicRefRoot.child(key).child('comments').once('value');
-  const data = snap.val() || {};
-  container.innerHTML = '';
-  const arr = Object.entries(data).map(([k,v])=>({k,...v})).sort((a,b)=>b.time - a.time);
-  for (const c of arr) {
-    const d = new Date(c.time).toLocaleString();
-    const div = document.createElement('div');
-    div.style.borderTop = '1px solid #eee'; div.style.paddingTop = '6px'; div.innerHTML = `<b>${c.user}</b>：${c.text} <span style="color:#777">(${d})</span>`;
-    container.appendChild(div);
-  }
-}
-
-try { loadYTTrending(); } catch(e) {}
-try { loadMusicWall(); } catch(e) {}
-
-</script>
-
-<script>
-async function checkInactivity() {
-  const dayMs = 86400000;
-  const now = Date.now();
-  const users = ['mom','jason'];
-  const names = {mom:'媽媽',jason:'Jason'};
-
-  let alertHTML = "";
-
-  for (const u of users) {
-    const userRef = firebase.database().ref("users/" + u);
-
-    // 取得延後提醒時間
-    const delaySnap = await userRef.child("inactivityDelayUntil").once("value");
-    const delayUntil = delaySnap.exists() ? delaySnap.val() : 0;
-
-    // ➜ 若有延後，且還沒到時間 → 不顯示、不推播
-    if (now < delayUntil) continue;
-
-    // 取得最後記帳時間
-    const snap = await userRef.child("records")
-      .orderByChild("timestamp").limitToLast(1).once('value');
-    const val = snap.val();
-    let lastTs = 0;
-
-    if (val) lastTs = Object.values(val)[0].timestamp || 0;
-
-    if (!lastTs) {
-      alertHTML += `
-      <div class='warn'>
-        ${names[u]} 尚未記帳！
-        <button onclick="delayInactivity('${u}')">我這幾天都沒花錢！</button>
-      </div>`;
-      continue;
-    }
-
-    const days = Math.floor((now - lastTs) / dayMs);
-    const dstr = new Date(lastTs - new Date().getTimezoneOffset()*60000)
-      .toISOString().slice(0,10);
-
-    if (days >= 2) {
-      alertHTML += `
-      <div class='warn'>
-        ${names[u]} 上次記帳 ${dstr} 已超過 ${days} 天未記帳!! 請注意
-        <button onclick="delayInactivity('${u}')">我這幾天都沒花錢！</button>
-      </div>`;
-
-      // ✔ 推播通知（你的舊版本功能）
-      if (Notification.permission === 'granted') {
-        new Notification("記帳提醒", {
-          body: `${names[u]} 已 ${days} 天未記帳`
-        });
-      }
-    }
-  }
-
-  const target = document.getElementById("inactivityZone");
-  if (target) target.innerHTML = alertHTML;
-}
-
-async function pushLine(msg) {
-  return fetch("https://api.line.me/v2/bot/message/push",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization":"Bearer IAVeviy3IfegCOxMwNV7CNLDz2wF+V7iDC8sUVTCtqtsxiYAwbIJGJ12wfhcOpxFJYv/NTBUutv609eMgBbRmcdzZPuKnhcUuq4Dhreq9NJniDPpU3DxltVbN6suMHQG/4HnJrt9IsDYcPT32y88bAdB04t89/1O/w1cDnyilFU="
-    },
-    body:JSON.stringify({
-      to:"U11bb1cee1c5e4630a87fd2df11bad0c1",
-      messages:[{type:"text",text:msg}]
-    })
-  });
-}
-
-function syncSnapshotPortfolio() {
-  const src = document.querySelectorAll('#portfolioList li');
-  const dest = document.getElementById('snapshotPortfolioList');
-  if (!dest) return;
-
-  dest.innerHTML = '';
-  src.forEach(li => dest.appendChild(li.cloneNode(true)));
-
-  if (!src.length) {
-    dest.innerHTML = '<li>尚無資料</li>';
-  }
-}
-
-// 在投資組合更新後同步
-const _renderPortfolio = window.renderPortfolio;
-if (_renderPortfolio) {
-  window.renderPortfolio = function () {
-    _renderPortfolio();
-    syncSnapshotPortfolio();
-  };
-}
-window.notifyEpisodeUpdate = async function(showName,newEp){
-  const msg = `📺 你追的 ${showName} 更新到第 ${newEp} 集！`;
-  await pushLine(msg);
-};
-window.addEventListener("load", () => {
-  loadBoard();
-  const savedUser = localStorage.getItem('currentUser');
-  if (savedUser) {
-    // 如果有存過使用者，直接顯示主畫面並初始化
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-    initForUser(savedUser);
-  }
-});
-window.addEventListener("load", ()=>{
-  if (Notification.permission !== 'granted'){
-    Notification.requestPermission();
-  }
-  checkInactivity();
-});
-</script>
-
-<div id="inactivityZone" style="padding:10px;color:#d00;"></div>
-
-
-<script>
-/* --- Weather & FX control (lightweight) --- */
-const weatherScenes = ['sunny','cloudy','night','rain','storm'];
-const fxScenes = ['clouds','stars','meteors','particles','fireworks'];
-
-function clearWeatherLayers() {
-  const bg = document.getElementById('weather-bg');
-  if (!bg) return;
-  bg.innerHTML = '';
-  bg.className = '';
-  // remove overlay if exists
-  const ov = document.getElementById('weather-overlay');
-  if (ov) ov.remove();
-}
-
-function applyWeather(scene) {
-  clearWeatherLayers();
-  const bg = document.getElementById('weather-bg');
-  if (!bg) return;
-  const overlay = document.createElement('div');
-  overlay.id = 'weather-overlay';
-  document.body.appendChild(overlay);
-
-  switch(scene) {
-    case 'sunny':
-      bg.classList.add('w-sunny');
-      overlay.style.opacity = '0';
-      break;
-    case 'cloudy':
-      bg.classList.add('w-cloudy');
-      overlay.style.opacity = '0.0';
-      // add subtle cloud pseudo via fx-clouds but light
-      const c = document.createElement('div');
-      c.className = 'fx-clouds';
-      const cl1 = document.createElement('div'); cl1.className='cloud';
-      const cl2 = document.createElement('div'); cl2.className='cloud c2';
-      c.appendChild(cl1); c.appendChild(cl2);
-      bg.appendChild(c);
-      break;
-    case 'night':
-      bg.classList.add('w-night');
-      overlay.style.opacity = '0';
-      break;
-    case 'rain':
-      bg.classList.add('w-cloudy');
-      const rain = document.createElement('div'); rain.className='rain-layer';
-      bg.appendChild(rain);
-      overlay.style.opacity = '0.15';
-      break;
-    case 'storm':
-      bg.classList.add('w-cloudy');
-      const rain2 = document.createElement('div'); rain2.className='rain-layer';
-      bg.appendChild(rain2);
-      const flash = document.createElement('div'); flash.className='lightning-flash';
-      bg.appendChild(flash);
-      overlay.style.opacity = '0.22';
-      break;
-    default:
-      bg.classList.add('w-sunny');
-      overlay.style.opacity = '0';
-      break;
-  }
-}
-
-/* pick random weather (button) */
-function randomWeather() {
-  const pick = weatherScenes[Math.floor(Math.random()*weatherScenes.length)];
-  applyWeather(pick);
-  // set theme classes for readability if needed
-  if (pick === 'night') setTheme('night'); else if (pick==='cloudy' || pick==='rain' || pick==='storm') setTheme('day'); else setTheme('day');
-}
-
-/* FX handling */
-function clearFX() {
-  // remove fx containers inside weather-bg
-  const bg = document.getElementById('weather-bg');
-  if (!bg) return;
-  const nodes = bg.querySelectorAll('.fx-clouds, .fx-stars, .fx-meteors, .fx-particles, .fx-fireworks');
-  nodes.forEach(n => n.remove());
-}
-
-function applyFX(scene) {
-  clearFX();
-  const bg = document.getElementById('weather-bg');
-  if (!bg) return;
-  switch(scene) {
-    case 'clouds':
-      const cwrap = document.createElement('div'); cwrap.className='fx-clouds';
-      const c1 = document.createElement('div'); c1.className='cloud';
-      const c2 = document.createElement('div'); c2.className='cloud c2';
-      cwrap.appendChild(c1); cwrap.appendChild(c2);
-      bg.appendChild(cwrap);
-      break;
-    case 'stars':
-      const s = document.createElement('div'); s.className='fx-stars';
-      bg.appendChild(s);
-      break;
-    case 'meteors':
-      const mwrap = document.createElement('div'); mwrap.className='fx-meteors';
-      for (let i=0;i<3;i++){
-        const met = document.createElement('div'); met.className='meteor';
-        met.style.left = (10 + i*25) + 'vw';
-        met.style.top = (-10 + i*10) + 'vh';
-        met.style.animationDelay = (i*0.6) + 's';
-        mwrap.appendChild(met);
-      }
-      bg.appendChild(mwrap);
-      break;
-    case 'particles':
-      const pw = document.createElement('div'); pw.className='fx-particles';
-      for (let i=0;i<10;i++){
-        const p = document.createElement('div'); p.className='p';
-        p.style.left = (Math.random()*90)+'vw';
-        p.style.top = (Math.random()*80)+'vh';
-        p.style.animationDuration = (6 + Math.random()*6)+'s';
-        pw.appendChild(p);
-      }
-      bg.appendChild(pw);
-      break;
-    case 'fireworks':
-      const fw = document.createElement('div'); fw.className='fx-fireworks';
-      for (let i=0;i<6;i++){
-        const b = document.createElement('div'); b.className='burst';
-        b.style.left = (20 + i*10) + 'vw';
-        b.style.top = (20 + (i%2)*10) + 'vh';
-        b.style.animationDelay = (i*0.2) + 's';
-        fw.appendChild(b);
-      }
-      bg.appendChild(fw);
-      break;
-    default:
-      break;
-  }
-}
-
-/* pick random FX */
-function randomFX() {
-  const pick = fxScenes[Math.floor(Math.random()*fxScenes.length)];
-  applyFX(pick);
-}
-async function syncFamilyProfitToSnapshot(user, totalProfit) {
-  if (!user) return;
-  // 取得台灣時間日期 (YYYY-MM-DD)
-  const now = new Date();
-  const dateStr = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-  
-  // 存入快照區，用於統計和圖表
-  await firebase.database().ref(`family/investSnapshot/${user}/${dateStr}`).set({
-    profit: totalProfit,
-    timestamp: firebase.database.ServerValue.TIMESTAMP
-  });
-}
-
-/* ensure buttons show current selection briefly */
-document.addEventListener('DOMContentLoaded', ()=> {
-  // preserve previous theme
-  const saved = localStorage.getItem('themeMode') || 'day';
-  setTheme(saved);
-  // initialize with sunny
-  applyWeather('sunny');
-});
-
-function syncFamilyProfitToSnapshot(user, profit) {
-  if (!user) return;
-  const now = new Date();
-  // 取得台灣時間日期 (YYYY-MM-DD)
-  const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split("T")[0];
-
-  // 紀錄每日損益快照
-  firebase.database().ref(`family/investSnapshot/${user}/${today}`).set({
-    profit: profit,
-    time: Date.now()
-  });
-
-  // 紀錄當前總現值（供 calculateNetWorth 使用）
-  firebase.database().ref(`family/currentNetWorth/${user}`).set({
-    value: profit, // 這裡建議存 totalNetWorth，如果你想顯示 179萬那種數字
-    time: Date.now()
-  });
-}
-
-// 資產快照讀取 family 資料
-function calculateNetWorth() {
-  const user = localStorage.getItem("currentUser");
-  firebase.database().ref(`family/currentNetWorth/${user}`).on("value", snap => {
-    if (!snap.exists()) return;
-    document.getElementById("currentNetWorth").textContent =
-      snap.val().value.toLocaleString();
-  });
-}
-
-let profitChart = null; // 全域變數儲存圖表實例
-
-function loadAnnualReview() {
-  const user = localStorage.getItem("currentUser");
-  if (!user) return;
-
-  firebase.database().ref(`family/investSnapshot/${user}`).once("value", snap => {
-    const data = snap.val();
-    if (!data) {
-      document.getElementById("maxGainDay").textContent = "尚無資料";
-      document.getElementById("maxLossDay").textContent = "尚無資料";
-      return;
-    }
-
-    // 轉換為陣列並按日期排序
-    const entries = Object.entries(data)
-      .map(([date, val]) => ({ date, profit: val.profit }))
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    if (entries.length === 0) return;
-
-    // 找出最大與最小損益
-    const maxRecord = entries.reduce((prev, curr) => (curr.profit > prev.profit) ? curr : prev);
-    const minRecord = entries.reduce((prev, curr) => (curr.profit < prev.profit) ? curr : prev);
-
-    // 更新顯示文字
-    document.getElementById("maxGainDay").innerHTML = 
-      `${maxRecord.date} <span style="color:red;">+${maxRecord.profit.toLocaleString()}</span>`;
-    document.getElementById("maxLossDay").innerHTML = 
-      `${minRecord.date} <span style="color:green;">${minRecord.profit.toLocaleString()}</span>`;
-
-    // 生成圖表
-    renderProfitChart(entries);
-  });
-}
-function renderProfitChart(entries) {
-  const ctx = document.getElementById('profitTrendChart').getContext('2d');
-  
-  if (profitChart) profitChart.destroy(); // 如果已有圖表則銷毀重建
-
-  profitChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: entries.map(e => e.date),
-      datasets: [{
-        label: '每日總損益走勢',
-        data: entries.map(e => e.profit),
-        borderColor: '#f0a500',
-        backgroundColor: 'rgba(240, 165, 0, 0.1)',
-        fill: true,
-        tension: 0.3
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: { beginAtZero: false }
-      }
-    }
-  });
-}
+  </script>
+</body>
+</html>
