@@ -7,7 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🐷豬豬e網🐷</title>
   <style>
-    /* --- 基礎樣式 --- */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0; padding: 20px; max-width: 900px;
@@ -37,7 +36,6 @@
     ul { list-style: none; padding: 0; background: #fff; border-radius: 6px; }
     ul li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
     
-    /* --- 特殊區塊樣式 --- */
     iframe { width: 100%; height: 500px; border: 2px solid #f0a500; border-radius: 10px; margin-top: 10px; }
     body.theme-night { background-color: #121212; color: #eee; }
     body.theme-night .container { background: #1e1e1e; color: #eee; }
@@ -71,7 +69,7 @@
     </div>
 
     <section class="container">
-      <h2>📉 2026 資產快照</h2>
+      <h2>💰 2026 資產快照</h2>
       <div class="stat-box">
         <p>💰 當前資產現值：<span id="currentNetWorth" style="font-size:1.5em;color:#f0a500;">0</span> 元</p>
         <div class="flex-row">
@@ -99,7 +97,6 @@
   </div>
 
   <script>
-    // --- Firebase 配置 ---
     const firebaseConfig = {
       apiKey: "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg",
       authDomain: "piggynet-93c33.firebaseapp.com",
@@ -113,7 +110,6 @@
     const db = firebase.database();
     let profitChartInstance = null;
 
-    // --- 核心邏輯 ---
     async function login() {
       const user = document.getElementById('loginUser').value;
       const pass = document.getElementById('loginPassword').value.trim();
@@ -142,7 +138,6 @@
       loadAnnualReview(user);
     }
 
-    // --- 功能函式 ---
     function postMessage() {
       const msg = document.getElementById('boardInput').value;
       if (!msg) return;
@@ -175,7 +170,6 @@
       });
     }
 
-    // --- 關注節目邏輯 ---
     function addShow() {
       const user = localStorage.getItem('currentUser');
       const url = document.getElementById('showUrlInput').value.trim();
@@ -193,8 +187,6 @@
         ).join('');
       });
     }
-
-    // --- 投資與快照邏輯 ---
     async function updateTodayProfit() {
       const user = localStorage.getItem('currentUser');
       const snap = await db.ref(`users/${user}/portfolio`).get();
