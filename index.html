@@ -136,6 +136,7 @@
       loadPortfolio(user);
       loadShows(user);
       loadAnnualReview(user);
+      updateTodayProfit(); 
     }
 
     function postMessage() {
@@ -192,6 +193,7 @@
       const snap = await db.ref(`users/${user}/portfolio`).get();
       if (!snap.exists()) return;
       document.getElementById("todayTotalProfit").textContent = "更新中...";
+      document.getElementById("currentNetWorth").textContent = "計算中...";
       let totalP = 0, totalN = 0;
       for (const [code, info] of Object.entries(snap.val())) {
         try {
@@ -255,3 +257,4 @@
   </script>
 </body>
 </html>
+
