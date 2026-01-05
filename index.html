@@ -225,30 +225,52 @@
       if(code && shares) db.ref(`users/${user}/portfolio/${code}`).set({ shares, cost });
     }
 
-    function loadAnnualReview(user) {
-      db.ref(`family/investSnapshot/${user}`).once("value", snap => {
-        const entries = Object.entries(snap.val() || {}).map(([d,v])=>({date:d, profit:v.profit})).sort((a,b)=>new Date(a.date)-new Date(b.date));
-        if(!entries.length) return;
-        const max = entries.reduce((p,c)=>c.profit>p.profit?c:p);
-        const min = entries.reduce((p,c)=>c.profit<p.profit?p:c);
-        document.getElementById("maxGainDay").innerHTML = `${max.date}<br><span style="color:red;">$${max.profit}</span>`;
-        document.getElementById("maxLossDay").innerHTML = `${min.date}<br><span style="color:green;">$${min.profit}</span>`;
-        renderChart(entries);
-      });
-    }
+function loadAnnualReview(user) {
+  db.ref(`family/investSnapshot/${user}`).once("value", snap => {
+    const allEntries = Object.entries(snap.val() || {})
+      .map(([d,v])=>({date:d, profit:v.profit}))
+      .sort((a,b)=>new Date(a.date)-new Date(b.date));
 
-    function renderChart(entries) {
-      const ctx = document.getElementById('profitTrendChart').getContext('2d');
-      if (profitChartInstance) profitChartInstance.destroy();
-      profitChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: entries.slice(-7).map(e=>e.date.substring(5)),
-          datasets: [{ label:'損益', data: entries.slice(-7).map(e=>e.profit), borderColor:'#f0a500', fill:true }]
-        },
-        options: { responsive:true, maintainAspectRatio:false }
-      });
+    if (!allEntries.length) return;
+
+    const chartEntries = allEntries.slice(-30);
+
+    const max = chartEntries.reduce((p,c)=>c.profit > p.profit ? c : p);
+    const min = chartEntries.reduce((p,c)=>c.profit < p.profit ? c : p);
+
+    document.getElementById("maxGainDay").innerHTML =
+      `${max.date}<br><span style="color:red;">$${max.profit.toLocaleString()}</span>`;
+
+    document.getElementById("maxLossDay").innerHTML =
+      `${min.date}<br><span style="color:green;">$${min.profit.toLocaleString()}</span>`;
+
+    renderChart(chartEntries);
+  });
+}
+
+
+function renderChart(entries) {
+  const ctx = document.getElementById('profitTrendChart').getContext('2d');
+  if (profitChartInstance) profitChartInstance.destroy();
+
+  profitChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: entries.map(e => e.date.substring(5)),
+      datasets: [{
+        label: '損益',
+        data: entries.map(e => e.profit),
+        borderColor: '#f0a500',
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
     }
+  });
+}
+
 
     function setTheme(mode) {
       document.body.className = 'theme-' + mode;
