@@ -36,7 +36,6 @@
     ul { list-style: none; padding: 0; background: #fff; border-radius: 6px; }
     ul li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
     
-    iframe { width: 100%; height: 500px; border: 2px solid #f0a500; border-radius: 10px; margin-top: 10px; }
     body.theme-night { background-color: #121212; color: #eee; }
     body.theme-night .container { background: #1e1e1e; color: #eee; }
     body.theme-night .stat-box { color: #333; }
@@ -63,18 +62,28 @@
 
   <div id="mainContent" style="display:none;">
     <div style="text-align: right; margin-bottom: 10px;">
-      <button onclick="setTheme('day')">🌞 白天</button>
-      <button onclick="setTheme('night')">🌙 黑夜</button>
+      <span id="userNameDisplay" style="margin-right: 10px; font-weight: bold;"></span>
+      <button onclick="setTheme('day')">🌞</button>
+      <button onclick="setTheme('night')">🌙</button>
       <button onclick="logout()">🚪 登出</button>
     </div>
 
     <section class="container">
       <h2>💰 2026 資產快照</h2>
+      
+      <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #f0a500; margin-bottom: 15px;">
+        <label>📝 手動輸入今日總盈餘：</label>
+        <div class="flex-row" style="margin-top: 8px;">
+          <input type="number" id="manualProfitInput" placeholder="輸入金額 (例如: 5000)">
+          <button onclick="saveManualProfit()">💾 儲存今日盈餘</button>
+        </div>
+      </div>
+
       <div class="stat-box">
-        <p>💰 當前資產現值：<span id="currentNetWorth" style="font-size:1.5em;color:#f0a500;">0</span> 元</p>
+        <p>📊 當前盈餘：<span id="currentProfitDisplay" style="font-size:1.5em;color:#f0a500;">0</span> 元</p>
         <div class="flex-row">
-          <div class="flex-grow">🚀 今年賺最多：<br><small id="maxGainDay">讀取中...</small></div>
-          <div class="flex-grow">📉 今年最慘日：<br><small id="maxLossDay">讀取中...</small></div>
+          <div class="flex-grow">🚀 歷史賺最多：<br><small id="maxGainDay">讀取中...</small></div>
+          <div class="flex-grow">📉 歷史最慘日：<br><small id="maxLossDay">讀取中...</small></div>
         </div>
       </div>
       <div class="chart-container"><canvas id="profitTrendChart"></canvas></div>
@@ -88,11 +97,7 @@
         <input type="number" id="pfCost" placeholder="成本" style="flex:1">
         <button onclick="addPortfolio()">新增</button>
       </div>
-      <div style="margin: 10px 0;">
-        📈 損益：<span id="todayTotalProfit">0</span> 元
-        <button onclick="updateTodayProfit()" style="font-size: 12px; padding: 4px 8px;">🔄 刷新同步</button>
-      </div>
-      <ul id="portfolioList"></ul>
+      <ul id="portfolioList" style="margin-top:10px;"></ul>
     </section>
   </div>
 
@@ -110,110 +115,65 @@
     const db = firebase.database();
     let profitChartInstance = null;
 
+    // 登入邏輯
     async function login() {
       const user = document.getElementById('loginUser').value;
       const pass = document.getElementById('loginPassword').value.trim();
       const snap = await db.ref(`users/${user}/password`).get();
       const stored = snap.exists() ? snap.val() : "9527";
-      if (pass === stored) { localStorage.setItem('currentUser', user); location.reload(); }
-      else alert("密碼錯誤");
+      if (pass === stored) { 
+        localStorage.setItem('currentUser', user); 
+        location.reload(); 
+      } else {
+        alert("密碼錯誤");
+      }
     }
 
-    function logout() { localStorage.removeItem('currentUser'); location.reload(); }
+    function logout() { 
+      localStorage.removeItem('currentUser'); 
+      location.reload(); 
+    }
 
     window.onload = () => {
       const user = localStorage.getItem('currentUser');
       if (user) {
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
         initApp(user);
       }
     };
 
     function initApp(user) {
-      loadBoard();
-      loadRecords(user);
       loadPortfolio(user);
-      loadShows(user);
       loadAnnualReview(user);
-      updateTodayProfit(); 
     }
 
-    function postMessage() {
-      const msg = document.getElementById('boardInput').value;
-      if (!msg) return;
-      db.ref("family/board").push({ user: localStorage.getItem('currentUser'), msg, time: Date.now() });
-      document.getElementById('boardInput').value = "";
-    }
-
-    function loadBoard() {
-      db.ref("family/board").limitToLast(10).on("value", snap => {
-        const box = document.getElementById("boardMessages");
-        box.innerHTML = Object.values(snap.val() || {}).reverse().map(m => `<div><b>${m.user}</b>: ${m.msg}</div>`).join('');
-      });
-    }
-
-    function addRecord() {
+    // 手動儲存盈餘到 Firebase
+    function saveManualProfit() {
       const user = localStorage.getItem('currentUser');
-      const amount = parseFloat(document.getElementById('amountInput').value);
-      if (!amount) return;
-      db.ref(`users/${user}/records`).push({
-        amount, category: document.getElementById('categorySelect').value,
-        description: document.getElementById('descriptionInput').value,
-        date: new Date().toISOString().split('T')[0]
-      }).then(() => { location.reload(); });
-    }
-
-    function loadRecords(user) {
-      db.ref(`users/${user}/records`).limitToLast(5).once('value', snap => {
-        const list = document.getElementById('recordList');
-        list.innerHTML = Object.values(snap.val() || {}).reverse().map(r => `<li>${r.date} | ${r.amount}元 (${r.category})</li>`).join('');
-      });
-    }
-
-    function addShow() {
-      const user = localStorage.getItem('currentUser');
-      const url = document.getElementById('showUrlInput').value.trim();
-      if (!url) return;
-      db.ref(`users/${user}/shows`).push({ url, time: Date.now() });
-      document.getElementById('showUrlInput').value = "";
-    }
-
-    function loadShows(user) {
-      db.ref(`users/${user}/shows`).on('value', snap => {
-        const list = document.getElementById('showList');
-        const data = snap.val() || {};
-        list.innerHTML = Object.entries(data).map(([key, s]) => 
-          `<li><a href="${s.url}" target="_blank">點我查看節目</a> <button onclick="db.ref('users/${user}/shows/${key}').remove()">🗑️</button></li>`
-        ).join('');
-      });
-    }
-    async function updateTodayProfit() {
-      const user = localStorage.getItem('currentUser');
-      const snap = await db.ref(`users/${user}/portfolio`).get();
-      if (!snap.exists()) return;
-      document.getElementById("todayTotalProfit").textContent = "更新中...";
-      document.getElementById("currentNetWorth").textContent = "計算中...";
-      let totalP = 0, totalN = 0;
-      for (const [code, info] of Object.entries(snap.val())) {
-        try {
-          const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo='+code)}`);
-          const json = await res.json();
-          const stock = JSON.parse(json.contents);
-          const price = parseFloat(stock.data.pop()[6].replace(/,/g, ""));
-          totalP += (price - info.cost) * info.shares;
-          totalN += price * info.shares;
-        } catch(e) {}
+      const amount = parseFloat(document.getElementById('manualProfitInput').value);
+      if (isNaN(amount)) {
+        alert("請輸入有效的數字");
+        return;
       }
-      document.getElementById("todayTotalProfit").textContent = Math.round(totalP).toLocaleString();
-      document.getElementById("currentNetWorth").textContent = Math.round(totalN).toLocaleString();
-      db.ref(`family/investSnapshot/${user}/${new Date().toISOString().split('T')[0]}`).set({ profit: Math.round(totalP) });
-      loadAnnualReview(user);
+      const today = new Date().toISOString().split('T')[0];
+      
+      db.ref(`family/investSnapshot/${user}/${today}`).set({ 
+        profit: Math.round(amount) 
+      }).then(() => {
+        alert("儲存成功！");
+        document.getElementById('manualProfitInput').value = "";
+        loadAnnualReview(user);
+      });
     }
 
     function loadPortfolio(user) {
       db.ref(`users/${user}/portfolio`).on('value', snap => {
-        document.getElementById('portfolioList').innerHTML = Object.entries(snap.val() || {}).map(([c, i]) => `<li><b>${c}</b> | ${i.shares}股 | 成本:${i.cost}</li>`).join('');
+        const data = snap.val() || {};
+        document.getElementById('portfolioList').innerHTML = Object.entries(data).map(([c, i]) => 
+          `<li><b>${c}</b> | ${i.shares}股 | 成本:${i.cost}</li>`
+        ).join('');
       });
     }
 
@@ -225,52 +185,55 @@
       if(code && shares) db.ref(`users/${user}/portfolio/${code}`).set({ shares, cost });
     }
 
-function loadAnnualReview(user) {
-  db.ref(`family/investSnapshot/${user}`).once("value", snap => {
-    const allEntries = Object.entries(snap.val() || {})
-      .map(([d,v])=>({date:d, profit:v.profit}))
-      .sort((a,b)=>new Date(a.date)-new Date(b.date));
+    function loadAnnualReview(user) {
+      db.ref(`family/investSnapshot/${user}`).on("value", snap => {
+        const allEntries = Object.entries(snap.val() || {})
+          .map(([d,v])=>({date:d, profit:v.profit}))
+          .sort((a,b)=>new Date(a.date)-new Date(b.date));
 
-    if (!allEntries.length) return;
+        if (!allEntries.length) return;
 
-    const chartEntries = allEntries.slice(-30);
+        // 顯示最後一次輸入的盈餘
+        const latest = allEntries[allEntries.length - 1];
+        document.getElementById("currentProfitDisplay").textContent = latest.profit.toLocaleString();
 
-    const max = chartEntries.reduce((p,c)=>c.profit > p.profit ? c : p);
-    const min = chartEntries.reduce((p,c)=>c.profit < p.profit ? c : p);
+        const chartEntries = allEntries.slice(-30);
+        const max = allEntries.reduce((p,c)=>c.profit > p.profit ? c : p);
+        const min = allEntries.reduce((p,c)=>c.profit < p.profit ? c : p);
 
-    document.getElementById("maxGainDay").innerHTML =
-      `${max.date}<br><span style="color:red;">$${max.profit.toLocaleString()}</span>`;
+        document.getElementById("maxGainDay").innerHTML =
+          `${max.date}<br><span style="color:red;">$${max.profit.toLocaleString()}</span>`;
 
-    document.getElementById("maxLossDay").innerHTML =
-      `${min.date}<br><span style="color:green;">$${min.profit.toLocaleString()}</span>`;
+        document.getElementById("maxLossDay").innerHTML =
+          `${min.date}<br><span style="color:green;">$${min.profit.toLocaleString()}</span>`;
 
-    renderChart(chartEntries);
-  });
-}
-
-
-function renderChart(entries) {
-  const ctx = document.getElementById('profitTrendChart').getContext('2d');
-  if (profitChartInstance) profitChartInstance.destroy();
-
-  profitChartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: entries.map(e => e.date.substring(5)),
-      datasets: [{
-        label: '損益',
-        data: entries.map(e => e.profit),
-        borderColor: '#f0a500',
-        fill: true
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false
+        renderChart(chartEntries);
+      });
     }
-  });
-}
 
+    function renderChart(entries) {
+      const ctx = document.getElementById('profitTrendChart').getContext('2d');
+      if (profitChartInstance) profitChartInstance.destroy();
+
+      profitChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: entries.map(e => e.date.substring(5)),
+          datasets: [{
+            label: '個人盈餘趨勢',
+            data: entries.map(e => e.profit),
+            borderColor: '#f0a500',
+            backgroundColor: 'rgba(240, 165, 0, 0.2)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
 
     function setTheme(mode) {
       document.body.className = 'theme-' + mode;
@@ -279,4 +242,3 @@ function renderChart(entries) {
   </script>
 </body>
 </html>
-
