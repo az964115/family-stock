@@ -189,27 +189,56 @@
       });
     }
     async function updateTodayProfit() {
-      const user = localStorage.getItem('currentUser');
-      const snap = await db.ref(`users/${user}/portfolio`).get();
-      if (!snap.exists()) return;
-      document.getElementById("todayTotalProfit").textContent = "更新中...";
-      document.getElementById("currentNetWorth").textContent = "計算中...";
-      let totalP = 0, totalN = 0;
-      for (const [code, info] of Object.entries(snap.val())) {
-        try {
-          const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo='+code)}`);
-          const json = await res.json();
-          const stock = JSON.parse(json.contents);
-          const price = parseFloat(stock.data.pop()[6].replace(/,/g, ""));
-          totalP += (price - info.cost) * info.shares;
-          totalN += price * info.shares;
-        } catch(e) {}
-      }
-      document.getElementById("todayTotalProfit").textContent = Math.round(totalP).toLocaleString();
-      document.getElementById("currentNetWorth").textContent = Math.round(totalN).toLocaleString();
-      db.ref(`family/investSnapshot/${user}/${new Date().toISOString().split('T')[0]}`).set({ profit: Math.round(totalP) });
-      loadAnnualReview(user);
+    const user = localStorage.getItem('currentUser');
+    const snap = await db.ref(`users/${user}/portfolio`).get();
+    if (!snap.exists()) {
+        document.getElementById("currentNetWorth").textContent = "0";
+        return;
     }
+
+    document.getElementById("todayTotalProfit").textContent = "同步中...";
+    document.getElementById("currentNetWorth").textContent = "計算中...";
+
+    const portfolio = snap.val();
+    const codes = Object.keys(portfolio);
+    let totalP = 0, totalN = 0;
+
+    const fetchPromises = codes.map(async (code) => {
+        try {
+            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=' + code)}`);
+            const json = await res.json();
+            const stock = JSON.parse(json.contents);
+            
+            if (stock && stock.data && stock.data.length > 0) {
+                const price = parseFloat(stock.data[stock.data.length - 1][6].replace(/,/g, ""));
+                const info = portfolio[code];
+                
+                return {
+                    gain: (price - info.cost) * info.shares,
+                    value: price * info.shares
+                };
+            }
+        } catch (e) {
+            console.error(`股票 ${code} 抓取失敗:`, e);
+        }
+        return { gain: 0, value: 0 }; 
+    });
+
+    const results = await Promise.all(fetchPromises);
+
+    results.forEach(res => {
+        totalP += res.gain;
+        totalN += res.value;
+    });
+
+    document.getElementById("todayTotalProfit").textContent = Math.round(totalP).toLocaleString();
+    document.getElementById("currentNetWorth").textContent = Math.round(totalN).toLocaleString();
+
+    const today = new Date().toISOString().split('T')[0];
+    db.ref(`family/investSnapshot/${user}/${today}`).set({ profit: Math.round(totalP) });
+    
+    loadAnnualReview(user);
+}
 
     function loadPortfolio(user) {
       db.ref(`users/${user}/portfolio`).on('value', snap => {
@@ -279,4 +308,5 @@ function renderChart(entries) {
   </script>
 </body>
 </html>
+
 
