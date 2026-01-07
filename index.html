@@ -36,6 +36,7 @@
     ul { list-style: none; padding: 0; background: #fff; border-radius: 6px; }
     ul li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
     
+    iframe { width: 100%; height: 500px; border: 2px solid #f0a500; border-radius: 10px; margin-top: 10px; }
     body.theme-night { background-color: #121212; color: #eee; }
     body.theme-night .container { background: #1e1e1e; color: #eee; }
     body.theme-night .stat-box { color: #333; }
@@ -130,173 +131,146 @@
     };
 
     function initApp(user) {
+      loadBoard();
+      loadRecords(user);
       loadPortfolio(user);
+      loadShows(user);
       loadAnnualReview(user);
+      updateTodayProfit(); 
     }
 
-    async function updateTodayProfit() {
-    const user = localStorage.getItem('currentUser');
-    const snap = await db.ref(`users/${user}/portfolio`).get();
-    if (!snap.exists()) {
-        document.getElementById("currentNetWorth").textContent = "0";
-        document.getElementById("todayTotalProfit").textContent = "0";
-        return;
+    function postMessage() {
+      const msg = document.getElementById('boardInput').value;
+      if (!msg) return;
+      db.ref("family/board").push({ user: localStorage.getItem('currentUser'), msg, time: Date.now() });
+      document.getElementById('boardInput').value = "";
     }
 
-    const portfolio = snap.val();
-    const codes = Object.keys(portfolio);
-
-    document.getElementById("todayTotalProfit").textContent = "⏳ 讀取中...";
-    document.getElementById("currentNetWorth").textContent = "⏳ 計算中...";
-
-    try {
-        // 換成穩定且無 CORS 限制的 API 來源 (GitHub 上同步的台股資料)
-        // 這個 API 會包含所有台股當日的現價
-        const res = await fetch(`https://raw.githubusercontent.com/swinslow/taiwan-stock-data/main/data/latest.json`);
-        
-        // 如果上面那個失效，備用方案是這個：
-        // const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL')}`);
-        
-        const rawData = await res.json();
-        // 根據來源格式調整解析邏輯
-        const allData = rawData.data || rawData; 
-        
-        const stockMap = new Map();
-        allData.forEach(item => {
-            // 不同的 API 欄位名稱略有不同，這裡做兼容處理
-            const code = item.Code || item.id || item[0];
-            const price = item.ClosingPrice || item.close || item[7];
-            if (code) stockMap.set(code.toString().trim(), parseFloat(price));
-        });
-
-        let totalP = 0; 
-        let totalN = 0; 
-        const listItems = [];
-
-        codes.forEach(code => {
-            const info = portfolio[code];
-            const currentPrice = stockMap.get(code.toString().trim()) || 0; 
-            
-            const profit = (currentPrice - info.cost) * info.shares;
-            const value = currentPrice * info.shares;
-
-            totalP += profit;
-            totalN += value;
-
-            const profitColor = profit > 0 ? "#ff4444" : (profit < 0 ? "#00aa00" : "#333");
-            const profitSign = profit > 0 ? "+" : "";
-
-            listItems.push(`
-                <li>
-                    <span>
-                        <b>${code}</b> | ${info.shares.toLocaleString()}股<br>
-                        <small>成本: ${info.cost} ➔ 現價: ${currentPrice || '不詳'}</small>
-                    </span>
-                    <span style="text-align:right;">
-                        <b style="color:${profitColor};">${profitSign}${Math.round(profit).toLocaleString()}</b><br>
-                        <button onclick="removePortfolio('${code}')" style="padding:2px 8px; font-size:12px; background:#666; margin-top:5px;">刪除</button>
-                    </span>
-                </li>
-            `);
-        });
-
-        document.getElementById('portfolioList').innerHTML = listItems.join('');
-        document.getElementById("todayTotalProfit").textContent = Math.round(totalP).toLocaleString();
-        document.getElementById("todayTotalProfit").style.color = totalP >= 0 ? "red" : "green";
-        document.getElementById("currentNetWorth").textContent = Math.round(totalN).toLocaleString();
-
-        const today = new Date().toISOString().split('T')[0];
-        db.ref(`family/investSnapshot/${user}/${today}`).set({ profit: Math.round(totalP) });
-        loadAnnualReview(user);
-
-    } catch (e) {
-        console.error("更新失敗:", e);
-        // 如果失敗，嘗試最後一個保險：使用 allorigins 代理
-        fallbackUpdate(user, portfolio);
-    }
-}
-
-// 備援方案：當主 API 失敗時觸發
-async function fallbackUpdate(user, portfolio) {
-    try {
-        const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL')}`);
-        const json = await res.json();
-        const allData = JSON.parse(json.contents);
-        
-        // ... (後續處理邏輯同上，略) ...
-        // 直接重新呼叫主邏輯但傳入資料
-        processStockData(user, portfolio, allData);
-    } catch(err) {
-        document.getElementById("todayTotalProfit").textContent = "連線異常，請稍後再試";
-    }
-}
-
-    function loadPortfolio(user) {
-      db.ref(`users/${user}/portfolio`).on('value', snap => {
-          updateTodayProfit(); 
+    function loadBoard() {
+      db.ref("family/board").limitToLast(10).on("value", snap => {
+        const box = document.getElementById("boardMessages");
+        box.innerHTML = Object.values(snap.val() || {}).reverse().map(m => `<div><b>${m.user}</b>: ${m.msg}</div>`).join('');
       });
     }
 
-    function removePortfolio(code) {
+    function addRecord() {
       const user = localStorage.getItem('currentUser');
-      if(confirm(`確定刪除 ${code} 嗎？`)) {
-          db.ref(`users/${user}/portfolio/${code}`).remove();
+      const amount = parseFloat(document.getElementById('amountInput').value);
+      if (!amount) return;
+      db.ref(`users/${user}/records`).push({
+        amount, category: document.getElementById('categorySelect').value,
+        description: document.getElementById('descriptionInput').value,
+        date: new Date().toISOString().split('T')[0]
+      }).then(() => { location.reload(); });
+    }
+
+    function loadRecords(user) {
+      db.ref(`users/${user}/records`).limitToLast(5).once('value', snap => {
+        const list = document.getElementById('recordList');
+        list.innerHTML = Object.values(snap.val() || {}).reverse().map(r => `<li>${r.date} | ${r.amount}元 (${r.category})</li>`).join('');
+      });
+    }
+
+    function addShow() {
+      const user = localStorage.getItem('currentUser');
+      const url = document.getElementById('showUrlInput').value.trim();
+      if (!url) return;
+      db.ref(`users/${user}/shows`).push({ url, time: Date.now() });
+      document.getElementById('showUrlInput').value = "";
+    }
+
+    function loadShows(user) {
+      db.ref(`users/${user}/shows`).on('value', snap => {
+        const list = document.getElementById('showList');
+        const data = snap.val() || {};
+        list.innerHTML = Object.entries(data).map(([key, s]) => 
+          `<li><a href="${s.url}" target="_blank">點我查看節目</a> <button onclick="db.ref('users/${user}/shows/${key}').remove()">🗑️</button></li>`
+        ).join('');
+      });
+    }
+    async function updateTodayProfit() {
+      const user = localStorage.getItem('currentUser');
+      const snap = await db.ref(`users/${user}/portfolio`).get();
+      if (!snap.exists()) return;
+      document.getElementById("todayTotalProfit").textContent = "更新中...";
+      document.getElementById("currentNetWorth").textContent = "計算中...";
+      let totalP = 0, totalN = 0;
+      for (const [code, info] of Object.entries(snap.val())) {
+        try {
+          const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo='+code)}`);
+          const json = await res.json();
+          const stock = JSON.parse(json.contents);
+          const price = parseFloat(stock.data.pop()[6].replace(/,/g, ""));
+          totalP += (price - info.cost) * info.shares;
+          totalN += price * info.shares;
+        } catch(e) {}
       }
+      document.getElementById("todayTotalProfit").textContent = Math.round(totalP).toLocaleString();
+      document.getElementById("currentNetWorth").textContent = Math.round(totalN).toLocaleString();
+      db.ref(`family/investSnapshot/${user}/${new Date().toISOString().split('T')[0]}`).set({ profit: Math.round(totalP) });
+      loadAnnualReview(user);
+    }
+
+    function loadPortfolio(user) {
+      db.ref(`users/${user}/portfolio`).on('value', snap => {
+        document.getElementById('portfolioList').innerHTML = Object.entries(snap.val() || {}).map(([c, i]) => `<li><b>${c}</b> | ${i.shares}股 | 成本:${i.cost}</li>`).join('');
+      });
     }
 
     function addPortfolio() {
       const user = localStorage.getItem('currentUser');
-      const code = document.getElementById('pfSymbol').value.trim();
+      const code = document.getElementById('pfSymbol').value;
       const shares = parseFloat(document.getElementById('pfShares').value);
       const cost = parseFloat(document.getElementById('pfCost').value);
-      
-      if(code && shares && cost) {
-          db.ref(`users/${user}/portfolio/${code}`).set({ shares, cost }).then(() => {
-              document.getElementById('pfSymbol').value = "";
-              document.getElementById('pfShares').value = "";
-              document.getElementById('pfCost').value = "";
-          });
-      } else {
-          alert("請輸入完整資訊");
-      }
+      if(code && shares) db.ref(`users/${user}/portfolio/${code}`).set({ shares, cost });
     }
 
-    function loadAnnualReview(user) {
-      db.ref(`family/investSnapshot/${user}`).once("value", snap => {
-        const allEntries = Object.entries(snap.val() || {})
-          .map(([d,v])=>({date:d, profit:v.profit}))
-          .sort((a,b)=>new Date(a.date)-new Date(b.date));
+function loadAnnualReview(user) {
+  db.ref(`family/investSnapshot/${user}`).once("value", snap => {
+    const allEntries = Object.entries(snap.val() || {})
+      .map(([d,v])=>({date:d, profit:v.profit}))
+      .sort((a,b)=>new Date(a.date)-new Date(b.date));
 
-        if (!allEntries.length) return;
-        const chartEntries = allEntries.slice(-30);
-        const max = chartEntries.reduce((p,c)=>c.profit > p.profit ? c : p);
-        const min = chartEntries.reduce((p,c)=>c.profit < p.profit ? c : p);
+    if (!allEntries.length) return;
 
-        document.getElementById("maxGainDay").innerHTML = `${max.date}<br><span style="color:red;">$${max.profit.toLocaleString()}</span>`;
-        document.getElementById("maxLossDay").innerHTML = `${min.date}<br><span style="color:green;">$${min.profit.toLocaleString()}</span>`;
-        renderChart(chartEntries);
-      });
+    const chartEntries = allEntries.slice(-30);
+
+    const max = chartEntries.reduce((p,c)=>c.profit > p.profit ? c : p);
+    const min = chartEntries.reduce((p,c)=>c.profit < p.profit ? c : p);
+
+    document.getElementById("maxGainDay").innerHTML =
+      `${max.date}<br><span style="color:red;">$${max.profit.toLocaleString()}</span>`;
+
+    document.getElementById("maxLossDay").innerHTML =
+      `${min.date}<br><span style="color:green;">$${min.profit.toLocaleString()}</span>`;
+
+    renderChart(chartEntries);
+  });
+}
+
+
+function renderChart(entries) {
+  const ctx = document.getElementById('profitTrendChart').getContext('2d');
+  if (profitChartInstance) profitChartInstance.destroy();
+
+  profitChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: entries.map(e => e.date.substring(5)),
+      datasets: [{
+        label: '損益',
+        data: entries.map(e => e.profit),
+        borderColor: '#f0a500',
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
     }
+  });
+}
 
-    function renderChart(entries) {
-      const ctx = document.getElementById('profitTrendChart').getContext('2d');
-      if (profitChartInstance) profitChartInstance.destroy();
-      profitChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: entries.map(e => e.date.substring(5)),
-          datasets: [{
-            label: '損益趨勢',
-            data: entries.map(e => e.profit),
-            borderColor: '#f0a500',
-            backgroundColor: 'rgba(240, 165, 0, 0.1)',
-            fill: true,
-            tension: 0.3
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-    }
 
     function setTheme(mode) {
       document.body.className = 'theme-' + mode;
