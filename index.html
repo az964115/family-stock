@@ -185,39 +185,41 @@ function loadPortfolio() {
     totalEl.style.color = totalProfit >= 0 ? "red" : "green";
   });
 }
-    // 自動更新持股邏輯
 async function loadPortfolio(user) {
   const pfRef = db.ref(`users/${user}/portfolio`);
   const listEl = document.getElementById("portfolioList");
   const totalNetWorthEl = document.getElementById("autoTotalNetWorth");
+  const currentNetWorthDisplay = document.getElementById("currentNetWorth");
 
+  // 使用 .on 監聽，確保 Firebase 資料更新時會自動重新計算
   pfRef.on("value", async (snapshot) => {
     const data = snapshot.val();
     if (!data) {
       listEl.innerHTML = "<li>目前無持股資料</li>";
-      totalNetWorthEl.textContent = "0";
+      if(totalNetWorthEl) totalNetWorthEl.textContent = "0";
       return;
     }
 
-    listEl.innerHTML = "<li>連線至證交所抓取現價中...</li>";
+    listEl.innerHTML = "<li>正在連線證交所更新現價...</li>";
     let totalNetWorth = 0;
     let htmlContent = "";
 
-    // 取得所有代號並執行非同步抓取
     const stockCodes = Object.keys(data);
     
+    // 使用 for...of 確保 await 有效
     for (const code of stockCodes) {
       const info = data[code];
-      let currentPrice = info.cost; // 預設值
+      let currentPrice = info.cost; // 如果 API 失敗，暫時以成本計
 
       try {
-        // 參考 index.html 的 API 呼叫方式
+        // 呼叫證交所 API
         const response = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
         const result = await response.json();
 
         if (result.stat === "OK" && result.data && result.data.length > 0) {
           const lastData = result.data[result.data.length - 1];
-          currentPrice = parseFloat(lastData[6].replace(/,/g, '')); // 收盤價在第 7 欄
+          // 關鍵修正：去除數字中的逗號並轉為浮點數
+          currentPrice = parseFloat(lastData[6].replace(/,/g, '')); 
         }
       } catch (err) {
         console.error(`${code} 價格抓取失敗:`, err);
@@ -231,10 +233,10 @@ async function loadPortfolio(user) {
       const profitText = profit >= 0 ? `+${profit.toLocaleString()}` : profit.toLocaleString();
 
       htmlContent += `
-        <li style="border-bottom: 1px solid #ddd; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
+        <li style="border-bottom: 1px dotted #ccc; padding: 10px 0; display: flex; justify-content: space-between;">
           <div>
-            <b style="font-size: 1.1em;">${code}</b> <small>(${info.shares} 股)</small><br>
-            <small>成本: ${info.cost} | 現價: ${currentPrice}</small>
+            <b>${code}</b> <small>(${info.shares} 股)</small><br>
+            <small>成本: ${info.cost} | 現價: <span style="color:blue">${currentPrice}</span></small>
           </div>
           <div style="text-align: right;">
             <span style="color: ${profitColor}; font-weight: bold;">${profitText}</span><br>
@@ -244,14 +246,12 @@ async function loadPortfolio(user) {
       `;
     }
 
+    // 更新介面
     listEl.innerHTML = htmlContent;
-    totalNetWorthEl.textContent = Math.round(totalNetWorth).toLocaleString();
+    const formattedTotal = Math.round(totalNetWorth).toLocaleString();
     
-    // 同步更新 index2.html 上方的「當前資產總現值」
-    const currentNetWorthDisplay = document.getElementById("currentNetWorth");
-    if (currentNetWorthDisplay) {
-      currentNetWorthDisplay.textContent = Math.round(totalNetWorth).toLocaleString();
-    }
+    if (totalNetWorthEl) totalNetWorthEl.textContent = formattedTotal;
+    if (currentNetWorthDisplay) currentNetWorthDisplay.textContent = formattedTotal;
   });
 }
     function initForUser(user) {
