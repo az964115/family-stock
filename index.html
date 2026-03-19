@@ -70,7 +70,15 @@
 
     <section class="container">
       <h2>💰 2026 資產快照</h2>
-      
+      <section class="container">
+  <h3>📋 我的持股列表</h3>
+  <div id="totalProfitSection" style="margin-bottom:10px; font-weight:bold;">
+    📈 自動計算總損益：<span id="autoTotalProfit">0</span> 元
+  </div>
+  <ul id="portfolioList">
+    <li>載入中...</li>
+  </ul>
+</section>
       <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #f0a500; margin-bottom: 15px;">
         <label>📝 手動輸入今日總盈餘：</label>
         <div class="flex-row" style="margin-top: 8px;">
@@ -128,7 +136,61 @@
         alert("密碼錯誤");
       }
     }
+    // 1. 讀取 Firebase 中的持股資料並即時抓取股價
+function loadPortfolio() {
+  if (!pfRef) return; // 確保 pfRef 已在 initForUser 中定義
+  
+  pfRef.on("value", async snap => {
+    const data = snap.val() || {};
+    const list = document.getElementById("portfolioList");
+    list.innerHTML = "";
+    let totalProfit = 0;
 
+    for (const [code, info] of Object.entries(data)) {
+      try {
+        // 呼叫證交所 API (參考 index.html)
+        const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
+        const stock = await res.json();
+        let price = 0;
+        
+        if (stock.stat === "OK" && stock.data.length > 0) {
+          const last = stock.data[stock.data.length - 1];
+          price = parseFloat(last[6].replace(/,/g, "")); // 取得最新收盤價
+        }
+
+        // 計算損益：(現價 - 成本) * 股數
+        const gain = ((price - info.cost) * info.shares).toFixed(2);
+        totalProfit += parseFloat(gain);
+        
+        const color = gain >= 0 ? "red" : "green";
+        const li = document.createElement("li");
+        li.style.display = "flex";
+        li.style.justifyContent = "space-between";
+        li.innerHTML = `
+          <span><b>${code}</b> | ${info.shares}股 | 成本 ${info.cost}</span>
+          <span>現價 ${price.toFixed(2)} | <b style="color:${color};">損益 ${gain}</b></span>
+        `;
+        list.appendChild(li);
+      } catch (e) {
+        console.error(`無法讀取股票 ${code}:`, e);
+      }
+    }
+    
+    if (list.innerHTML === "") list.innerHTML = "<li>暫無資料</li>";
+    
+    // 更新總損益顯示
+    const totalEl = document.getElementById("autoTotalProfit");
+    totalEl.textContent = totalProfit.toLocaleString();
+    totalEl.style.color = totalProfit >= 0 ? "red" : "green";
+  });
+}
+    function initForUser(user) {
+  // ... 原有的 Firebase 參考宣告 ...
+  pfRef = db.ref(`users/${user}/portfolio`); // 確保指向正確的路徑
+  
+  // 啟動自動更新邏輯
+  loadPortfolio(); 
+}
     function logout() { 
       localStorage.removeItem('currentUser'); 
       location.reload(); 
