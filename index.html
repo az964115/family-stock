@@ -17,7 +17,22 @@
     input, button { padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
     button { cursor: pointer; background-color: #f0a500; color: #fff; border: none; font-weight: bold; }
     .chart-container { height: 300px; margin-top: 20px; }
-    .stock-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px dotted #ccc; background: #fff; margin-bottom: 5px; border-radius: 5px; }
+    
+    /* 持股列表樣式優化 */
+    #portfolioList { list-style: none; padding: 0; }
+    .stock-item { 
+      background: #fff; 
+      padding: 15px; 
+      border-radius: 8px; 
+      margin-bottom: 8px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border-left: 5px solid #f0a500;
+      line-height: 1.6;
+    }
+    .stock-info-row { display: flex; justify-content: space-between; flex-wrap: wrap; }
+    .stock-code { font-size: 1.1em; color: #d88e00; }
+    .profit-positive { color: #e74c3c; font-weight: bold; } /* 紅色代表賺 */
+    .profit-negative { color: #2ecc71; font-weight: bold; } /* 綠色代表賠 */
   </style>
 </head>
 <body>
@@ -57,12 +72,11 @@
       <input type="date" id="dateInput">
       <input type="number" id="profitInput">
       <button onclick="saveDailyProfit()">手動更新紀錄</button>
-      <p style="color: gray; font-size: 0.8em;">* 網頁載入時會自動抓取股價並嘗試更新今日紀錄</p>
     </div>
 
     <div class="container">
-      <h3>📋 持股列表</h3>
-      <ul id="portfolioList"><li>載入中...</li></ul>
+      <h3>📋 詳細持股清單</h3>
+      <ul id="portfolioList"><li>正在連線證交所更新現價...</li></ul>
     </div>
   </div>
 
@@ -99,7 +113,10 @@
 
       pfRef.on("value", async (snapshot) => {
         const data = snapshot.val();
-        if (!data) return;
+        if (!data) {
+          listEl.innerHTML = "<li>目前無持股資料</li>";
+          return;
+        }
 
         let totalProfit = 0;
         let htmlContent = "";
@@ -118,7 +135,23 @@
 
           const profit = (currentPrice - info.cost) * info.shares;
           totalProfit += profit;
-          htmlContent += `<li class="stock-item"><span><b>${code}</b></span><span>${Math.round(profit).toLocaleString()}</span></li>`;
+          
+          const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
+          const profitSign = profit >= 0 ? "+" : "";
+
+          // 這裡修改了顯示內容，增加股數、成本與格式化損益
+          htmlContent += `
+            <li class="stock-item">
+              <div class="stock-info-row">
+                <span class="stock-code"><b>標的: ${code}</b></span>
+                <span>持有股數: <b>${info.shares.toLocaleString()}</b></span>
+              </div>
+              <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
+                <span>成本: ${info.cost}</span>
+                <span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>
+                <span>損益: <span class="${profitClass}">${profitSign}${Math.round(profit).toLocaleString()}</span></span>
+              </div>
+            </li>`;
         }
 
         listEl.innerHTML = htmlContent;
@@ -126,7 +159,6 @@
         autoTotalNetWorthEl.textContent = finalProfit.toLocaleString();
         profitInput.value = finalProfit;
 
-        // 【新增：自動儲存邏輯】
         autoSaveToHistory(user, finalProfit);
       });
     }
@@ -134,13 +166,9 @@
     function autoSaveToHistory(user, profit) {
       const today = new Date().toISOString().split('T')[0];
       const targetRef = db.ref(`family/investSnapshot/${user}/${today}`);
-      
-      // 先讀取今天的數據，如果數字不一樣才更新，避免無限迴圈
       targetRef.once('value', (snap) => {
         if (!snap.exists() || snap.val().profit !== profit) {
-          targetRef.set({ profit: profit }).then(() => {
-            console.log("今日數據已自動更新至線圖");
-          });
+          targetRef.set({ profit: profit });
         }
       });
     }
@@ -171,7 +199,14 @@
         type: 'line',
         data: {
           labels: entries.map(e => e.date.substring(5)),
-          datasets: [{ label: '個人盈餘趨勢', data: entries.map(e => e.profit), borderColor: '#f0a500', tension: 0.3 }]
+          datasets: [{ 
+            label: '個人盈餘趨勢', 
+            data: entries.map(e => e.profit), 
+            borderColor: '#f0a500', 
+            backgroundColor: 'rgba(240, 165, 0, 0.1)',
+            fill: true,
+            tension: 0.3 
+          }]
         },
         options: { responsive: true, maintainAspectRatio: false }
       });
