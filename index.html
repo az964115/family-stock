@@ -71,11 +71,12 @@
     <section class="container">
       <h2>💰 2026 資產快照</h2>
       <section class="container">
+  <section class="container">
   <h3>📋 我的持股列表</h3>
   <div id="totalProfitSection" style="margin-bottom:10px; font-weight:bold;">
-    📈 自動計算總損益：<span id="autoTotalProfit">0</span> 元
+    📈 自動計算總現值：<span id="autoTotalNetWorth">0</span> 元
   </div>
-  <ul id="portfolioList">
+  <ul id="portfolioList" style="list-style: none; padding: 0;">
     <li>載入中...</li>
   </ul>
 </section>
@@ -184,10 +185,86 @@ function loadPortfolio() {
     totalEl.style.color = totalProfit >= 0 ? "red" : "green";
   });
 }
+    // 自動更新持股邏輯
+async function loadPortfolio(user) {
+  const pfRef = db.ref(`users/${user}/portfolio`);
+  const listEl = document.getElementById("portfolioList");
+  const totalNetWorthEl = document.getElementById("autoTotalNetWorth");
+
+  pfRef.on("value", async (snapshot) => {
+    const data = snapshot.val();
+    if (!data) {
+      listEl.innerHTML = "<li>目前無持股資料</li>";
+      totalNetWorthEl.textContent = "0";
+      return;
+    }
+
+    listEl.innerHTML = "<li>連線至證交所抓取現價中...</li>";
+    let totalNetWorth = 0;
+    let htmlContent = "";
+
+    // 取得所有代號並執行非同步抓取
+    const stockCodes = Object.keys(data);
+    
+    for (const code of stockCodes) {
+      const info = data[code];
+      let currentPrice = info.cost; // 預設值
+
+      try {
+        // 參考 index.html 的 API 呼叫方式
+        const response = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
+        const result = await response.json();
+
+        if (result.stat === "OK" && result.data && result.data.length > 0) {
+          const lastData = result.data[result.data.length - 1];
+          currentPrice = parseFloat(lastData[6].replace(/,/g, '')); // 收盤價在第 7 欄
+        }
+      } catch (err) {
+        console.error(`${code} 價格抓取失敗:`, err);
+      }
+
+      const stockValue = currentPrice * info.shares;
+      const profit = (currentPrice - info.cost) * info.shares;
+      totalNetWorth += stockValue;
+
+      const profitColor = profit >= 0 ? "#e74c3c" : "#2ecc71"; // 紅漲綠跌
+      const profitText = profit >= 0 ? `+${profit.toLocaleString()}` : profit.toLocaleString();
+
+      htmlContent += `
+        <li style="border-bottom: 1px solid #ddd; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <b style="font-size: 1.1em;">${code}</b> <small>(${info.shares} 股)</small><br>
+            <small>成本: ${info.cost} | 現價: ${currentPrice}</small>
+          </div>
+          <div style="text-align: right;">
+            <span style="color: ${profitColor}; font-weight: bold;">${profitText}</span><br>
+            <small>市值: ${Math.round(stockValue).toLocaleString()}</small>
+          </div>
+        </li>
+      `;
+    }
+
+    listEl.innerHTML = htmlContent;
+    totalNetWorthEl.textContent = Math.round(totalNetWorth).toLocaleString();
+    
+    // 同步更新 index2.html 上方的「當前資產總現值」
+    const currentNetWorthDisplay = document.getElementById("currentNetWorth");
+    if (currentNetWorthDisplay) {
+      currentNetWorthDisplay.textContent = Math.round(totalNetWorth).toLocaleString();
+    }
+  });
+}
     function initForUser(user) {
   // ... 原有的 Firebase 參考宣告 ...
   pfRef = db.ref(`users/${user}/portfolio`); // 確保指向正確的路徑
-  
+  // 假設您的登入初始化邏輯如下
+auth.onAuthStateChanged(user => {
+  if (user) {
+    const userName = user.email.split('@')[0].replace('.', '_');
+    // ... 其他初始化 ...
+    loadPortfolio(userName); // 啟動自動更新
+  }
+});
   // 啟動自動更新邏輯
   loadPortfolio(); 
 }
