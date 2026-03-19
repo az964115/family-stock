@@ -185,7 +185,6 @@ function loadPortfolio() {
     totalEl.style.color = totalProfit >= 0 ? "red" : "green";
   });
 }
-// 在 index2.html 的 loadPortfolio 中加入自動填入邏輯
 async function loadPortfolio(user) {
   const pfRef = db.ref(`users/${user}/portfolio`);
   const listEl = document.getElementById("portfolioList");
@@ -196,7 +195,7 @@ async function loadPortfolio(user) {
     const data = snapshot.val();
     if (!data) return;
 
-    let totalProfit = 0; // 這是計算「總損益」
+    let totalProfit = 0; 
     const stockCodes = Object.keys(data);
     
     for (const code of stockCodes) {
@@ -210,10 +209,21 @@ async function loadPortfolio(user) {
           totalProfit += (lastPrice - info.cost) * info.shares;
         }
       } catch (e) { console.error(e); }
-    // 自動存檔邏輯 (僅當今天還沒有資料時才存)
-const today = new Date().toISOString().split('T')[0];
-const historyRef = db.ref(`users/${user}/history`);
+    }
 
+    const finalProfit = Math.round(totalProfit);
+    
+    // 顯示在畫面上
+    if (autoTotalNetWorthEl) autoTotalNetWorthEl.textContent = finalProfit.toLocaleString();
+    
+    // 【關鍵修正】：自動帶入輸入框，方便點擊「紀錄」
+    if (profitInput) {
+      profitInput.value = finalProfit;
+      // 加上一個淺色背景，提醒這是自動帶入的
+      profitInput.style.backgroundColor = "#fff9c4"; 
+    }
+  });
+}
 historyRef.orderByChild("date").equalTo(today).once("value", (histSnap) => {
   if (!histSnap.exists()) {
     // 如果今天還沒紀錄過，就自動推播一筆
@@ -284,7 +294,7 @@ historyRef.orderByChild("date").equalTo(today).once("value", (histSnap) => {
         </li>
       `;
     }
-
+    
     // 更新介面
     listEl.innerHTML = htmlContent;
     const formattedTotal = Math.round(totalNetWorth).toLocaleString();
@@ -292,6 +302,17 @@ historyRef.orderByChild("date").equalTo(today).once("value", (histSnap) => {
     if (totalNetWorthEl) totalNetWorthEl.textContent = formattedTotal;
     if (currentNetWorthDisplay) currentNetWorthDisplay.textContent = formattedTotal;
   });
+}
+    function initForUser(user) {
+  currentUser = user;
+  // 設定預設日期為今天
+  document.getElementById("dateInput").value = new Date().toISOString().split('T')[0];
+  
+  // 載入歷史線圖
+  loadHistory(user);
+  
+  // 【關鍵】：啟動自動抓取股價並填入今日盈餘
+  loadPortfolio(user);
 }
     function initForUser(user) {
   // ... 原有的 Firebase 參考宣告 ...
