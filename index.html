@@ -17,22 +17,15 @@
     input, button { padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
     button { cursor: pointer; background-color: #f0a500; color: #fff; border: none; font-weight: bold; }
     .chart-container { height: 300px; margin-top: 20px; }
-    
-    /* 持股列表樣式優化 */
     #portfolioList { list-style: none; padding: 0; }
     .stock-item { 
-      background: #fff; 
-      padding: 15px; 
-      border-radius: 8px; 
-      margin-bottom: 8px; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      border-left: 5px solid #f0a500;
-      line-height: 1.6;
+      background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 8px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid #f0a500; line-height: 1.6;
     }
     .stock-info-row { display: flex; justify-content: space-between; flex-wrap: wrap; }
     .stock-code { font-size: 1.1em; color: #d88e00; }
-    .profit-positive { color: #e74c3c; font-weight: bold; } /* 紅色代表賺 */
-    .profit-negative { color: #2ecc71; font-weight: bold; } /* 綠色代表賠 */
+    .profit-positive { color: #e74c3c; font-weight: bold; } /* 紅色 */
+    .profit-negative { color: #2ecc71; font-weight: bold; } /* 綠色 */
   </style>
 </head>
 <body>
@@ -54,11 +47,11 @@
       <h3>📈 資產趨勢回顧</h3>
       <div class="stat-grid">
         <div class="stat-box">
-          <small>最後紀錄盈餘</small>
-          <div id="currentProfitDisplay" style="font-size: 1.5em; font-weight: bold; color: #f0a500;">0</div>
+          <small>今日與昨日盈餘差額</small>
+          <div id="profitDiffDisplay" style="font-size: 1.5em; font-weight: bold;">--</div>
         </div>
         <div class="stat-box">
-          <small>今日自動計算損益</small>
+          <small>今日自動計算總盈餘</small>
           <div id="autoTotalNetWorth" style="font-size: 1.5em; font-weight: bold; color: #2980b9;">計算中...</div>
         </div>
         <div class="stat-box"><small>🚀 今年賺最多</small><div id="maxGainDay">--</div></div>
@@ -93,6 +86,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let profitChartInstance = null;
+    let lastRecordedProfit = 0; // 用來存儲資料庫中最後一筆紀錄的數值
 
     async function login() {
       const user = document.getElementById('loginUser').value;
@@ -113,10 +107,7 @@
 
       pfRef.on("value", async (snapshot) => {
         const data = snapshot.val();
-        if (!data) {
-          listEl.innerHTML = "<li>目前無持股資料</li>";
-          return;
-        }
+        if (!data) return;
 
         let totalProfit = 0;
         let htmlContent = "";
@@ -139,7 +130,6 @@
           const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
           const profitSign = profit >= 0 ? "+" : "";
 
-          // 這裡修改了顯示內容，增加股數、成本與格式化損益
           htmlContent += `
             <li class="stock-item">
               <div class="stock-info-row">
@@ -159,8 +149,25 @@
         autoTotalNetWorthEl.textContent = finalProfit.toLocaleString();
         profitInput.value = finalProfit;
 
+        // 計算差額並顯示
+        updateProfitDifference(finalProfit);
+        
+        // 自動儲存
         autoSaveToHistory(user, finalProfit);
       });
+    }
+
+    function updateProfitDifference(currentCalculatedProfit) {
+      const diffEl = document.getElementById("profitDiffDisplay");
+      const diff = currentCalculatedProfit - lastRecordedProfit;
+      const sign = diff >= 0 ? "+" : "";
+      
+      diffEl.textContent = `${sign}${diff.toLocaleString()}`;
+      if (diff >= 0) {
+        diffEl.style.color = "#e74c3c"; // 正值紅色
+      } else {
+        diffEl.style.color = "#2ecc71"; // 負值綠色
+      }
     }
 
     function autoSaveToHistory(user, profit) {
@@ -181,14 +188,30 @@
           .sort((a, b) => new Date(a.date) - new Date(b.date));
 
         if (!allEntries.length) return;
-        document.getElementById("currentProfitDisplay").textContent = allEntries[allEntries.length-1].profit.toLocaleString();
+
+        // 核心邏輯：取得「倒數第二筆」或「最後一筆」作為基準
+        // 為了顯示與「昨日（上一次）」的差別，我們紀錄最後一個數據
+        const todayStr = new Date().toISOString().split('T')[0];
+        const pastEntries = allEntries.filter(e => e.date !== todayStr);
         
+        if (pastEntries.length > 0) {
+          lastRecordedProfit = pastEntries[pastEntries.length - 1].profit;
+        } else {
+          lastRecordedProfit = allEntries[0].profit;
+        }
+
         const max = allEntries.reduce((p, c) => c.profit > p.profit ? c : p);
         const min = allEntries.reduce((p, c) => c.profit < p.profit ? c : p);
         document.getElementById("maxGainDay").innerHTML = `${max.date}<br><span style="color:red;">$${max.profit.toLocaleString()}</span>`;
         document.getElementById("maxLossDay").innerHTML = `${min.date}<br><span style="color:green;">$${min.profit.toLocaleString()}</span>`;
 
         renderChart(allEntries.slice(-30));
+        
+        // 如果此時已經算出今日現值，則觸發一次差額更新
+        const currentCalc = parseFloat(document.getElementById("profitInput").value);
+        if (!isNaN(currentCalc)) {
+          updateProfitDifference(currentCalc);
+        }
       });
     }
 
@@ -226,8 +249,8 @@
         document.getElementById('mainContent').style.display = 'block';
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
         document.getElementById("dateInput").value = new Date().toISOString().split('T')[0];
-        loadPortfolioAndAutoFill(user);
-        loadAnnualReview(user);
+        loadAnnualReview(user); // 先載入歷史，獲取基準值
+        loadPortfolioAndAutoFill(user); // 再抓取現價計算
       }
     };
   </script>
