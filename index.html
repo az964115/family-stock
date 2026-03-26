@@ -26,6 +26,7 @@
     .stock-code { font-size: 1.1em; color: #d88e00; }
     .profit-positive { color: #e74c3c; font-weight: bold; } /* 紅色 */
     .profit-negative { color: #2ecc71; font-weight: bold; } /* 綠色 */
+    .hidden-blur { filter: blur(4px); user-select: none; }
   </style>
 </head>
 <body>
@@ -60,7 +61,7 @@
       <div class="chart-container"><canvas id="profitTrendChart"></canvas></div>
     </div>
 
-    <div class="container">
+    <div class="container" id="manualRecordSection">
       <h3>📝 手動紀錄/校對</h3>
       <input type="date" id="dateInput">
       <input type="number" id="profitInput">
@@ -86,7 +87,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let profitChartInstance = null;
-    let lastRecordedProfit = 0; // 用來存儲資料庫中最後一筆紀錄的數值
+    let lastRecordedProfit = 0; 
 
     async function login() {
       const user = document.getElementById('loginUser').value;
@@ -104,58 +105,66 @@
       const listEl = document.getElementById("portfolioList");
       const profitInput = document.getElementById("profitInput");
       const autoTotalNetWorthEl = document.getElementById("autoTotalNetWorth");
+      const isJason = user.toLowerCase() === 'jason';
 
       pfRef.on("value", async (snapshot) => {
         const data = snapshot.val();
-        if (!data) return;
+        if (!data) {
+          listEl.innerHTML = "<li>目前無持股資料</li>";
+          return;
+        }
 
         let totalProfit = 0;
         let htmlContent = "";
         const stockCodes = Object.keys(data);
 
+        for (const code of stockCodes) {
+          const info = data[code];
+          let currentPrice = info.cost;
 
-for (const code of stockCodes) {
-  const info = data[code];
-  let currentPrice = info.cost;
+          // 核心抓取邏輯：無論是誰都必須抓到正確現價來計算
+          try {
+            const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
+            const stock = await res.json();
+            if (stock.stat === "OK" && stock.data && stock.data.length > 0) {
+              currentPrice = parseFloat(stock.data[stock.data.length - 1][6].replace(/,/g, ''));
+            }
+          } catch (e) { console.error(`無法抓取 ${code} 的價格`, e); }
 
+          const profit = (currentPrice - info.cost) * info.shares;
+          totalProfit += profit;
+          
+          const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
+          const profitSign = profit >= 0 ? "+" : "";
 
-  const profit = (currentPrice - info.cost) * info.shares;
-  totalProfit += profit;
+          // 隱藏邏輯：只有 Jason 能看到 code 和股數
+          const displayCode = isJason ? `標的: ${code}` : `投資項目 (已隱藏)`;
+          const displayShares = isJason ? info.shares.toLocaleString() : "****";
+          const displayDetails = isJason 
+            ? `<span>成本: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>`
+            : `<span>成本: --</span><span>現價: --</span>`;
 
-  const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
-  const profitSign = profit >= 0 ? "+" : "";
-
-  const currentUser = localStorage.getItem('currentUser');
-  const isJason = currentUser && currentUser.toLowerCase() === 'jason';
-
-  const displayCode = isJason ? `標的: ${code}` : `投資項目 (隱藏)`;
-  const displayShares = isJason ? info.shares.toLocaleString() : "******";
-  const displayCostPrice = isJason 
-    ? `<span>成本: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>` 
-    : `<span>成本: --</span><span>現價: --</span>`;
-
-  htmlContent += `
-    <li class="stock-item">
-      <div class="stock-info-row">
-        <span class="stock-code"><b>${displayCode}</b></span>
-        <span>持有股數: <b>${displayShares}</b></span>
-      </div>
-      <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
-        ${displayCostPrice}
-        <span>損益: <span class="${profitClass}">${profitSign}${Math.round(profit).toLocaleString()}</span></span>
-      </div>
-    </li>`;
-}
+          htmlContent += `
+            <li class="stock-item">
+              <div class="stock-info-row">
+                <span class="stock-code"><b>${displayCode}</b></span>
+                <span>持有股數: <b>${displayShares}</b></span>
+              </div>
+              <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
+                ${displayDetails}
+                <span>損益: <span class="${profitClass}">${profitSign}${Math.round(profit).toLocaleString()}</span></span>
+              </div>
+            </li>`;
+        }
 
         listEl.innerHTML = htmlContent;
         const finalProfit = Math.round(totalProfit);
         autoTotalNetWorthEl.textContent = finalProfit.toLocaleString();
         profitInput.value = finalProfit;
 
-        // 計算差額並顯示
+        // 計算差額
         updateProfitDifference(finalProfit);
-        
-        // 自動儲存
+        // 自動儲存歷史
         autoSaveToHistory(user, finalProfit);
       });
     }
@@ -164,13 +173,9 @@ for (const code of stockCodes) {
       const diffEl = document.getElementById("profitDiffDisplay");
       const diff = currentCalculatedProfit - lastRecordedProfit;
       const sign = diff >= 0 ? "+" : "";
-      
       diffEl.textContent = `${sign}${diff.toLocaleString()}`;
-      if (diff >= 0) {
-        diffEl.style.color = "#e74c3c"; // 正值紅色
-      } else {
-        diffEl.style.color = "#2ecc71"; // 負值綠色
-      }
+      diffEl.className = diff >= 0 ? "profit-positive" : "profit-negative";
+      diffEl.style.fontSize = "1.5em";
     }
 
     function autoSaveToHistory(user, profit) {
@@ -192,8 +197,6 @@ for (const code of stockCodes) {
 
         if (!allEntries.length) return;
 
-        // 核心邏輯：取得「倒數第二筆」或「最後一筆」作為基準
-        // 為了顯示與「昨日（上一次）」的差別，我們紀錄最後一個數據
         const todayStr = new Date().toISOString().split('T')[0];
         const pastEntries = allEntries.filter(e => e.date !== todayStr);
         
@@ -205,16 +208,10 @@ for (const code of stockCodes) {
 
         const max = allEntries.reduce((p, c) => c.profit > p.profit ? c : p);
         const min = allEntries.reduce((p, c) => c.profit < p.profit ? c : p);
-        document.getElementById("maxGainDay").innerHTML = `${max.date}<br><span style="color:red;">$${max.profit.toLocaleString()}</span>`;
-        document.getElementById("maxLossDay").innerHTML = `${min.date}<br><span style="color:green;">$${min.profit.toLocaleString()}</span>`;
+        document.getElementById("maxGainDay").innerHTML = `${max.date}<br><span class="profit-positive">$${max.profit.toLocaleString()}</span>`;
+        document.getElementById("maxLossDay").innerHTML = `${min.date}<br><span class="profit-negative">$${min.profit.toLocaleString()}</span>`;
 
         renderChart(allEntries.slice(-30));
-        
-        // 如果此時已經算出今日現值，則觸發一次差額更新
-        const currentCalc = parseFloat(document.getElementById("profitInput").value);
-        if (!isNaN(currentCalc)) {
-          updateProfitDifference(currentCalc);
-        }
       });
     }
 
@@ -226,7 +223,7 @@ for (const code of stockCodes) {
         data: {
           labels: entries.map(e => e.date.substring(5)),
           datasets: [{ 
-            label: '個人盈餘趨勢', 
+            label: '盈餘趨勢', 
             data: entries.map(e => e.profit), 
             borderColor: '#f0a500', 
             backgroundColor: 'rgba(240, 165, 0, 0.1)',
@@ -242,6 +239,7 @@ for (const code of stockCodes) {
       const user = localStorage.getItem('currentUser');
       const date = document.getElementById("dateInput").value;
       const profit = parseFloat(document.getElementById("profitInput").value);
+      if(!date || isNaN(profit)) return alert("請輸入正確資料");
       db.ref(`family/investSnapshot/${user}/${date}`).set({ profit: Math.round(profit) }).then(() => alert("手動更新成功"));
     }
 
@@ -252,8 +250,16 @@ for (const code of stockCodes) {
         document.getElementById('mainContent').style.display = 'block';
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
         document.getElementById("dateInput").value = new Date().toISOString().split('T')[0];
-        loadAnnualReview(user); // 先載入歷史，獲取基準值
-        loadPortfolioAndAutoFill(user); // 再抓取現價計算
+        
+        // 針對非 Jason 使用者的介面限制
+        if (user.toLowerCase() !== 'jason') {
+          document.getElementById("manualRecordSection").style.opacity = "0.5";
+          document.getElementById("profitInput").type = "password"; // 隱藏數值
+          document.getElementById("profitInput").readOnly = true;
+        }
+
+        loadAnnualReview(user); 
+        loadPortfolioAndAutoFill(user); 
       }
     };
   </script>
