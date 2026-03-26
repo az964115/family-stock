@@ -113,36 +113,39 @@
         let htmlContent = "";
         const stockCodes = Object.keys(data);
 
-        for (const code of stockCodes) {
-          const info = data[code];
-          let currentPrice = info.cost;
-          try {
-            const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-            const stock = await res.json();
-            if (stock.stat === "OK" && stock.data && stock.data.length > 0) {
-              currentPrice = parseFloat(stock.data[stock.data.length - 1][6].replace(/,/g, ''));
-            }
-          } catch (e) { console.error(e); }
 
-          const profit = (currentPrice - info.cost) * info.shares;
-          totalProfit += profit;
-          
-          const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
-          const profitSign = profit >= 0 ? "+" : "";
+for (const code of stockCodes) {
+  const info = data[code];
+  let currentPrice = info.cost;
 
-          htmlContent += `
-            <li class="stock-item">
-              <div class="stock-info-row">
-                <span class="stock-code"><b>標的: ${code}</b></span>
-                <span>持有股數: <b>${info.shares.toLocaleString()}</b></span>
-              </div>
-              <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
-                <span>成本: ${info.cost}</span>
-                <span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>
-                <span>損益: <span class="${profitClass}">${profitSign}${Math.round(profit).toLocaleString()}</span></span>
-              </div>
-            </li>`;
-        }
+
+  const profit = (currentPrice - info.cost) * info.shares;
+  totalProfit += profit;
+
+  const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
+  const profitSign = profit >= 0 ? "+" : "";
+
+  const currentUser = localStorage.getItem('currentUser');
+  const isJason = currentUser && currentUser.toLowerCase() === 'jason';
+
+  const displayCode = isJason ? `標的: ${code}` : `投資項目 (隱藏)`;
+  const displayShares = isJason ? info.shares.toLocaleString() : "******";
+  const displayCostPrice = isJason 
+    ? `<span>成本: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>` 
+    : `<span>成本: --</span><span>現價: --</span>`;
+
+  htmlContent += `
+    <li class="stock-item">
+      <div class="stock-info-row">
+        <span class="stock-code"><b>${displayCode}</b></span>
+        <span>持有股數: <b>${displayShares}</b></span>
+      </div>
+      <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
+        ${displayCostPrice}
+        <span>損益: <span class="${profitClass}">${profitSign}${Math.round(profit).toLocaleString()}</span></span>
+      </div>
+    </li>`;
+}
 
         listEl.innerHTML = htmlContent;
         const finalProfit = Math.round(totalProfit);
