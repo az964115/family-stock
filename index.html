@@ -26,7 +26,14 @@
     .stock-code { font-size: 1.1em; color: #d88e00; }
     .profit-positive { color: #e74c3c; font-weight: bold; } /* 紅色 */
     .profit-negative { color: #2ecc71; font-weight: bold; } /* 綠色 */
-    .hidden-blur { filter: blur(4px); user-select: none; }
+    
+    /* Switch 樣式 */
+    .switch { position: relative; display: inline-block; width: 40px; height: 20px; vertical-align: middle; margin: 0 10px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #f0a500; }
+    input:checked + .slider:before { transform: translateX(20px); }
   </style>
 </head>
 <body>
@@ -42,6 +49,18 @@
     <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
       <h2 id="userNameDisplay">Hi, User</h2>
       <button onclick="logout()" style="background-color: #777;">登出</button>
+    </div>
+
+    <div id="adminPanel" class="container" style="display:none; border: 2px solid #f0a500; background-color: #fff9f0;">
+      <h3>⚙️ 管理員控制台 (Jason Only)</h3>
+      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <span>開放全體成員查看詳細持股：</span>
+        <label class="switch">
+          <input type="checkbox" id="toggleShowAll" onchange="toggleGlobalPermission(this.checked)">
+          <span class="slider"></span>
+        </label>
+        <b id="permissionStatus" style="color: #f0a500;">讀取中...</b>
+      </div>
     </div>
 
     <div class="container">
@@ -88,10 +107,12 @@
     const db = firebase.database();
     let profitChartInstance = null;
     let lastRecordedProfit = 0; 
+    let globalCanSeeDetails = false; // 全域變數追蹤權限
 
     async function login() {
-      const user = document.getElementById('loginUser').value;
+      const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPassword').value.trim();
+      if(!user) return alert("請輸入帳號");
       const snap = await db.ref(`users/${user}/password`).get();
       const stored = snap.exists() ? snap.val() : "9527";
       if (pass === stored) { localStorage.setItem('currentUser', user); location.reload(); }
@@ -100,73 +121,95 @@
 
     function logout() { localStorage.removeItem('currentUser'); location.reload(); }
 
+    function toggleGlobalPermission(isOpen) {
+      db.ref('settings/global/showPortfolioToAll').set(isOpen);
+    }
+
     function loadPortfolioAndAutoFill(user) {
       const pfRef = db.ref(`users/${user}/portfolio`);
+      const isJason = user.toLowerCase() === 'jason';
+      
+      // 1. 監聽全域權限設定
+      db.ref('settings/global/showPortfolioToAll').on('value', (permSnap) => {
+        globalCanSeeDetails = permSnap.val() || false;
+        
+        // 更新 UI 狀態
+        const statusEl = document.getElementById("permissionStatus");
+        if(statusEl) statusEl.textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏詳細標的";
+        if(isJason && document.getElementById("toggleShowAll")) {
+            document.getElementById("toggleShowAll").checked = globalCanSeeDetails;
+        }
+
+        // 2. 權限改變時重新拉取並渲染持股
+        pfRef.once("value", async (snapshot) => {
+          await renderPortfolio(snapshot.val(), user, globalCanSeeDetails);
+        });
+      });
+
+      // 3. 同時持續監聽持股資料變動（如股數、成本變更）
+      pfRef.on("value", async (snapshot) => {
+        await renderPortfolio(snapshot.val(), user, globalCanSeeDetails);
+      });
+    }
+
+    async function renderPortfolio(data, user, canSeeDetails) {
       const listEl = document.getElementById("portfolioList");
       const profitInput = document.getElementById("profitInput");
       const autoTotalNetWorthEl = document.getElementById("autoTotalNetWorth");
       const isJason = user.toLowerCase() === 'jason';
+      const hasAccess = isJason || canSeeDetails; // 關鍵權限邏輯
 
-      pfRef.on("value", async (snapshot) => {
-        const data = snapshot.val();
-        if (!data) {
-          listEl.innerHTML = "<li>目前無持股資料</li>";
-          return;
-        }
+      if (!data) {
+        listEl.innerHTML = "<li>目前無持股資料</li>";
+        return;
+      }
 
-        let totalProfit = 0;
-        let htmlContent = "";
-        const stockCodes = Object.keys(data);
+      let totalProfit = 0;
+      let htmlContent = "";
+      const stockCodes = Object.keys(data);
 
-        for (const code of stockCodes) {
-          const info = data[code];
-          let currentPrice = info.cost;
+      for (const code of stockCodes) {
+        const info = data[code];
+        let currentPrice = info.cost;
 
-          // 核心抓取邏輯：無論是誰都必須抓到正確現價來計算
-          try {
-            const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-            const stock = await res.json();
-            if (stock.stat === "OK" && stock.data && stock.data.length > 0) {
-              currentPrice = parseFloat(stock.data[stock.data.length - 1][6].replace(/,/g, ''));
-            }
-          } catch (e) { console.error(`無法抓取 ${code} 的價格`, e); }
+        try {
+          const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
+          const stock = await res.json();
+          if (stock.stat === "OK" && stock.data && stock.data.length > 0) {
+            currentPrice = parseFloat(stock.data[stock.data.length - 1][6].replace(/,/g, ''));
+          }
+        } catch (e) { console.error(`無法抓取 ${code} 價格`, e); }
 
-          const profit = (currentPrice - info.cost) * info.shares;
-          totalProfit += profit;
-          
-          const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
-          const profitSign = profit >= 0 ? "+" : "";
+        const profit = (currentPrice - info.cost) * info.shares;
+        totalProfit += profit;
+        
+        const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
+        const displayCode = hasAccess ? `標的: ${code}` : `投資項目 (已隱藏)`;
+        const displayShares = hasAccess ? info.shares.toLocaleString() : "****";
+        const displayDetails = hasAccess 
+          ? `<span>成本: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>`
+          : `<span>成本: --</span><span>現價: --</span>`;
 
-          // 隱藏邏輯：只有 Jason 能看到 code 和股數
-          const displayCode = isJason ? `標的: ${code}` : `投資項目 (已隱藏)`;
-          const displayShares = isJason ? info.shares.toLocaleString() : "****";
-          const displayDetails = isJason 
-            ? `<span>成本: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>`
-            : `<span>成本: --</span><span>現價: --</span>`;
+        htmlContent += `
+          <li class="stock-item">
+            <div class="stock-info-row">
+              <span class="stock-code"><b>${displayCode}</b></span>
+              <span>持有股數: <b>${displayShares}</b></span>
+            </div>
+            <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
+              ${displayDetails}
+              <span>損益: <span class="${profitClass}">${profit >= 0 ? '+' : ''}${Math.round(profit).toLocaleString()}</span></span>
+            </div>
+          </li>`;
+      }
 
-          htmlContent += `
-            <li class="stock-item">
-              <div class="stock-info-row">
-                <span class="stock-code"><b>${displayCode}</b></span>
-                <span>持有股數: <b>${displayShares}</b></span>
-              </div>
-              <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
-                ${displayDetails}
-                <span>損益: <span class="${profitClass}">${profitSign}${Math.round(profit).toLocaleString()}</span></span>
-              </div>
-            </li>`;
-        }
+      listEl.innerHTML = htmlContent;
+      const finalProfit = Math.round(totalProfit);
+      autoTotalNetWorthEl.textContent = finalProfit.toLocaleString();
+      profitInput.value = finalProfit;
 
-        listEl.innerHTML = htmlContent;
-        const finalProfit = Math.round(totalProfit);
-        autoTotalNetWorthEl.textContent = finalProfit.toLocaleString();
-        profitInput.value = finalProfit;
-
-        // 計算差額
-        updateProfitDifference(finalProfit);
-        // 自動儲存歷史
-        autoSaveToHistory(user, finalProfit);
-      });
+      updateProfitDifference(finalProfit);
+      autoSaveToHistory(user, finalProfit);
     }
 
     function updateProfitDifference(currentCalculatedProfit) {
@@ -175,7 +218,6 @@
       const sign = diff >= 0 ? "+" : "";
       diffEl.textContent = `${sign}${diff.toLocaleString()}`;
       diffEl.className = diff >= 0 ? "profit-positive" : "profit-negative";
-      diffEl.style.fontSize = "1.5em";
     }
 
     function autoSaveToHistory(user, profit) {
@@ -199,12 +241,7 @@
 
         const todayStr = new Date().toISOString().split('T')[0];
         const pastEntries = allEntries.filter(e => e.date !== todayStr);
-        
-        if (pastEntries.length > 0) {
-          lastRecordedProfit = pastEntries[pastEntries.length - 1].profit;
-        } else {
-          lastRecordedProfit = allEntries[0].profit;
-        }
+        lastRecordedProfit = pastEntries.length > 0 ? pastEntries[pastEntries.length - 1].profit : allEntries[0].profit;
 
         const max = allEntries.reduce((p, c) => c.profit > p.profit ? c : p);
         const min = allEntries.reduce((p, c) => c.profit < p.profit ? c : p);
@@ -227,8 +264,7 @@
             data: entries.map(e => e.profit), 
             borderColor: '#f0a500', 
             backgroundColor: 'rgba(240, 165, 0, 0.1)',
-            fill: true,
-            tension: 0.3 
+            fill: true, tension: 0.3 
           }]
         },
         options: { responsive: true, maintainAspectRatio: false }
@@ -246,15 +282,17 @@
     window.onload = () => {
       const user = localStorage.getItem('currentUser');
       if (user) {
+        const isJason = user.toLowerCase() === 'jason';
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
         document.getElementById("dateInput").value = new Date().toISOString().split('T')[0];
         
-        // 針對非 Jason 使用者的介面限制
-        if (user.toLowerCase() !== 'jason') {
+        if (isJason) {
+          document.getElementById('adminPanel').style.display = 'block';
+        } else {
           document.getElementById("manualRecordSection").style.opacity = "0.5";
-          document.getElementById("profitInput").type = "password"; // 隱藏數值
+          document.getElementById("profitInput").type = "password";
           document.getElementById("profitInput").readOnly = true;
         }
 
