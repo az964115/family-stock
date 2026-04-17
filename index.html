@@ -10,8 +10,28 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; max-width: 900px; background-color: #fdf6e3; color: #333; }
-    .container { background: #fff3e0; border-radius: 10px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 8px rgb(0 0 0 / 0.1); }
+    /* 增加背景圖支援與讀取優化 */
+    body { 
+      font-family: 'Segoe UI', sans-serif; 
+      margin: 0; 
+      padding: 20px; 
+      max-width: 900px; 
+      background-color: #fdf6e3; 
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #333; 
+      transition: background 0.5s ease;
+    }
+    /* 確保內容在有背景圖時依然清晰 */
+    .container { 
+      background: rgba(255, 243, 224, 0.9); /* 加上透明度 */
+      backdrop-filter: blur(5px); /* 毛玻璃效果 */
+      border-radius: 10px; 
+      padding: 20px; 
+      margin-bottom: 25px; 
+      box-shadow: 0 4px 8px rgb(0 0 0 / 0.1); 
+    }
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
     .stat-box { background: #fff; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ffe0b2; }
     input, button { padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
@@ -19,21 +39,27 @@
     .chart-container { height: 300px; margin-top: 20px; }
     #portfolioList { list-style: none; padding: 0; }
     .stock-item { 
-      background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 8px; 
+      background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 8px; margin-bottom: 8px; 
       box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid #f0a500; line-height: 1.6;
     }
     .stock-info-row { display: flex; justify-content: space-between; flex-wrap: wrap; }
     .stock-code { font-size: 1.1em; color: #d88e00; }
-    .profit-positive { color: #e74c3c; font-weight: bold; } /* 紅色 */
-    .profit-negative { color: #2ecc71; font-weight: bold; } /* 綠色 */
+    .profit-positive { color: #e74c3c; font-weight: bold; } 
+    .profit-negative { color: #2ecc71; font-weight: bold; } 
     
-    /* Switch 樣式 */
     .switch { position: relative; display: inline-block; width: 40px; height: 20px; vertical-align: middle; margin: 0 10px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
     .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
     input:checked + .slider { background-color: #f0a500; }
     input:checked + .slider:before { transform: translateX(20px); }
+
+    /* 背景上傳按鈕樣式 */
+    .bg-upload-btn {
+      background-color: #5d4037;
+      font-size: 0.8em;
+      padding: 5px 10px;
+    }
   </style>
 </head>
 <body>
@@ -46,8 +72,12 @@
   </div>
 
   <div id="mainContent" style="display:none;">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-      <h2 id="userNameDisplay">Hi, User</h2>
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+      <div>
+        <h2 id="userNameDisplay" style="display: inline-block; margin-right: 15px;">Hi, User</h2>
+        <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click()">🖼️ 更換背景</button>
+        <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
+      </div>
       <button onclick="logout()" style="background-color: #777;">登出</button>
     </div>
 
@@ -94,6 +124,7 @@
   </div>
 
   <script>
+    // Firebase 設定保持原樣
     const firebaseConfig = {
       apiKey: "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg",
       authDomain: "piggynet-93c33.firebaseapp.com",
@@ -107,7 +138,21 @@
     const db = firebase.database();
     let profitChartInstance = null;
     let lastRecordedProfit = 0; 
-    let globalCanSeeDetails = false; // 全域變數追蹤權限
+    let globalCanSeeDetails = false; 
+
+    // 背景上傳處理
+    function updateBackground(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const user = localStorage.getItem('currentUser');
+          const bgData = e.target.result;
+          document.body.style.backgroundImage = `url(${bgData})`;
+          localStorage.setItem(`bg_${user}`, bgData);
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
 
     async function login() {
       const user = document.getElementById('loginUser').value.trim();
@@ -129,35 +174,30 @@
       const pfRef = db.ref(`users/${user}/portfolio`);
       const isJason = user.toLowerCase() === 'jason';
       
-      // 1. 監聽全域權限設定
       db.ref('settings/global/showPortfolioToAll').on('value', (permSnap) => {
         globalCanSeeDetails = permSnap.val() || false;
-        
-        // 更新 UI 狀態
         const statusEl = document.getElementById("permissionStatus");
         if(statusEl) statusEl.textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏詳細標的";
         if(isJason && document.getElementById("toggleShowAll")) {
             document.getElementById("toggleShowAll").checked = globalCanSeeDetails;
         }
-
-        // 2. 權限改變時重新拉取並渲染持股
         pfRef.once("value", async (snapshot) => {
           await renderPortfolio(snapshot.val(), user, globalCanSeeDetails);
         });
       });
 
-      // 3. 同時持續監聽持股資料變動（如股數、成本變更）
       pfRef.on("value", async (snapshot) => {
         await renderPortfolio(snapshot.val(), user, globalCanSeeDetails);
       });
     }
 
+    // 修改此函數以符合自動計算與權限邏輯
     async function renderPortfolio(data, user, canSeeDetails) {
       const listEl = document.getElementById("portfolioList");
       const profitInput = document.getElementById("profitInput");
       const autoTotalNetWorthEl = document.getElementById("autoTotalNetWorth");
       const isJason = user.toLowerCase() === 'jason';
-      const hasAccess = isJason || canSeeDetails; // 關鍵權限邏輯
+      const hasAccess = isJason || canSeeDetails; 
 
       if (!data) {
         listEl.innerHTML = "<li>目前無持股資料</li>";
@@ -180,15 +220,27 @@
           }
         } catch (e) { console.error(`無法抓取 ${code} 價格`, e); }
 
-        const profit = (currentPrice - info.cost) * info.shares;
+        const costTotal = info.cost * info.shares;
+        const currentTotal = currentPrice * info.shares;
+        const profit = currentTotal - costTotal;
         totalProfit += profit;
         
         const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
-        const displayCode = hasAccess ? `標的: ${code}` : `投資項目 (已隱藏)`;
+        
+        // 權限分流顯示
+        const displayCode = hasAccess ? `標的: ${code}` : `投資項目 (隱藏細節)`;
         const displayShares = hasAccess ? info.shares.toLocaleString() : "****";
+        
+        // 自動計算欄位
         const displayDetails = hasAccess 
-          ? `<span>成本: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>`
-          : `<span>成本: --</span><span>現價: --</span>`;
+          ? `<span>成本單價: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>`
+          : `<span>成本單價: --</span><span>現價: --</span>`;
+
+        const autoCalDetails = `
+          <div class="stock-info-row" style="border-top: 1px dashed #ffe0b2; margin-top:5px; padding-top:5px;">
+             <span>成本總額: <b>$${Math.round(costTotal).toLocaleString()}</b></span>
+             <span>現值總額: <b>$${Math.round(currentTotal).toLocaleString()}</b></span>
+          </div>`;
 
         htmlContent += `
           <li class="stock-item">
@@ -200,6 +252,7 @@
               ${displayDetails}
               <span>損益: <span class="${profitClass}">${profit >= 0 ? '+' : ''}${Math.round(profit).toLocaleString()}</span></span>
             </div>
+            ${autoCalDetails}
           </li>`;
       }
 
@@ -282,6 +335,10 @@
     window.onload = () => {
       const user = localStorage.getItem('currentUser');
       if (user) {
+        // 載入個人背景
+        const savedBg = localStorage.getItem(`bg_${user}`);
+        if(savedBg) document.body.style.backgroundImage = `url(${savedBg})`;
+
         const isJason = user.toLowerCase() === 'jason';
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
