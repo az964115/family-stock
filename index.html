@@ -191,14 +191,16 @@
       const ratio = Math.round((amount / currentGlobalTotalValue) * 1000) / 1000;
       const allocatedProfit = currentGlobalTotalProfit * ratio;
       const fee = allocatedProfit > 0 ? Math.round(allocatedProfit * 0.15) : 0;
-      document.getElementById('calcDetails').innerHTML = `
+      const resultEl = document.getElementById('calcResult');
+      const detailsEl = document.getElementById('calcDetails');
+      detailsEl.innerHTML = `
         📍 提領權重：<b>${(ratio * 100).toFixed(1)}%</b><br>
         📍 對應獲利結算：<b>$${Math.round(allocatedProfit).toLocaleString()}</b><br>
         📍 <b>技術服務規費 (15%)：</b> <b style="color:#e74c3c; font-size:1.2em;">$${fee.toLocaleString()}</b><br>
         <hr style="border:0; border-top:1px dashed #f0a500;">
-        <span style="font-size:0.85em; color:#666;">您的實領金額為 $${amount.toLocaleString()}。</span>
+        <span style="font-size:0.85em; color:#666;">* 此規費已包含手續費、證交稅及個人綜所稅負擔。您的實領金額為 $${amount.toLocaleString()}。</span>
       `;
-      document.getElementById('calcResult').style.display = 'block';
+      resultEl.style.display = 'block';
     }
 
     function updateBackground(input) {
@@ -238,45 +240,55 @@
 
     async function renderPortfolio(data, user, canSeeDetails) {
       const listEl = document.getElementById("portfolioList");
+      const autoTotalNetWorthEl = document.getElementById("autoTotalNetWorth");
       const isJason = user.toLowerCase() === 'jason';
       const hasAccess = isJason || canSeeDetails; 
       if (!data) { listEl.innerHTML = "<li>目前無持股資料</li>"; return; }
 
       let totalProfit = 0, totalCurrentValue = 0, htmlContent = "";
-      for (const code in data) {
+      const stockCodes = Object.keys(data);
+
+      for (const code of stockCodes) {
         const info = data[code];
-        let price = info.cost;
+        let currentPrice = info.cost;
         try {
           const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-          const s = await res.json();
-          if (s.stat === "OK") price = parseFloat(s.data[s.data.length - 1][6].replace(/,/g, ''));
+          const stock = await res.json();
+          if (stock.stat === "OK" && stock.data && stock.data.length > 0) {
+            currentPrice = parseFloat(stock.data[stock.data.length - 1][6].replace(/,/g, ''));
+          }
         } catch (e) {}
 
         const costTotal = info.cost * info.shares;
-        const currentTotal = price * info.shares;
+        const currentTotal = currentPrice * info.shares;
         const profit = currentTotal - costTotal;
-        const profitRate = ((profit / costTotal) * 100).toFixed(1); // 計算百分比
+        const profitRate = ((profit / costTotal) * 100).toFixed(1);
         
         totalProfit += profit;
         totalCurrentValue += currentTotal;
-        const pClass = profit >= 0 ? "profit-positive" : "profit-negative";
+        const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
 
         htmlContent += `
           <li class="stock-item">
             <div class="stock-info-row">
-              <span class="stock-code"><b>${hasAccess ? '標的: '+code : '投資項目'}</b></span>
+              <span class="stock-code"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏細節)'}</b></span>
               <span>持有股數: <b>${hasAccess ? info.shares.toLocaleString() : '****'}</b></span>
             </div>
             <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
-              ${hasAccess ? `<span>成本: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${price}</b></span>` : '<span>成本: --</span><span>現價: --</span>'}
-              <span>損益: <span class="${pClass}">${profit >= 0 ? '+' : ''}${Math.round(profit).toLocaleString()} (${profit >= 0 ? '+' : ''}${profitRate}%)</span></span>
+              ${hasAccess ? `<span>成本單價: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>` : '<span>成本單價: --</span><span>現價: --</span>'}
+              <span>損益: <span class="${profitClass}">${profit >= 0 ? '+' : ''}${Math.round(profit).toLocaleString()} (${profit >= 0 ? '+' : ''}${profitRate}%)</span></span>
+            </div>
+            <div class="stock-info-row" style="border-top: 1px dashed #ffe0b2; margin-top:5px; padding-top:5px;">
+               <span>成本總額: <b>$${Math.round(costTotal).toLocaleString()}</b></span>
+               <span>現值總額: <b>$${Math.round(currentTotal).toLocaleString()}</b></span>
             </div>
           </li>`;
       }
+
       listEl.innerHTML = htmlContent;
       currentGlobalTotalProfit = Math.round(totalProfit);
       currentGlobalTotalValue = Math.round(totalCurrentValue);
-      document.getElementById("autoTotalNetWorth").textContent = currentGlobalTotalProfit.toLocaleString();
+      autoTotalNetWorthEl.textContent = currentGlobalTotalProfit.toLocaleString();
       updateProfitDifference(currentGlobalTotalProfit);
       autoSaveToHistory(user, currentGlobalTotalProfit);
     }
@@ -296,7 +308,7 @@
     function loadAnnualReview(user) {
       db.ref(`family/investSnapshot/${user}`).on("value", snap => {
         const val = snap.val() || {};
-        const entries = Object.entries(val).map(([d, v]) => ({ date: d, profit: v.profit })).sort((a,b)=>new Date(a.date)-new Date(b.date));
+        const entries = Object.entries(val).map(([d, v]) => ({ date: d, profit: v.profit })).sort((a, b) => new Date(a.date) - new Date(b.date));
         if (!entries.length) return;
         const todayStr = new Date().toISOString().split('T')[0];
         const past = entries.filter(e => e.date !== todayStr);
@@ -316,7 +328,11 @@
         type: 'line',
         data: {
           labels: entries.map(e => e.date.substring(5)),
-          datasets: [{ label: '盈餘趨勢', data: entries.map(e => e.profit), borderColor: '#f0a500', fill: false, tension: 0.3 }]
+          datasets: [{ 
+            label: '盈餘趨勢', data: entries.map(e => e.profit), 
+            borderColor: '#f0a500', backgroundColor: 'rgba(240, 165, 0, 0.1)',
+            fill: true, tension: 0.3 
+          }]
         },
         options: { responsive: true, maintainAspectRatio: false }
       });
@@ -325,8 +341,8 @@
     window.onload = () => {
       const user = localStorage.getItem('currentUser');
       if (user) {
-        const bg = localStorage.getItem(`bg_${user}`);
-        if(bg) document.body.style.backgroundImage = `url(${bg})`;
+        const savedBg = localStorage.getItem(`bg_${user}`);
+        if(savedBg) document.body.style.backgroundImage = `url(${savedBg})`;
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
