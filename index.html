@@ -10,7 +10,6 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* 增加背景圖支援與讀取優化 */
     body { 
       font-family: 'Segoe UI', sans-serif; 
       margin: 0; 
@@ -23,10 +22,9 @@
       color: #333; 
       transition: background 0.5s ease;
     }
-    /* 確保內容在有背景圖時依然清晰 */
     .container { 
-      background: rgba(255, 243, 224, 0.9); /* 加上透明度 */
-      backdrop-filter: blur(5px); /* 毛玻璃效果 */
+      background: rgba(255, 243, 224, 0.9); 
+      backdrop-filter: blur(5px); 
       border-radius: 10px; 
       padding: 20px; 
       margin-bottom: 25px; 
@@ -54,11 +52,32 @@
     input:checked + .slider { background-color: #f0a500; }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    /* 背景上傳按鈕樣式 */
-    .bg-upload-btn {
-      background-color: #5d4037;
-      font-size: 0.8em;
-      padding: 5px 10px;
+    /* 背景與功能按鈕樣式 */
+    .bg-upload-btn { background-color: #5d4037; font-size: 0.8em; padding: 5px 10px; }
+    .calc-btn { background-color: #2980b9; font-size: 0.8em; padding: 5px 10px; }
+
+    /* 提領試算 Modal 樣式 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fffefb;
+      margin: 10% auto;
+      padding: 25px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      border: 3px solid #f0a500;
+    }
+    .modal-header { border-bottom: 2px solid #ffe0b2; padding-bottom: 10px; margin-bottom: 15px; }
+    .calc-result { 
+      background: #fdf2e9; padding: 15px; border-radius: 8px; margin-top: 15px; 
+      border: 1px dashed #f0a500; display: none; line-height: 1.8;
     }
   </style>
 </head>
@@ -76,9 +95,31 @@
       <div>
         <h2 id="userNameDisplay" style="display: inline-block; margin-right: 15px;">Hi, User</h2>
         <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click()">🖼️ 更換背景</button>
+        <button class="calc-btn" onclick="openWithdrawModal()">💰 提領試算</button>
         <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
       </div>
       <button onclick="logout()" style="background-color: #777;">登出</button>
+    </div>
+
+    <div id="withdrawModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 style="margin:0; color:#d88e00;">💸 提領結算試算 (15%)</h3>
+        </div>
+        <div style="font-size: 0.95em;">
+          <p>當前帳戶現值：<b id="modalCurrentValue">$0</b></p>
+          <p>帳戶累積損益：<b id="modalTotalProfit" class="profit-positive">$0</b></p>
+          <hr style="border:0; border-top:1px solid #ffe0b2;">
+          <label>請輸入欲提領金額：</label><br>
+          <input type="number" id="withdrawAmount" style="width:100%; font-size:1.2em;" placeholder="例如: 10000">
+          <button onclick="calculateWithdraw()" style="width:100%; margin-top:10px; background-color:#27ae60;">開始結算</button>
+          
+          <div id="calcResult" class="calc-result">
+            <span id="calcDetails"></span>
+          </div>
+        </div>
+        <button onclick="closeWithdrawModal()" style="width:100%; margin-top:15px; background-color:#777;">關閉</button>
+      </div>
     </div>
 
     <div id="adminPanel" class="container" style="display:none; border: 2px solid #f0a500; background-color: #fff9f0;">
@@ -124,7 +165,7 @@
   </div>
 
   <script>
-    // Firebase 設定保持原樣
+    // Firebase 設定
     const firebaseConfig = {
       apiKey: "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg",
       authDomain: "piggynet-93c33.firebaseapp.com",
@@ -139,6 +180,49 @@
     let profitChartInstance = null;
     let lastRecordedProfit = 0; 
     let globalCanSeeDetails = false; 
+
+    // 全域變數用於存儲當前最新數據
+    let currentGlobalTotalValue = 0;
+    let currentGlobalTotalProfit = 0;
+
+    // 提領試算邏輯
+    function openWithdrawModal() {
+      document.getElementById('modalCurrentValue').textContent = `$${currentGlobalTotalValue.toLocaleString()}`;
+      document.getElementById('modalTotalProfit').textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
+      document.getElementById('modalTotalProfit').className = currentGlobalTotalProfit >= 0 ? "profit-positive" : "profit-negative";
+      document.getElementById('withdrawModal').style.display = 'block';
+      document.getElementById('calcResult').style.display = 'none';
+      document.getElementById('withdrawAmount').value = "";
+    }
+
+    function closeWithdrawModal() {
+      document.getElementById('withdrawModal').style.display = 'none';
+    }
+
+    function calculateWithdraw() {
+      const amount = parseFloat(document.getElementById('withdrawAmount').value);
+      if(!amount || amount <= 0) return alert("請輸入有效的提領金額");
+      if(amount > currentGlobalTotalValue) return alert("提領金額不可大於帳戶現值");
+
+      // 1. 提領佔比 (取到小數點後三位)
+      const ratio = Math.round((amount / currentGlobalTotalValue) * 1000) / 1000;
+      // 2. 分攤損益
+      const allocatedProfit = currentGlobalTotalProfit * ratio;
+      // 3. 15% 服務費
+      const fee = allocatedProfit > 0 ? Math.round(allocatedProfit * 0.15) : 0;
+      
+      const resultEl = document.getElementById('calcResult');
+      const detailsEl = document.getElementById('calcDetails');
+      
+      detailsEl.innerHTML = `
+        📍 提領權重：<b>${(ratio * 100).toFixed(1)}%</b><br>
+        📍 對應獲利結算：<b>$${Math.round(allocatedProfit).toLocaleString()}</b><br>
+        📍 <b>技術服務規費 (15%)：</b> <b style="color:#e74c3c; font-size:1.2em;">$${fee.toLocaleString()}</b><br>
+        <hr style="border:0; border-top:1px dashed #f0a500;">
+        <span style="font-size:0.85em; color:#666;">* 此規費已包含手續費、證交稅及個人綜所稅負擔。您的實領金額為 $${amount.toLocaleString()}。</span>
+      `;
+      resultEl.style.display = 'block';
+    }
 
     // 背景上傳處理
     function updateBackground(input) {
@@ -191,7 +275,6 @@
       });
     }
 
-    // 修改此函數以符合自動計算與權限邏輯
     async function renderPortfolio(data, user, canSeeDetails) {
       const listEl = document.getElementById("portfolioList");
       const profitInput = document.getElementById("profitInput");
@@ -205,6 +288,7 @@
       }
 
       let totalProfit = 0;
+      let totalCurrentValue = 0; // 新增：用於提領試算
       let htmlContent = "";
       const stockCodes = Object.keys(data);
 
@@ -224,14 +308,11 @@
         const currentTotal = currentPrice * info.shares;
         const profit = currentTotal - costTotal;
         totalProfit += profit;
+        totalCurrentValue += currentTotal; // 累加總現值
         
         const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
-        
-        // 權限分流顯示
         const displayCode = hasAccess ? `標的: ${code}` : `投資項目 (隱藏細節)`;
         const displayShares = hasAccess ? info.shares.toLocaleString() : "****";
-        
-        // 自動計算欄位
         const displayDetails = hasAccess 
           ? `<span>成本單價: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>`
           : `<span>成本單價: --</span><span>現價: --</span>`;
@@ -260,6 +341,10 @@
       const finalProfit = Math.round(totalProfit);
       autoTotalNetWorthEl.textContent = finalProfit.toLocaleString();
       profitInput.value = finalProfit;
+
+      // 更新全域變數供彈窗使用
+      currentGlobalTotalValue = Math.round(totalCurrentValue);
+      currentGlobalTotalProfit = finalProfit;
 
       updateProfitDifference(finalProfit);
       autoSaveToHistory(user, finalProfit);
@@ -335,7 +420,6 @@
     window.onload = () => {
       const user = localStorage.getItem('currentUser');
       if (user) {
-        // 載入個人背景
         const savedBg = localStorage.getItem(`bg_${user}`);
         if(savedBg) document.body.style.backgroundImage = `url(${savedBg})`;
 
