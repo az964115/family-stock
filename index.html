@@ -198,7 +198,7 @@
         📍 對應獲利結算：<b>$${Math.round(allocatedProfit).toLocaleString()}</b><br>
         📍 <b>技術服務規費 (15%)：</b> <b style="color:#e74c3c; font-size:1.2em;">$${fee.toLocaleString()}</b><br>
         <hr style="border:0; border-top:1px dashed #f0a500;">
-        <span style="font-size:0.85em; color:#666;">* 此規費已包含手續費、證交稅及個人綜所稅負擔。您的實領金額為 $${amount.toLocaleString()}。</span>
+        <span style="font-size:0.85em; color:#666;">* 此規費已包含手續費、證交稅及個人綜所稅負擔。您的實領金額為 $${amount.toLocaleString()}-技術服務費 (15%)。</span>
       `;
       resultEl.style.display = 'block';
     }
@@ -275,7 +275,7 @@
               <span>持有股數: <b>${hasAccess ? info.shares.toLocaleString() : '****'}</b></span>
             </div>
             <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
-              ${hasAccess ? `<span>成本單價: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>` : '<span>成本單價: --</span><span>現價: --</span>'}
+              ${hasAccess ? `<span>成本單價: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>` : '<span>成本: --</span><span>現價: --</span>'}
               <span>損益: <span class="${profitClass}">${profit >= 0 ? '+' : ''}${Math.round(profit).toLocaleString()} (${profit >= 0 ? '+' : ''}${profitRate}%)</span></span>
             </div>
             <div class="stock-info-row" style="border-top: 1px dashed #ffe0b2; margin-top:5px; padding-top:5px;">
