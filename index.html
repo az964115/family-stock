@@ -11,7 +11,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { 
-      font-family: 'Segoe UI', sans-serif; 
+      font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif; 
       margin: 0; 
       padding: 20px; 
       max-width: 900px; 
@@ -21,151 +21,154 @@
       background-attachment: fixed;
       color: #333; 
       transition: background 0.5s ease;
+      line-height: 1.5;
     }
+    /* 玻璃擬態優化 */
     .container { 
-      background: rgba(255, 243, 224, 0.9); 
-      backdrop-filter: blur(5px); 
-      border-radius: 10px; 
-      padding: 20px; 
+      background: rgba(255, 255, 255, 0.85); 
+      backdrop-filter: blur(10px); 
+      border-radius: 16px; 
+      padding: 24px; 
       margin-bottom: 25px; 
-      box-shadow: 0 4px 8px rgb(0 0 0 / 0.1); 
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); 
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-    .stat-box { background: #fff; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ffe0b2; }
-    input, button { padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
-    button { cursor: pointer; background-color: #f0a500; color: #fff; border: none; font-weight: bold; }
+    .stat-box { 
+      background: rgba(255, 255, 255, 0.6); 
+      padding: 15px; 
+      border-radius: 12px; 
+      text-align: center; 
+      border: 1px solid rgba(240, 165, 0, 0.2); 
+    }
+    input, button { padding: 10px 16px; margin: 5px 0; border-radius: 8px; border: 1px solid #ddd; outline: none; }
+    button { 
+      cursor: pointer; 
+      background-color: #f0a500; 
+      color: #fff; 
+      border: none; 
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    button:hover { opacity: 0.9; transform: translateY(-1px); }
     .chart-container { height: 300px; margin-top: 20px; }
+    
     #portfolioList { list-style: none; padding: 0; }
     .stock-item { 
-      background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 8px; margin-bottom: 8px; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid #f0a500; line-height: 1.6;
+      background: rgba(255, 255, 255, 0.9); 
+      padding: 18px; 
+      border-radius: 12px; 
+      margin-bottom: 12px; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02); 
+      border-left: 6px solid #f0a500; 
+      transition: transform 0.2s;
     }
-    .stock-info-row { display: flex; justify-content: space-between; flex-wrap: wrap; }
-    .stock-code { font-size: 1.1em; color: #d88e00; }
-    .profit-positive { color: #e74c3c; font-weight: bold; } 
-    .profit-negative { color: #2ecc71; font-weight: bold; } 
+    .stock-item:hover { transform: scale(1.01); }
+    .stock-info-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .stock-code { font-size: 1.1em; color: #b47700; font-weight: bold; }
     
-    .switch { position: relative; display: inline-block; width: 40px; height: 20px; vertical-align: middle; margin: 0 10px; }
+    /* 損益色彩優化 */
+    .profit-positive { color: #d63031; font-weight: bold; } /* 台灣紅 */
+    .profit-negative { color: #00b894; font-weight: bold; } /* 台灣綠 */
+    .percentage-tag {
+        font-size: 0.9em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 4px;
+    }
+    .tag-pos { background: rgba(214, 48, 49, 0.1); }
+    .tag-neg { background: rgba(0, 184, 148, 0.1); }
+
+    /* 開關樣式 */
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; vertical-align: middle; margin: 0 10px; }
     .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
-    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
     input:checked + .slider { background-color: #f0a500; }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    /* 背景與功能按鈕樣式 */
-    .bg-upload-btn { background-color: #5d4037; font-size: 0.8em; padding: 5px 10px; }
-    .calc-btn { background-color: #2980b9; font-size: 0.8em; padding: 5px 10px; }
+    .calc-btn { background-color: #0984e3; }
+    .bg-upload-btn { background-color: #636e72; }
 
-    /* 提領試算 Modal 樣式 */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0; top: 0; width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.5);
+    /* Modal */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
+    .modal-content { 
+      background: #fff; margin: 10% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; 
+      border: 2px solid #f0a500; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
-    .modal-content {
-      background-color: #fffefb;
-      margin: 10% auto;
-      padding: 25px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 450px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      border: 3px solid #f0a500;
-    }
-    .modal-header { border-bottom: 2px solid #ffe0b2; padding-bottom: 10px; margin-bottom: 15px; }
-    .calc-result { 
-      background: #fdf2e9; padding: 15px; border-radius: 8px; margin-top: 15px; 
-      border: 1px dashed #f0a500; display: none; line-height: 1.8;
-    }
+    .calc-result { background: #fff9f0; padding: 15px; border-radius: 12px; margin-top: 15px; border: 1px dashed #f0a500; display: none; }
   </style>
 </head>
 <body>
 
   <div id="loginSection" class="container">
-    <h2>🔑 登入系統</h2>
-    <input type="text" id="loginUser" placeholder="帳號">
-    <input type="password" id="loginPassword" placeholder="密碼">
-    <button onclick="login()">登入</button>
+    <h2 style="text-align: center; color: #f0a500;">🔑 帳戶登入</h2>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <input type="text" id="loginUser" placeholder="請輸入帳號">
+        <input type="password" id="loginPassword" placeholder="請輸入密碼">
+        <button onclick="login()" style="font-size: 1.1em; padding: 12px;">確認登入</button>
+    </div>
   </div>
 
   <div id="mainContent" style="display:none;">
     <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
       <div>
         <h2 id="userNameDisplay" style="display: inline-block; margin-right: 15px;">Hi, User</h2>
-        <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click()">🖼️ 更換背景</button>
+        <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click()">🖼️ 背景</button>
         <button class="calc-btn" onclick="openWithdrawModal()">💰 提領試算</button>
         <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
       </div>
-      <button onclick="logout()" style="background-color: #777;">登出</button>
+      <button onclick="logout()" style="background-color: #b2bec3;">登出</button>
     </div>
 
     <div id="withdrawModal" class="modal">
       <div class="modal-content">
-        <div class="modal-header">
-          <h3 style="margin:0; color:#d88e00;">💸 提領結算試算 (15%)</h3>
-        </div>
-        <div style="font-size: 0.95em;">
-          <p>當前帳戶現值：<b id="modalCurrentValue">$0</b></p>
-          <p>帳戶累積損益：<b id="modalTotalProfit" class="profit-positive">$0</b></p>
-          <hr style="border:0; border-top:1px solid #ffe0b2;">
-          <label>請輸入欲提領金額：</label><br>
-          <input type="number" id="withdrawAmount" style="width:100%; font-size:1.2em;" placeholder="例如: 10000">
-          <button onclick="calculateWithdraw()" style="width:100%; margin-top:10px; background-color:#27ae60;">開始結算</button>
-          
-          <div id="calcResult" class="calc-result">
-            <span id="calcDetails"></span>
-          </div>
-        </div>
-        <button onclick="closeWithdrawModal()" style="width:100%; margin-top:15px; background-color:#777;">關閉</button>
+        <h3 style="margin-top:0; color:#b47700;">💸 提領損益結算</h3>
+        <p>當前總現值：<b id="modalCurrentValue">$0</b></p>
+        <p>當前總損益：<b id="modalTotalProfit">$0</b></p>
+        <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+        <label>欲提領金額：</label>
+        <input type="number" id="withdrawAmount" style="width:100%; box-sizing: border-box; font-size:1.1em;" placeholder="輸入金額">
+        <button onclick="calculateWithdraw()" style="width:100%; margin-top:15px; background-color:#2d3436;">計算 15% 規費</button>
+        <div id="calcResult" class="calc-result"><span id="calcDetails"></span></div>
+        <button onclick="closeWithdrawModal()" style="width:100%; margin-top:10px; background-color:#aaa; font-size: 0.9em;">關閉</button>
       </div>
     </div>
 
-    <div id="adminPanel" class="container" style="display:none; border: 2px solid #f0a500; background-color: #fff9f0;">
-      <h3>⚙️ 管理員控制台 (Jason Only)</h3>
-      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <span>開放全體成員查看詳細持股：</span>
+    <div id="adminPanel" class="container" style="display:none; border: 2px solid #f0a500;">
+      <h3>⚙️ 管理權限</h3>
+      <div style="display: flex; align-items: center;">
+        <span>開放詳細持股清單：</span>
         <label class="switch">
           <input type="checkbox" id="toggleShowAll" onchange="toggleGlobalPermission(this.checked)">
           <span class="slider"></span>
         </label>
-        <b id="permissionStatus" style="color: #f0a500;">讀取中...</b>
+        <b id="permissionStatus">讀取中...</b>
       </div>
     </div>
 
     <div class="container">
-      <h3>📈 資產趨勢回顧</h3>
+      <h3>📈 資產概覽</h3>
       <div class="stat-grid">
         <div class="stat-box">
-          <small>今日與昨日盈餘差額</small>
-          <div id="profitDiffDisplay" style="font-size: 1.5em; font-weight: bold;">--</div>
+          <small style="color:#636e72">今日損益變動</small>
+          <div id="profitDiffDisplay" style="font-size: 1.6em; font-weight: bold;">--</div>
         </div>
         <div class="stat-box">
-          <small>今日自動計算總盈餘</small>
-          <div id="autoTotalNetWorth" style="font-size: 1.5em; font-weight: bold; color: #2980b9;">計算中...</div>
+          <small style="color:#636e72">帳戶總累積盈餘</small>
+          <div id="autoTotalNetWorth" style="font-size: 1.6em; font-weight: bold; color: #0984e3;">計算中...</div>
         </div>
-        <div class="stat-box"><small>🚀 今年賺最多</small><div id="maxGainDay">--</div></div>
-        <div class="stat-box"><small>📉 今年最慘日</small><div id="maxLossDay">--</div></div>
       </div>
       <div class="chart-container"><canvas id="profitTrendChart"></canvas></div>
     </div>
 
-    <div class="container" id="manualRecordSection">
-      <h3>📝 手動紀錄/校對</h3>
-      <input type="date" id="dateInput">
-      <input type="number" id="profitInput">
-      <button onclick="saveDailyProfit()">手動更新紀錄</button>
-    </div>
-
     <div class="container">
       <h3>📋 詳細持股清單</h3>
-      <ul id="portfolioList"><li>正在連線證交所更新現價...</li></ul>
+      <ul id="portfolioList"><li>正在抓取最新市場報價...</li></ul>
     </div>
   </div>
 
   <script>
-    // Firebase 設定
     const firebaseConfig = {
       apiKey: "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg",
       authDomain: "piggynet-93c33.firebaseapp.com",
@@ -179,60 +182,36 @@
     const db = firebase.database();
     let profitChartInstance = null;
     let lastRecordedProfit = 0; 
-    let globalCanSeeDetails = false; 
-
-    // 全域變數用於存儲當前最新數據
     let currentGlobalTotalValue = 0;
     let currentGlobalTotalProfit = 0;
 
-    // 提領試算邏輯
     function openWithdrawModal() {
       document.getElementById('modalCurrentValue').textContent = `$${currentGlobalTotalValue.toLocaleString()}`;
       document.getElementById('modalTotalProfit').textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
-      document.getElementById('modalTotalProfit').className = currentGlobalTotalProfit >= 0 ? "profit-positive" : "profit-negative";
       document.getElementById('withdrawModal').style.display = 'block';
-      document.getElementById('calcResult').style.display = 'none';
-      document.getElementById('withdrawAmount').value = "";
     }
-
-    function closeWithdrawModal() {
-      document.getElementById('withdrawModal').style.display = 'none';
-    }
-
+    function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
     function calculateWithdraw() {
       const amount = parseFloat(document.getElementById('withdrawAmount').value);
-      if(!amount || amount <= 0) return alert("請輸入有效的提領金額");
-      if(amount > currentGlobalTotalValue) return alert("提領金額不可大於帳戶現值");
-
-      // 1. 提領佔比 (取到小數點後三位)
+      if(!amount || amount <= 0) return alert("請輸入有效金額");
       const ratio = Math.round((amount / currentGlobalTotalValue) * 1000) / 1000;
-      // 2. 分攤損益
       const allocatedProfit = currentGlobalTotalProfit * ratio;
-      // 3. 15% 服務費
       const fee = allocatedProfit > 0 ? Math.round(allocatedProfit * 0.15) : 0;
-      
-      const resultEl = document.getElementById('calcResult');
-      const detailsEl = document.getElementById('calcDetails');
-      
-      detailsEl.innerHTML = `
-        📍 提領權重：<b>${(ratio * 100).toFixed(1)}%</b><br>
-        📍 對應獲利結算：<b>$${Math.round(allocatedProfit).toLocaleString()}</b><br>
-        📍 <b>技術服務規費 (15%)：</b> <b style="color:#e74c3c; font-size:1.2em;">$${fee.toLocaleString()}</b><br>
-        <hr style="border:0; border-top:1px dashed #f0a500;">
-        <span style="font-size:0.85em; color:#666;">* 此規費已包含手續費、證交稅及個人綜所稅負擔。您的實領金額為 $${amount.toLocaleString()}-技術服務規費 (15%)。</span>
+      document.getElementById('calcDetails').innerHTML = `
+        提領佔比：${(ratio * 100).toFixed(1)}%<br>
+        分攤獲利：$${Math.round(allocatedProfit).toLocaleString()}<br>
+        <b>技術服務規費 (15%)：$${fee.toLocaleString()}</b>
       `;
-      resultEl.style.display = 'block';
+      document.getElementById('calcResult').style.display = 'block';
     }
 
-    // 背景上傳處理
     function updateBackground(input) {
       if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = e => {
           const user = localStorage.getItem('currentUser');
-          const bgData = e.target.result;
-          document.body.style.backgroundImage = `url(${bgData})`;
-          localStorage.setItem(`bg_${user}`, bgData);
+          document.body.style.backgroundImage = `url(${e.target.result})`;
+          localStorage.setItem(`bg_${user}`, e.target.result);
         };
         reader.readAsDataURL(input.files[0]);
       }
@@ -241,204 +220,115 @@
     async function login() {
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPassword').value.trim();
-      if(!user) return alert("請輸入帳號");
       const snap = await db.ref(`users/${user}/password`).get();
       const stored = snap.exists() ? snap.val() : "9527";
       if (pass === stored) { localStorage.setItem('currentUser', user); location.reload(); }
       else { alert("密碼錯誤"); }
     }
-
     function logout() { localStorage.removeItem('currentUser'); location.reload(); }
 
-    function toggleGlobalPermission(isOpen) {
-      db.ref('settings/global/showPortfolioToAll').set(isOpen);
-    }
+    function toggleGlobalPermission(isOpen) { db.ref('settings/global/showPortfolioToAll').set(isOpen); }
 
-    function loadPortfolioAndAutoFill(user) {
-      const pfRef = db.ref(`users/${user}/portfolio`);
+    function loadPortfolio(user) {
       const isJason = user.toLowerCase() === 'jason';
-      
-      db.ref('settings/global/showPortfolioToAll').on('value', (permSnap) => {
-        globalCanSeeDetails = permSnap.val() || false;
-        const statusEl = document.getElementById("permissionStatus");
-        if(statusEl) statusEl.textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏詳細標的";
-        if(isJason && document.getElementById("toggleShowAll")) {
-            document.getElementById("toggleShowAll").checked = globalCanSeeDetails;
-        }
-        pfRef.once("value", async (snapshot) => {
-          await renderPortfolio(snapshot.val(), user, globalCanSeeDetails);
+      db.ref('settings/global/showPortfolioToAll').on('value', snap => {
+        const globalPerm = snap.val() || false;
+        document.getElementById("permissionStatus").textContent = globalPerm ? "已開放全體" : "僅限管理員";
+        if(isJason) document.getElementById("toggleShowAll").checked = globalPerm;
+        db.ref(`users/${user}/portfolio`).on("value", pfSnap => {
+          renderPortfolio(pfSnap.val(), isJason || globalPerm, user);
         });
       });
-
-      pfRef.on("value", async (snapshot) => {
-        await renderPortfolio(snapshot.val(), user, globalCanSeeDetails);
-      });
     }
 
-    async function renderPortfolio(data, user, canSeeDetails) {
+    async function renderPortfolio(data, hasAccess, user) {
       const listEl = document.getElementById("portfolioList");
-      const profitInput = document.getElementById("profitInput");
-      const autoTotalNetWorthEl = document.getElementById("autoTotalNetWorth");
-      const isJason = user.toLowerCase() === 'jason';
-      const hasAccess = isJason || canSeeDetails; 
+      if (!data) { listEl.innerHTML = "<li>無持股資料</li>"; return; }
 
-      if (!data) {
-        listEl.innerHTML = "<li>目前無持股資料</li>";
-        return;
-      }
-
-      let totalProfit = 0;
-      let totalCurrentValue = 0; // 新增：用於提領試算
-      let htmlContent = "";
-      const stockCodes = Object.keys(data);
-
-      for (const code of stockCodes) {
+      let tProfit = 0, tValue = 0;
+      let html = "";
+      
+      for (const code in data) {
         const info = data[code];
-        let currentPrice = info.cost;
-
+        let price = info.cost;
         try {
           const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-          const stock = await res.json();
-          if (stock.stat === "OK" && stock.data && stock.data.length > 0) {
-            currentPrice = parseFloat(stock.data[stock.data.length - 1][6].replace(/,/g, ''));
-          }
-        } catch (e) { console.error(`無法抓取 ${code} 價格`, e); }
+          const s = await res.json();
+          if (s.stat === "OK") price = parseFloat(s.data[s.data.length - 1][6].replace(/,/g, ''));
+        } catch(e){}
 
         const costTotal = info.cost * info.shares;
-        const currentTotal = currentPrice * info.shares;
+        const currentTotal = price * info.shares;
         const profit = currentTotal - costTotal;
-        totalProfit += profit;
-        totalCurrentValue += currentTotal; // 累加總現值
+        const pRate = ((profit / costTotal) * 100).toFixed(2);
         
-        const profitClass = profit >= 0 ? "profit-positive" : "profit-negative";
-        const displayCode = hasAccess ? `標的: ${code}` : `投資項目 (隱藏細節)`;
-        const displayShares = hasAccess ? info.shares.toLocaleString() : "****";
-        const displayDetails = hasAccess 
-          ? `<span>成本單價: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>`
-          : `<span>成本單價: --</span><span>現價: --</span>`;
+        tProfit += profit;
+        tValue += currentTotal;
+        
+        const pClass = profit >= 0 ? "profit-positive" : "profit-negative";
+        const tagClass = profit >= 0 ? "tag-pos" : "tag-neg";
 
-        const autoCalDetails = `
-          <div class="stock-info-row" style="border-top: 1px dashed #ffe0b2; margin-top:5px; padding-top:5px;">
-             <span>成本總額: <b>$${Math.round(costTotal).toLocaleString()}</b></span>
-             <span>現值總額: <b>$${Math.round(currentTotal).toLocaleString()}</b></span>
-          </div>`;
-
-        htmlContent += `
+        html += `
           <li class="stock-item">
             <div class="stock-info-row">
-              <span class="stock-code"><b>${displayCode}</b></span>
-              <span>持有股數: <b>${displayShares}</b></span>
+              <span class="stock-code">${hasAccess ? code : '投資項目'}</span>
+              <span class="${pClass}">
+                ${profit >= 0 ? '+' : ''}${Math.round(profit).toLocaleString()}
+                <span class="percentage-tag ${tagClass}">${profit >= 0 ? '+' : ''}${pRate}%</span>
+              </span>
             </div>
-            <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
-              ${displayDetails}
-              <span>損益: <span class="${profitClass}">${profit >= 0 ? '+' : ''}${Math.round(profit).toLocaleString()}</span></span>
+            <div class="stock-info-row" style="font-size:0.9em; color:#636e72; margin-top:8px;">
+              <span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span>
+              <span>現值: $${Math.round(currentTotal).toLocaleString()}</span>
             </div>
-            ${autoCalDetails}
           </li>`;
       }
-
-      listEl.innerHTML = htmlContent;
-      const finalProfit = Math.round(totalProfit);
-      autoTotalNetWorthEl.textContent = finalProfit.toLocaleString();
-      profitInput.value = finalProfit;
-
-      // 更新全域變數供彈窗使用
-      currentGlobalTotalValue = Math.round(totalCurrentValue);
-      currentGlobalTotalProfit = finalProfit;
-
-      updateProfitDifference(finalProfit);
-      autoSaveToHistory(user, finalProfit);
+      listEl.innerHTML = html;
+      currentGlobalTotalProfit = Math.round(tProfit);
+      currentGlobalTotalValue = Math.round(tValue);
+      document.getElementById("autoTotalNetWorth").textContent = currentGlobalTotalProfit.toLocaleString();
+      updateDiff(currentGlobalTotalProfit);
+      autoSave(user, currentGlobalTotalProfit);
     }
 
-    function updateProfitDifference(currentCalculatedProfit) {
-      const diffEl = document.getElementById("profitDiffDisplay");
-      const diff = currentCalculatedProfit - lastRecordedProfit;
-      const sign = diff >= 0 ? "+" : "";
-      diffEl.textContent = `${sign}${diff.toLocaleString()}`;
-      diffEl.className = diff >= 0 ? "profit-positive" : "profit-negative";
+    function updateDiff(current) {
+      const el = document.getElementById("profitDiffDisplay");
+      const d = current - lastRecordedProfit;
+      el.textContent = `${d >= 0 ? '+' : ''}${d.toLocaleString()}`;
+      el.className = d >= 0 ? "profit-positive" : "profit-negative";
     }
 
-    function autoSaveToHistory(user, profit) {
-      const today = new Date().toISOString().split('T')[0];
-      const targetRef = db.ref(`family/investSnapshot/${user}/${today}`);
-      targetRef.once('value', (snap) => {
-        if (!snap.exists() || snap.val().profit !== profit) {
-          targetRef.set({ profit: profit });
-        }
-      });
-    }
-
-    function loadAnnualReview(user) {
-      db.ref(`family/investSnapshot/${user}`).on("value", snap => {
-        const val = snap.val() || {};
-        const allEntries = Object.entries(val)
-          .map(([d, v]) => ({ date: d, profit: v.profit }))
-          .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        if (!allEntries.length) return;
-
-        const todayStr = new Date().toISOString().split('T')[0];
-        const pastEntries = allEntries.filter(e => e.date !== todayStr);
-        lastRecordedProfit = pastEntries.length > 0 ? pastEntries[pastEntries.length - 1].profit : allEntries[0].profit;
-
-        const max = allEntries.reduce((p, c) => c.profit > p.profit ? c : p);
-        const min = allEntries.reduce((p, c) => c.profit < p.profit ? c : p);
-        document.getElementById("maxGainDay").innerHTML = `${max.date}<br><span class="profit-positive">$${max.profit.toLocaleString()}</span>`;
-        document.getElementById("maxLossDay").innerHTML = `${min.date}<br><span class="profit-negative">$${min.profit.toLocaleString()}</span>`;
-
-        renderChart(allEntries.slice(-30));
-      });
-    }
-
-    function renderChart(entries) {
-      const ctx = document.getElementById('profitTrendChart').getContext('2d');
-      if (profitChartInstance) profitChartInstance.destroy();
-      profitChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: entries.map(e => e.date.substring(5)),
-          datasets: [{ 
-            label: '盈餘趨勢', 
-            data: entries.map(e => e.profit), 
-            borderColor: '#f0a500', 
-            backgroundColor: 'rgba(240, 165, 0, 0.1)',
-            fill: true, tension: 0.3 
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-    }
-
-    function saveDailyProfit() {
-      const user = localStorage.getItem('currentUser');
-      const date = document.getElementById("dateInput").value;
-      const profit = parseFloat(document.getElementById("profitInput").value);
-      if(!date || isNaN(profit)) return alert("請輸入正確資料");
-      db.ref(`family/investSnapshot/${user}/${date}`).set({ profit: Math.round(profit) }).then(() => alert("手動更新成功"));
+    function autoSave(u, p) {
+      const d = new Date().toISOString().split('T')[0];
+      db.ref(`family/investSnapshot/${u}/${d}`).set({ profit: p });
     }
 
     window.onload = () => {
       const user = localStorage.getItem('currentUser');
       if (user) {
-        const savedBg = localStorage.getItem(`bg_${user}`);
-        if(savedBg) document.body.style.backgroundImage = `url(${savedBg})`;
-
-        const isJason = user.toLowerCase() === 'jason';
+        const bg = localStorage.getItem(`bg_${user}`);
+        if(bg) document.body.style.backgroundImage = `url(${bg})`;
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
-        document.getElementById("dateInput").value = new Date().toISOString().split('T')[0];
-        
-        if (isJason) {
-          document.getElementById('adminPanel').style.display = 'block';
-        } else {
-          document.getElementById("manualRecordSection").style.opacity = "0.5";
-          document.getElementById("profitInput").type = "password";
-          document.getElementById("profitInput").readOnly = true;
-        }
+        if (user.toLowerCase() === 'jason') document.getElementById('adminPanel').style.display = 'block';
 
-        loadAnnualReview(user); 
-        loadPortfolioAndAutoFill(user); 
+        db.ref(`family/investSnapshot/${user}`).on("value", snap => {
+          const entries = Object.entries(snap.val() || {}).map(([d, v]) => ({ date: d, profit: v.profit })).sort((a,b)=>new Date(a.date)-new Date(b.date));
+          if(entries.length > 1) lastRecordedProfit = entries[entries.length - 2].profit;
+          
+          const ctx = document.getElementById('profitTrendChart').getContext('2d');
+          if (profitChartInstance) profitChartInstance.destroy();
+          profitChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: entries.slice(-15).map(e => e.date.slice(5)),
+              datasets: [{ label: '盈餘', data: entries.slice(-15).map(e => e.profit), borderColor: '#f0a500', fill: false }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+        });
+        loadPortfolio(user);
       }
     };
   </script>
