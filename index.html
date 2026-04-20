@@ -133,10 +133,10 @@
     </div>
 
     <div class="container">
-      <h3>📈 資產趨勢回顧</h3>
+      <h3>📈 收益儀表盤</h3>
       <div class="stat-grid">
         <div class="stat-box">
-          <small>😎 今日收益</small>
+          <small>㊗️ 今日收益</small>
           <div id="profitDiffDisplay" style="font-size: 1.5em; font-weight: bold;">--</div>
         </div>
         <div class="stat-box">
@@ -329,7 +329,7 @@
         data: {
           labels: entries.map(e => e.date.substring(5)),
           datasets: [{ 
-            label: '盈餘趨勢', data: entries.map(e => e.profit), 
+            label: '30日收益圖表', data: entries.map(e => e.profit), 
             borderColor: '#f0a500', backgroundColor: 'rgba(240, 165, 0, 0.1)',
             fill: true, tension: 0.3 
           }]
