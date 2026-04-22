@@ -54,6 +54,7 @@
 
     .bg-upload-btn { background-color: #5d4037; font-size: 0.8em; padding: 5px 10px; }
     .calc-btn { background-color: #2980b9; font-size: 0.8em; padding: 5px 10px; }
+    .rank-btn { background-color: #8e44ad; font-size: 0.8em; padding: 5px 10px; }
 
     .modal {
       display: none;
@@ -73,6 +74,13 @@
       border: 3px solid #f0a500;
     }
     .modal-header { border-bottom: 2px solid #ffe0b2; padding-bottom: 10px; margin-bottom: 15px; }
+    
+    /* 績效排行專用樣式 */
+    .rank-card { background: #fff; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; padding: 10px; }
+    .rank-summary { display: flex; justify-content: space-between; align-items: center; cursor: pointer; list-style: none; outline: none; }
+    .rank-summary::-webkit-details-marker { display: none; }
+    .rank-details { margin-top: 10px; padding-left: 10px; border-top: 1px dashed #eee; font-size: 0.9em; }
+    .sub-stock { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px inset #f9f9f9; }
     .calc-result { 
       background: #fdf2e9; padding: 15px; border-radius: 8px; margin-top: 15px; 
       border: 1px dashed #f0a500; display: none; line-height: 1.8;
@@ -94,9 +102,23 @@
         <h2 id="userNameDisplay" style="display: inline-block; margin-right: 15px;">Hi, User</h2>
         <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click()">🖼️ 更換背景</button>
         <button class="calc-btn" onclick="openWithdrawModal()">💰 提領試算</button>
+        <button class="rank-btn" onclick="openRankModal()">🏆 績效排行</button>
         <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
       </div>
       <button onclick="logout()" style="background-color: #777;">登出</button>
+    </div>
+
+    <div id="rankModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 style="margin:0; color:#8e44ad;">🏆 成員績效排行</h3>
+        </div>
+        <p style="font-size: 0.8em; color: #777; margin-bottom: 10px;">* 預設顯示該成員最強標的投報率</p>
+        <div id="rankList">
+          <p style="text-align:center;">正在獲取最新數據...</p>
+        </div>
+        <button onclick="closeRankModal()" style="width:100%; margin-top:15px; background-color:#777;">關閉</button>
+      </div>
     </div>
 
     <div id="withdrawModal" class="modal">
@@ -173,6 +195,83 @@
     let currentGlobalTotalValue = 0;
     let currentGlobalTotalProfit = 0;
 
+    // --- 新增：績效排行邏輯 ---
+    async function openRankModal() {
+      document.getElementById('rankModal').style.display = 'block';
+      const listEl = document.getElementById('rankList');
+      listEl.innerHTML = '<p style="text-align:center;">📊 正在計算全員績效...</p>';
+
+      try {
+        const snap = await db.ref('users').get();
+        if (!snap.exists()) return;
+        const allUsers = snap.val();
+        let userRanks = [];
+
+        for (let username in allUsers) {
+          const portfolio = allUsers[username].portfolio;
+          if (!portfolio) continue;
+
+          let stocksDetail = [];
+          let maxRate = -999; 
+
+          for (let code in portfolio) {
+            const item = portfolio[code];
+            let currentPrice = item.cost;
+            try {
+              const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
+              const stockData = await res.json();
+              if (stockData.stat === "OK") {
+                currentPrice = parseFloat(stockData.data[stockData.data.length - 1][6].replace(/,/g, ''));
+              }
+            } catch (e) {}
+
+            const stockRate = parseFloat(((currentPrice - item.cost) / item.cost * 100).toFixed(2));
+            if (stockRate > maxRate) maxRate = stockRate; 
+            
+            stocksDetail.push({ rate: stockRate });
+          }
+
+          // 明細由高到低排序
+          stocksDetail.sort((a, b) => b.rate - a.rate);
+          userRanks.push({ name: username, maxRate: maxRate, details: stocksDetail });
+        }
+
+        // 依據「單檔最高獲利」排序排名
+        userRanks.sort((a, b) => b.maxRate - a.maxRate);
+
+        let html = "";
+        userRanks.forEach((user, index) => {
+          const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "👤";
+          const colorClass = user.maxRate >= 0 ? "profit-positive" : "profit-negative";
+          
+          html += `
+            <div class="rank-card">
+              <details>
+                <summary class="rank-summary">
+                  <span>${medal} <b>${user.name}</b></span>
+                  <span class="${colorClass}" style="font-size:1em;">單檔最高：${user.maxRate >= 0 ? '+' : ''}${user.maxRate}%</span>
+                </summary>
+                <div class="rank-details">
+                  <div style="color:#999; font-size:0.8em; margin-bottom:5px;">持股表現 (代碼已隱藏)：</div>
+                  ${user.details.map((s, i) => `
+                    <div class="sub-stock">
+                      <span>投資項目 ${String.fromCharCode(65 + i)}</span>
+                      <span class="${s.rate >= 0 ? 'profit-positive' : 'profit-negative'}">${s.rate >= 0 ? '+' : ''}${s.rate}%</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </details>
+            </div>`;
+        });
+        listEl.innerHTML = html;
+      } catch (err) {
+        listEl.innerHTML = "讀取資料時發生錯誤";
+      }
+    }
+
+    function closeRankModal() { document.getElementById('rankModal').style.display = 'none'; }
+
+    // --- 原有邏輯：提領試算 ---
     function openWithdrawModal() {
       document.getElementById('modalCurrentValue').textContent = `$${currentGlobalTotalValue.toLocaleString()}`;
       document.getElementById('modalTotalProfit').textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
@@ -203,6 +302,7 @@
       resultEl.style.display = 'block';
     }
 
+    // --- 原有邏輯：背景、登入等 ---
     function updateBackground(input) {
       if (input.files && input.files[0]) {
         const reader = new FileReader();
