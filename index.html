@@ -75,12 +75,14 @@
     }
     .modal-header { border-bottom: 2px solid #ffe0b2; padding-bottom: 10px; margin-bottom: 15px; }
     
-    /* 績效排行專用樣式 */
     .rank-card { background: #fff; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; padding: 10px; }
     .rank-summary { display: flex; justify-content: space-between; align-items: center; cursor: pointer; list-style: none; outline: none; }
     .rank-summary::-webkit-details-marker { display: none; }
     .rank-details { margin-top: 10px; padding-left: 10px; border-top: 1px dashed #eee; font-size: 0.9em; }
     .sub-stock { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px inset #f9f9f9; }
+    .daily-badge { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; margin-left: 5px; vertical-align: middle; }
+    .badge-up { background-color: #ffebee; color: #e74c3c; border: 1px solid #ffcdd2; }
+    .badge-down { background-color: #e8f5e9; color: #2ecc71; border: 1px solid #c8e6c9; }
     .calc-result { 
       background: #fdf2e9; padding: 15px; border-radius: 8px; margin-top: 15px; 
       border: 1px dashed #f0a500; display: none; line-height: 1.8;
@@ -113,7 +115,7 @@
         <div class="modal-header">
           <h3 style="margin:0; color:#8e44ad;">🏆 成員績效排行</h3>
         </div>
-        <p style="font-size: 0.8em; color: #777; margin-bottom: 10px;">* 預設顯示該成員最強標的投報率</p>
+        <p style="font-size: 0.8em; color: #777; margin-bottom: 10px;">* 括號內為與昨日總損益相比之變動</p>
         <div id="rankList">
           <p style="text-align:center;">正在獲取最新數據...</p>
         </div>
@@ -195,17 +197,25 @@
     let currentGlobalTotalValue = 0;
     let currentGlobalTotalProfit = 0;
 
-    // --- 新增：績效排行邏輯 ---
+    // --- 升級版：績效排行邏輯 (含今日 vs 昨日變動) ---
     async function openRankModal() {
       document.getElementById('rankModal').style.display = 'block';
       const listEl = document.getElementById('rankList');
-      listEl.innerHTML = '<p style="text-align:center;">📊 正在計算全員績效...</p>';
+      listEl.innerHTML = '<p style="text-align:center;">📊 正在分析成員表現...</p>';
 
       try {
-        const snap = await db.ref('users').get();
-        if (!snap.exists()) return;
-        const allUsers = snap.val();
+        const usersSnap = await db.ref('users').get();
+        const historySnap = await db.ref('family/investSnapshot').get(); // 取得歷史紀錄
+        
+        if (!usersSnap.exists()) return;
+        const allUsers = usersSnap.val();
+        const allHistory = historySnap.exists() ? historySnap.val() : {};
         let userRanks = [];
+
+        // 取得昨天的日期字串 (YYYY-MM-DD)
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yestStr = yesterday.toISOString().split('T')[0];
 
         for (let username in allUsers) {
           const portfolio = allUsers[username].portfolio;
@@ -213,7 +223,10 @@
 
           let stocksDetail = [];
           let maxRate = -999; 
+          let currentTotalProfit = 0;
+          let currentTotalCost = 0;
 
+          // 1. 計算該成員今日即時數據
           for (let code in portfolio) {
             const item = portfolio[code];
             let currentPrice = item.cost;
@@ -225,18 +238,36 @@
               }
             } catch (e) {}
 
+            const costTotal = item.cost * item.shares;
+            const currentTotal = currentPrice * item.shares;
+            const profit = currentTotal - costTotal;
             const stockRate = parseFloat(((currentPrice - item.cost) / item.cost * 100).toFixed(2));
-            if (stockRate > maxRate) maxRate = stockRate; 
             
+            currentTotalProfit += profit;
+            currentTotalCost += costTotal;
+            if (stockRate > maxRate) maxRate = stockRate; 
             stocksDetail.push({ rate: stockRate });
           }
 
-          // 明細由高到低排序
+          // 2. 獲取昨日數據並計算「今日變動 %」
+          let dailyChangePercent = 0;
+          const userHistory = allHistory[username] || {};
+          const yesterdayProfit = userHistory[yestStr] ? userHistory[yestStr].profit : null;
+
+          if (yesterdayProfit !== null && currentTotalCost > 0) {
+            // 變動百分比 = (今日總損益 - 昨日總損益) / 今日總成本 * 100
+            dailyChangePercent = parseFloat(((currentTotalProfit - yesterdayProfit) / currentTotalCost * 100).toFixed(2));
+          }
+
           stocksDetail.sort((a, b) => b.rate - a.rate);
-          userRanks.push({ name: username, maxRate: maxRate, details: stocksDetail });
+          userRanks.push({ 
+            name: username, 
+            maxRate: maxRate, 
+            details: stocksDetail,
+            dailyChange: dailyChangePercent 
+          });
         }
 
-        // 依據「單檔最高獲利」排序排名
         userRanks.sort((a, b) => b.maxRate - a.maxRate);
 
         let html = "";
@@ -244,12 +275,19 @@
           const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "👤";
           const colorClass = user.maxRate >= 0 ? "profit-positive" : "profit-negative";
           
+          // 準備變動標籤
+          let dailyHtml = "";
+          if (user.dailyChange !== 0) {
+            const badgeClass = user.dailyChange > 0 ? "badge-up" : "badge-down";
+            dailyHtml = `<span class="daily-badge ${badgeClass}">${user.dailyChange > 0 ? '↗️ 今日 +' : '↘️ 今日 '}${user.dailyChange}%</span>`;
+          }
+
           html += `
             <div class="rank-card">
               <details>
                 <summary class="rank-summary">
-                  <span>${medal} <b>${user.name}</b></span>
-                  <span class="${colorClass}" style="font-size:1em;">單檔最高：${user.maxRate >= 0 ? '+' : ''}${user.maxRate}%</span>
+                  <span>${medal} <b>${user.name}</b> ${dailyHtml}</span>
+                  <span class="${colorClass}" style="font-size:0.95em;">單檔最高：${user.maxRate >= 0 ? '+' : ''}${user.maxRate}%</span>
                 </summary>
                 <div class="rank-details">
                   <div style="color:#999; font-size:0.8em; margin-bottom:5px;">持股表現 (代碼已隱藏)：</div>
@@ -265,13 +303,13 @@
         });
         listEl.innerHTML = html;
       } catch (err) {
-        listEl.innerHTML = "讀取資料時發生錯誤";
+        listEl.innerHTML = "數據加載失敗，請確認 Firebase 權限";
       }
     }
 
     function closeRankModal() { document.getElementById('rankModal').style.display = 'none'; }
 
-    // --- 原有邏輯：提領試算 ---
+    // --- 以下為原有邏輯，保持不變 ---
     function openWithdrawModal() {
       document.getElementById('modalCurrentValue').textContent = `$${currentGlobalTotalValue.toLocaleString()}`;
       document.getElementById('modalTotalProfit').textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
@@ -297,12 +335,11 @@
         📍 對應獲利結算：<b>$${Math.round(allocatedProfit).toLocaleString()}</b><br>
         📍 <b>技術服務費 (15%)：</b> <b style="color:#e74c3c; font-size:1.2em;">$${fee.toLocaleString()}</b><br>
         <hr style="border:0; border-top:1px dashed #f0a500;">
-        <span style="font-size:0.85em; color:#666;">* 此費用已包含內扣費、手續費、證交稅、交易成本及個人綜所稅負擔等等。您的實領金額為 $${amount.toLocaleString()}-技術服務費 (15%)。</span>
+        <span style="font-size:0.85em; color:#666;">* 此費用已包含交易稅與個人綜所稅負擔等。您的實領金額為 $${amount.toLocaleString()}-技術服務費。</span>
       `;
       resultEl.style.display = 'block';
     }
 
-    // --- 原有邏輯：背景、登入等 ---
     function updateBackground(input) {
       if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -377,10 +414,6 @@
             <div class="stock-info-row" style="margin-top:5px; font-size:0.9em; color:#666;">
               ${hasAccess ? `<span>成本單價: ${info.cost}</span><span>現價: <b style="color:#2980b9;">${currentPrice}</b></span>` : '<span>成本: --</span><span>現價: --</span>'}
               <span>損益: <span class="${profitClass}">${profit >= 0 ? '+' : ''}${Math.round(profit).toLocaleString()} (${profit >= 0 ? '+' : ''}${profitRate}%)</span></span>
-            </div>
-            <div class="stock-info-row" style="border-top: 1px dashed #ffe0b2; margin-top:5px; padding-top:5px;">
-               <span>成本總額: <b>$${Math.round(costTotal).toLocaleString()}</b></span>
-               <span>現值總額: <b>$${Math.round(currentTotal).toLocaleString()}</b></span>
             </div>
           </li>`;
       }
