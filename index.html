@@ -98,6 +98,7 @@
         <div class="modal-header"><h3 style="margin:0; color:#27ae60;">💸 提領結算試算</h3></div>
         <div style="font-size: 0.85em; color: #666; margin-bottom: 10px;">
           * 說明：本試算預扣 0.5% 摩擦成本，僅對「稅後淨利」部分抽成 15% 服務費。
+          * 實際步驟 : 收到確定提領的需求後，本人會到平台賣出相對應價格之有價證券，依對帳單實收金額後(扣除券商費用)依申請權重收取相對權重獲利之 15% 服務費。
         </div>
         <div style="background: #f9f9f9; padding: 10px; border-radius: 8px; font-size: 0.9em;">
           <p>當前現值：<b id="modalCurrentValue">$0</b></p>
@@ -217,8 +218,8 @@
         userRanks.forEach((user, i) => {
           const medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":"👤";
           const badge = user.dailyChange !== 0 ? `<span class="daily-badge ${user.dailyChange > 0 ? 'badge-up' : 'badge-down'}">${user.dailyChange > 0 ? '↗️ ' : '↘️ '}${user.dailyChange}%</span>` : "";
-          html += `<div class="rank-card"><details><summary class="rank-summary"><span>${medal} <b>${user.name}</b> ${badge}</span><span class="${user.maxRate >= 0 ? 'profit-positive' : 'profit-negative'}">${user.maxRate}%</span></summary>
-            <div class="rank-details">${user.details.map((s, idx) => `<div class="sub-stock"><span>項目 ${String.fromCharCode(65 + idx)}</span><span class="${s.rate >= 0 ? 'profit-positive' : 'profit-negative'}">${s.rate}%</span></div>`).join('')}</div>
+          html += `<div class="rank-card"><details><summary class="rank-summary"><span>${medal} <b>${user.name}</b> ${badge}</span><span class="${user.maxRate >= 0 ? 'profit-positive' : 'profit-negative'}">${user.maxRate >= 0 ? '+' : ''}${user.maxRate}%</span></summary>
+            <div class="rank-details">${user.details.map((s, idx) => `<div class="sub-stock"><span>項目 ${String.fromCharCode(65 + idx)}</span><span class="${s.rate >= 0 ? 'profit-positive' : 'profit-negative'}">${s.rate >= 0 ? '+' : ''}${s.rate}%</span></div>`).join('')}</div>
             </details></div>`;
         });
         listEl.innerHTML = html;
