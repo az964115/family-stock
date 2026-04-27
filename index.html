@@ -50,10 +50,37 @@
     .rank-btn { background-color: #8e44ad; font-size: 0.8em; padding: 5px 10px; }
 
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-    .modal-content { 
-      background-color: #fffefb; margin: 5% auto; padding: 25px; border-radius: 12px; 
-      width: 90%; max-width: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 3px solid #f0a500; 
-    }
+    /* 修改 Modal 內容物，讓它在手機/小螢幕上不會超出 */
+.modal-content { 
+  background-color: #fffefb; 
+  margin: 2% auto; /* 減少頂部邊距 */
+  padding: 20px; 
+  border-radius: 12px; 
+  width: 90%; 
+  max-width: 450px; 
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+  border: 3px solid #f0a500; 
+  
+  /* 新增以下屬性：限制最大高度並允許滾動 */
+  max-height: 90vh; 
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* 防止外層溢出 */
+}
+
+/* 建立一個可滾動的內容區塊 */
+.modal-body-scroll {
+  overflow-y: auto;
+  flex: 1; /* 自動撐開並在超出時出現滾動條 */
+  padding-right: 5px; /* 給滾動條一點空間 */
+}
+
+/* 讓底部關閉按鈕區塊固定 */
+.modal-footer {
+  margin-top: 15px;
+  border-top: 1px solid #ffe0b2;
+  padding-top: 10px;
+}
     .modal-header { border-bottom: 2px solid #ffe0b2; padding-bottom: 10px; margin-bottom: 15px; }
     .calc-result { background: #fdf2e9; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px dashed #f0a500; display: none; line-height: 1.8; }
     
@@ -93,35 +120,39 @@
       </div>
     </div>
 
-    <div id="withdrawModal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header"><h3 style="margin:0; color:#27ae60;">💸 提領結算試算</h3></div>
-        <div style="font-size: 0.85em; color: #666; margin-bottom: 10px;">
-          * 說明：本試算預扣 0.5% 摩擦成本，僅對「稅後淨利」部分抽成 15% 服務費。
-          * 實際步驟 : 收到確定提領的需求後，本人會到平台賣出相對應價格之有價證券，依對帳單實收金額後(扣除券商費用)依申請權重收取相對權重獲利之 15% 服務費。
-        </div>
-        <div style="background: #f9f9f9; padding: 10px; border-radius: 8px; font-size: 0.9em;">
-          <p>當前現值：<b id="modalCurrentValue">$0</b></p>
-          <p>原始本金：<b id="modalTotalCost">$0</b></p>
-          <p>帳戶損益：<b id="modalTotalProfit">$0</b></p>
-        </div>
-        <div style="margin-top: 15px;">
-          <label><b>請輸入欲提領金額：</b></label>
-          <input type="number" id="withdrawAmount" style="width:100%; box-sizing: border-box;" placeholder="例如: 100000">
-          <button onclick="calculateWithdraw()" style="width:100%; margin-top:10px; background-color:#27ae60;">執行試算並紀錄</button>
-        </div>
-        
-        <div id="calcResult" class="calc-result"><div id="calcDetails"></div></div>
+<div id="withdrawModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3 style="margin:0; color:#27ae60;">💸 提領結算試算</h3></div>
+    
+    <div class="modal-body-scroll">
+      <div style="font-size: 0.85em; color: #666; margin-bottom: 10px;">
+        * 實際步驟 : 收到確定提領的需求後，本人會到平台賣出相對應價格之有價證券，依對帳單實收金額後(扣除券商費用)依申請權重收取相對權重獲利之 15% 服務費。
+        說明：本試算預扣 0.5% 摩擦成本，僅對「稅後淨利」部分抽成 15% 服務費。
+      </div>
+      <div style="background: #f9f9f9; padding: 10px; border-radius: 8px; font-size: 0.9em;">
+        <p>當前現值：<b id="modalCurrentValue">$0</b></p>
+        <p>原始本金：<b id="modalTotalCost">$0</b></p>
+        <p>帳戶損益：<b id="modalTotalProfit">$0</b></p>
+      </div>
+      <div style="margin-top: 15px;">
+        <label><b>請輸入欲提領金額：</b></label>
+        <input type="number" id="withdrawAmount" style="width:100%; box-sizing: border-box;" placeholder="例如: 100000">
+        <button onclick="calculateWithdraw()" style="width:100%; margin-top:10px; background-color:#27ae60;">執行試算並紀錄</button>
+      </div>
+      
+      <div id="calcResult" class="calc-result"><div id="calcDetails"></div></div>
 
-        <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
-          <h4 style="margin: 0 0 10px 0;">🕒 我的試算紀錄</h4>
-          <div id="calcLogs" class="log-container"></div>
-          <button onclick="clearLogs()" style="width:100%; margin-top:10px; background-color:#e74c3c; font-size: 0.8em;">🗑️ 清除所有紀錄</button>
-        </div>
-        
-        <button onclick="closeWithdrawModal()" style="width:100%; margin-top:15px; background-color:#777;">關閉</button>
+      <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+        <h4 style="margin: 0 0 10px 0;">🕒 我的試算紀錄</h4>
+        <div id="calcLogs" class="log-container"></div>
+        <button onclick="clearLogs()" style="width:100%; margin-top:10px; background-color:#e74c3c; font-size: 0.8em;">🗑️ 清除所有紀錄</button>
       </div>
     </div>
+    <div class="modal-footer">
+      <button onclick="closeWithdrawModal()" style="width:100%; background-color:#777;">關閉視窗</button>
+    </div>
+  </div>
+</div>
 
     <div id="adminPanel" class="container" style="display:none; border: 2px solid #f0a500;">
       <h3>⚙️ 管理員控制台 (Jason Only)</h3>
