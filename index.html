@@ -126,8 +126,9 @@
     
     <div class="modal-body-scroll">
       <div style="font-size: 0.85em; color: #666; margin-bottom: 10px;">
-        * 實際步驟 : 收到確定提領的需求後，本人會到平台賣出相對應價格之有價證券，依對帳單實收金額後(扣除券商費用)依申請權重收取相對權重獲利之 15% 服務費。
-        說明：本試算預扣 0.5% 摩擦成本，僅對「稅後淨利」部分抽成 15% 服務費。
+        * <b>結算說明：</b>本帳戶為合併代操，提領時統一收取 15% 服務規費。<br>
+        * <b>規費內含：</b>證券交易稅(0.3%)、券商手續費、<b>代墊個人綜合所得稅</b>、二代健保費及系統維護費。<br>
+        * <b>優點：</b>此金額為「完稅實領」，您無需再處理任何稅務申報問題。
       </div>
       <div style="background: #f9f9f9; padding: 10px; border-radius: 8px; font-size: 0.9em;">
         <p>當前現值：<b id="modalCurrentValue">$0</b></p>
@@ -309,30 +310,44 @@
       db.ref(`family/investSnapshot/${user}/${today}`).set({ profit: profit });
     }
 
-    // --- 提領試算紀錄 Logs ---
-    async function calculateWithdraw() {
-      const user = localStorage.getItem('currentUser');
-      const amt = parseFloat(document.getElementById('withdrawAmount').value);
-      const frictionRate = 0.005; 
-      const estimatedNetValue = currentGlobalTotalValue * (1 - frictionRate);
-      
-      if(!amt || amt <= 0 || amt > estimatedNetValue) return alert("金額無效或超出上限");
-      
-      const ratio = amt / estimatedNetValue;
-      const netTotalProfit = estimatedNetValue - currentGlobalTotalCost;
-      let fee = netTotalProfit > 0 ? Math.round((netTotalProfit * ratio) * 0.15) : 0;
+async function calculateWithdraw() {
+  const user = localStorage.getItem('currentUser');
+  const amt = parseFloat(document.getElementById('withdrawAmount').value);
+  
+  if(!amt || amt <= 0 || amt > currentGlobalTotalValue) {
+    return alert("金額無效或超出帳戶現值");
+  }
+  
+  const serviceRate = 0.15;
+  const fee = Math.round(amt * serviceRate);
+  const finalAmt = Math.round(amt - fee);
+  const isProfit = currentGlobalTotalValue > currentGlobalTotalCost;
+  if (!isProfit) {
+    // 可以選擇提醒家人目前是虧損提領，或者給予折扣
+      console.log("目前帳戶處於虧損狀態");
+  }
 
-      document.getElementById('calcDetails').innerHTML = `
-        📍 預估稅後淨值: $${Math.round(estimatedNetValue).toLocaleString()}<br>
-        📍 服務費 (15%): <span class="profit-positive">$${fee.toLocaleString()}</span><br>
-        <hr style="border:1px dashed #f0a500">
-        <div style="font-size:1.1em; color:#27ae60;"><b>💰 實領預計: $${Math.round(amt - fee).toLocaleString()}</b></div>`;
-      document.getElementById('calcResult').style.display = 'block';
+  // 3. 顯示結果
+  document.getElementById('calcDetails').innerHTML = `
+    📍 申請提領總額: $${amt.toLocaleString()}<br>
+    📍 服務規費 (15%): <span class="profit-positive">$${fee.toLocaleString()}</span><br>
+    <small style="color: #888;">(含證交稅、代墊綜所稅及技術費)</small>
+    <hr style="border:1px dashed #f0a500">
+    <div style="font-size:1.1em; color:#27ae60;"><b>💰 實際撥款預計: $${finalAmt.toLocaleString()}</b></div>`;
+  
+  document.getElementById('calcResult').style.display = 'block';
 
-      const logData = { time: new Date().toLocaleString(), applyAmt: amt, fee: fee, finalAmt: Math.round(amt - fee) };
-      await db.ref(`userLogs/${user}/withdrawHistory`).push(logData);
-      loadLogs();
-    }
+  // 4. 紀錄到 Firebase
+  const logData = { 
+    time: new Date().toLocaleString(), 
+    applyAmt: amt, 
+    fee: fee, 
+    finalAmt: finalAmt,
+    type: "總額抽成制" 
+  };
+  await db.ref(`userLogs/${user}/withdrawHistory`).push(logData);
+  loadLogs();
+}
 
     async function loadLogs() {
       const user = localStorage.getItem('currentUser');
