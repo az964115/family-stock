@@ -330,7 +330,7 @@ async function calculateWithdraw() {
   // 3. 顯示結果
   document.getElementById('calcDetails').innerHTML = `
     📍 申請提領總額: $${amt.toLocaleString()}<br>
-    📍 服務規費 (15%): <span class="profit-positive">$${fee.toLocaleString()}</span><br>
+    📍 服務規費 (10%): <span class="profit-positive">$${fee.toLocaleString()}</span><br>
     <small style="color: #888;">(含證交稅、代墊綜所稅及技術費)</small>
     <hr style="border:1px dashed #f0a500">
     <div style="font-size:1.1em; color:#27ae60;"><b>💰 實際撥款預計: $${finalAmt.toLocaleString()}</b></div>`;
