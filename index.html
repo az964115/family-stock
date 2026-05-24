@@ -126,7 +126,7 @@
     
     <div class="modal-body-scroll">
       <div style="font-size: 0.85em; color: #666; margin-bottom: 10px;">
-        * <b>結算說明：</b>本帳戶為合併代操，提領時統一收取 15% 服務規費。<br>
+        * <b>結算說明：</b>本帳戶為合併代操，提領時統一收取 10% 服務規費。<br>
         * <b>規費內含：</b>證券交易稅(0.3%)、券商手續費、<b>代墊個人綜合所得稅</b>、二代健保費及系統維護費。<br>
         * <b>優點：</b>此金額為「完稅實領」，您無需再處理任何稅務申報問題。
       </div>
@@ -318,7 +318,7 @@ async function calculateWithdraw() {
     return alert("金額無效或超出帳戶現值");
   }
   
-  const serviceRate = 0.15;
+  const serviceRate = 0.1;
   const fee = Math.round(amt * serviceRate);
   const finalAmt = Math.round(amt - fee);
   const isProfit = currentGlobalTotalValue > currentGlobalTotalCost;
