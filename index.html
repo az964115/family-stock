@@ -106,6 +106,8 @@
         <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click()">🖼️ 更換背景</button>
         <button class="calc-btn" onclick="openWithdrawModal()">💰 提領試算</button>
         <button class="rank-btn" onclick="openRankModal()">🏆 績效排行</button>
+        <button class="rank-btn" onclick="openRankModal()">🏆 績效排行</button>
+<button style="background-color: #e67e22; font-size: 0.8em; padding: 5px 10px;" onclick="openCompoundModal()">⏳ 複利計算</button>
         <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
       </div>
       <button onclick="logout()" style="background-color: #777;">登出</button>
@@ -166,7 +168,39 @@
         <b id="permissionStatus">讀取中...</b>
       </div>
     </div>
-
+    <div id="compoundModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3 style="margin:0; color:#e67e22;">⏳ 長期複利效益計算</h3></div>
+    
+    <div class="modal-body-scroll">
+      <div style="font-size: 0.85em; color: #666; margin-bottom: 10px;">
+        * <b>務實規劃：</b>輸入你的投資設定，看看時間與複利帶來的滾雪球效應。
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <label><b>單筆初始本金 (元)：</b></label>
+        <input type="number" id="compPrincipal" placeholder="例如: 100000" value="100000">
+        
+        <label><b>每月定期定額投入 (元)：</b></label>
+        <input type="number" id="compMonthly" placeholder="例如: 10000" value="10000">
+        
+        <label><b>預期年化報酬率 (%)：</b></label>
+        <input type="number" id="compRate" placeholder="例如: 8" value="8" step="0.1">
+        
+        <label><b>投資年期 (年)：</b></label>
+        <input type="number" id="compYears" placeholder="例如: 10" value="10">
+        
+        <button onclick="calculateCompound()" style="width:100%; margin-top:10px; background-color:#e67e22;">開始計算</button>
+      </div>
+      
+      <div id="compoundResult" class="calc-result" style="display:none; background: #fef5e7; border-color: #e67e22;">
+        <div id="compoundDetails"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeCompoundModal()" style="width:100%; background-color:#777;">關閉視窗</button>
+    </div>
+  </div>
+</div>
     <div class="container">
       <h3>📈 收益儀表盤</h3>
       <div class="stat-grid">
@@ -257,6 +291,50 @@
         listEl.innerHTML = html;
       } catch (err) { listEl.innerHTML = "讀取失敗"; }
     }
+    // --- 複利計算機邏輯 ---
+function openCompoundModal() {
+  document.getElementById('compoundModal').style.display = 'block';
+}
+function closeCompoundModal() {
+  document.getElementById('compoundModal').style.display = 'none';
+}
+
+function calculateCompound() {
+  const principal = parseFloat(document.getElementById('compPrincipal').value) || 0;
+  const monthly = parseFloat(document.getElementById('compMonthly').value) || 0;
+  const annualRate = parseFloat(document.getElementById('compRate').value) || 0;
+  const years = parseInt(document.getElementById('compYears').value) || 0;
+  
+  if (years <= 0) return alert("投資年期必須大於 0 年");
+  
+  const monthlyRate = (annualRate / 100) / 12;
+  const totalMonths = years * 12;
+  
+  // 複利公式計算
+  // 1. 初始本金複利: P * (1 + r)^n
+  let futureValuePrincipal = principal * Math.pow(1 + monthlyRate, totalMonths);
+  
+  // 2. 定期定額年金終值: PMT * [((1 + r)^n - 1) / r]
+  let futureValueSeries = 0;
+  if (monthlyRate > 0) {
+    futureValueSeries = monthly * ((Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate);
+  } else {
+    futureValueSeries = monthly * totalMonths;
+  }
+  
+  const totalEstimated = Math.round(futureValuePrincipal + futureValueSeries);
+  const totalInvested = Math.round(principal + (monthly * totalMonths));
+  const totalInterest = totalEstimated - totalInvested;
+
+  document.getElementById('compoundDetails').innerHTML = `
+    📈 <b>${years} 年後預估成果明細：</b><br>
+    📍 總投入本金: $${totalInvested.toLocaleString()} 元<br>
+    📍 滾出總利息: <span class="profit-positive">$${totalInterest.toLocaleString()} 元</span><br>
+    <hr style="border:1px dashed #e67e22">
+    <div style="font-size:1.15em; color:#d35400;"><b>💰 資產預估總額: $${totalEstimated.toLocaleString()} 元</b></div>
+  `;
+  document.getElementById('compoundResult').style.display = 'block';
+}
     function closeRankModal() { document.getElementById('rankModal').style.display = 'none'; }
 
     // --- 持股與核心邏輯 ---
