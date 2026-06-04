@@ -343,36 +343,19 @@ function calculateCompound() {
       const hasAccess = isJason || canSeeDetails; 
       if (!data) { listEl.innerHTML = "<li>無持股資料</li>"; return; }
 
-      // 先讀取 Firebase 上的公共暫存現價
-      const priceSnap = await db.ref('globalStockPrices').get();
-      const globalPrices = priceSnap.exists() ? priceSnap.val() : {};
-
       let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0, html = "";
-      let updatedPrices = {}; // 用來記錄本次成功抓到的新價格
-
       for (let code in data) {
         const info = data[code];
-        
-        // 預設順序：1. 先用公共暫存現價 -> 2. 沒有暫存則用成本
-        let price = globalPrices[code] !== undefined ? globalPrices[code] : info.cost;
-
+        let price = info.cost;
         try {
-          // 網頁端照常去抓證交所
           const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
           const s = await res.json();
-          if (s.stat === "OK" && s.data && s.data.length > 0) {
-            price = parseFloat(s.data[s.data.length - 1][6].replace(/,/g, ''));
-            updatedPrices[code] = price; // 成功抓到，記錄起來
-          }
-        } catch (e) {
-          console.log(`${code} 抓取失敗，自動沿用系統最新暫存價: ${price}`);
-        }
-
+          if(s.stat === "OK") price = parseFloat(s.data[s.data.length-1][6].replace(/,/g,''));
+        } catch(e){}
         const costT = info.cost * info.shares;
         const currT = price * info.shares;
         const p = currT - costT;
         totalProfit += p; totalCurrentValue += currT; totalCostT += costT;
-        
         html += `<li class="stock-item">
             <div class="stock-info-row"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏)'}</b><span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span></div>
             <div class="stock-info-row" style="font-size:0.9em; color:#666;">
@@ -383,21 +366,15 @@ function calculateCompound() {
                <span>成本總額: $${Math.round(costT).toLocaleString()}</span><span>現值總額: $${Math.round(currT).toLocaleString()}</span>
             </div></li>`;
       }
-      
       listEl.innerHTML = html;
       currentGlobalTotalProfit = Math.round(totalProfit);
       currentGlobalTotalValue = Math.round(totalCurrentValue);
       currentGlobalTotalCost = Math.round(totalCostT);
       document.getElementById("autoTotalNetWorth").textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
       updateProfitDifference(currentGlobalTotalProfit);
-      
-      // 網頁把今天成功抓到的新現價更新回 Firebase 公共節點，供所有人與 Python 共享
-      if (Object.keys(updatedPrices).length > 0) {
-        db.ref('globalStockPrices').update(updatedPrices);
-      }
-
       autoSaveToHistory(user, currentGlobalTotalProfit);
     }
+
     function updateProfitDifference(curr) {
       const el = document.getElementById("profitDiffDisplay");
       const diff = curr - lastRecordedProfit;
