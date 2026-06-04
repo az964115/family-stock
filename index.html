@@ -343,19 +343,23 @@ function calculateCompound() {
       const hasAccess = isJason || canSeeDetails; 
       if (!data) { listEl.innerHTML = "<li>無持股資料</li>"; return; }
 
+      // 1. 先從 Firebase 讀取 Python 幫我們存好的公共現價節點
+      const priceSnap = await db.ref('globalStockPrices').get();
+      const globalPrices = priceSnap.exists() ? priceSnap.val() : {};
+
       let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0, html = "";
+      
       for (let code in data) {
         const info = data[code];
-        let price = info.cost;
-        try {
-          const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
-          const s = await res.json();
-          if(s.stat === "OK") price = parseFloat(s.data[s.data.length-1][6].replace(/,/g,''));
-        } catch(e){}
+        
+        // 2. 直接拿現價，如果 Python 還沒抓過，就先預設等於成本
+        let price = globalPrices[code] !== undefined ? globalPrices[code] : info.cost;
+
         const costT = info.cost * info.shares;
         const currT = price * info.shares;
         const p = currT - costT;
         totalProfit += p; totalCurrentValue += currT; totalCostT += costT;
+        
         html += `<li class="stock-item">
             <div class="stock-info-row"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏)'}</b><span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span></div>
             <div class="stock-info-row" style="font-size:0.9em; color:#666;">
@@ -372,7 +376,8 @@ function calculateCompound() {
       currentGlobalTotalCost = Math.round(totalCostT);
       document.getElementById("autoTotalNetWorth").textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
       updateProfitDifference(currentGlobalTotalProfit);
-      autoSaveToHistory(user, currentGlobalTotalProfit);
+      
+      // 網頁端不需要再重寫一次 history，交給 Python 統一處理即可
     }
 
     function updateProfitDifference(curr) {
