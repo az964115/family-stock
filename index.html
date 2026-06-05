@@ -336,43 +336,110 @@ function calculateCompound() {
 }
     function closeRankModal() { document.getElementById('rankModal').style.display = 'none'; }
 
-    // --- 持股與核心邏輯 ---
+    // --- 嚴格模式：持股與核心邏輯 ---
     async function renderPortfolio(data, user, canSeeDetails) {
       const listEl = document.getElementById("portfolioList");
       const isJason = user.toLowerCase() === 'jason';
       const hasAccess = isJason || canSeeDetails; 
+      
       if (!data) { listEl.innerHTML = "<li>無持股資料</li>"; return; }
 
-      let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0, html = "";
-      for (let code in data) {
+      // 1. 初始狀態：提示正在取得最新精確資料
+      listEl.innerHTML = "<li>🔄 正在即時連線證交所，驗證數據精確度中...</li>";
+      document.getElementById("autoTotalNetWorth").textContent = "計算中...";
+      document.getElementById("profitDiffDisplay").textContent = "--";
+
+      let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0;
+      let html = "";
+      
+      // 標記本次所有 API 請求是否「全數成功」
+      let isAllDataAccurate = true; 
+
+      // 2. 包裝所有請求
+      const codes = Object.keys(data);
+      const fetchPromises = codes.map(async (code) => {
         const info = data[code];
-        let price = info.cost;
+        let price = null; // 初始設為 null，確保一定要從 API 拿到真數據
+
         try {
-          const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`);
+          // 設定 6 秒超時控制，超過就斷開
+          const controller = new AbortController();
+          const id = setTimeout(() => controller.abort(), 6000);
+          
+          const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`, {
+            signal: controller.signal
+          });
+          clearTimeout(id);
+          
           const s = await res.json();
-          if(s.stat === "OK") price = parseFloat(s.data[s.data.length-1][6].replace(/,/g,''));
-        } catch(e){}
-        const costT = info.cost * info.shares;
-        const currT = price * info.shares;
-        const p = currT - costT;
-        totalProfit += p; totalCurrentValue += currT; totalCostT += costT;
-        html += `<li class="stock-item">
-            <div class="stock-info-row"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏)'}</b><span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span></div>
-            <div class="stock-info-row" style="font-size:0.9em; color:#666;">
-              ${hasAccess ? `<span>成本: ${info.cost}</span><span>現價: ${price}</span>` : '<span>成本: --</span><span>現價: --</span>'}
-              <span>損益: <span class="${p>=0?'profit-positive':'profit-negative'}">${p>=0?'+':''}${Math.round(p).toLocaleString()} (${((p/costT)*100).toFixed(1)}%)</span></span>
-            </div>
-            <div class="stock-info-row" style="border-top:1px dashed #ffe0b2; margin-top:5px; padding-top:5px;">
-               <span>成本總額: $${Math.round(costT).toLocaleString()}</span><span>現值總額: $${Math.round(currT).toLocaleString()}</span>
-            </div></li>`;
+          if (s && s.stat === "OK" && s.data && s.data.length > 0) {
+            price = parseFloat(s.data[s.data.length - 1][6].replace(/,/g, ''));
+          } else {
+            // 證交所回傳格式不對或被限制頻率
+            isAllDataAccurate = false;
+          }
+        } catch (e) {
+          console.warn(`標的 ${code} 抓取即時價格失敗。`, e);
+          isAllDataAccurate = false; // 只要有一檔失敗，整體標記就失敗
+        }
+
+        // 如果這檔股票成功拿到價格，才計算單檔損益，否則帶入錯誤數值
+        if (price !== null) {
+          const costT = info.cost * info.shares;
+          const currT = price * info.shares;
+          const p = currT - costT;
+          return { code, info, costT, currT, p, price, success: true };
+        } else {
+          return { success: false };
+        }
+      });
+
+      try {
+        // 3. 等待所有連線結果
+        const results = await Promise.all(fetchPromises);
+
+        // 4. 關鍵檢查：防線攔截！如果有人失敗，立刻執行「不顯示」邏輯
+        if (!isAllDataAccurate || results.some(r => !r.success)) {
+          listEl.innerHTML = "<li style='color: #e74c3c; font-weight: bold;'>⚠️ 證交所連線忙碌中，為了保障數據精確度，系統已暫停顯示。請稍後 10 秒再重新整理網頁。</li>";
+          document.getElementById("autoTotalNetWorth").innerHTML = "<span style='color:#e74c3c; font-size:0.6em;'>暫時無法連線</span>";
+          document.getElementById("profitDiffDisplay").textContent = "⚠️";
+          return; // 直接中斷函式，不寫入 Firebase，不更新圖表，不顯示任何錯誤總額！
+        }
+
+        // 5. 驗證通過：100% 都是最新正確數據，開始統計與渲染
+        results.forEach(({ code, info, costT, currT, p, price }) => {
+          totalProfit += p; 
+          totalCurrentValue += currT; 
+          totalCostT += costT;
+
+          html += `<li class="stock-item">
+              <div class="stock-info-row"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏)'}</b><span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span></div>
+              <div class="stock-info-row" style="font-size:0.9em; color:#666;">
+                ${hasAccess ? `<span>成本: ${info.cost}</span><span>現價: ${price}</span>` : '<span>成本: --</span><span>現價: --</span>'}
+                <span>損益: <span class="${p>=0?'profit-positive':'profit-negative'}">${p>=0?'+':''}${Math.round(p).toLocaleString()} (${((p/costT)*100).toFixed(1)}%)</span></span>
+              </div>
+              <div class="stock-info-row" style="border-top:1px dashed #ffe0b2; margin-top:5px; padding-top:5px;">
+                 <span>成本總額: $${Math.round(costT).toLocaleString()}</span><span>現值總額: $${Math.round(currT).toLocaleString()}</span>
+              </div></li>`;
+        });
+
+        // 渲染正確畫面
+        listEl.innerHTML = html;
+        
+        currentGlobalTotalProfit = Math.round(totalProfit);
+        currentGlobalTotalValue = Math.round(totalCurrentValue);
+        currentGlobalTotalCost = Math.round(totalCostT);
+        
+        document.getElementById("autoTotalNetWorth").textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
+        updateProfitDifference(currentGlobalTotalProfit);
+        
+        // 只有在 100% 數據正確時，才觸發自動存檔存入 Firebase
+        autoSaveToHistory(user, currentGlobalTotalProfit);
+
+      } catch (globalError) {
+        console.error("系統嚴重錯誤", globalError);
+        listEl.innerHTML = "<li>❌ 系統計算損益時發生錯誤。</li>";
       }
-      listEl.innerHTML = html;
-      currentGlobalTotalProfit = Math.round(totalProfit);
-      currentGlobalTotalValue = Math.round(totalCurrentValue);
-      currentGlobalTotalCost = Math.round(totalCostT);
-      document.getElementById("autoTotalNetWorth").textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
-      updateProfitDifference(currentGlobalTotalProfit);
-      autoSaveToHistory(user, currentGlobalTotalProfit);
     }
 
     function updateProfitDifference(curr) {
