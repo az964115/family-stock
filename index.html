@@ -584,7 +584,7 @@ async function calculateWithdraw() {
         type: 'line',
         data: {
           labels: entries.map(e => e.date.substring(5)),
-          datasets: [{ label: '30日損益', data: entries.map(e => e.profit), borderColor: '#f0a500', fill: true, tension: 0.6 }]
+          datasets: [{ label: '30日損益', data: entries.map(e => e.profit), borderColor: '#f0a500', fill: true, tension: 0.3 }]
         },
         options: { responsive: true, maintainAspectRatio: false }
       });
