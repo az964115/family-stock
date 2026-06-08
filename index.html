@@ -2,357 +2,310 @@
 <html lang="zh-Hant">
 <head>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f0a500">
+  <meta name="theme-color" content="#4A5568">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🐷豬豬e網 - 資產管理🐷</title>
-  
-  <!-- 引入 Google Fonts 與 FontAwesome 精緻圖示 -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <style>
     :root {
-      --primary: #f0a500;
-      --primary-dark: #d48f00;
-      --accent: #5d4037;
-      --bg: #fdf6e3;
-      --up: #e74c3c;
-      --down: #2ecc71;
-      --glass: rgba(255, 255, 255, 0.88);
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+      --primary: #4A5568;
+      --primary-light: #718096;
+      --bg-gradient: linear-gradient(135deg, #FFFDF0 0%, #FCE8C3 100%); 
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --text-main: #2D3748;
+      --text-muted: #718096;
+      --success: #2F855A;
+      --success-light: #E6FFFA;
+      --danger: #9B2C2C;
+      --danger-light: #FFF5F5;
+      --accent: #D4AF37;
     }
 
-    /* 全局排版優化 */
     body { 
-      font-family: 'Noto Sans TC', 'Segoe UI', sans-serif; 
-      margin: 0; padding: 20px; 
-      background-color: var(--bg);
-      background-size: cover; background-position: center; background-attachment: fixed;
-      color: #2c3e50; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0; padding: 30px 20px; max-width: 1050px; margin: 0 auto;
+      background: var(--bg-gradient); background-attachment: fixed;
+      color: var(--text-main); -webkit-font-smoothing: antialiased;
       transition: background 0.5s ease;
-      line-height: 1.5;
     }
+    /* 新增：目標設定按鈕顏色 */
+.target-btn { background-color: #3182CE; color: white; }
+.target-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-    .app-wrapper {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    /* 容器毛玻璃與微互動質感 */
+/* 新增：進度條專用樣式 */
+.progress-container {
+  margin: 20px 0;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  position: relative;
+  height: 24px;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+.progress-bar {
+  background: linear-gradient(90deg, #3182CE 0%, #319795 100%);
+  height: 100%;
+  width: 0%; /* 由 JS 動態控制 */
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px;
+}
+.progress-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.85em;
+  font-weight: 700;
+  color: #2D3748;
+  text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.8);
+}
     .container { 
-      background: var(--glass); 
-      backdrop-filter: blur(12px); 
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 20px; 
-      padding: 24px; 
-      margin-bottom: 24px; 
-      box-shadow: var(--shadow);
+      background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-radius: 16px; padding: 25px; margin-bottom: 25px; 
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.4);
-      animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .container:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.12);
     }
-
-    /* 標題與字體 */
-    h2, h3 { font-weight: 700; margin-top: 0; display: flex; align-items: center; gap: 10px; }
-    .number-font { font-family: 'Montserrat', sans-serif; }
-
-    /* 按鈕優化 */
-    button { 
-      cursor: pointer; 
-      background-color: var(--primary); 
-      color: #fff; 
-      border: none; 
-      font-weight: 600; 
-      padding: 10px 18px;
-      border-radius: 12px;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 12px rgba(240, 165, 0, 0.15);
-    }
-    button:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(240, 165, 0, 0.25); background-color: var(--primary-dark); }
-    button:active { transform: scale(0.95); }
-
-    /* 輸入框優化 */
-    input { 
-      padding: 12px; border-radius: 10px; border: 1px solid #e0e0e0; 
-      font-size: 16px; transition: border 0.3s, box-shadow 0.3s;
-      background: #fff;
-    }
-    input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(240, 165, 0, 0.15); }
-
-    /* 儀表盤網格 */
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
-    .stat-box { 
-      background: #fff; padding: 20px; border-radius: 16px; text-align: left; 
-      border: 1px solid rgba(240, 165, 0, 0.15);
-      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
-    }
-    .stat-box:hover { transform: translateY(-4px); box-shadow: 0 6px 15px rgba(0,0,0,0.04); }
-    .stat-label { font-size: 0.85em; color: #7f8c8d; display: block; margin-bottom: 5px; }
-    .stat-value { font-size: 1.4em; font-weight: 700; }
-
-    /* 持股清單卡片設計 */
-    #portfolioList { list-style: none; padding: 0; margin: 0; }
-    .stock-item { 
-      background: #fff; padding: 20px; border-radius: 18px; margin-bottom: 14px; 
-      box-shadow: 0 4px 6px rgba(0,0,0,0.01); 
-      border-left: 6px solid var(--primary);
-      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-    .stock-item:hover { transform: scale(1.015); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-    .stock-info-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .stock-tag { background: #f8f9fa; padding: 4px 8px; border-radius: 6px; font-size: 0.8em; color: #666; border: 1px solid #eee; }
-
-    /* 損益顏色 */
-    .profit-positive { color: var(--up); font-weight: bold; } 
-    .profit-negative { color: var(--down); font-weight: bold; } 
-
-    .daily-badge { font-size: 0.75em; padding: 3px 8px; border-radius: 6px; margin-left: 5px; vertical-align: middle; font-weight: bold; }
-    .badge-up { background-color: #ffebee; color: var(--up); border: 1px solid #ffcdd2; }
-    .badge-down { background-color: #e8f5e9; color: var(--down); border: 1px solid #c8e6c9; }
-
-    /* Switch 開關 */
-    .switch { position: relative; display: inline-block; width: 44px; height: 22px; vertical-align: middle; margin: 0 10px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 22px; }
-    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--primary); }
-    input:checked + .slider:before { transform: translateX(22px); }
-
-    .bg-upload-btn { background-color: var(--accent); font-size: 0.85em; }
-    .calc-btn { background-color: #27ae60; font-size: 0.85em; }
-    .rank-btn { background-color: #8e44ad; font-size: 0.85em; }
-
-    /* Modal 彈窗優化 */
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
-    .modal-content { 
-      background-color: #fffefb; 
-      margin: 4% auto; 
-      padding: 24px; 
-      border-radius: 24px; 
-      width: 90%; 
-      max-width: 460px; 
-      box-shadow: 0 15px 40px rgba(0,0,0,0.15); 
-      border: 1px solid rgba(240, 165, 0, 0.3); 
-      max-height: 85vh; 
-      display: flex;
-      flex-direction: column;
-      overflow: hidden; 
-      animation: modalOpen 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.15);
-    }
-    @keyframes modalOpen { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-    .modal-body-scroll { overflow-y: auto; flex: 1; padding-right: 6px; }
-    .modal-footer { margin-top: 15px; border-top: 1px solid #ffe0b2; padding-top: 12px; }
-    .modal-header { border-bottom: 2px solid #ffe0b2; padding-bottom: 12px; margin-bottom: 15px; }
     
-    .calc-result { background: #fffdf9; padding: 18px; border-radius: 14px; margin-top: 15px; border: 1px dashed var(--primary); display: none; line-height: 1.8; box-shadow: inset 0 2px 6px rgba(0,0,0,0.01); }
-    .rank-card { background: #fff; border: 1px solid #eee; border-radius: 14px; margin-bottom: 12px; padding: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s; }
-    .rank-card:hover { transform: translateY(-2px); }
-    .rank-summary { display: flex; justify-content: space-between; align-items: center; cursor: pointer; list-style: none; outline: none; font-weight: 500; }
-    .rank-summary::-webkit-details-marker { display: none; }
-    .rank-details { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee; font-size: 0.9em; color: #555; }
-    .sub-stock { display: flex; justify-content: space-between; padding: 4px 0; }
-
-    .log-container { max-height: 160px; overflow-y: auto; margin-top: 10px; background: #fff; padding: 12px; border-radius: 10px; border: 1px solid #eee; font-size: 0.85em; }
-    .log-item { border-bottom: 1px solid #f5f5f5; padding: 6px 0; }
-    .log-item:last-child { border-bottom: none; }
-
-    /* 骨架屏載入動畫 */
-    .loading-pulse { animation: pulse 1.5s infinite ease-in-out; }
-    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-    .chart-container { height: 280px; margin-top: 20px; position: relative; }
-
-    @media (max-width: 480px) {
-      body { padding: 10px; }
-      .container { padding: 16px; margin-bottom: 16px; }
-      .stat-grid { grid-template-columns: 1fr; gap: 12px; }
-      .stat-box { padding: 14px; }
-      button { width: auto; padding: 8px 14px; font-size: 0.9em; }
+    h2, h3, h4 { margin-top: 0; color: var(--primary); font-weight: 600; letter-spacing: -0.5px; }
+    
+    /* 調整為 6 欄位，更能完美容納新增的區塊 */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 20px; }
+    .stat-box { 
+      background: rgba(255, 255, 255, 0.7); padding: 18px 12px; border-radius: 12px; 
+      text-align: center; border: 1px solid rgba(255, 255, 255, 0.6);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+    .stat-box:hover { background: #fff; transform: scale(1.02); }
+    .stat-box small { color: var(--text-muted); font-size: 0.82em; font-weight: 500; display: block; margin-bottom: 6px; }
+    
+    input[type="text"], input[type="password"], input[type="number"] { 
+      padding: 12px 16px; margin: 8px 0; border-radius: 8px; 
+      border: 1px solid #CBD5E0; background: rgba(255, 255, 255, 0.9);
+      font-size: 1em; width: 100%; box-sizing: border-box; outline: none;
+      transition: all 0.2s ease;
+    }
+    input:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(113, 128, 150, 0.15); }
+    
+    button { 
+      cursor: pointer; padding: 12px 20px; margin: 6px 0; border-radius: 8px; 
+      font-weight: 600; font-size: 0.95em; border: none; letter-spacing: 0.5px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    
+    .btn-primary { background-color: var(--primary); color: #fff; }
+    .btn-primary:hover { background-color: var(--primary-light); transform: translateY(-1px); }
+    
+    .bg-upload-btn { background-color: #5A626A; color: white; }
+    .calc-btn { background-color: #2F855A; color: white; }
+    .rank-btn { background-color: #6B46C1; color: white; }
+    .compound-btn { background-color: #D69E2E; color: white; }
+    .bg-upload-btn:hover, .calc-btn:hover, .rank-btn:hover, .compound-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    .chart-container { height: 320px; margin-top: 25px; position: relative; }
+    #portfolioList { list-style: none; padding: 0; margin: 20px 0 0 0; }
+    
+    .stock-item { 
+      background: rgba(255, 255, 255, 0.8); padding: 18px; border-radius: 12px; margin-bottom: 12px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02); border-left: 5px solid var(--primary-light); 
+      line-height: 1.6; transition: all 0.2s ease;
+    }
+    .stock-item:hover { transform: translateX(3px); background: #fff; }
+    .stock-info-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+    
+    .profit-positive { color: #C53030; font-weight: 600; } 
+    .profit-negative { color: #22543D; font-weight: 600; } 
+    
+    .daily-badge { font-size: 0.75em; padding: 3px 8px; border-radius: 20px; margin-left: 6px; font-weight: 600; }
+    .badge-up { background-color: var(--danger-light); color: #C53030; }
+    .badge-down { background-color: var(--success-light); color: #22543D; }
+
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; vertical-align: middle; margin: 0 10px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E0; transition: .3s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Modal Styling */
+    .modal { 
+      display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; 
+      background-color: rgba(26, 32, 44, 0.4); backdrop-filter: blur(4px);
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .modal.show { display: block; opacity: 1; }
+    
+    .modal-content { 
+      background-color: #FFF; margin: 5vh auto; padding: 25px; border-radius: 16px; 
+      width: 90%; max-width: 460px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      border: none; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;
+      transform: translateY(-20px); transition: transform 0.3s ease;
+    }
+    .modal.show .modal-content { transform: translateY(0); }
+    .modal-body-scroll { overflow-y: auto; flex: 1; padding-right: 8px; margin-top: 10px; }
+    .modal-body-scroll::-webkit-scrollbar { width: 6px; }
+    .modal-body-scroll::-webkit-scrollbar-thumb { background-color: #E2E8F0; border-radius: 4px; }
+    .modal-footer { margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 15px; }
+    .modal-header { border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 10px; }
+    
+    .calc-result { background: #F7FAFC; padding: 18px; border-radius: 12px; margin-top: 15px; border: 1px solid #E2E8F0; display: none; line-height: 1.8; }
+    .rank-card { background: #F7FAFC; border: 1px solid #EDF2F7; border-radius: 10px; margin-bottom: 10px; padding: 12px; }
+    .rank-summary { display: flex; justify-content: space-between; align-items: center; cursor: pointer; list-style: none; font-weight: 500; }
+    .rank-summary::-webkit-details-marker { display: none; }
+    
+    .log-container { max-height: 160px; overflow-y: auto; margin-top: 10px; background: #F7FAFC; padding: 12px; border-radius: 8px; border: 1px solid #EDF2F7; font-size: 0.88em; }
+    .log-item { border-bottom: 1px solid #EDF2F7; padding: 8px 0; }
+    .log-item:last-child { border-bottom: none; }
+    
+    .flex-wrap-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
   </style>
 </head>
 <body>
 
-<div class="app-wrapper">
-  <!-- 登入區塊 -->
-  <div id="loginSection" class="container" style="text-align: center; max-width: 400px; margin: 10% auto 0 auto;">
-    <div style="font-size: 3.5em; margin-bottom: 10px; animation: pulse 2s infinite;">🐷</div>
-    <h2><i class="fa-solid fa-lock" style="color: var(--primary);"></i> 登入系統</h2>
-    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
-      <input type="text" id="loginUser" placeholder="請輸入帳號">
-      <input type="password" id="loginPassword" placeholder="請輸入密碼">
-      <button onclick="login()" style="width:100%; margin-top: 8px;"><i class="fa-solid fa-right-to-bracket"></i> 登入</button>
-    </div>
+  <div id="loginSection" class="container" style="max-width: 400px; margin: 10vh auto;">
+    <h2 style="text-align: center; margin-bottom: 20px;">🔑 登入系統</h2>
+    <input type="text" id="loginUser" placeholder="帳號">
+    <input type="password" id="loginPassword" placeholder="密碼">
+    <button class="btn-primary" onclick="login()" style="width:100%; margin-top: 15px; padding: 14px;">登入</button>
   </div>
 
-  <!-- 主頁面區塊 -->
   <div id="mainContent" style="display:none;">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-      <div>
-        <h2 id="userNameDisplay" style="display: inline-block; margin-right: 15px; margin-bottom: 0;"><i class="fa-solid fa-circle-user"></i> Hi, User</h2>
-        <div style="display: inline-flex; gap: 8px; flex-wrap: wrap; margin-top: 5px;">
-          <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click()"><i class="fa-solid fa-image"></i> 更換背景</button>
-          <button class="calc-btn" onclick="openWithdrawModal()"><i class="fa-solid fa-money-bill-transfer"></i> 提領試算</button>
-          <button class="rank-btn" onclick="openRankModal()"><i class="fa-solid fa-trophy"></i> 績效排行</button>
-          <button style="background-color: #e67e22; font-size: 0.85em;" onclick="openCompoundModal()"><i class="fa-solid fa-chart-line"></i> 複利計算</button>
-        </div>
+    <div class="container flex-wrap-header">
+      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <h2 id="userNameDisplay" style="margin: 0 15px 0 0; font-size: 1.6em;">Hi, User</h2>
+        <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click()">🖼️ 更換背景</button>
+        <button class="calc-btn" onclick="openWithdrawModal()">💰 提領試算</button>
+        <button class="rank-btn" onclick="openRankModal()">🏆 績效排行</button>
+        <button class="compound-btn" onclick="openCompoundModal()">⏳ 複利計算</button>
+        <button class="target-btn" onclick="openTargetModal()">🎯 目標設定</button>
         <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
       </div>
-      <button onclick="logout()" style="background-color: #7f8c8d;"><i class="fa-solid fa-power-off"></i></button>
+      <button onclick="logout()" style="background-color: #A0AEC0; color: white;">登出</button>
     </div>
 
-    <!-- 管理員控制台 -->
-    <div id="adminPanel" class="container" style="display:none; border: 2px solid var(--primary);">
-      <h3 style="color: var(--primary);"><i class="fa-solid fa-user-shield"></i> 管理員控制台 (Jason Only)</h3>
-      <div style="display: flex; align-items: center; gap: 10px; background: #fff; padding: 12px; border-radius: 12px;">
+    <div id="rankModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header"><h3 style="margin:0; color:#6B46C1;">🏆 成員績效排行</h3></div>
+        <p style="font-size: 0.82em; color: var(--text-muted); margin-bottom: 10px;">* 名字旁顯示今日帳號總變動；右側顯示單檔最強投報率</p>
+        <div id="rankList" class="modal-body-scroll"><p style="text-align:center; color: var(--text-muted);">正在計算...</p></div>
+        <div class="modal-footer"><button onclick="closeRankModal()" style="width:100%; background-color:#718096; color: white;">關閉</button></div>
+      </div>
+    </div>
+
+    <div id="withdrawModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header"><h3 style="margin:0; color:#2F855A;">💸 提領結算試算</h3></div>
+        <div class="modal-body-scroll">
+          <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
+            * 本帳戶為合併代操，提領時統一收取 10% 服務規費（完稅實領）。
+          </div>
+          <div style="background: #F7FAFC; padding: 15px; border-radius: 12px; font-size: 0.92em; border: 1px solid #E2E8F0;">
+            <p style="margin: 4px 0;">當前現值：<b id="modalCurrentValue">$0</b></p>
+            <p style="margin: 4px 0;">原始本金：<b id="modalTotalCost">$0</b></p>
+            <p style="margin: 4px 0;">帳戶損益：<b id="modalTotalProfit">$0</b></p>
+          </div>
+          <div style="margin-top: 15px;">
+            <input type="number" id="withdrawAmount" placeholder="例如: 100000">
+            <button onclick="calculateWithdraw()" style="width:100%; margin-top:8px; background-color:#2F855A; color: white;">執行試算並紀錄</button>
+          </div>
+          <div id="calcResult" class="calc-result"><div id="calcDetails"></div></div>
+          <div style="margin-top: 25px; border-top: 1px solid #E2E8F0; padding-top: 15px;">
+            <h4 style="margin: 0 0 10px 0;">🕒 我的試算紀錄</h4>
+            <div id="calcLogs" class="log-container"></div>
+            <button onclick="clearLogs()" style="width:100%; margin-top:10px; background-color:#9B2C2C; color: white; font-size: 0.85em;">🗑️ 清除所有紀錄</button>
+          </div>
+        </div>
+        <div class="modal-footer"><button onclick="closeWithdrawModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
+      </div>
+    </div>
+
+    <div id="compoundModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header"><h3 style="margin:0; color:#D69E2E;">⏳ 長期複利效益計算</h3></div>
+        <div class="modal-body-scroll">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label>初始本金 (元)：</label><input type="number" id="compPrincipal" value="100000">
+            <label>每月投入 (元)：</label><input type="number" id="compMonthly" value="10000">
+            <label>年化報酬率 (%)：</label><input type="number" id="compRate" value="8" step="0.1">
+            <label>投資年期 (年)：</label><input type="number" id="compYears" value="10">
+            <button onclick="calculateCompound()" style="width:100%; margin-top:12px; background-color:#D69E2E; color: white;">開始計算</button>
+          </div>
+          <div id="compoundResult" class="calc-result" style="background: #FFFDF5; border-color: #FEFCBF;"><div id="compoundDetails"></div></div>
+        </div>
+        <div class="modal-footer"><button onclick="closeCompoundModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
+      </div>
+    </div>
+    <div id="targetModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3 style="margin:0; color:#3182CE;">🎯 設定長期投資目標</h3></div>
+    <div class="modal-body-scroll">
+      <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
+        * 設定你預期的資產總額目標（現值基準），系統將自動為你計算目前的達成進度。
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <label>我的投資目標金額 (元)：</label>
+        <input type="number" id="targetAmountInput" placeholder="例如: 1000000">
+        <button onclick="saveTargetAmount()" style="width:100%; margin-top:12px; background-color:#3182CE; color: white;">儲存目標</button>
+      </div>
+    </div>
+    <div class="modal-footer"><button onclick="closeTargetModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
+  </div>
+</div>
+    <div id="adminPanel" class="container" style="display:none;">
+      <h3>⚙️ 管理員控制台 (Jason Only)</h3>
+      <div style="display: flex; align-items: center; gap: 10px;">
         <span>開放全體成員查看詳細持股：</span>
-        <label class="switch">
-          <input type="checkbox" id="toggleShowAll" onchange="toggleGlobalPermission(this.checked)">
-          <span class="slider"></span>
-        </label>
+        <label class="switch"><input type="checkbox" id="toggleShowAll" onchange="toggleGlobalPermission(this.checked)"><span class="slider"></span></label>
         <b id="permissionStatus">讀取中...</b>
       </div>
     </div>
 
-    <!-- 儀表盤 -->
     <div class="container">
-      <h3><i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> 收益儀表盤</h3>
+      <h3>📈 收益儀表盤</h3>
       <div class="stat-grid">
-        <div class="stat-box">
-          <span class="stat-label">㊗️ 今日收益</span>
-          <div id="profitDiffDisplay" class="stat-value number-font">--</div>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">💰 總收益</span>
-          <div id="autoTotalNetWorth" class="stat-value number-font" style="color: #2980b9;">--</div>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">🚀 今年賺最多</span>
-          <div id="maxGainDay" style="font-size: 0.95em; color: #555; margin-top: 4px;">--</div>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">📉 今年最慘日</span>
-          <div id="maxLossDay" style="font-size: 0.95em; color: #555; margin-top: 4px;">--</div>
+        <div class="stat-box"><small>㊗️ 今日收益</small><div id="profitDiffDisplay" style="font-size: 1.3em; font-weight: 700;">--</div></div>
+        <div class="stat-box"><small>💰 總收益</small><div id="autoTotalNetWorth" style="font-size: 1.3em; font-weight: 700; color: #2B6CB0;">--</div></div>
+        <div class="stat-box"><small>📅 本月幅度</small><div id="monthPerformance" style="font-size: 1.3em; font-weight: 700;">--</div></div>
+        <div class="stat-box"><small>🚀 今年賺最多</small><div id="maxGainDay" style="font-size: 0.88em; line-height: 1.4; font-weight: 500;">--</div></div>
+        <div class="stat-box"><small>📉 今年最慘日</small><div id="maxLossDay" style="font-size: 0.88em; line-height: 1.4; font-weight: 500;">--</div></div>
+        
+        
+        
+        <div class="stat-box" style="border-color: rgba(229, 62, 62, 0.2);"><small>⚠️ 歷史最大回撤</small><div id="maxDrawdownDisplay" style="font-size: 1.3em; font-weight: 700; color: #C53030;">--</div></div>
+      </div>
+      </div> <div id="progressSection" style="margin-top: 25px; display: none;">
+        <h4 style="margin: 0 0 8px 0; font-size: 0.95em; color: var(--text-muted); display: flex; justify-content: space-between;">
+          <span>🎯 長期資產目標達成進度</span>
+          <span id="progressPercentText" style="color: #3182CE; font-weight: bold;">0%</span>
+        </h4>
+        <div class="progress-container">
+          <div id="mainProgressBar" class="progress-bar"></div>
+          <div id="progressDetailsText" class="progress-text">累計現值 $0 / 目標 $0</div>
         </div>
       </div>
+
+      <div class="chart-container"><canvas id="profitTrendChart"></canvas></div>
       <div class="chart-container"><canvas id="profitTrendChart"></canvas></div>
     </div>
 
-    <!-- 持股明細 -->
     <div class="container">
-      <h3><i class="fa-solid fa-list-ul" style="color: var(--primary);"></i> 我的持股明細</h3>
-      <ul id="portfolioList">
-        <div class="loading-pulse" style="text-align: center; padding: 30px; color: #999;">
-          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5em; margin-bottom: 10px;"></i>
-          <div>正在即時連線證交所更新現價，請稍候...</div>
-        </div>
-      </ul>
+      <h3>📋 我的持股明細</h3>
+      <ul id="portfolioList"><li>正在更新現價...</li></ul>
     </div>
   </div>
-</div>
 
-<!-- 彈窗模組：排行 -->
-<div id="rankModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header"><h3 style="margin:0; color:#8e44ad;"><i class="fa-solid fa-crown"></i> 成員績效排行</h3></div>
-    <p style="font-size: 0.8em; color: #777; margin-bottom: 12px; margin-top:0;">* 名字旁顯示今日帳號總變動；右側顯示單檔最強投報率</p>
-    <div id="rankList" class="modal-body-scroll"><p style="text-align:center;">正在計算...</p></div>
-    <div class="modal-footer">
-      <button onclick="closeRankModal()" style="width:100%; background-color:#777;"><i class="fa-solid fa-xmark"></i> 關閉</button>
-    </div>
-  </div>
-</div>
-
-<!-- 彈窗模組：提領 -->
-<div id="withdrawModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header"><h3 style="margin:0; color:#27ae60;"><i class="fa-solid fa-hand-holding-dollar"></i> 提領結算試算</h3></div>
-    
-    <div class="modal-body-scroll">
-      <div style="font-size: 0.85em; color: #666; margin-bottom: 12px; line-height: 1.4; background: #fdfaf4; padding: 10px; border-radius: 8px; border-left: 3px solid #e67e22;">
-        * <b>結算說明：</b>本帳戶為合併代操，提領時統一收取 10% 服務規費。<br>
-        * <b>規費內含：</b>證券交易稅(0.3%)、券商手續費、<b>代墊個人綜合所得稅</b>、二代健保費及系統維護費。<br>
-        * <b>優點：</b>此金額為「完稅實領」，您無需再處理任何稅務申報問題。
-      </div>
-      <div style="background: #f8f9fa; padding: 12px; border-radius: 12px; font-size: 0.95em; display: flex; flex-direction: column; gap: 6px; border: 1px solid #eee;">
-        <div style="display: flex; justify-content: space-between;"><span>當前現值：</span><b id="modalCurrentValue" class="number-font">$0</b></div>
-        <div style="display: flex; justify-content: space-between;"><span>原始本金：</span><b id="modalTotalCost" class="number-font">$0</b></div>
-        <div style="display: flex; justify-content: space-between;"><span>帳戶損益：</span><b id="modalTotalProfit" class="number-font">$0</b></div>
-      </div>
-      <div style="margin-top: 15px;">
-        <label style="font-size: 0.9em; font-weight: bold; margin-bottom: 5px; display: block;">請輸入欲提領金額：</label>
-        <input type="number" id="withdrawAmount" style="width:100%; box-sizing: border-box;" placeholder="例如: 100000">
-        <button onclick="calculateWithdraw()" style="width:100%; margin-top:10px; background-color:#27ae60;"><i class="fa-solid fa-calculator"></i> 執行試算並紀錄</button>
-      </div>
-      
-      <div id="calcResult" class="calc-result"><div id="calcDetails"></div></div>
-
-      <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 12px;">
-        <h4 style="margin: 0 0 10px 0;"><i class="fa-solid fa-history"></i> 我的試算紀錄</h4>
-        <div id="calcLogs" class="log-container"></div>
-        <button onclick="clearLogs()" style="width:100%; margin-top:10px; background-color:#e74c3c; font-size: 0.85em;"><i class="fa-solid fa-trash-can"></i> 清除所有紀錄</button>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button onclick="closeWithdrawModal()" style="width:100%; background-color:#777;"><i class="fa-solid fa-xmark"></i> 關閉視窗</button>
-    </div>
-  </div>
-</div>
-
-<!-- 彈窗模組：複利 -->
-<div id="compoundModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header"><h3 style="margin:0; color:#e67e22;"><i class="fa-solid fa-hourglass-half"></i> 長期複利效益計算</h3></div>
-    
-    <div class="modal-body-scroll">
-      <div style="font-size: 0.85em; color: #666; margin-bottom: 12px;">
-        * <b>務實規劃：</b>輸入你的投資設定，看看時間與複利帶來的滾雪球效應。
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div>
-          <label style="font-size: 0.85em; font-weight: bold; display: block; margin-bottom: 3px;">初始本金 (元)：</label>
-          <input type="number" id="compPrincipal" style="width:100%; box-sizing: border-box;" placeholder="例如: 100000" value="100000">
-        </div>
-        <div>
-          <label style="font-size: 0.85em; font-weight: bold; display: block; margin-bottom: 3px;">每月投入 (元)：</label>
-          <input type="number" id="compMonthly" style="width:100%; box-sizing: border-box;" placeholder="例如: 10000" value="10000">
-        </div>
-        <div>
-          <label style="font-size: 0.85em; font-weight: bold; display: block; margin-bottom: 3px;">年化報酬率 (%)：</label>
-          <input type="number" id="compRate" style="width:100%; box-sizing: border-box;" placeholder="例如: 8" value="8" step="0.1">
-        </div>
-        <div>
-          <label style="font-size: 0.85em; font-weight: bold; display: block; margin-bottom: 3px;">投資年期 (年)：</label>
-          <input type="number" id="compYears" style="width:100%; box-sizing: border-box;" placeholder="例如: 10" value="10">
-        </div>
-        <button onclick="calculateCompound()" style="width:100%; margin-top:5px; background-color:#e67e22;"><i class="fa-solid fa-wand-magic-sparkles"></i> 開始計算</button>
-      </div>
-      
-      <div id="compoundResult" class="calc-result" style="background: #fef5e7; border-color: #e67e22;">
-        <div id="compoundDetails"></div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button onclick="closeCompoundModal()" style="width:100%; background-color:#777;"><i class="fa-solid fa-xmark"></i> 關閉視窗</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  const firebaseConfig = {
+  <script>
+    const firebaseConfig = {
       apiKey: "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg",
       authDomain: "piggynet-93c33.firebaseapp.com",
       databaseURL: "https://piggynet-93c33-default-rtdb.europe-west1.firebasedatabase.app",
@@ -363,151 +316,30 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-      
+    
     let profitChartInstance = null;
     let lastRecordedProfit = 0; 
     let currentGlobalTotalValue = 0;
     let currentGlobalTotalCost = 0;
     let currentGlobalTotalProfit = 0;
     let globalCanSeeDetails = false;
+    let userTargetAmount = 0; // 全域變數快取目標金額
 
-    // --- 全過關才放行（All-or-Nothing）嚴格更新核心損益邏輯 ---
-    async function renderPortfolio(data, user, canSeeDetails) {
-      const listEl = document.getElementById("portfolioList");
-      const isJason = user.toLowerCase() === 'jason';
-      const hasAccess = isJason || canSeeDetails; 
-      
-      if (!data) { listEl.innerHTML = "<li class='stock-item'>無持股資料</li>"; return; }
-
-      // 初始化載入狀態與清除舊數據提示
-      listEl.innerHTML = `<div class="loading-pulse" style="text-align: center; padding: 30px; color: #7f8c8d;">
-                            <i class="fa-solid fa-tower-broadcast fa-fade" style="font-size: 1.5em; margin-bottom: 8px;"></i>
-                            <div>正在即時更新證交所現價，驗證數據精確度中...</div>
-                          </div>`;
-      document.getElementById("autoTotalNetWorth").textContent = "驗證中...";
-      document.getElementById("profitDiffDisplay").textContent = "--";
-
-      let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0;
-      let html = "";
-      
-      // 全域完整度控制旗標
-      let isAllDataAccurate = true; 
-
-      const codes = Object.keys(data);
-      // 包裝並行非同步請求
-      const fetchPromises = codes.map(async (code) => {
-        const info = data[code];
-        let price = null;
-
-        try {
-          // 設定 6 秒連線超時機制
-          const controller = new AbortController();
-          const id = setTimeout(() => controller.abort(), 6000);
-          
-          const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`, {
-            signal: controller.signal
-          });
-          clearTimeout(id);
-          
-          const s = await res.json();
-          if (s && s.stat === "OK" && s.data && s.data.length > 0) {
-            price = parseFloat(s.data[s.data.length - 1][6].replace(/,/g, ''));
-          } else {
-            isAllDataAccurate = false; // 證交所 API 限流或無回應
-          }
-        } catch (e) {
-          console.warn(`標的 ${code} 價格更新失敗。`, e);
-          isAllDataAccurate = false; 
-        }
-
-        if (price !== null) {
-          const costT = info.cost * info.shares;
-          const currT = price * info.shares;
-          const p = currT - costT;
-          return { code, info, costT, currT, p, price, success: true };
-        } else {
-          return { success: false };
-        }
-      });
-
-      try {
-        const results = await Promise.all(fetchPromises);
-
-        // 防線攔截：只要任何一檔獲取失敗，立刻阻斷渲染與數據流，確保數據絕對不失真
-        if (!isAllDataAccurate || results.some(r => !r.success)) {
-          listEl.innerHTML = `<div class="stock-item" style="border-left-color: var(--up); text-align: center; padding: 25px;">
-                                <i class="fa-solid fa-triangle-exclamation" style="color: var(--up); font-size: 2em; margin-bottom: 8px;"></i>
-                                <div style="font-weight: bold; color: #c0392b;">證交所線路忙碌或部分標的更新超時</div>
-                                <div style="font-size: 0.85em; color: #7f8c8d; margin-top: 4px;">為了保障資產數據絕對精確，系統已自動暫停顯示。請於 10 秒後重新整理網頁。</div>
-                              </div>`;
-          document.getElementById("autoTotalNetWorth").innerHTML = "<span style='color:var(--up); font-size:0.7em;'><i class='fa-solid fa-circle-exclamation'></i> 連線忙碌</span>";
-          document.getElementById("profitDiffDisplay").innerHTML = "<span style='color:var(--up);'><i class='fa-solid fa-triangle-exclamation'></i></span>";
-          return; // 中斷函式，不蓋掉歷史快照，不污染 Firebase 趨勢數據
-        }
-
-        // 100% 成功通過驗證，一次性解析並繪製畫面
-        results.forEach(({ code, info, costT, currT, p, price }) => {
-          totalProfit += p; 
-          totalCurrentValue += currT; 
-          totalCostT += costT;
-          const rate = ((p / costT) * 100).toFixed(1);
-
-          html += `<li class="stock-item">
-              <div class="stock-info-row">
-                <b style="font-size: 1.05em; color: var(--accent);"><i class="fa-solid fa-money-bill-wave" style="color:var(--primary); margin-right:4px;"></i> ${hasAccess ? '標的: ' + code : '投資項目 (已加密)'}</b>
-                <span class="stock-tag">股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span>
-              </div>
-              <div class="stock-info-row" style="margin-top: 10px;">
-                <div style="font-size: 0.9em; color: #7f8c8d;">
-                  ${hasAccess ? `成本: $${info.cost} ➔ 現價: $${price}` : '標的詳細現況已隱藏'}
-                </div>
-                <div class="number-font ${p >= 0 ? 'profit-positive' : 'profit-negative'}" style="font-size: 1.15em;">
-                  ${p >= 0 ? '+' : ''}${Math.round(p).toLocaleString()} (${rate}%)
-                </div>
-              </div>
-              <div class="stock-info-row" style="border-top: 1px dashed #eee; margin-top: 10px; padding-top: 8px; font-size: 0.85em; color: #555;">
-                 <span>成本總額: $${Math.round(costT).toLocaleString()}</span>
-                 <span style="color: #2980b9; font-weight: 600;">現值總額: $${Math.round(currT).toLocaleString()}</span>
-              </div>
-            </li>`;
-        });
-
-        listEl.innerHTML = html;
-        currentGlobalTotalProfit = Math.round(totalProfit);
-        currentGlobalTotalValue = Math.round(totalCurrentValue);
-        currentGlobalTotalCost = Math.round(totalCostT);
-        
-        document.getElementById("autoTotalNetWorth").textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
-        updateProfitDifference(currentGlobalTotalProfit);
-        
-        // 唯有數據 100% 精準取得時，才會安全寫入 Firebase 快照
-        autoSaveToHistory(user, currentGlobalTotalProfit);
-
-      } catch (globalError) {
-        console.error("系統計算嚴重錯誤", globalError);
-        listEl.innerHTML = "<li class='stock-item'>❌ 系統計算損益時發生錯誤。</li>";
-      }
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      modal.style.display = 'block';
+      setTimeout(() => modal.classList.add('show'), 10);
+    }
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.remove('show');
+      setTimeout(() => modal.style.display = 'none', 300);
     }
 
-    // 更新今日收益與前一日之差距
-    function updateProfitDifference(curr) {
-      const el = document.getElementById("profitDiffDisplay");
-      const diff = curr - lastRecordedProfit;
-      el.textContent = `${diff >= 0 ? '+' : ''}${diff.toLocaleString()}`;
-      el.className = diff >= 0 ? "stat-value number-font profit-positive" : "stat-value number-font profit-negative";
-    }
-
-    // 自動儲存歷史快照
-    function autoSaveToHistory(user, profit) {
-      const today = new Date().toISOString().split('T')[0];
-      db.ref(`family/investSnapshot/${user}/${today}`).set({ profit: profit });
-    }
-
-    // --- 績效排行 (優化版排版與異步流) ---
     async function openRankModal() {
-      document.getElementById('rankModal').style.display = 'block';
+      openModal('rankModal');
       const listEl = document.getElementById('rankList');
-      listEl.innerHTML = '<div style="text-align:center; padding: 20px;"><i class="fa-solid fa-circle-notch fa-spin" style="font-size:2em; color:#8e44ad;"></i><p>📊 正在精確分析家族成員績效中...</p></div>';
+      listEl.innerHTML = '<p style="text-align:center; color: var(--text-muted);">📊 分析全員績效中...</p>';
       try {
         const usersSnap = await db.ref('users').get();
         const historySnap = await db.ref('family/investSnapshot').get();
@@ -523,7 +355,6 @@
           const portfolio = allUsers[username].portfolio;
           if (!portfolio) continue;
           let stocksDetail = [], maxRate = -999, cProfit = 0, cCost = 0;
-          
           for (let code in portfolio) {
             const item = portfolio[code];
             let price = item.cost;
@@ -545,73 +376,237 @@
           stocksDetail.sort((a, b) => b.rate - a.rate);
           userRanks.push({ name: username, maxRate: maxRate, details: stocksDetail, dailyChange: dailyChange });
         }
-        
         userRanks.sort((a, b) => b.maxRate - a.maxRate);
         let html = "";
         userRanks.forEach((user, i) => {
           const medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":"👤";
           const badge = user.dailyChange !== 0 ? `<span class="daily-badge ${user.dailyChange > 0 ? 'badge-up' : 'badge-down'}">${user.dailyChange > 0 ? '↗️ ' : '↘️ '}${user.dailyChange}%</span>` : "";
-          html += `<div class="rank-card">
-            <details>
-              <summary class="rank-summary">
-                <span>${medal} <b>${user.name}</b> ${badge}</span>
-                <span class="${user.maxRate >= 0 ? 'profit-positive' : 'profit-negative'}">${user.maxRate >= 0 ? '+' : ''}${user.maxRate}% <i class="fa-solid fa-chevron-down" style="font-size:0.8em; margin-left:4px; color:#aaa;"></i></span>
-              </summary>
-              <div class="rank-details">
-                ${user.details.map((s, idx) => `
-                  <div class="sub-stock">
-                    <span><i class="fa-solid fa-caret-right" style="color:var(--primary);"></i> 投資標的 ${String.fromCharCode(65 + idx)}</span>
-                    <span class="${s.rate >= 0 ? 'profit-positive' : 'profit-negative'}">${s.rate >= 0 ? '+' : ''}${s.rate}%</span>
-                  </div>`).join('')}
-              </div>
-            </details>
-          </div>`;
+          html += `<div class="rank-card"><details><summary class="rank-summary"><span>${medal} <b>${user.name}</b> ${badge}</span><span class="${user.maxRate >= 0 ? 'profit-positive' : 'profit-negative'}">${user.maxRate >= 0 ? '+' : ''}${user.maxRate}%</span></summary>
+            <div class="rank-details" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #E2E8F0;">${user.details.map((s, idx) => `<div style="display:flex; justify-content:space-between; font-size:0.9em; margin: 4px 0;"><span>項目 ${String.fromCharCode(65 + idx)}</span><span class="${s.rate >= 0 ? 'profit-positive' : 'profit-negative'}">${s.rate >= 0 ? '+' : ''}${s.rate}%</span></div>`).join('')}</div>
+            </details></div>`;
         });
         listEl.innerHTML = html;
-      } catch (err) { listEl.innerHTML = "<p style='text-align:center; color:var(--up);'>績效讀取失敗</p>"; }
+      } catch (err) { listEl.innerHTML = "讀取失敗"; }
     }
-    function closeRankModal() { document.getElementById('rankModal').style.display = 'none'; }
+    
+    function closeRankModal() { closeModal('rankModal'); }
+    function openCompoundModal() { openModal('compoundModal'); }
+    function closeCompoundModal() { closeModal('compoundModal'); }
 
-    // --- 提領結算試算 ---
-    function openWithdrawModal() {
-      document.getElementById('modalCurrentValue').textContent = `$${currentGlobalTotalValue.toLocaleString()}`;
-      document.getElementById('modalTotalCost').textContent = `$${currentGlobalTotalCost.toLocaleString()}`;
-      document.getElementById('modalTotalProfit').textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
-      document.getElementById('withdrawModal').style.display = 'block';
-      loadLogs();
+    function calculateCompound() {
+      const principal = parseFloat(document.getElementById('compPrincipal').value) || 0;
+      const monthly = parseFloat(document.getElementById('compMonthly').value) || 0;
+      const annualRate = parseFloat(document.getElementById('compRate').value) || 0;
+      const years = parseInt(document.getElementById('compYears').value) || 0;
+      if (years <= 0) return alert("投資年期必須大於 0 年");
+      const monthlyRate = (annualRate / 100) / 12;
+      const totalMonths = years * 12;
+      let futureValuePrincipal = principal * Math.pow(1 + monthlyRate, totalMonths);
+      let futureValueSeries = monthlyRate > 0 ? monthly * ((Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate) : monthly * totalMonths;
+      const totalEstimated = Math.round(futureValuePrincipal + futureValueSeries);
+      const totalInvested = Math.round(principal + (monthly * totalMonths));
+      const totalInterest = totalEstimated - totalInvested;
+      document.getElementById('compoundDetails').innerHTML = `
+        <span style="font-weight:600; color:var(--primary);">📈 ${years} 年後預估成果明細：</span><br>
+        📍 總投入本金: $${totalInvested.toLocaleString()} 元<br>
+        📍 滾出總利息: <span class="profit-positive">$${totalInterest.toLocaleString()} 元</span>
+        <div style="font-size:1.1em; color:#B8860B; margin-top:8px; font-weight:bold; border-top:1px solid #E2E8F0; padding-top:8px;">💰 資產預估總額: $${totalEstimated.toLocaleString()} 元</div>`;
+      document.getElementById('compoundResult').style.display = 'block';
     }
-    function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
+
+    function openTargetModal() {
+      document.getElementById('targetAmountInput').value = userTargetAmount || "";
+      openModal('targetModal');
+    }
+
+    function closeTargetModal() {
+      closeModal('targetModal');
+    }
+
+    async function saveTargetAmount() {
+      const user = localStorage.getItem('currentUser');
+      const amt = parseFloat(document.getElementById('targetAmountInput').value);
+      if (!amt || amt <= 0) return alert("請輸入有效的目標金額");
+      
+      try {
+        await db.ref(`users/${user}/targetAmount`).set(amt);
+        alert("投資目標更新成功！");
+        closeTargetModal();
+      } catch (error) {
+        alert("儲存失敗，請檢查網路連線。");
+      }
+    }
+
+    function updateProgressBarVisual() {
+      const progressSection = document.getElementById("progressSection");
+      if (!userTargetAmount || userTargetAmount <= 0) {
+        progressSection.style.display = "none"; 
+        return;
+      }
+      
+      progressSection.style.display = "block"; 
+      
+      let percentage = (currentGlobalTotalValue / userTargetAmount) * 100;
+      if (percentage > 100) percentage = 100; 
+      
+      document.getElementById("mainProgressBar").style.width = `${percentage.toFixed(1)}%`;
+      document.getElementById("progressPercentText").textContent = `${percentage.toFixed(1)}%`;
+      document.getElementById("progressDetailsText").textContent = `目前現值 $${currentGlobalTotalValue.toLocaleString()} / 目標 $${userTargetAmount.toLocaleString()}`;
+    } // <-- 修正：補上原本缺失的結束大括號
+
+    async function renderPortfolio(data, user, canSeeDetails) {
+      const listEl = document.getElementById("portfolioList");
+      const isJason = user.toLowerCase() === 'jason';
+      const hasAccess = isJason || canSeeDetails; 
+      if (!data) { listEl.innerHTML = "<li>無持股資料</li>"; return; }
+
+      listEl.innerHTML = "<li>🔄 正在即時連線證交所，驗證數據精確度中...</li>";
+      document.getElementById("autoTotalNetWorth").textContent = "計算中...";
+      document.getElementById("profitDiffDisplay").textContent = "--";
+
+      let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0;
+      let html = "";
+      let isAllDataAccurate = true; 
+
+      const codes = Object.keys(data);
+      const fetchPromises = codes.map(async (code) => {
+        const info = data[code];
+        let price = null;
+        try {
+          const controller = new AbortController();
+          const id = setTimeout(() => controller.abort(), 6000);
+          const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`, { signal: controller.signal });
+          clearTimeout(id);
+          const s = await res.json();
+          if (s && s.stat === "OK" && s.data && s.data.length > 0) {
+            price = parseFloat(s.data[s.data.length - 1][6].replace(/,/g, ''));
+          } else { isAllDataAccurate = false; }
+        } catch (e) { isAllDataAccurate = false; }
+
+        if (price !== null) {
+          const costT = info.cost * info.shares;
+          const currT = price * info.shares;
+          const p = currT - costT;
+          return { code, info, costT, currT, p, price, success: true };
+        } else { return { success: false }; }
+      });
+
+      try {
+        const results = await Promise.all(fetchPromises);
+        if (!isAllDataAccurate || results.some(r => !r.success)) {
+          listEl.innerHTML = "<li style='color: #9B2C2C; font-weight: bold;'>⚠️ 證交所連線忙碌中，為了保障數據精確度，系統已暫停顯示。請稍後 10 秒再重新整理網頁。</li>";
+          document.getElementById("autoTotalNetWorth").innerHTML = "<span style='color:#9B2C2C; font-size:0.6em;'>暫時無法連線</span>";
+          return;
+        }
+
+        results.forEach(({ code, info, costT, currT, p, price }) => {
+          totalProfit += p; totalCurrentValue += currT; totalCostT += costT;
+          html += `<li class="stock-item">
+              <div class="stock-info-row"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏)'}</b><span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span></div>
+              <div class="stock-info-row" style="font-size:0.9em; color: var(--text-muted);">
+                ${hasAccess ? `<span>成本: ${info.cost}</span><span>現價: ${price}</span>` : '<span>成本: --</span><span>現價: --</span>'}
+                <span>損益: <span class="${p>=0?'profit-positive':'profit-negative'}">${p>=0?'+':''}${Math.round(p).toLocaleString()} (${((p/costT)*100).toFixed(1)}%)</span></span>
+              </div>
+              <div class="stock-info-row" style="border-top:1px dashed #E2E8F0; margin-top:8px; padding-top:8px; font-size:0.9em;">
+                 <span>成本總額: $${Math.round(costT).toLocaleString()}</span><span>現值總額: $${Math.round(currT).toLocaleString()}</span>
+              </div></li>`;
+        });
+
+        listEl.innerHTML = html;
+        currentGlobalTotalProfit = Math.round(totalProfit);
+        currentGlobalTotalValue = Math.round(totalCurrentValue);
+        currentGlobalTotalCost = Math.round(totalCostT);
+        
+        document.getElementById("autoTotalNetWorth").textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
+        updateProfitDifference(currentGlobalTotalProfit);
+        autoSaveToHistory(user, currentGlobalTotalProfit);
+
+        updateDynamicMetrics();
+        updateProgressBarVisual(); // 確保每次現值計算完，進度條都會刷新
+
+      } catch (globalError) {
+        listEl.innerHTML = "<li>❌ 系統計算損益時發生錯誤。</li>";
+      }
+    }
+
+    function updateDynamicMetrics() {
+      const monthEl = document.getElementById("monthPerformance");
+      const mddEl = document.getElementById("maxDrawdownDisplay");
+      if (!window.globalHistoryEntries || window.globalHistoryEntries.length === 0) return;
+
+      const entries = [...window.globalHistoryEntries];
+      
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todayIdx = entries.findIndex(e => e.date === todayStr);
+      if (todayIdx !== -1) {
+        entries[todayIdx].profit = currentGlobalTotalProfit;
+      } else {
+        entries.push({ date: todayStr, profit: currentGlobalTotalProfit });
+      }
+
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+
+      const monthEntries = entries.filter(e => e.date.startsWith(`${year}-${month}-`));
+      if (monthEntries.length > 0) {
+        monthEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const baselineProfit = monthEntries[0].profit;
+        
+        if (baselineProfit === 0) {
+          monthEl.textContent = currentGlobalTotalProfit >= 0 ? "+100%" : "-100%";
+          monthEl.className = currentGlobalTotalProfit >= 0 ? "profit-positive" : "profit-negative";
+        } else {
+          const changeRate = ((currentGlobalTotalProfit - baselineProfit) / Math.abs(baselineProfit)) * 100;
+          monthEl.textContent = `${changeRate >= 0 ? '+' : ''}${changeRate.toFixed(1)}%`;
+          monthEl.className = changeRate >= 0 ? "profit-positive" : "profit-negative";
+        }
+      } else {
+        monthEl.textContent = "--";
+      }
+
+      let maxPeak = -Infinity;
+      let maxDropPercent = 0;
+
+      entries.forEach(e => {
+        const assetValue = currentGlobalTotalCost + e.profit; 
+        if (assetValue > maxPeak) {
+          maxPeak = assetValue;
+        }
+        if (maxPeak > 0) {
+          const dropPercent = ((maxPeak - assetValue) / maxPeak) * 100;
+          if (dropPercent > maxDropPercent) {
+            maxDropPercent = dropPercent;
+          }
+        }
+      });
+      mddEl.textContent = `-${maxDropPercent.toFixed(1)}%`;
+    }
+
+    function updateProfitDifference(curr) {
+      const el = document.getElementById("profitDiffDisplay");
+      const diff = curr - lastRecordedProfit;
+      el.textContent = `${diff >= 0 ? '+' : ''}${diff.toLocaleString()}`;
+      el.className = diff >= 0 ? "profit-positive" : "profit-negative";
+    }
+
+    function autoSaveToHistory(user, profit) {
+      const today = new Date().toISOString().split('T')[0];
+      db.ref(`family/investSnapshot/${user}/${today}`).set({ profit: profit });
+    }
 
     async function calculateWithdraw() {
       const user = localStorage.getItem('currentUser');
       const amt = parseFloat(document.getElementById('withdrawAmount').value);
-      
-      if(!amt || amt <= 0 || amt > currentGlobalTotalValue) {
-        return alert("金額無效或超出帳戶當前現值！");
-      }
-      
-      const serviceRate = 0.1;
-      const fee = Math.round(amt * serviceRate);
+      if(!amt || amt <= 0 || amt > currentGlobalTotalValue) return alert("金額無效或超出帳戶現值");
+      const fee = Math.round(amt * 0.1);
       const finalAmt = Math.round(amt - fee);
-
       document.getElementById('calcDetails').innerHTML = `
-        <div style="font-weight: 500; color: #333; margin-bottom:6px;"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--primary);"></i> <b>試算完成成果：</b></div>
-        📍 申請提領總額: $${amt.toLocaleString()} 元<br>
-        📍 服務規費 (10%): <span class="profit-positive">$${fee.toLocaleString()} 元</span><br>
-        <small style="color: #7f8c8d; display:block; margin-left:14px;">(含證交稅、代墊個人綜所稅、健保費及系統維護費)</small>
-        <hr style="border:1px dashed var(--primary); margin: 10px 0;">
-        <div style="font-size:1.15em; color:#27ae60; font-weight:700;"><b>💰 實際完稅撥款: $${finalAmt.toLocaleString()} 元</b></div>`;
-      
+        📍 申請提領總額: $${amt.toLocaleString()}<br>
+        📍 服務規費 (10%): <span class="profit-positive">$${fee.toLocaleString()}</span><br>
+        <div style="font-size:1.1em; color:#2F855A; font-weight:bold; margin-top:8px; border-top:1px solid #E2E8F0; padding-top:8px;">💰 實際撥款預計: $${finalAmt.toLocaleString()}</div>`;
       document.getElementById('calcResult').style.display = 'block';
-
-      const logData = { 
-        time: new Date().toLocaleString(), 
-        applyAmt: amt, 
-        fee: fee, 
-        finalAmt: finalAmt,
-        type: "總額抽成制" 
-      };
-      await db.ref(`userLogs/${user}/withdrawHistory`).push(logData);
+      await db.ref(`userLogs/${user}/withdrawHistory`).push({ time: new Date().toLocaleString(), applyAmt: amt, fee: fee, finalAmt: finalAmt });
       loadLogs();
     }
 
@@ -619,193 +614,111 @@
       const user = localStorage.getItem('currentUser');
       const snap = await db.ref(`userLogs/${user}/withdrawHistory`).get();
       const container = document.getElementById('calcLogs');
-      if (!snap.exists()) { container.innerHTML = "<div style='color:#aaa; text-align:center; padding:10px;'>尚無試算紀錄</div>"; return; }
+      if (!snap.exists()) { container.innerHTML = "尚無紀錄"; return; }
       let html = "";
-      const data = snap.val();
-      Object.keys(data).reverse().forEach(key => {
-        const item = data[key];
-        html += `<div class="log-item">
-          <div style="display:flex; justify-content:space-between; color:#7f8c8d; font-size:0.9em;"><span>${item.time}</span><b>${item.type}</b></div>
-          <div style="margin-top:3px;">申請: $${item.applyAmt.toLocaleString()} | 規費: $${item.fee.toLocaleString()} | <span style="color:#27ae60; font-weight:bold;">實領: $${item.finalAmt.toLocaleString()}</span></div>
-        </div>`;
+      Object.keys(snap.val()).reverse().forEach(key => {
+        const item = snap.val()[key];
+        html += `<div class="log-item"><small style="color:var(--text-muted);">${item.time}</small><br>申請: $${item.applyAmt.toLocaleString()} | <b>領: $${item.finalAmt.toLocaleString()}</b></div>`;
       });
       container.innerHTML = html;
     }
 
     async function clearLogs() {
-      if(!confirm("確定要徹底刪除所有本地與雲端的提領試算紀錄嗎？")) return;
-      const user = localStorage.getItem('currentUser');
-      await db.ref(`userLogs/${user}/withdrawHistory`).remove();
+      if(!confirm("確定要刪除所有紀錄嗎？")) return;
+      await db.ref(`userLogs/${localStorage.getItem('currentUser')}/withdrawHistory`).remove();
       loadLogs();
     }
 
-    // --- 複利效益計算機 ---
-    function openCompoundModal() { document.getElementById('compoundModal').style.display = 'block'; }
-    function closeCompoundModal() { document.getElementById('compoundModal').style.display = 'none'; }
-
-    function calculateCompound() {
-      const principal = parseFloat(document.getElementById('compPrincipal').value) || 0;
-      const monthly = parseFloat(document.getElementById('compMonthly').value) || 0;
-      const annualRate = parseFloat(document.getElementById('compRate').value) || 0;
-      const years = parseInt(document.getElementById('compYears').value) || 0;
-      
-      if (years <= 0) return alert("投資年期必須大於 0 年");
-      
-      const monthlyRate = (annualRate / 100) / 12;
-      const totalMonths = years * 12;
-      
-      let futureValuePrincipal = principal * Math.pow(1 + monthlyRate, totalMonths);
-      let futureValueSeries = 0;
-      if (monthlyRate > 0) {
-        futureValueSeries = monthly * ((Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate);
-      } else {
-        futureValueSeries = monthly * totalMonths;
-      }
-      
-      const totalEstimated = Math.round(futureValuePrincipal + futureValueSeries);
-      const totalInvested = Math.round(principal + (monthly * totalMonths));
-      const totalInterest = totalEstimated - totalInvested;
-
-      document.getElementById('compoundDetails').innerHTML = `
-        <div style="font-weight: 700; color: #d35400; margin-bottom:6px;"><i class="fa-solid fa-chart-line"></i> ${years} 年後資產雪球成果：</div>
-        📍 總計投入本金: $${totalInvested.toLocaleString()} 元<br>
-        📍 時間衍生複利: <span class="profit-positive">$${totalInterest.toLocaleString()} 元</span><br>
-        <hr style="border:1px dashed #e67e22; margin: 10px 0;">
-        <div style="font-size:1.2em; color:#d35400; font-weight:bold;"><b>💰 資產累計總額: $${totalEstimated.toLocaleString()} 元</b></div>
-      `;
-      document.getElementById('compoundResult').style.display = 'block';
+    function openWithdrawModal() {
+      document.getElementById('modalCurrentValue').textContent = `$${currentGlobalTotalValue.toLocaleString()}`;
+      document.getElementById('modalTotalCost').textContent = `$${currentGlobalTotalCost.toLocaleString()}`;
+      document.getElementById('modalTotalProfit').textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
+      openModal('withdrawModal'); loadLogs();
     }
-
-    // --- 更換背景與權限安全邏輯 ---
+    function closeWithdrawModal() { closeModal('withdrawModal'); }
     function updateBackground(input) {
       if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          document.body.style.backgroundImage = `linear-gradient(rgba(253, 246, 227, 0.72), rgba(253, 246, 227, 0.72)), url(${e.target.result})`;
+          document.body.style.backgroundImage = `url(${e.target.result})`;
           localStorage.setItem(`bg_${localStorage.getItem('currentUser')}`, e.target.result);
         };
         reader.readAsDataURL(input.files[0]);
       }
     }
-
     async function login() {
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPassword').value.trim();
-      if(!user || !pass) return alert("請完整填寫帳號與密碼");
-      
-      try {
-        const snap = await db.ref(`users/${user}/password`).get();
-        if (snap.exists() && snap.val() === pass) { 
-          localStorage.setItem('currentUser', user); 
-          location.reload(); 
-        } else { 
-          alert("帳號或密碼錯誤"); 
-        }
-      } catch (err) {
-        alert("登入連線失敗，請檢查 Firebase 資料庫連線配置。");
+      const snap = await db.ref(`users/${user}/password`).get();
+      if (snap.val() === pass) { localStorage.setItem('currentUser', user); location.reload(); }
+      else alert("密碼錯誤");
+    }
+    function logout() { localStorage.removeItem('currentUser'); location.reload(); }
+    function toggleGlobalPermission(isOpen) { db.ref('settings/global/showPortfolioToAll').set(isOpen); }
+
+    window.onload = () => {
+      const user = localStorage.getItem('currentUser');
+      if (user) {
+        const bg = localStorage.getItem(`bg_${user}`);
+        if(bg) document.body.style.backgroundImage = `url(${bg})`;
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
+        if (user.toLowerCase() === 'jason') document.getElementById('adminPanel').style.display = 'block';
+        
+        // 修正後的 Firebase 監聽器巢狀結構
+        db.ref('settings/global/showPortfolioToAll').on('value', snap => {
+          globalCanSeeDetails = snap.val() || false;
+          if(document.getElementById("permissionStatus")) document.getElementById("permissionStatus").textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏標的";
+          db.ref(`users/${user}/portfolio`).on("value", s => renderPortfolio(s.val(), user, globalCanSeeDetails));
+        });
+
+        db.ref(`users/${user}/targetAmount`).on('value', snap => {
+          userTargetAmount = snap.val() || 0;
+          updateProgressBarVisual(); 
+        });
+
+        db.ref(`family/investSnapshot/${user}`).on("value", snap => {
+          const val = snap.val() || {};
+          const entries = Object.entries(val).map(([d, v]) => ({ date: d, profit: v.profit })).sort((a,b)=>new Date(a.date)-new Date(b.date));
+          if(entries.length){
+            window.globalHistoryEntries = entries; 
+            const todayStr = new Date().toISOString().split('T')[0];
+            const past = entries.filter(e => e.date !== todayStr);
+            lastRecordedProfit = past.length ? past[past.length-1].profit : entries[0].profit;
+            const max = entries.reduce((p, c) => c.profit > p.profit ? c : p);
+            const min = entries.reduce((p, c) => c.profit < p.profit ? c : p);
+            document.getElementById("maxGainDay").innerHTML = `${max.date}<br><span class="profit-positive">$${max.profit.toLocaleString()}</span>`;
+            document.getElementById("maxLossDay").innerHTML = `${min.date}<br><span class="profit-negative">$${min.profit.toLocaleString()}</span>`;
+            renderChart(entries.slice(-30));
+            updateDynamicMetrics();
+          }
+        });
       }
-    }
+    };
 
-    function logout() { 
-      localStorage.removeItem('currentUser'); 
-      location.reload(); 
-    }
-    
-    function toggleGlobalPermission(isOpen) { 
-      db.ref('settings/global/showPortfolioToAll').set(isOpen); 
-    }
-
-    // --- 圖表美化設計 ---
     function renderChart(entries) {
       const ctx = document.getElementById('profitTrendChart').getContext('2d');
       if (profitChartInstance) profitChartInstance.destroy();
-      
-      // 繪製高級感漸層
-      const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-      gradient.addColorStop(0, 'rgba(240, 165, 0, 0.35)');
-      gradient.addColorStop(1, 'rgba(240, 165, 0, 0.00)');
-
       profitChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
           labels: entries.map(e => e.date.substring(5)),
           datasets: [{ 
-            label: '30日資產走勢', 
+            label: '30日損益', 
             data: entries.map(e => e.profit), 
-            borderColor: '#f0a500', 
-            backgroundColor: gradient,
-            fill: true, 
-            tension: 0.38,
-            pointRadius: 2,
-            pointHoverRadius: 5,
-            borderWidth: 3
+            borderColor: '#718096', 
+            backgroundColor: 'rgba(113, 128, 150, 0.05)',
+            fill: true, tension: 0.1, borderWidth: 2, pointBackgroundColor: '#4A5568'
           }]
         },
         options: { 
-          responsive: true, 
-          maintainAspectRatio: false,
+          responsive: true, maintainAspectRatio: false,
           plugins: { legend: { display: false } },
-          scales: {
-            y: { grid: { color: 'rgba(0, 0, 0, 0.04)' }, ticks: { font: { family: 'Montserrat' } } },
-            x: { grid: { display: false } }
-          }
+          scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.03)' } } }
         }
       });
     }
-
-    // 系統載入初始化
-    window.onload = () => {
-      const user = localStorage.getItem('currentUser');
-      if (user) {
-        // 套用客製化背景
-        const bg = localStorage.getItem(`bg_${user}`);
-        if(bg) {
-          document.body.style.backgroundImage = `linear-gradient(rgba(253, 246, 227, 0.72), rgba(253, 246, 227, 0.72)), url(${bg})`;
-        } else {
-          document.body.style.backgroundImage = `linear-gradient(rgba(253, 246, 227, 0.9), rgba(253, 246, 227, 0.9))`;
-        }
-        
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
-        document.getElementById('userNameDisplay').innerHTML = `<i class="fa-solid fa-circle-user" style="color:var(--primary)"></i> Hi, ${user}`;
-        
-        if (user.toLowerCase() === 'jason') document.getElementById('adminPanel').style.display = 'block';
-        
-        // 權限與即時資料流監聽
-        db.ref('settings/global/showPortfolioToAll').on('value', snap => {
-          globalCanSeeDetails = snap.val() || false;
-          const statusEl = document.getElementById("permissionStatus");
-          if(statusEl) {
-            statusEl.textContent = globalCanSeeDetails ? "已開放全體明細" : "已隱藏詳細標的";
-            statusEl.style.color = globalCanSeeDetails ? "#27ae60" : "#7f8c8d";
-          }
-          if(document.getElementById("toggleShowAll")) {
-            document.getElementById("toggleShowAll").checked = globalCanSeeDetails;
-          }
-          
-          db.ref(`users/${user}/portfolio`).on("value", s => renderPortfolio(s.val(), user, globalCanSeeDetails));
-        });
-
-        // 歷史趨勢與最賺/最慘日快照監聽
-        db.ref(`family/investSnapshot/${user}`).on("value", snap => {
-          const val = snap.val() || {};
-          const entries = Object.entries(val).map(([d, v]) => ({ date: d, profit: v.profit })).sort((a,b)=>new Date(a.date)-new Date(b.date));
-          if(entries.length){
-            const todayStr = new Date().toISOString().split('T')[0];
-            const past = entries.filter(e => e.date !== todayStr);
-            lastRecordedProfit = past.length ? past[past.length-1].profit : entries[0].profit;
-            
-            const max = entries.reduce((p, c) => c.profit > p.profit ? c : p);
-            const min = entries.reduce((p, c) => c.profit < p.profit ? c : p);
-            
-            document.getElementById("maxGainDay").innerHTML = `<i class="fa-solid fa-arrow-trend-up" style="color:var(--up)"></i> ${max.date}<br><span class="profit-positive">$${max.profit.toLocaleString()}</span>`;
-            document.getElementById("maxLossDay").innerHTML = `<i class="fa-solid fa-arrow-trend-down" style="color:var(--down)"></i> ${min.date}<br><span class="profit-negative">$${min.profit.toLocaleString()}</span>`;
-            
-            renderChart(entries.slice(-30));
-          }
-        });
-      }
-    };
-</script>
+  </script>
 </body>
 </html>
