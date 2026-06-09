@@ -31,40 +31,39 @@
       color: var(--text-main); -webkit-font-smoothing: antialiased;
       transition: background 0.5s ease;
     }
-    /* 新增：目標設定按鈕顏色 */
-.target-btn { background-color: #3182CE; color: white; }
-.target-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    
+    .target-btn { background-color: #3182CE; color: white; }
+    .target-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-/* 新增：進度條專用樣式 */
-.progress-container {
-  margin: 20px 0;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 20px;
-  position: relative;
-  height: 24px;
-  width: 100%;
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-.progress-bar {
-  background: linear-gradient(90deg, #3182CE 0%, #319795 100%);
-  height: 100%;
-  width: 0%; /* 由 JS 動態控制 */
-  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 20px;
-}
-.progress-text {
-  position: absolute;
-  width: 100%;
-  text-align: center;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.85em;
-  font-weight: 700;
-  color: #2D3748;
-  text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.8);
-}
+    .progress-container {
+      margin: 20px 0;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 20px;
+      position: relative;
+      height: 24px;
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    .progress-bar {
+      background: linear-gradient(90deg, #3182CE 0%, #319795 100%);
+      height: 100%;
+      width: 0%; 
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 20px;
+    }
+    .progress-text {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.85em;
+      font-weight: 700;
+      color: #2D3748;
+      text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.8);
+    }
     .container { 
       background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       border-radius: 16px; padding: 25px; margin-bottom: 25px; 
@@ -79,7 +78,6 @@
     
     h2, h3, h4 { margin-top: 0; color: var(--primary); font-weight: 600; letter-spacing: -0.5px; }
     
-    /* 調整為 6 欄位，更能完美容納新增的區塊 */
     .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 20px; }
     .stat-box { 
       background: rgba(255, 255, 255, 0.7); padding: 18px 12px; border-radius: 12px; 
@@ -137,7 +135,6 @@
     input:checked + .slider { background-color: var(--primary); }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    /* Modal Styling */
     .modal { 
       display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; 
       background-color: rgba(26, 32, 44, 0.4); backdrop-filter: blur(4px);
@@ -245,22 +242,24 @@
         <div class="modal-footer"><button onclick="closeCompoundModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
       </div>
     </div>
+
     <div id="targetModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header"><h3 style="margin:0; color:#3182CE;">🎯 設定長期投資目標</h3></div>
-    <div class="modal-body-scroll">
-      <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
-        * 設定你預期的資產總額目標（現值基準），系統將自動為你計算目前的達成進度。
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 4px;">
-        <label>我的投資目標金額 (元)：</label>
-        <input type="number" id="targetAmountInput" placeholder="例如: 1000000">
-        <button onclick="saveTargetAmount()" style="width:100%; margin-top:12px; background-color:#3182CE; color: white;">儲存目標</button>
+      <div class="modal-content">
+        <div class="modal-header"><h3 style="margin:0; color:#3182CE;">🎯 設定長期投資目標</h3></div>
+        <div class="modal-body-scroll">
+          <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
+            * 設定你預期的資產總額目標（現值基準），系統將自動為你計算目前的達成進度。
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label>我的投資目標金額 (元)：</label>
+            <input type="number" id="targetAmountInput" placeholder="例如: 1000000">
+            <button onclick="saveTargetAmount()" style="width:100%; margin-top:12px; background-color:#3182CE; color: white;">儲存目標</button>
+          </div>
+        </div>
+        <div class="modal-footer"><button onclick="closeTargetModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
       </div>
     </div>
-    <div class="modal-footer"><button onclick="closeTargetModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
-  </div>
-</div>
+
     <div id="adminPanel" class="container" style="display:none;">
       <h3>⚙️ 管理員控制台 (Jason Only)</h3>
       <div style="display: flex; align-items: center; gap: 10px;">
@@ -280,7 +279,8 @@
         <div class="stat-box"><small>📅 本月幅度</small><div id="monthPerformance" style="font-size: 1.3em; font-weight: 700;">--</div></div>
         <div class="stat-box" style="border-color: rgba(229, 62, 62, 0.2);"><small>⚠️ 歷史最大回撤</small><div id="maxDrawdownDisplay" style="font-size: 1.3em; font-weight: 700; color: #C53030;">--</div></div>
       </div>
-      </div> <div id="progressSection" style="margin-top: 25px; display: none;">
+
+      <div id="progressSection" style="margin-top: 25px; display: none;">
         <h4 style="margin: 0 0 8px 0; font-size: 0.95em; color: var(--text-muted); display: flex; justify-content: space-between;">
           <span>🎯 長期資產目標達成進度</span>
           <span id="progressPercentText" style="color: #3182CE; font-weight: bold;">0%</span>
@@ -292,7 +292,11 @@
       </div>
 
       <div class="chart-container"><canvas id="profitTrendChart"></canvas></div>
-      <div class="chart-container"><canvas id="profitTrendChart"></canvas></div>
+      
+      <div class="chart-container" style="margin-top: 40px; height: 300px;">
+        <h3 style="text-align: center; font-size: 1.1em; margin-bottom: 10px;">📊 全資產產業配置權重</h3>
+        <canvas id="portfolioPieChart"></canvas>
+      </div>
     </div>
 
     <div class="container">
@@ -315,12 +319,23 @@
     const db = firebase.database();
     
     let profitChartInstance = null;
+    let pieChartInstance = null; // 圓餅圖實例
     let lastRecordedProfit = 0; 
     let currentGlobalTotalValue = 0;
     let currentGlobalTotalCost = 0;
     let currentGlobalTotalProfit = 0;
     let globalCanSeeDetails = false;
-    let userTargetAmount = 0; // 全域變數快取目標金額
+    let userTargetAmount = 0; 
+
+    // 新增：靜態產業對照表（可以自由擴充代碼）
+    // 如果是個股，直接寫對應單一產業字串
+    // 如果是 ETF，則寫成一個物件，定義各產業佔比（加總須為 1）
+    const STOCK_SECTORS = {
+      "3653": "電子零組件",
+      "0050": { "半導體業": 0.73, "金融保險業": 0.08, "電子零組件業": 0.07, "電腦及週邊設備業": 0.04,"其他電子業": 0.04,"通信網路業":0.02,"塑膠工業":0.01,"食品工業":0.01 },
+      "009816": { "半導體業": 0.52, "金融保險業": 0.19, "電子零組件業": 0.12, "其他電子業": 0.06,"電腦及週邊設備業":0.04,"通信網路業":0.03,"生技醫療業":0.01 ,"航運業":0.01,"塑膠工業":0.01,"食品工業":0.01},
+      "00981A": { "電子零組件業": 0.35, "半導體業": 0.31, "電腦及週邊設備業	": 0.08, "其他電子業": 0.06,"通信網路業":0.05,"塑膠工業":0.02,"上櫃電腦及週邊設備業":0.02,"現金保留":0.12 }
+    };
 
     function openModal(id) {
       const modal = document.getElementById(id);
@@ -416,22 +431,17 @@
       openModal('targetModal');
     }
 
-    function closeTargetModal() {
-      closeModal('targetModal');
-    }
+    function closeTargetModal() { closeModal('targetModal'); }
 
     async function saveTargetAmount() {
       const user = localStorage.getItem('currentUser');
       const amt = parseFloat(document.getElementById('targetAmountInput').value);
       if (!amt || amt <= 0) return alert("請輸入有效的目標金額");
-      
       try {
         await db.ref(`users/${user}/targetAmount`).set(amt);
         alert("投資目標更新成功！");
         closeTargetModal();
-      } catch (error) {
-        alert("儲存失敗，請檢查網路連線。");
-      }
+      } catch (error) { alert("儲存失敗，請檢查網路連線。"); }
     }
 
     function updateProgressBarVisual() {
@@ -440,16 +450,13 @@
         progressSection.style.display = "none"; 
         return;
       }
-      
       progressSection.style.display = "block"; 
-      
       let percentage = (currentGlobalTotalValue / userTargetAmount) * 100;
       if (percentage > 100) percentage = 100; 
-      
       document.getElementById("mainProgressBar").style.width = `${percentage.toFixed(1)}%`;
       document.getElementById("progressPercentText").textContent = `${percentage.toFixed(1)}%`;
       document.getElementById("progressDetailsText").textContent = `目前現值 $${currentGlobalTotalValue.toLocaleString()} / 目標 $${userTargetAmount.toLocaleString()}`;
-    } // <-- 修正：補上原本缺失的結束大括號
+    }
 
     async function renderPortfolio(data, user, canSeeDetails) {
       const listEl = document.getElementById("portfolioList");
@@ -464,6 +471,9 @@
       let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0;
       let html = "";
       let isAllDataAccurate = true; 
+
+      // 用來存放各產業累計現值的物件
+      let sectorDataMap = {};
 
       const codes = Object.keys(data);
       const fetchPromises = codes.map(async (code) => {
@@ -498,6 +508,20 @@
 
         results.forEach(({ code, info, costT, currT, p, price }) => {
           totalProfit += p; totalCurrentValue += currT; totalCostT += costT;
+          
+          // 新增：產業比重計算核心邏輯
+          const mapping = STOCK_SECTORS[code] || "未分類/其他";
+          if (typeof mapping === "string") {
+            // 一般個股
+            sectorDataMap[mapping] = (sectorDataMap[mapping] || 0) + currT;
+          } else {
+            // ETF 拆解
+            for (let secName in mapping) {
+              const ratio = mapping[secName];
+              sectorDataMap[secName] = (sectorDataMap[secName] || 0) + (currT * ratio);
+            }
+          }
+
           html += `<li class="stock-item">
               <div class="stock-info-row"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏)'}</b><span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span></div>
               <div class="stock-info-row" style="font-size:0.9em; color: var(--text-muted);">
@@ -519,11 +543,61 @@
         autoSaveToHistory(user, currentGlobalTotalProfit);
 
         updateDynamicMetrics();
-        updateProgressBarVisual(); // 確保每次現值計算完，進度條都會刷新
+        updateProgressBarVisual(); 
+        
+        // 新增：呼叫畫圓餅圖的函數
+        renderPieChart(sectorDataMap);
 
       } catch (globalError) {
         listEl.innerHTML = "<li>❌ 系統計算損益時發生錯誤。</li>";
       }
+    }
+
+    // 新增：圓餅圖渲染函數
+    function renderPieChart(sectorMap) {
+      const ctx = document.getElementById('portfolioPieChart').getContext('2d');
+      if (pieChartInstance) pieChartInstance.destroy();
+
+      const labels = Object.keys(sectorMap);
+      const dataValues = Object.values(sectorMap).map(v => Math.round(v));
+
+      if (labels.length === 0) return;
+
+      pieChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: dataValues,
+            backgroundColor: [
+              '#4A5568', '#3182CE', '#319795', '#D69E2E', '#9B2C2C', '#6B46C1', '#A0AEC0'
+            ],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { font: { size: 12 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.label || '';
+                  let value = context.parsed || 0;
+                  let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  let percentage = ((value / total) * 100).toFixed(1) + '%';
+                  return ` ${label}: $${value.toLocaleString()} (${percentage})`;
+                }
+              }
+            }
+          }
+        }
+      });
     }
 
     function updateDynamicMetrics() {
@@ -532,7 +606,6 @@
       if (!window.globalHistoryEntries || window.globalHistoryEntries.length === 0) return;
 
       const entries = [...window.globalHistoryEntries];
-      
       const todayStr = new Date().toISOString().split('T')[0];
       const todayIdx = entries.findIndex(e => e.date === todayStr);
       if (todayIdx !== -1) {
@@ -549,7 +622,6 @@
       if (monthEntries.length > 0) {
         monthEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
         const baselineProfit = monthEntries[0].profit;
-        
         if (baselineProfit === 0) {
           monthEl.textContent = currentGlobalTotalProfit >= 0 ? "+100%" : "-100%";
           monthEl.className = currentGlobalTotalProfit >= 0 ? "profit-positive" : "profit-negative";
@@ -558,23 +630,16 @@
           monthEl.textContent = `${changeRate >= 0 ? '+' : ''}${changeRate.toFixed(1)}%`;
           monthEl.className = changeRate >= 0 ? "profit-positive" : "profit-negative";
         }
-      } else {
-        monthEl.textContent = "--";
-      }
+      } else { monthEl.textContent = "--"; }
 
       let maxPeak = -Infinity;
       let maxDropPercent = 0;
-
       entries.forEach(e => {
         const assetValue = currentGlobalTotalCost + e.profit; 
-        if (assetValue > maxPeak) {
-          maxPeak = assetValue;
-        }
+        if (assetValue > maxPeak) { maxPeak = assetValue; }
         if (maxPeak > 0) {
           const dropPercent = ((maxPeak - assetValue) / maxPeak) * 100;
-          if (dropPercent > maxDropPercent) {
-            maxDropPercent = dropPercent;
-          }
+          if (dropPercent > maxDropPercent) { maxDropPercent = dropPercent; }
         }
       });
       mddEl.textContent = `-${maxDropPercent.toFixed(1)}%`;
@@ -633,6 +698,7 @@
       openModal('withdrawModal'); loadLogs();
     }
     function closeWithdrawModal() { closeModal('withdrawModal'); }
+    
     function updateBackground(input) {
       if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -643,6 +709,7 @@
         reader.readAsDataURL(input.files[0]);
       }
     }
+    
     async function login() {
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPassword').value.trim();
@@ -663,7 +730,6 @@
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
         if (user.toLowerCase() === 'jason') document.getElementById('adminPanel').style.display = 'block';
         
-        // 修正後的 Firebase 監聽器巢狀結構
         db.ref('settings/global/showPortfolioToAll').on('value', snap => {
           globalCanSeeDetails = snap.val() || false;
           if(document.getElementById("permissionStatus")) document.getElementById("permissionStatus").textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏標的";
