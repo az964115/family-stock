@@ -106,7 +106,7 @@
     button { 
       cursor: pointer; padding: 12px 20px; margin: 6px 0; border-radius: 8px; 
       font-weight: 600; font-size: 0.95em; border: none; letter-spacing: 0.5px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.2 cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     }
     
     .btn-primary { background-color: var(--primary); color: #fff; }
@@ -916,6 +916,20 @@
 
     // 主程式生命週期初始化
     window.onload = () => {
+      // ⭐【核心推播修正 1】一載入網頁就主動向瀏覽器要求開啟通知權限
+      if ('Notification' in window) {
+        if (Notification.permission !== 'granted') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              console.log('🎉 豬豬e網通知權限允許成功！');
+              setupPushSubscription();
+            }
+          });
+        } else {
+          setupPushSubscription();
+        }
+      }
+
       const user = localStorage.getItem('currentUser');
       if (user) {
         const bg = localStorage.getItem(`bg_${user}`);
@@ -931,7 +945,11 @@
         db.ref('settings/global/showPortfolioToAll').on('value', snap => {
           globalCanSeeDetails = snap.val() || false;
           if(document.getElementById("permissionStatus")) document.getElementById("permissionStatus").textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏標的";
-          db.ref(`users/${user}/portfolio`).on("value", s => renderPortfolio(s.val(), user, globalCanSeeDetails));
+          db.ref(`users/${user}/portfolio`).on("value", s => {
+            renderPortfolio(s.val(), user, globalCanSeeDetails);
+            // ⭐【核心推播修正 2】當確認使用者登入且持股明細載入時，確保重新刷一次 Token 的紀錄，避免遺漏
+            setupPushSubscription();
+          });
         });
 
         db.ref(`users/${user}/targetAmount`).on('value', snap => {
@@ -957,6 +975,38 @@
         });
       }
     };
+
+    // ⭐【核心推播修正 3】向手機瀏覽器註冊 Service Worker 通道，並將「收件位址 Token」寫入 Firebase
+    function setupPushSubscription() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').then(async (registration) => {
+          console.log('Service Worker 註冊成功！');
+          if (!registration.pushManager) return;
+          
+          try {
+            let subscription = await registration.pushManager.getSubscription();
+            if (!subscription) {
+              subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true
+              });
+            }
+            
+            const tokenData = subscription.toJSON();
+            const user = localStorage.getItem('currentUser');
+            
+            // 如果成功拿到 Token 且帳號已登入，就把 Token 存到對應使用者的 Firebase 路徑下
+            if (user && tokenData) {
+              await db.ref(`users/${user}/pushToken`).set(tokenData);
+              console.log(`🎉 ${user} 的手機通知 Token 已連線同步至 Firebase！`);
+            }
+          } catch (e) {
+            console.error('取得推播 Token 失敗:', e);
+          }
+        }).catch(err => {
+          console.error('Service Worker 註冊失敗:', err);
+        });
+      }
+    }
 
     function renderChart(entries) {
       const ctx = document.getElementById('profitTrendChart').getContext('2d');
