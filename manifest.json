@@ -1,0 +1,11 @@
+{
+  "name": "豬豬e網 - 資產管理",
+  "short_name": "豬豬e網",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#FCE8C3",
+  "theme-color": "#4A5568",
+  "icons": [
+    { "src": "icon.png", "sizes": "192x192", "type": "image/png" }
+  ]
+}
