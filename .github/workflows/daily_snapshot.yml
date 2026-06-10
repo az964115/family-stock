@@ -19,41 +19,38 @@ jobs:
           echo "📡 正在從歐洲西區 (europe-west1) 雲端資料庫撈取 mom 的最新推播資料..."
           
           TODAY=$(date +%Y-%m-%d)
-          
-          # 💡 修正點 ①：網址全面更換為正確的歐洲西區 (europe-west1) 節點
           DB_BASE="https://piggynet-93c33-default-rtdb.europe-west1.firebasedatabase.app"
           
           # 撈取今日損益
           PROFIT_RAW=$(curl -s "$DB_BASE/family/investSnapshot/mom/$TODAY/profit.json")
           
-          # 撈取標準 Web Push 的三件套 (Endpoint, auth, p256dh)
+          # 撈取標準 Web Push 的三件套 (Endpoint)
           ENDPOINT_RAW=$(curl -s "$DB_BASE/users/mom/pushToken/endpoint.json" | tr -d '"')
-          AUTH_RAW=$(curl -s "$DB_BASE/users/mom/pushToken/keys/auth.json" | tr -d '"')
-          P256DH_RAW=$(curl -s "$DB_BASE/users/mom/pushToken/keys/p256dh.json" | tr -d '"')
           
           if [ "$ENDPOINT_RAW" = "null" ] || [ -z "$ENDPOINT_RAW" ]; then
             echo "❌ 找不到 mom 的手機訂閱 Endpoint，取消發送。"
             exit 0
           fi
           
+          # 從 endpoint 網址中精準切出真正的 FCM Token ID
+          FCM_TOKEN=$(basename "$ENDPOINT_RAW")
+          
           # 格式化金額數字為千分位
           PROFIT=$(printf "%'d" $PROFIT_RAW 2>/dev/null || echo $PROFIT_RAW)
           
           echo "🎯 成功對接正確的資料庫！"
           echo "💰 今日最新真實損益為: \$$PROFIT 元"
-          echo "📱 手機目標 Endpoint 網址: $ENDPOINT_RAW"
           
-          # 💡 修正點 ②：不再打 404 的舊網址。
-          # 直接使用瀏覽器產生的標準 Web Push 協定，帶上 Server Key 直接發往 endpoint。
-          # 這繞過了 FCM 繁瑣的 OAuth2 限制，在後台 Linux 執行完全不受 CORS 限制！
+          # 💡 修正點：改回打 V1 唯一的通用相容轉發端點，並使用符合 Google 規範的標準 JSON 封包結構
           echo "🚀 後端伺服器正在將通知直接空投至該手機端點..."
           
           SERVER_KEY="AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg"
           
-          RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$ENDPOINT_RAW" \
+          RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://fcm.googleapis.com/fcm/send" \
             -H "Content-Type: application/json" \
             -H "Authorization: key=$SERVER_KEY" \
             -d "{
+              \"to\": \"$FCM_TOKEN\",
               \"notification\": {
                 \"title\": \"🐷 豬豬e網 - 今日收益回報 🐷\",
                 \"body\": \"嗨 mom，今日最新損益已同步完成！最新帳戶總收益為：\$$PROFIT 元。\",
@@ -67,5 +64,5 @@ jobs:
           if [ "$RESPONSE_CODE" = "200" ] || [ "$RESPONSE_CODE" = "201" ]; then
             echo "🎯 [推播捷報] 恭喜！通知已成功跨海精準遞送至 mom 的手機裝置！"
           else
-            echo "❌ 發送可能失敗，狀態碼非 200/201，請檢查金鑰或 Token 是否過期。"
+            echo "❌ 發送失敗，狀態碼非 200/201，請檢查後台日誌。"
           fi
