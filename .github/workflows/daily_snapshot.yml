@@ -2,6 +2,7 @@ name: Daily Asset Snapshot
 on:
   schedule:
     - cron: '40 7 * * 1-5' # 每週一至週五台灣時間下午 15:20 執行
+  workflow_dispatch:      # 💡 ⭐ 補上這一行！這就是「手動手動執行」的魔法開關
 
 jobs:
   trigger_snapshot:
