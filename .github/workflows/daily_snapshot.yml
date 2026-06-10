@@ -1,7 +1,7 @@
 name: Daily Asset Snapshot
 on:
   schedule:
-    - cron: '20 7 * * 1-5' # 每週一至週五台灣時間下午 15:20 執行
+    - cron: '40 7 * * 1-5' # 每週一至週五台灣時間下午 15:20 執行
 
 jobs:
   trigger_snapshot:
