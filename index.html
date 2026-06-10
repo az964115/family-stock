@@ -95,6 +95,14 @@
     }
     input:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(113, 128, 150, 0.15); }
     
+    textarea {
+      width: 100%; min-height: 110px; padding: 12px 16px; margin: 8px 0; border-radius: 8px;
+      border: 1px solid #CBD5E0; background: rgba(255, 255, 255, 0.9);
+      font-size: 1em; box-sizing: border-box; outline: none; resize: vertical;
+      font-family: inherit; transition: all 0.2s ease;
+    }
+    textarea:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(113, 128, 150, 0.15); }
+
     button { 
       cursor: pointer; padding: 12px 20px; margin: 6px 0; border-radius: 8px; 
       font-weight: 600; font-size: 0.95em; border: none; letter-spacing: 0.5px;
@@ -165,6 +173,9 @@
     .log-item:last-child { border-bottom: none; }
     
     .flex-wrap-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .memo-status { font-size: 0.82em; font-weight: normal; padding: 2px 8px; border-radius: 12px; background: #E2E8F0; color: #4A5568; }
   </style>
 </head>
 <body>
@@ -230,13 +241,27 @@
       <div class="modal-content">
         <div class="modal-header"><h3 style="margin:0; color:#D69E2E;">⏳ 長期複利效益計算</h3></div>
         <div class="modal-body-scroll">
-          <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="display:flex; gap:10px; margin-bottom:15px; border-bottom:1px solid #E2E8F0; padding-bottom:10px;">
+            <button id="tabNormalComp" onclick="switchCompoundTab('normal')" style="flex:1; padding:8px; background:#D69E2E; color:white; font-size:0.9em;">正向複利預估</button>
+            <button id="tabInverseComp" onclick="switchCompoundTab('inverse')" style="flex:1; padding:8px; background:#E2E8F0; color:#2D3748; font-size:0.9em;">逆向圓夢計算</button>
+          </div>
+
+          <div id="sectorNormalComp" style="display: flex; flex-direction: column; gap: 4px;">
             <label>初始本金 (元)：</label><input type="number" id="compPrincipal" value="100000">
             <label>每月投入 (元)：</label><input type="number" id="compMonthly" value="10000">
             <label>年化報酬率 (%)：</label><input type="number" id="compRate" value="8" step="0.1">
             <label>投資年期 (年)：</label><input type="number" id="compYears" value="10">
             <button onclick="calculateCompound()" style="width:100%; margin-top:12px; background-color:#D69E2E; color: white;">開始計算</button>
           </div>
+
+          <div id="sectorInverseComp" style="display: none; flex-direction: column; gap: 4px;">
+            <label>終期圓夢目標金額 (元)：</label><input type="number" id="invTargetAmount" value="10000000" placeholder="例如: 10000000">
+            <label>現有初始本金 (元)：</label><input type="number" id="invPrincipal" value="100000">
+            <label>預計達成年期 (年)：</label><input type="number" id="invYears" value="10">
+            <label>預期年化報酬率 (%)：</label><input type="number" id="invRate" value="8" step="0.1">
+            <button onclick="calculateInverseCompound()" style="width:100%; margin-top:12px; background-color:#3182CE; color: white;">逆向計算每月需投入</button>
+          </div>
+
           <div id="compoundResult" class="calc-result" style="background: #FFFDF5; border-color: #FEFCBF;"><div id="compoundDetails"></div></div>
         </div>
         <div class="modal-footer"><button onclick="closeCompoundModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
@@ -300,6 +325,34 @@
     </div>
 
     <div class="container">
+      <h3>📝 公告欄&個人備忘錄</h3>
+      <div class="grid-2" style="margin-top: 15px;">
+        <div style="background: rgba(255, 255, 255, 0.5); padding: 20px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.03); display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; color: var(--primary); font-size: 1.1em;">📢 全體公告</h4>
+            <button id="editAnnouncementBtn" style="display: none; background: #4A5568; color: white; padding: 4px 10px; font-size: 0.8em; margin: 0;" onclick="toggleAnnouncementEdit()">✏️ 編輯公告</button>
+          </div>
+          <div id="announcementDisplay" style="min-height: 110px; white-space: pre-wrap; line-height: 1.6; color: var(--text-main); font-size: 0.95em;">讀取公告中...</div>
+          <div id="announcementEditArea" style="display: none;">
+            <textarea id="announcementInput" placeholder="請輸入全體公告內容..."></textarea>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 5px;">
+              <button style="background: #A0AEC0; color: white; padding: 6px 12px; font-size: 0.85em;" onclick="toggleAnnouncementEdit()">取消</button>
+              <button style="background: #2F855A; color: white; padding: 6px 12px; font-size: 0.85em;" onclick="saveAnnouncement()">💾 儲存</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.5); padding: 20px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.03); display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; color: var(--primary); font-size: 1.1em;">🔒 個人投資備忘錄</h4>
+            <span id="memoStatus" class="memo-status">讀取中...</span>
+          </div>
+          <textarea id="personalMemoInput" oninput="handleMemoInput()" placeholder="在這裡輸入只有你看得見的私人備忘（例如：關注產業、個人預計投入資金配置等...）" style="flex: 1; min-height: 110px; margin: 0; background: rgba(255,255,255,0.6);"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
       <h3>📋 我的持股明細</h3>
       <ul id="portfolioList"><li>正在更新現價...</li></ul>
     </div>
@@ -319,22 +372,21 @@
     const db = firebase.database();
     
     let profitChartInstance = null;
-    let pieChartInstance = null; // 圓餅圖實例
+    let pieChartInstance = null; 
     let lastRecordedProfit = 0; 
     let currentGlobalTotalValue = 0;
     let currentGlobalTotalCost = 0;
     let currentGlobalTotalProfit = 0;
     let globalCanSeeDetails = false;
     let userTargetAmount = 0; 
+    let isEditingAnnouncement = false;
+    let memoDebounceTimeout = null;
 
-    // 新增：靜態產業對照表（可以自由擴充代碼）
-    // 如果是個股，直接寫對應單一產業字串
-    // 如果是 ETF，則寫成一個物件，定義各產業佔比（加總須為 1）
     const STOCK_SECTORS = {
       "3653": "電子零組件",
       "0050": { "半導體業": 0.73, "金融保險業": 0.08, "電子零組件業": 0.07, "電腦及週邊設備業": 0.04,"其他電子業": 0.04,"通信網路業":0.02,"塑膠工業":0.01,"食品工業":0.01 },
-      "009816": { "半導體業": 0.52, "金融保險業": 0.19, "電子零組件業": 0.12, "其他電子業": 0.06,"電腦及週邊設備業":0.04,"通信網路業":0.03,"生技醫療業":0.01 ,"航運業":0.01,"塑膠工業":0.01,"食品工業":0.01},
-      "00981A": { "電子零組件業": 0.35, "半導體業": 0.31, "電腦及週邊設備業	": 0.08, "其他電子業": 0.06,"通信網路業":0.05,"塑膠工業":0.02,"上櫃電腦及週邊設備業":0.02,"現金保留":0.12 }
+      "009816": { "半導體業": 0.52, "金融保險業": 0.19, "電子零組件業": 0.12, "其他電子業": 0.06,"電腦及週邊設備業":0.04,"通信網路業":0.03,"生技醫療業":0.01 ,"航運業":0.01,"塑膠工業":0.01,"食品工業":0.01 },
+      "00981A": { "電子零組件業": 0.35, "半導體業": 0.31, "電腦及週邊設備業\t": 0.08, "其他電子業": 0.06,"通信網路業":0.05,"塑膠工業":0.02,"上櫃電腦及週邊設備業":0.02,"現金保留":0.12 }
     };
 
     function openModal(id) {
@@ -348,6 +400,7 @@
       setTimeout(() => modal.style.display = 'none', 300);
     }
 
+    // 績效排行分析
     async function openRankModal() {
       openModal('rankModal');
       const listEl = document.getElementById('rankList');
@@ -397,14 +450,39 @@
             <div class="rank-details" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #E2E8F0;">${user.details.map((s, idx) => `<div style="display:flex; justify-content:space-between; font-size:0.9em; margin: 4px 0;"><span>項目 ${String.fromCharCode(65 + idx)}</span><span class="${s.rate >= 0 ? 'profit-positive' : 'profit-negative'}">${s.rate >= 0 ? '+' : ''}${s.rate}%</span></div>`).join('')}</div>
             </details></div>`;
         });
-        listEl.innerHTML = html;
+        userRanks.length === 0 ? listEl.innerHTML = "<p style='text-align:center; color: var(--text-muted);'>尚無持股成員數據</p>" : listEl.innerHTML = html;
       } catch (err) { listEl.innerHTML = "讀取失敗"; }
     }
     
-    function closeRankModal() { closeModal('rankModal'); }
-    function openCompoundModal() { openModal('compoundModal'); }
+    function openCompoundModal() { 
+      document.getElementById('compoundDetails').innerHTML = '';
+      document.getElementById('compoundResult').style.display = 'none';
+      switchCompoundTab('normal');
+      openModal('compoundModal'); 
+    }
     function closeCompoundModal() { closeModal('compoundModal'); }
 
+    // 複利標籤切換
+    function switchCompoundTab(mode) {
+      const tabNormal = document.getElementById('tabNormalComp');
+      const tabInverse = document.getElementById('tabInverseComp');
+      const secNormal = document.getElementById('sectorNormalComp');
+      const secInverse = document.getElementById('sectorInverseComp');
+      
+      document.getElementById('compoundResult').style.display = 'none';
+
+      if (mode === 'normal') {
+        tabNormal.style.background = '#D69E2E'; tabNormal.style.color = 'white';
+        tabInverse.style.background = '#E2E8F0'; tabInverse.style.color = '#2D3748';
+        secNormal.style.display = 'flex'; secInverse.style.display = 'none';
+      } else {
+        tabInverse.style.background = '#3182CE'; tabInverse.style.color = 'white';
+        tabNormal.style.background = '#E2E8F0'; tabNormal.style.color = '#2D3748';
+        secInverse.style.display = 'flex'; secNormal.style.display = 'none';
+      }
+    }
+
+    // 正向複利計算
     function calculateCompound() {
       const principal = parseFloat(document.getElementById('compPrincipal').value) || 0;
       const monthly = parseFloat(document.getElementById('compMonthly').value) || 0;
@@ -418,11 +496,59 @@
       const totalEstimated = Math.round(futureValuePrincipal + futureValueSeries);
       const totalInvested = Math.round(principal + (monthly * totalMonths));
       const totalInterest = totalEstimated - totalInvested;
+      
       document.getElementById('compoundDetails').innerHTML = `
-        <span style="font-weight:600; color:var(--primary);">📈 ${years} 年後預估成果明細：</span><br>
-        📍 總投入本金: $${totalInvested.toLocaleString()} 元<br>
-        📍 滾出總利息: <span class="profit-positive">$${totalInterest.toLocaleString()} 元</span>
+        <span style="font-weight:600; color:#D69E2E;">📈 ${years} 年後預估財富成果：</span><br>
+        📍 累計投入本金: $${totalInvested.toLocaleString()} 元<br>
+        📍 累計滾出利息: <span class="profit-positive">$${totalInterest.toLocaleString()} 元</span>
         <div style="font-size:1.1em; color:#B8860B; margin-top:8px; font-weight:bold; border-top:1px solid #E2E8F0; padding-top:8px;">💰 資產預估總額: $${totalEstimated.toLocaleString()} 元</div>`;
+      document.getElementById('compoundResult').style.display = 'block';
+    }
+
+    // 逆向圓夢計算機
+    function calculateInverseCompound() {
+      const targetAmt = parseFloat(document.getElementById('invTargetAmount').value) || 0;
+      const principal = parseFloat(document.getElementById('invPrincipal').value) || 0;
+      const years = parseInt(document.getElementById('invYears').value) || 0;
+      const annualRate = parseFloat(document.getElementById('invRate').value) || 0;
+
+      if (targetAmt <= 0) return alert("請輸入有效的目標圓夢金額");
+      if (years <= 0) return alert("預計達成年期必須大於 0 年");
+
+      const monthlyRate = (annualRate / 100) / 12;
+      const totalMonths = years * 12;
+
+      const futureValuePrincipal = principal * Math.pow(1 + monthlyRate, totalMonths);
+      const remainingTarget = targetAmt - futureValuePrincipal;
+
+      let requiredMonthly = 0;
+      if (remainingTarget > 0) {
+        if (monthlyRate > 0) {
+          requiredMonthly = remainingTarget / (((Math.pow(1 + monthlyRate, totalMonths) - 1) / monthlyRate));
+        } else {
+          requiredMonthly = remainingTarget / totalMonths;
+        }
+      }
+
+      requiredMonthly = Math.max(0, Math.round(requiredMonthly));
+      const totalInvested = Math.round(principal + (requiredMonthly * totalMonths));
+      const totalInterest = Math.round(targetAmt - totalInvested);
+
+      if (futureValuePrincipal >= targetAmt) {
+        document.getElementById('compoundDetails').innerHTML = `
+          <span style="font-weight:600; color:#3182CE;">🎯 逆向圓夢計算分析：</span><br>
+          恭喜！您的初始本金 $${principal.toLocaleString()} 元在 ${years} 年後複利滾存可達 $${Math.round(futureValuePrincipal).toLocaleString()} 元，<b style="color:var(--success);">已自動超越目標金額！</b><br>
+          <div style="font-size:1.1em; color:#3182CE; margin-top:8px; font-weight:bold; border-top:1px solid #E2E8F0; padding-top:8px;">💰 每月需要再投入：$0 元</div>`;
+      } else {
+        document.getElementById('compoundDetails').innerHTML = `
+          <span style="font-weight:600; color:#3182CE;">🎯 逆向圓夢計算成果：</span><br>
+          目標總額：$${targetAmt.toLocaleString()} 元（年期 ${years} 年、年化 ${annualRate}%）<br>
+          📍 初始本金 ${years} 年後滾至：$${Math.round(futureValuePrincipal).toLocaleString()} 元<br>
+          📍 倒扣後尚缺金額：$${Math.round(remainingTarget).toLocaleString()} 元<br>
+          📍 您總共需手動投入本金：$${totalInvested.toLocaleString()} 元<br>
+          📍 系統幫你賺的複利利息：<span class="profit-positive">$${totalInterest.toLocaleString()} 元</span>
+          <div style="font-size:1.1em; color:#2B6CB0; margin-top:8px; font-weight:bold; border-top:1px solid #E2E8F0; padding-top:8px;">💡 每月「必須」定時定額投入：$${requiredMonthly.toLocaleString()} 元</div>`;
+      }
       document.getElementById('compoundResult').style.display = 'block';
     }
 
@@ -430,7 +556,6 @@
       document.getElementById('targetAmountInput').value = userTargetAmount || "";
       openModal('targetModal');
     }
-
     function closeTargetModal() { closeModal('targetModal'); }
 
     async function saveTargetAmount() {
@@ -458,6 +583,86 @@
       document.getElementById("progressDetailsText").textContent = `目前現值 $${currentGlobalTotalValue.toLocaleString()} / 目標 $${userTargetAmount.toLocaleString()}`;
     }
 
+    // --- 備忘與公告欄邏輯 ---
+    function initAnnouncementAndMemo(username) {
+      if (!username) return;
+      const editBtn = document.getElementById("editAnnouncementBtn");
+      
+      if (username.toLowerCase() === "jason") {
+        if (editBtn) editBtn.style.display = "inline-block";
+      } else {
+        if (editBtn) editBtn.style.display = "none";
+      }
+
+      // 接軌 Firebase 公告監聽
+      db.ref("family/globalAnnouncement").on("value", (snap) => {
+        const text = snap.val() || "歡迎使用豬豬e網資產管理平台。目前尚無全體公告。";
+        document.getElementById("announcementDisplay").textContent = text;
+        document.getElementById("announcementInput").value = text;
+      });
+
+      // 載入個人獨立備忘錄
+      document.getElementById("memoStatus").textContent = "讀取中...";
+      db.ref(`users/${username}/memo`).once("value").then((snap) => {
+        document.getElementById("personalMemoInput").value = snap.val() || "";
+        document.getElementById("memoStatus").textContent = "雲端已同步 ✅";
+        document.getElementById("memoStatus").style.background = "#E6FFFA";
+        document.getElementById("memoStatus").style.color = "#23543D";
+      }).catch(()=>{
+        document.getElementById("memoStatus").textContent = "讀取失敗";
+      });
+    }
+
+    function toggleAnnouncementEdit() {
+      const displayDiv = document.getElementById("announcementDisplay");
+      const editDiv = document.getElementById("announcementEditArea");
+      const editBtn = document.getElementById("editAnnouncementBtn");
+      
+      isEditingAnnouncement = !isEditingAnnouncement;
+      if (isEditingAnnouncement) {
+        displayDiv.style.display = "none";
+        editDiv.style.display = "block";
+        editBtn.style.display = "none";
+      } else {
+        displayDiv.style.display = "block";
+        editDiv.style.display = "none";
+        if ((localStorage.getItem('currentUser') || '').toLowerCase() === "jason") {
+          editBtn.style.display = "inline-block";
+        }
+      }
+    }
+
+    async function saveAnnouncement() {
+      const text = document.getElementById("announcementInput").value;
+      try {
+        await db.ref("family/globalAnnouncement").set(text);
+        toggleAnnouncementEdit();
+      } catch (e) { alert("儲存公告失敗"); }
+    }
+
+    // 個人備忘錄自動防抖儲存 (停止輸入 0.8 秒後觸發)
+    function handleMemoInput() {
+      const statusSpan = document.getElementById("memoStatus");
+      statusSpan.textContent = "正在輸入...⏳";
+      statusSpan.style.background = "#FFF5F5";
+      statusSpan.style.color = "#9B2C2C";
+
+      clearTimeout(memoDebounceTimeout);
+      memoDebounceTimeout = setTimeout(() => {
+        const user = localStorage.getItem('currentUser');
+        if (!user) return;
+        const text = document.getElementById("personalMemoInput").value;
+        db.ref(`users/${user}/memo`).set(text).then(() => {
+          statusSpan.textContent = "雲端已同步 ✅";
+          statusSpan.style.background = "#E6FFFA";
+          statusSpan.style.color = "#23543D";
+        }).catch(() => {
+          statusSpan.textContent = "同步失敗 ❌";
+        });
+      }, 800);
+    }
+
+    // 渲染持股資產明細與串接 API
     async function renderPortfolio(data, user, canSeeDetails) {
       const listEl = document.getElementById("portfolioList");
       const isJason = user.toLowerCase() === 'jason';
@@ -471,8 +676,6 @@
       let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0;
       let html = "";
       let isAllDataAccurate = true; 
-
-      // 用來存放各產業累計現值的物件
       let sectorDataMap = {};
 
       const codes = Object.keys(data);
@@ -509,13 +712,10 @@
         results.forEach(({ code, info, costT, currT, p, price }) => {
           totalProfit += p; totalCurrentValue += currT; totalCostT += costT;
           
-          // 新增：產業比重計算核心邏輯
           const mapping = STOCK_SECTORS[code] || "未分類/其他";
           if (typeof mapping === "string") {
-            // 一般個股
             sectorDataMap[mapping] = (sectorDataMap[mapping] || 0) + currT;
           } else {
-            // ETF 拆解
             for (let secName in mapping) {
               const ratio = mapping[secName];
               sectorDataMap[secName] = (sectorDataMap[secName] || 0) + (currT * ratio);
@@ -544,8 +744,6 @@
 
         updateDynamicMetrics();
         updateProgressBarVisual(); 
-        
-        // 新增：呼叫畫圓餅圖的函數
         renderPieChart(sectorDataMap);
 
       } catch (globalError) {
@@ -553,7 +751,7 @@
       }
     }
 
-    // 新增：圓餅圖渲染函數
+    // 產業分佈圓餅圖
     function renderPieChart(sectorMap) {
       const ctx = document.getElementById('portfolioPieChart').getContext('2d');
       if (pieChartInstance) pieChartInstance.destroy();
@@ -569,9 +767,7 @@
           labels: labels,
           datasets: [{
             data: dataValues,
-            backgroundColor: [
-              '#4A5568', '#3182CE', '#319795', '#D69E2E', '#9B2C2C', '#6B46C1', '#A0AEC0'
-            ],
+            backgroundColor: ['#4A5568', '#3182CE', '#319795', '#D69E2E', '#9B2C2C', '#6B46C1', '#A0AEC0'],
             borderWidth: 2,
             borderColor: '#ffffff'
           }]
@@ -580,10 +776,7 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              position: 'right',
-              labels: { font: { size: 12 } }
-            },
+            legend: { position: 'right', labels: { font: { size: 12 } } },
             tooltip: {
               callbacks: {
                 label: function(context) {
@@ -600,6 +793,7 @@
       });
     }
 
+    // 指標動態演算
     function updateDynamicMetrics() {
       const monthEl = document.getElementById("monthPerformance");
       const mddEl = document.getElementById("maxDrawdownDisplay");
@@ -720,6 +914,7 @@
     function logout() { localStorage.removeItem('currentUser'); location.reload(); }
     function toggleGlobalPermission(isOpen) { db.ref('settings/global/showPortfolioToAll').set(isOpen); }
 
+    // 主程式生命週期初始化
     window.onload = () => {
       const user = localStorage.getItem('currentUser');
       if (user) {
@@ -730,6 +925,9 @@
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
         if (user.toLowerCase() === 'jason') document.getElementById('adminPanel').style.display = 'block';
         
+        // 初始化全體公告與私人備忘錄
+        initAnnouncementAndMemo(user);
+
         db.ref('settings/global/showPortfolioToAll').on('value', snap => {
           globalCanSeeDetails = snap.val() || false;
           if(document.getElementById("permissionStatus")) document.getElementById("permissionStatus").textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏標的";
