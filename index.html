@@ -987,7 +987,9 @@
             let subscription = await registration.pushManager.getSubscription();
             if (!subscription) {
               subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true
+                userVisibleOnly: true,
+                // ⭐ 補上這一行，把你在 Firebase 複製的長字串貼在下面
+                applicationServerKey: 'BL5SsIhlF93Pp32HI1VxmqTLvYGMgv0Bdg3tV0qF4iArM1-r1jDHM_t7twcVidXVVuN5IhyoARHI6z5ftEU-kPo'
               });
             }
             
