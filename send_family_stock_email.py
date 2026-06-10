@@ -9,7 +9,7 @@ import requests
 RECEIVERS = {
     "jason": "az964115@gmail.com",
     "mom": "sa400020@gmail.com",
-    "debby": "debby95170@gmail.com"
+    # "debby": "debby95170@gmail.com"
     # "dad": "",  # 先空著
     # "wei": ""   # 先空著
 }
