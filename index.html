@@ -915,7 +915,22 @@
     function toggleGlobalPermission(isOpen) { db.ref('settings/global/showPortfolioToAll').set(isOpen); }
 
     // 主程式生命週期初始化
+    // 主程式生命週期初始化
     window.onload = () => {
+      // ⭐【核心推播修正】一載入網頁就主動向瀏覽器要求開啟通知權限
+      if ('Notification' in window) {
+        if (Notification.permission !== 'granted') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              console.log('🎉 豬豬e網通知權限允許成功！');
+              setupPushSubscription();
+            }
+          });
+        } else {
+          setupPushSubscription();
+        }
+      }
+
       const user = localStorage.getItem('currentUser');
       if (user) {
         const bg = localStorage.getItem(`bg_${user}`);
@@ -925,8 +940,9 @@
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
         if (user.toLowerCase() === 'jason') document.getElementById('adminPanel').style.display = 'block';
         
-        // 初始化全體公告與私人備忘錄
+        // 初始化公告、備忘錄與累計配息面版監聽
         initAnnouncementAndMemo(user);
+        loadDividendLogs();
 
         db.ref('settings/global/showPortfolioToAll').on('value', snap => {
           globalCanSeeDetails = snap.val() || false;
@@ -957,6 +973,17 @@
         });
       }
     };
+
+    // ⭐【核心推播修正】註冊瀏覽器 Service Worker 的通道
+    function setupPushSubscription() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').then(registration => {
+          console.log('Service Worker 註冊成功，14:00 聽候推播差遣。', registration);
+        }).catch(err => {
+          console.error('Service Worker 註冊失敗:', err);
+        });
+      }
+    }
 
     function renderChart(entries) {
       const ctx = document.getElementById('profitTrendChart').getContext('2d');
