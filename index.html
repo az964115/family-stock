@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#4A5568">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐷豬豬e網 -資產管理🐷</title>
+  <title>🐷豬豬e網 - 資產管理🐷</title>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -848,64 +848,11 @@
       el.className = diff >= 0 ? "profit-positive" : "profit-negative";
     }
 
-    // ⭐【最終大功告成版：利用官方 Server Key 發送通知，完美繞過 CORS 限制】
     async function autoSaveToHistory(user, profit) {
       const today = new Date().toISOString().split('T')[0];
-      
-      // 1. 先執行原本的邏輯：將今日損益寫入 Firebase 供折線圖讀取
+      // 網頁端專心做這件事就好，避開所有 CORS 戰場！
       await db.ref(`family/investSnapshot/${user}/${today}`).set({ profit: profit });
       console.log(`📊 已成功自動將 ${user} 的今日損益 $${profit.toLocaleString()} 寫入折線圖歷史。`);
-      
-      // 2. 🚀 開始進行手機推播
-      try {
-        const tokenSnap = await db.ref(`users/${user}/pushToken`).get();
-        if (!tokenSnap.exists()) {
-          console.log(`[推播] 找不到成員 ${user} 的手機訂閱 Token，跳過發送。`);
-          return;
-        }
-        
-        const pushInfo = tokenSnap.val();
-        let fcmToken = "";
-        if (pushInfo.endpoint) {
-          // 萃取標準 endpoint 尾巴的專屬裝置識別碼
-          fcmToken = pushInfo.endpoint.split('/').pop();
-        } else {
-          console.log(`[推播] 找不到有效端點`);
-          return;
-        }
-
-        console.log(`📡 正在透過 Firebase 官方通道向 ${user} 發送手機推播...`);
-
-        // 💡 填入您剛才找到的官方伺服器金鑰
-        const serverKey = "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg";
-        
-        // 呼叫 Google 官方發信通道
-        const response = await fetch('https://fcm.googleapis.com/fcm/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'key=' + serverKey
-          },
-          body: JSON.stringify({
-            "to": fcmToken,
-            "notification": {
-              "title": "🐷 豬豬e網 - 今日收益回報 🐷",
-              "body": `嗨 ${user}，今日最新損益已同步完成！最新帳戶總收益為：$${profit.toLocaleString()} 元。`,
-              "icon": "icon.png",
-              "click_action": "https://az964115.github.io/family-stock/"
-            }
-          })
-        });
-
-        if (response.ok) {
-          console.log(`🎯 [推播捷報] 成功利用官方通道將通知發送至 ${user} 的手機裝置！`);
-        } else {
-          console.error(`[推播] 傳送失敗，回應狀態: ${response.status}`);
-        }
-
-      } catch (pushError) {
-        console.error("發送推播時發生錯誤:", pushError);
-      }
     }
 
     // 🛠️ 輔助函式：產生符合標準 Web Push 的 VAPID 認證字串
