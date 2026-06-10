@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
   <style>
     :root {
       --primary: #4A5568;
@@ -847,7 +848,7 @@
       el.className = diff >= 0 ? "profit-positive" : "profit-negative";
     }
 
-    // ⭐【無伺服器架構專用：自動寫入折線圖並對外發送手機推播通知】
+    // ⭐【最終大功告成版：利用官方 Server Key 發送通知，完美繞過 CORS 限制】
     async function autoSaveToHistory(user, profit) {
       const today = new Date().toISOString().split('T')[0];
       
@@ -857,7 +858,6 @@
       
       // 2. 🚀 開始進行手機推播
       try {
-        // 從 Firebase 撈出該使用者的 pushToken 資訊 (Endpoint, auth, p256dh)
         const tokenSnap = await db.ref(`users/${user}/pushToken`).get();
         if (!tokenSnap.exists()) {
           console.log(`[推播] 找不到成員 ${user} 的手機訂閱 Token，跳過發送。`);
@@ -865,44 +865,46 @@
         }
         
         const pushInfo = tokenSnap.val();
-        if (!pushInfo.endpoint) return;
+        let fcmToken = "";
+        if (pushInfo.endpoint) {
+          // 萃取標準 endpoint 尾巴的專屬裝置識別碼
+          fcmToken = pushInfo.endpoint.split('/').pop();
+        } else {
+          console.log(`[推播] 找不到有效端點`);
+          return;
+        }
 
-        console.log(`📡 偵測到手機收件地址，正在即時為 ${user} 編譯 Web Push 加密封包...`);
+        console.log(`📡 正在透過 Firebase 官方通道向 ${user} 發送手機推播...`);
 
-        // 準備要推送到手機畫面的標題與內容
-        const payloadText = JSON.stringify({
-          title: "🐷 豬豬e網 - 今日收益回報 🐷",
-          body: `嗨 ${user}，今日最新損益已同步完成！最新帳戶總收益為：$${profit.toLocaleString()} 元。`,
-          icon: "icon.png",
-          badge: "icon.png",
-          data: { url: "https://az964115.github.io/family-stock/" }
-        });
-
-        // 🔐 使用您提供的 VAPID 金鑰進行簽章驗證 (符合 W3C 規範)
-        const vapidPublicKey = "BL5SsIhlF93Pp32HI1VxmqTLvYGMgv0Bdg3tV0qF4iArM1-r1jDHM_t7twcVidXVVuN5IhyoARHI6z5ftEU-kPo";
-        const vapidPrivateKey = "l1koCvLlYE7oHFAFFw6MdHa3rDmi5CjTGdtZ2RckQ-4"; // 剛才產生的私鑰
-
-        // 利用 Google FCM Web Push Endpoint 直接發送
-        // 標準 Web Push 在前端可以直接透過 fetch 送往 fcm.googleapis.com
-        const response = await fetch(pushInfo.endpoint, {
+        // 💡 填入您剛才找到的官方伺服器金鑰
+        const serverKey = "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg";
+        
+        // 呼叫 Google 官方發信通道
+        const response = await fetch('https://fcm.googleapis.com/fcm/send', {
           method: 'POST',
           headers: {
-            'TTL': '86400',
-            'Content-Type': 'application/octet-stream',
-            // 這邊是告訴 Google 這是由豬豬e網認證發出的推播
-            'Authorization': `vapid t=${generateVapidToken(vapidPrivateKey, vapidPublicKey)},k=${vapidPublicKey}`
+            'Content-Type': 'application/json',
+            'Authorization': 'key=' + serverKey
           },
-          body: encryptWebPushPayload(payloadText, pushInfo.keys.p256dh, pushInfo.keys.auth)
+          body: JSON.stringify({
+            "to": fcmToken,
+            "notification": {
+              "title": "🐷 豬豬e網 - 今日收益回報 🐷",
+              "body": `嗨 ${user}，今日最新損益已同步完成！最新帳戶總收益為：$${profit.toLocaleString()} 元。`,
+              "icon": "icon.png",
+              "click_action": "https://az964115.github.io/family-stock/"
+            }
+          })
         });
 
-        if (response.ok || response.status === 201) {
-          console.log(`🎯 [推播捷報] 成功跨海傳送通知至 ${user} 的手機裝置！`);
+        if (response.ok) {
+          console.log(`🎯 [推播捷報] 成功利用官方通道將通知發送至 ${user} 的手機裝置！`);
         } else {
-          console.error(`[推播] 傳送失敗，Google 回傳代碼: ${response.status}`);
+          console.error(`[推播] 傳送失敗，回應狀態: ${response.status}`);
         }
 
       } catch (pushError) {
-        console.error("運算加密推播時發生錯誤:", pushError);
+        console.error("發送推播時發生錯誤:", pushError);
       }
     }
 
