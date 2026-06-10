@@ -28,7 +28,7 @@ def fetch_profit_and_send():
 
     # 連線到 SMTP 伺服器預備
     try:
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 445)
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
         server.login(GMAIL_USER, GMAIL_PASSWORD)
     except Exception as e:
         print(f"❌ Gmail SMTP 登入失敗: {e}")
