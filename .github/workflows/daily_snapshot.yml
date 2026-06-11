@@ -1,7 +1,7 @@
 name: Daily Asset Snapshot (Email)
 on:
   schedule:
-    - cron: '0 6 * * 1-5'   # 💡 台灣時間每週一至週五下午 14:00 自動執行 (6 + 8 = 14)
+    #- cron: '0 6 * * 1-5'   # 💡 台灣時間每週一至週五下午 14:00 自動執行 (6 + 8 = 14)
   workflow_dispatch:        # 💡 保留手動點擊發送的按鈕，方便您隨時測試！
 
 jobs:
