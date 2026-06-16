@@ -36,6 +36,10 @@
     
     .target-btn { background-color: #3182CE; color: white; }
     .target-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    
+    /* 新增資金歷程按鈕樣式 */
+    .history-btn { background-color: #ED8936; color: white; }
+    .history-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
     .progress-container {
       margin: 20px 0;
@@ -89,7 +93,7 @@
     .stat-box:hover { background: #fff; transform: scale(1.02); }
     .stat-box small { color: var(--text-muted); font-size: 0.82em; font-weight: 500; display: block; margin-bottom: 6px; }
     
-    input[type="text"], input[type="password"], input[type="number"] { 
+    input[type="text"], input[type="password"], input[type="number"], input[type="date"] { 
       padding: 12px 16px; margin: 8px 0; border-radius: 8px; 
       border: 1px solid #CBD5E0; background: rgba(255, 255, 255, 0.9);
       font-size: 1em; width: 100%; box-sizing: border-box; outline: none;
@@ -108,7 +112,7 @@
     button { 
       cursor: pointer; padding: 12px 20px; margin: 6px 0; border-radius: 8px; 
       font-weight: 600; font-size: 0.95em; border: none; letter-spacing: 0.5px;
-      transition: all 0.2 cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     }
     
     .btn-primary { background-color: var(--primary); color: #fff; }
@@ -198,6 +202,7 @@
         <button class="rank-btn" onclick="openRankModal()">🏆 績效排行</button>
         <button class="compound-btn" onclick="openCompoundModal()">⏳ 複利計算</button>
         <button class="target-btn" onclick="openTargetModal()">🎯 目標設定</button>
+        <button class="history-btn" onclick="openFundingHistoryModal()">📊 資金歷程</button>
         <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
       </div>
       <button onclick="logout()" style="background-color: #A0AEC0; color: white;">登出</button>
@@ -284,6 +289,40 @@
           </div>
         </div>
         <div class="modal-footer"><button onclick="closeTargetModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
+      </div>
+    </div>
+
+    <div id="fundingHistoryModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header"><h3 style="margin:0; color:#ED8936;">📊 資金進出歷程紀錄</h3></div>
+        <div class="modal-body-scroll">
+          
+          <div id="jasonFundingForm" style="display: none; background: #FFF5F5; padding: 15px; border-radius: 12px; border: 1px solid #FEB2B2; margin-bottom: 20px;">
+            <h4 style="margin: 0 0 10px 0; color: #9B2C2C; font-size: 0.95em;">⚙️ 新增成員資金異動 (Jason 專用)</h4>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-size: 0.85em;">對象成員帳號：</label>
+              <input type="text" id="fundingTargetUser" placeholder="例如: user1">
+              
+              <label style="font-size: 0.85em;">異動日期：</label>
+              <input type="date" id="fundingDate">
+              
+              <label style="font-size: 0.85em;">異動金額 (正數為入金，負數為出金)：</label>
+              <input type="number" id="fundingAmount" placeholder="金額 (元)">
+              
+              <label style="font-size: 0.85em;">備註說明：</label>
+              <input type="text" id="fundingNote" placeholder="例如: 第二期款入金、個人提領出金">
+              
+              <button onclick="saveFundingRecord()" style="width:100%; margin-top:10px; background-color:#9B2C2C; color: white;">💾 寫入雲端資料庫</button>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="margin: 0 0 10px 0; font-size: 1em;">🕒 歷史資金明細</h4>
+            <div id="fundingHistoryLogs" class="log-container" style="max-height: 300px;">正在讀取數據...</div>
+          </div>
+          
+        </div>
+        <div class="modal-footer"><button onclick="closeFundingHistoryModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
       </div>
     </div>
 
@@ -400,6 +439,102 @@
       const modal = document.getElementById(id);
       modal.classList.remove('show');
       setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    // 新增：開啟資金歷程彈出視窗與分流初始化
+    function openFundingHistoryModal() {
+      const currentUser = localStorage.getItem('currentUser') || '';
+      const formBlock = document.getElementById('jasonFundingForm');
+      
+      // 預設日期欄位為今天
+      document.getElementById('fundingDate').value = new Date().toISOString().split('T')[0];
+      
+      // 權限分流：如果是 Jason，則顯示管理員表單，且清空輸入內容
+      if (currentUser.toLowerCase() === 'jason') {
+        formBlock.style.display = 'block';
+        document.getElementById('fundingTargetUser').value = '';
+        document.getElementById('fundingAmount').value = '';
+        document.getElementById('fundingNote').value = '';
+      } else {
+        formBlock.style.display = 'none';
+      }
+      
+      openModal('fundingHistoryModal');
+      loadFundingRecords();
+    }
+    
+    function closeFundingHistoryModal() {
+      closeModal('fundingHistoryModal');
+    }
+
+    // 新增：寫入資金異動歷史至雲端 (Jason 專用)
+    async function saveFundingRecord() {
+      const targetUser = document.getElementById('fundingTargetUser').value.trim();
+      const dateStr = document.getElementById('fundingDate').value;
+      const amt = parseFloat(document.getElementById('fundingAmount').value);
+      const note = document.getElementById('fundingNote').value.trim();
+      
+      if (!targetUser) return alert('請輸入對象成員帳號');
+      if (!dateStr) return alert('請選擇異動日期');
+      if (isNaN(amt) || amt === 0) return alert('請輸入有效的非零金額');
+      
+      try {
+        // 寫入對應使用者的獨立節點：family/fundingHistory/使用者帳號/
+        await db.ref(`family/fundingHistory/${targetUser}`).push({
+          date: dateStr,
+          amount: amt,
+          note: note || "無備註",
+          timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        alert(`成功為成員 ${targetUser} 新增一筆資金異動紀錄！`);
+        
+        // 重新載入明細
+        loadFundingRecords();
+      } catch (e) {
+        alert('寫入雲端失敗，請確認網路連線或 Firebase 權限設定。');
+      }
+    }
+
+    // 新增：載入並展示對應使用者的資金明細
+    async function loadFundingRecords() {
+      const currentUser = localStorage.getItem('currentUser') || '';
+      const logsContainer = document.getElementById('fundingHistoryLogs');
+      logsContainer.innerHTML = "正在從雲端載入歷程...";
+      
+      try {
+        const snap = await db.ref(`family/fundingHistory/${currentUser}`).get();
+        if (!snap.exists()) {
+          logsContainer.innerHTML = "尚無歷史資金進出明細";
+          return;
+        }
+        
+        let html = "";
+        const records = [];
+        
+        // 將物件轉為陣列方便排序
+        snap.forEach(child => {
+          records.push(child.val());
+        });
+        
+        // 依日期由新到舊排序
+        records.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        records.forEach(item => {
+          const isDeposit = item.amount > 0;
+          const amtStyle = isDeposit ? 'profit-positive' : 'profit-negative';
+          const prefix = isDeposit ? '➡️ 入金' : '⬅️ 出金';
+          
+          html += `<div class="log-item">
+            <small style="color:var(--text-muted); font-weight:600;">${item.date}</small>
+            <span style="float: right; font-weight: bold;" class="${amtStyle}">${prefix} $${Math.abs(item.amount).toLocaleString()}</span>
+            <br><span style="color: var(--text-main); font-size: 0.9em;">📝 備註: ${item.note}</span>
+          </div>`;
+        });
+        
+        logsContainer.innerHTML = html;
+      } catch (e) {
+        logsContainer.innerHTML = "數據讀取失敗。";
+      }
     }
 
     // 績效排行分析
@@ -850,7 +985,6 @@
 
     async function autoSaveToHistory(user, profit) {
       const today = new Date().toISOString().split('T')[0];
-      // 網頁端專心做這件事就好，避開所有 CORS 戰場！
       await db.ref(`family/investSnapshot/${user}/${today}`).set({ profit: profit });
       console.log(`📊 已成功自動將 ${user} 的今日損益 $${profit.toLocaleString()} 寫入折線圖歷史。`);
     }
@@ -865,7 +999,6 @@
         sub: "mailto:jason@piggynet.com"
       })).replace(/=/g, "");
       
-      // 這邊進行基礎簽章包裝
       const signature = CryptoJS.HmacSHA256(header + "." + claims, privateKey);
       const base64Sign = CryptoJS.enc.Base64.stringify(signature)
         .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
@@ -874,8 +1007,6 @@
 
     // 🛠️ 輔助函式：將推播內容進行基本的傳輸編碼處理
     function encryptWebPushPayload(text, p256dh, auth) {
-      // 由於 Google FCM 的 Web Push 端點接受標準 UTF-8 或是自訂加密
-      // 對於現代 Chrome/FCM 協議，在具備 VAPID JWT 授權下，可直接傳送明文或標準編碼進行協議握手
       return new TextEncoder().encode(text);
     }
 
@@ -944,7 +1075,6 @@
 
     // 主程式生命週期初始化
     window.onload = () => {
-      // ⭐【核心推播修正 1】一載入網頁就主動向瀏覽器要求開啟通知權限
       if ('Notification' in window) {
         if (Notification.permission !== 'granted') {
           Notification.requestPermission().then(permission => {
@@ -967,7 +1097,6 @@
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
         if (user.toLowerCase() === 'jason') document.getElementById('adminPanel').style.display = 'block';
         
-        // 初始化全體公告與私人備忘錄
         initAnnouncementAndMemo(user);
 
         db.ref('settings/global/showPortfolioToAll').on('value', snap => {
@@ -975,7 +1104,6 @@
           if(document.getElementById("permissionStatus")) document.getElementById("permissionStatus").textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏標的";
           db.ref(`users/${user}/portfolio`).on("value", s => {
             renderPortfolio(s.val(), user, globalCanSeeDetails);
-            // ⭐【核心推播修正 2】當確認使用者登入且持股明細載入時，確保重新刷一次 Token 的紀錄，避免遺漏
             setupPushSubscription();
           });
         });
@@ -1004,7 +1132,6 @@
       }
     };
 
-    // ⭐【核心推播修正 3】向手機瀏覽器註冊 Service Worker 通道，並將「收件位址 Token」寫入 Firebase
     function setupPushSubscription() {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(async (registration) => {
@@ -1016,7 +1143,6 @@
             if (!subscription) {
               subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
-                // ⭐ 補上這一行，把你在 Firebase 複製的長字串貼在下面
                 applicationServerKey: 'BL5SsIhlF93Pp32HI1VxmqTLvYGMgv0Bdg3tV0qF4iArM1-r1jDHM_t7twcVidXVVuN5IhyoARHI6z5ftEU-kPo'
               });
             }
@@ -1024,7 +1150,6 @@
             const tokenData = subscription.toJSON();
             const user = localStorage.getItem('currentUser');
             
-            // 如果成功拿到 Token 且帳號已登入，就把 Token 存到對應使用者的 Firebase 路徑下
             if (user && tokenData) {
               await db.ref(`users/${user}/pushToken`).set(tokenData);
               console.log(`🎉 ${user} 的手機通知 Token 已連線同步至 Firebase！`);
