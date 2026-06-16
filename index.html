@@ -479,32 +479,71 @@ function openFundingHistoryModal() {
   
   // 顯示統計區塊給所有登入者看
   document.getElementById('userFundingSummary').style.display = 'block';
-  
+  // 在 openFundingHistoryModal() 內部的最下方加上這幾行：
+document.getElementById('fundingType').onchange = function() {
+  const amtInput = document.getElementById('fundingAmount');
+  if (this.value === 'sell') {
+    amtInput.value = '0';
+    amtInput.disabled = true;
+    amtInput.placeholder = "賣出無需填寫金額，僅計股數";
+  } else {
+    amtInput.value = '';
+    amtInput.disabled = false;
+    amtInput.placeholder = "請輸入總金額";
+  }
+};
   openModal('fundingHistoryModal');
   loadFundingRecords();
+  
 }
     
     function closeFundingHistoryModal() {
       closeModal('fundingHistoryModal');
     }
 
-    // 修改：寫入包含股數與交易類型的資金紀錄 (Jason 專用)
+    // 修改：寫入包含股數與交易類型的資金紀錄 (含賣出扣股數邏輯)
 async function saveFundingRecord() {
   const targetUser = document.getElementById('fundingTargetUser').value.trim();
   const dateStr = document.getElementById('fundingDate').value;
   const type = document.getElementById('fundingType').value;
-  let amt = parseFloat(document.getElementById('fundingAmount').value);
-  const shares = parseFloat(document.getElementById('fundingShares').value) || 0;
   const note = document.getElementById('fundingNote').value.trim();
+  
+  let amt = parseFloat(document.getElementById('fundingAmount').value) || 0;
+  const shares = parseFloat(document.getElementById('fundingShares').value) || 0;
   
   if (!targetUser) return alert('請輸入對象成員帳號');
   if (!dateStr) return alert('請選擇異動日期');
-  if (isNaN(amt) || amt <= 0) return alert('請輸入有效的正數總金額');
-  if (type === 'buy' && (isNaN(shares) || shares <= 0)) return alert('買入時請輸入有效買到股數');
   
-  // 如果是賣出/提領，將金額存為負值
-  if (type === 'sell') {
-    amt = -Math.abs(amt);
+  // 驗證輸入
+  if (type === 'buy') {
+    if (isNaN(amt) || amt <= 0) return alert('買入時請輸入有效正數總金額');
+    if (isNaN(shares) || shares <= 0) return alert('買入時請輸入有效買到股數');
+  } else if (type === 'sell') {
+    if (isNaN(shares) || shares <= 0) return alert('賣出時請輸入有效賣出股數');
+    
+    // 【檢查庫存】先讀取該成員目前的總股數，避免超賣
+    try {
+      const snap = await db.ref(`family/fundingHistory/${targetUser}`).get();
+      let currentOwnedShares = 0;
+      if (snap.exists()) {
+        snap.forEach(child => {
+          const item = child.val();
+          const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
+          if (isBuy) {
+            currentOwnedShares += parseFloat(item.shares || 0);
+          } else {
+            currentOwnedShares -= parseFloat(item.shares || 0); // 扣除之前的賣出
+          }
+        });
+      }
+      if (shares > currentOwnedShares) {
+        return alert(`錯誤：該成員目前僅持有 ${currentOwnedShares.toLocaleString()} 股，無法賣出 ${shares.toLocaleString()} 股！`);
+      }
+    } catch(e) {
+      return alert('讀取庫存失敗，請稍後再試');
+    }
+    
+    amt = 0; // 獲利了結，不記錄特定變動金額，由股數控制
   }
   
   try {
@@ -512,20 +551,20 @@ async function saveFundingRecord() {
     await db.ref(`family/fundingHistory/${targetUser}`).push({
       date: dateStr,
       amount: amt,
-      shares: type === 'buy' ? shares : 0, // 只有買入計算股數
+      shares: shares, // 買入或賣出都記錄股數
       type: type,
-      note: note || "無備註",
+      note: note || (type === 'buy' ? "買入" : "獲利了結賣出"),
       timestamp: firebase.database.ServerValue.TIMESTAMP
     });
-    alert(`成功為成員 ${targetUser} 新增一筆資金異動紀錄！`);
+    alert(`成功為成員 ${targetUser} 新增一筆紀錄！`);
     // 重新載入明細
     loadFundingRecords();
   } catch (e) {
-    alert('寫入雲端失敗，請確認網路連線或 Firebase 權限設定。');
+    alert('寫入雲端失敗，請確認網路連線。');
   }
 }
 
-    // 修改：載入資金明細並動態計算總股數、平均成本
+    // 修改：載入資金明細並動態計算總股數、平均成本 (獲利了結不重算成本)
 async function loadFundingRecords() {
   const currentUser = localStorage.getItem('currentUser') || '';
   const logsContainer = document.getElementById('fundingHistoryLogs');
@@ -533,10 +572,6 @@ async function loadFundingRecords() {
   const summaryAvgCostEl = document.getElementById('summaryAvgCost');
   
   logsContainer.innerHTML = "正在從雲端載入歷程...";
-  
-  // 歸零初始統計值
-  let totalShares = 0;
-  let totalBuyAmount = 0;
   
   try {
     const snap = await db.ref(`family/fundingHistory/${currentUser}`).get();
@@ -554,38 +589,62 @@ async function loadFundingRecords() {
       records.push(child.val());
     });
     
-    // 計算總股數與總買入金額 (用於計算平均成本)
+    // 依時間由舊到新排序，以便依序模擬資金與股數滾動計算平均成本
+    records.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    
+    let runningShares = 0;      // 滾動剩餘股數
+    let runningTotalCost = 0;   // 滾動剩餘總本金
+    let runningAvgCost = 0;     // 滾動即時平均成本
+    
     records.forEach(item => {
-      // 判斷方式支援舊版(只有 amount 且正數為買)與新版(指定 type 為 buy)
       const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
+      const itemShares = parseFloat(item.shares || 0);
+      const itemAmount = Math.abs(parseFloat(item.amount || 0));
+      
       if (isBuy) {
-        totalBuyAmount += Math.abs(item.amount);
-        if (item.shares) {
-          totalShares += parseFloat(item.shares);
+        runningShares += itemShares;
+        runningTotalCost += itemAmount;
+        if (runningShares > 0) {
+          runningAvgCost = runningTotalCost / runningShares;
+        }
+      } else {
+        // 獲利了結賣出邏輯：
+        // 1. 扣除股數
+        runningShares -= itemShares;
+        // 2. 依原本的平均成本等比例扣除剩餘總本金，使賣出後的「平均成本」保持不變
+        runningTotalCost -= (itemShares * runningAvgCost);
+        
+        if (runningShares <= 0) {
+          runningShares = 0;
+          runningTotalCost = 0;
+          runningAvgCost = 0;
         }
       }
     });
     
-    // 計算平均成本 (總投入金額 / 總股數)
-    const avgCost = totalShares > 0 ? (totalBuyAmount / totalShares).toFixed(2) : 0;
+    // 更新統計面板 (防呆顯示)
+    summarySharesEl.innerText = runningShares.toLocaleString();
+    summaryAvgCostEl.innerText = `$${runningAvgCost.toFixed(2)}`;
     
-    // 渲染統計數字至下方欄位
-    summarySharesEl.innerText = totalShares.toLocaleString();
-    summaryAvgCostEl.innerText = `$${parseFloat(avgCost).toLocaleString()}`;
-    
-    // 依日期由新到舊排序歷史明細
+    // 顯示歷史明細時，改為由新到舊排序展示給使用者看
     records.sort((a, b) => new Date(b.date) - new Date(a.date));
     
     records.forEach(item => {
-      const isDeposit = item.type ? (item.type === 'buy') : (item.amount > 0);
-      const amtStyle = isDeposit ? 'profit-positive' : 'profit-negative';
-      const prefix = isDeposit ? '➡️ 買入' : '⬅️ 賣出';
-      const sharesText = (isDeposit && item.shares) ? `<br><small style="color:#4A5568;">📈 取得股數: ${parseFloat(item.shares).toLocaleString()} 股</small>` : '';
+      const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
+      const amtStyle = isBuy ? 'profit-positive' : 'profit-negative';
+      const prefix = isBuy ? '➡️ 買入' : '⬅️ 賣出';
+      
+      let detailText = "";
+      if (isBuy) {
+        detailText = `<br><small style="color:#4A5568;">💰 投入金額: $${Math.abs(item.amount).toLocaleString()} 元 | 📈 取得股數: ${parseFloat(item.shares || 0).toLocaleString()} 股</small>`;
+      } else {
+        detailText = `<br><small style="color:#4A5568;">📉 減少股數: ${parseFloat(item.shares || 0).toLocaleString()} 股 (獲利了結)</small>`;
+      }
       
       html += `<div class="log-item">
         <small style="color:var(--text-muted); font-weight:600;">${item.date}</small>
-        <span style="float: right; font-weight: bold;" class="${amtStyle}">${prefix} $${Math.abs(item.amount).toLocaleString()}</span>
-        ${sharesText}
+        <span style="float: right; font-weight: bold;" class="${amtStyle}">${prefix}</span>
+        ${detailText}
         <br><span style="color: var(--text-main); font-size: 0.9em;">📝 備註: ${item.note}</span>
       </div>`;
     });
