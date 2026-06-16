@@ -306,13 +306,30 @@
               <label style="font-size: 0.85em;">異動日期：</label>
               <input type="date" id="fundingDate">
               
-              <label style="font-size: 0.85em;">異動金額 (正數為買入，負數為賣出)：</label>
-              <input type="number" id="fundingAmount" placeholder="金額 (元)">
+              <label style="font-size: 0.85em;">交易類型：</label>
+              <select id="fundingType" style="padding: 12px 16px; margin: 8px 0; border-radius: 8px; border: 1px solid #CBD5E0; width: 100%; font-size: 1em;">
+                <option value="buy">➡️ 買入資金</option>
+                <option value="sell">⬅️ 賣出/提領資金</option>
+              </select>
+              
+              <label style="font-size: 0.85em;">總金額 (元)：</label>
+              <input type="number" id="fundingAmount" placeholder="請輸入總金額">
+              
+              <label style="font-size: 0.85em;">買到股數 (若是賣出/提領可填 0)：</label>
+              <input type="number" id="fundingShares" placeholder="請輸入股數" value="0">
               
               <label style="font-size: 0.85em;">備註說明：</label>
               <input type="text" id="fundingNote" placeholder="例如: 第二期款買入、個人提領賣出">
               
               <button onclick="saveFundingRecord()" style="width:100%; margin-top:10px; background-color:#9B2C2C; color: white;">💾 寫入雲端資料庫</button>
+            </div>
+          </div>
+
+          <div id="userFundingSummary" style="background: #EBF8FF; border: 1px solid #BEE3F8; padding: 15px; border-radius: 12px; margin-bottom: 20px; display:none;">
+            <h4 style="margin: 0 0 8px 0; color: #2B6CB0; font-size: 0.95em;">📊 累計資產統計 (依買入計算)</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em;">
+              <div>總累計股數：<b id="summaryTotalShares" style="color:#2B6CB0; font-size:1.1em;">0</b> 股</div>
+              <div>平均買入成本：<b id="summaryAvgCost" style="color:#C53030; font-size:1.1em;">$0</b> / 股</div>
             </div>
           </div>
 
@@ -441,101 +458,144 @@
       setTimeout(() => modal.style.display = 'none', 300);
     }
 
-    // 新增：開啟資金歷程彈出視窗與分流初始化
-    function openFundingHistoryModal() {
-      const currentUser = localStorage.getItem('currentUser') || '';
-      const formBlock = document.getElementById('jasonFundingForm');
-      
-      // 預設日期欄位為今天
-      document.getElementById('fundingDate').value = new Date().toISOString().split('T')[0];
-      
-      // 權限分流：如果是 Jason，則顯示管理員表單，且清空輸入內容
-      if (currentUser.toLowerCase() === 'jason') {
-        formBlock.style.display = 'block';
-        document.getElementById('fundingTargetUser').value = '';
-        document.getElementById('fundingAmount').value = '';
-        document.getElementById('fundingNote').value = '';
-      } else {
-        formBlock.style.display = 'none';
-      }
-      
-      openModal('fundingHistoryModal');
-      loadFundingRecords();
-    }
+    // 修改：開啟資金歷程彈出視窗與分流初始化
+function openFundingHistoryModal() {
+  const currentUser = localStorage.getItem('currentUser') || '';
+  const formBlock = document.getElementById('jasonFundingForm');
+  
+  // 預設日期欄位為今天
+  document.getElementById('fundingDate').value = new Date().toISOString().split('T')[0];
+  
+  // 權限分流：如果是 Jason，則顯示管理員表單，且清空輸入內容
+  if (currentUser.toLowerCase() === 'jason') {
+    formBlock.style.display = 'block';
+    document.getElementById('fundingTargetUser').value = '';
+    document.getElementById('fundingAmount').value = '';
+    document.getElementById('fundingShares').value = '0';
+    document.getElementById('fundingNote').value = '';
+  } else {
+    formBlock.style.display = 'none';
+  }
+  
+  // 顯示統計區塊給所有登入者看
+  document.getElementById('userFundingSummary').style.display = 'block';
+  
+  openModal('fundingHistoryModal');
+  loadFundingRecords();
+}
     
     function closeFundingHistoryModal() {
       closeModal('fundingHistoryModal');
     }
 
-    // 新增：寫入資金異動歷史至雲端 (Jason 專用)
-    async function saveFundingRecord() {
-      const targetUser = document.getElementById('fundingTargetUser').value.trim();
-      const dateStr = document.getElementById('fundingDate').value;
-      const amt = parseFloat(document.getElementById('fundingAmount').value);
-      const note = document.getElementById('fundingNote').value.trim();
-      
-      if (!targetUser) return alert('請輸入對象成員帳號');
-      if (!dateStr) return alert('請選擇異動日期');
-      if (isNaN(amt) || amt === 0) return alert('請輸入有效的非零金額');
-      
-      try {
-        // 寫入對應使用者的獨立節點：family/fundingHistory/使用者帳號/
-        await db.ref(`family/fundingHistory/${targetUser}`).push({
-          date: dateStr,
-          amount: amt,
-          note: note || "無備註",
-          timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-        alert(`成功為成員 ${targetUser} 新增一筆資金異動紀錄！`);
-        
-        // 重新載入明細
-        loadFundingRecords();
-      } catch (e) {
-        alert('寫入雲端失敗，請確認網路連線或 Firebase 權限設定。');
-      }
-    }
+    // 修改：寫入包含股數與交易類型的資金紀錄 (Jason 專用)
+async function saveFundingRecord() {
+  const targetUser = document.getElementById('fundingTargetUser').value.trim();
+  const dateStr = document.getElementById('fundingDate').value;
+  const type = document.getElementById('fundingType').value;
+  let amt = parseFloat(document.getElementById('fundingAmount').value);
+  const shares = parseFloat(document.getElementById('fundingShares').value) || 0;
+  const note = document.getElementById('fundingNote').value.trim();
+  
+  if (!targetUser) return alert('請輸入對象成員帳號');
+  if (!dateStr) return alert('請選擇異動日期');
+  if (isNaN(amt) || amt <= 0) return alert('請輸入有效的正數總金額');
+  if (type === 'buy' && (isNaN(shares) || shares <= 0)) return alert('買入時請輸入有效買到股數');
+  
+  // 如果是賣出/提領，將金額存為負值
+  if (type === 'sell') {
+    amt = -Math.abs(amt);
+  }
+  
+  try {
+    // 寫入對應使用者的獨立節點
+    await db.ref(`family/fundingHistory/${targetUser}`).push({
+      date: dateStr,
+      amount: amt,
+      shares: type === 'buy' ? shares : 0, // 只有買入計算股數
+      type: type,
+      note: note || "無備註",
+      timestamp: firebase.database.ServerValue.TIMESTAMP
+    });
+    alert(`成功為成員 ${targetUser} 新增一筆資金異動紀錄！`);
+    // 重新載入明細
+    loadFundingRecords();
+  } catch (e) {
+    alert('寫入雲端失敗，請確認網路連線或 Firebase 權限設定。');
+  }
+}
 
-    // 新增：載入並展示對應使用者的資金明細
-    async function loadFundingRecords() {
-      const currentUser = localStorage.getItem('currentUser') || '';
-      const logsContainer = document.getElementById('fundingHistoryLogs');
-      logsContainer.innerHTML = "正在從雲端載入歷程...";
-      
-      try {
-        const snap = await db.ref(`family/fundingHistory/${currentUser}`).get();
-        if (!snap.exists()) {
-          logsContainer.innerHTML = "尚無歷史資金進出明細";
-          return;
-        }
-        
-        let html = "";
-        const records = [];
-        
-        // 將物件轉為陣列方便排序
-        snap.forEach(child => {
-          records.push(child.val());
-        });
-        
-        // 依日期由新到舊排序
-        records.sort((a, b) => new Date(b.date) - new Date(a.date));
-        
-        records.forEach(item => {
-          const isDeposit = item.amount > 0;
-          const amtStyle = isDeposit ? 'profit-positive' : 'profit-negative';
-          const prefix = isDeposit ? '➡️ 買入' : '⬅️ 賣出';
-          
-          html += `<div class="log-item">
-            <small style="color:var(--text-muted); font-weight:600;">${item.date}</small>
-            <span style="float: right; font-weight: bold;" class="${amtStyle}">${prefix} $${Math.abs(item.amount).toLocaleString()}</span>
-            <br><span style="color: var(--text-main); font-size: 0.9em;">📝 備註: ${item.note}</span>
-          </div>`;
-        });
-        
-        logsContainer.innerHTML = html;
-      } catch (e) {
-        logsContainer.innerHTML = "數據讀取失敗。";
-      }
+    // 修改：載入資金明細並動態計算總股數、平均成本
+async function loadFundingRecords() {
+  const currentUser = localStorage.getItem('currentUser') || '';
+  const logsContainer = document.getElementById('fundingHistoryLogs');
+  const summarySharesEl = document.getElementById('summaryTotalShares');
+  const summaryAvgCostEl = document.getElementById('summaryAvgCost');
+  
+  logsContainer.innerHTML = "正在從雲端載入歷程...";
+  
+  // 歸零初始統計值
+  let totalShares = 0;
+  let totalBuyAmount = 0;
+  
+  try {
+    const snap = await db.ref(`family/fundingHistory/${currentUser}`).get();
+    if (!snap.exists()) {
+      logsContainer.innerHTML = "尚無歷史資金進出明細";
+      summarySharesEl.innerText = "0";
+      summaryAvgCostEl.innerText = "$0";
+      return;
     }
+    
+    let html = "";
+    const records = [];
+    
+    snap.forEach(child => {
+      records.push(child.val());
+    });
+    
+    // 計算總股數與總買入金額 (用於計算平均成本)
+    records.forEach(item => {
+      // 判斷方式支援舊版(只有 amount 且正數為買)與新版(指定 type 為 buy)
+      const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
+      if (isBuy) {
+        totalBuyAmount += Math.abs(item.amount);
+        if (item.shares) {
+          totalShares += parseFloat(item.shares);
+        }
+      }
+    });
+    
+    // 計算平均成本 (總投入金額 / 總股數)
+    const avgCost = totalShares > 0 ? (totalBuyAmount / totalShares).toFixed(2) : 0;
+    
+    // 渲染統計數字至下方欄位
+    summarySharesEl.innerText = totalShares.toLocaleString();
+    summaryAvgCostEl.innerText = `$${parseFloat(avgCost).toLocaleString()}`;
+    
+    // 依日期由新到舊排序歷史明細
+    records.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    records.forEach(item => {
+      const isDeposit = item.type ? (item.type === 'buy') : (item.amount > 0);
+      const amtStyle = isDeposit ? 'profit-positive' : 'profit-negative';
+      const prefix = isDeposit ? '➡️ 買入' : '⬅️ 賣出';
+      const sharesText = (isDeposit && item.shares) ? `<br><small style="color:#4A5568;">📈 取得股數: ${parseFloat(item.shares).toLocaleString()} 股</small>` : '';
+      
+      html += `<div class="log-item">
+        <small style="color:var(--text-muted); font-weight:600;">${item.date}</small>
+        <span style="float: right; font-weight: bold;" class="${amtStyle}">${prefix} $${Math.abs(item.amount).toLocaleString()}</span>
+        ${sharesText}
+        <br><span style="color: var(--text-main); font-size: 0.9em;">📝 備註: ${item.note}</span>
+      </div>`;
+    });
+    
+    logsContainer.innerHTML = html;
+  } catch (e) {
+    console.error(e);
+    logsContainer.innerHTML = "數據讀取失敗。";
+  }
+}
 
     // 績效排行分析
     async function openRankModal() {
