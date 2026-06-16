@@ -306,11 +306,11 @@
               <label style="font-size: 0.85em;">異動日期：</label>
               <input type="date" id="fundingDate">
               
-              <label style="font-size: 0.85em;">異動金額 (正數為入金，負數為出金)：</label>
+              <label style="font-size: 0.85em;">異動金額 (正數為買入，負數為賣出)：</label>
               <input type="number" id="fundingAmount" placeholder="金額 (元)">
               
               <label style="font-size: 0.85em;">備註說明：</label>
-              <input type="text" id="fundingNote" placeholder="例如: 第二期款入金、個人提領出金">
+              <input type="text" id="fundingNote" placeholder="例如: 第二期款買入、個人提領賣出">
               
               <button onclick="saveFundingRecord()" style="width:100%; margin-top:10px; background-color:#9B2C2C; color: white;">💾 寫入雲端資料庫</button>
             </div>
@@ -522,7 +522,7 @@
         records.forEach(item => {
           const isDeposit = item.amount > 0;
           const amtStyle = isDeposit ? 'profit-positive' : 'profit-negative';
-          const prefix = isDeposit ? '➡️ 入金' : '⬅️ 出金';
+          const prefix = isDeposit ? '➡️ 買入' : '⬅️ 賣出';
           
           html += `<div class="log-item">
             <small style="color:var(--text-muted); font-weight:600;">${item.date}</small>
