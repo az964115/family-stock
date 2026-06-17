@@ -303,39 +303,40 @@
               <label style="font-size: 0.85em;">對象成員帳號：</label>
               <input type="text" id="fundingTargetUser" placeholder="例如: user1">
               
+              <label style="font-size: 0.85em;">投資標的 (如 0050、NVDA)：</label>
+              <input type="text" id="fundingAsset" placeholder="請輸入標的代號或名稱">
+              
               <label style="font-size: 0.85em;">異動日期：</label>
               <input type="date" id="fundingDate">
               
               <label style="font-size: 0.85em;">交易類型：</label>
               <select id="fundingType" style="padding: 12px 16px; margin: 8px 0; border-radius: 8px; border: 1px solid #CBD5E0; width: 100%; font-size: 1em;">
                 <option value="buy">➡️ 買入資金</option>
-                <option value="sell">⬅️ 賣出/提領資金</option>
+                <option value="sell">⬅️ 賣出/提領 (獲利了結)</option>
               </select>
               
               <label style="font-size: 0.85em;">總金額 (元)：</label>
               <input type="number" id="fundingAmount" placeholder="請輸入總金額">
               
-              <label style="font-size: 0.85em;">買到股數 (若是賣出/提領可填 0)：</label>
+              <label style="font-size: 0.85em;">交易股數：</label>
               <input type="number" id="fundingShares" placeholder="請輸入股數" value="0">
               
               <label style="font-size: 0.85em;">備註說明：</label>
-              <input type="text" id="fundingNote" placeholder="例如: 第二期款買入、個人提領賣出">
+              <input type="text" id="fundingNote" placeholder="例如: 第二期款買入">
               
               <button onclick="saveFundingRecord()" style="width:100%; margin-top:10px; background-color:#9B2C2C; color: white;">💾 寫入雲端資料庫</button>
             </div>
           </div>
 
-          <div id="userFundingSummary" style="background: #EBF8FF; border: 1px solid #BEE3F8; padding: 15px; border-radius: 12px; margin-bottom: 20px; display:none;">
-            <h4 style="margin: 0 0 8px 0; color: #2B6CB0; font-size: 0.95em;">📊 累計資產統計 (依買入計算)</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em;">
-              <div>總累計股數：<b id="summaryTotalShares" style="color:#2B6CB0; font-size:1.1em;">0</b> 股</div>
-              <div>平均買入成本：<b id="summaryAvgCost" style="color:#C53030; font-size:1.1em;">$0</b> / 股</div>
-            </div>
+          <div id="assetSummarySection" style="margin-bottom: 20px;">
+            <h4 style="margin: 0 0 10px 0; color: #2B6CB0; font-size: 1em;">📈 持倉項目分類統計</h4>
+            <div id="assetSummaryCards" style="display: flex; flex-direction: column; gap: 10px;">
+              </div>
           </div>
 
           <div>
             <h4 style="margin: 0 0 10px 0; font-size: 1em;">🕒 歷史資金明細</h4>
-            <div id="fundingHistoryLogs" class="log-container" style="max-height: 300px;">正在讀取數據...</div>
+            <div id="fundingHistoryLogs" class="log-container" style="max-height: 250px;">正在讀取數據...</div>
           </div>
           
         </div>
@@ -458,18 +459,32 @@
       setTimeout(() => modal.style.display = 'none', 300);
     }
 
-    // 修改：開啟資金歷程彈出視窗與分流初始化
+    // 開啟資金歷程彈窗
 function openFundingHistoryModal() {
   const currentUser = localStorage.getItem('currentUser') || '';
   const formBlock = document.getElementById('jasonFundingForm');
   
-  // 預設日期欄位為今天
   document.getElementById('fundingDate').value = new Date().toISOString().split('T')[0];
   
-  // 權限分流：如果是 Jason，則顯示管理員表單，且清空輸入內容
+  // 聯動下拉選單切換效果
+  document.getElementById('fundingType').onchange = function() {
+    const amtInput = document.getElementById('fundingAmount');
+    if (this.value === 'sell') {
+      amtInput.value = '0';
+      amtInput.disabled = true;
+      amtInput.placeholder = "獲利了結無需填寫金額";
+    } else {
+      amtInput.value = '';
+      amtInput.disabled = false;
+      amtInput.placeholder = "請輸入總金額";
+    }
+  };
+  
+  // 權限分流：如果是 Jason，解鎖管理員表單
   if (currentUser.toLowerCase() === 'jason') {
     formBlock.style.display = 'block';
     document.getElementById('fundingTargetUser').value = '';
+    document.getElementById('fundingAsset').value = '';
     document.getElementById('fundingAmount').value = '';
     document.getElementById('fundingShares').value = '0';
     document.getElementById('fundingNote').value = '';
@@ -477,33 +492,18 @@ function openFundingHistoryModal() {
     formBlock.style.display = 'none';
   }
   
-  // 顯示統計區塊給所有登入者看
-  document.getElementById('userFundingSummary').style.display = 'block';
-  // 在 openFundingHistoryModal() 內部的最下方加上這幾行：
-document.getElementById('fundingType').onchange = function() {
-  const amtInput = document.getElementById('fundingAmount');
-  if (this.value === 'sell') {
-    amtInput.value = '0';
-    amtInput.disabled = true;
-    amtInput.placeholder = "賣出無需填寫金額，僅計股數";
-  } else {
-    amtInput.value = '';
-    amtInput.disabled = false;
-    amtInput.placeholder = "請輸入總金額";
-  }
-};
   openModal('fundingHistoryModal');
   loadFundingRecords();
-  
 }
     
     function closeFundingHistoryModal() {
       closeModal('fundingHistoryModal');
     }
 
-    // 修改：寫入包含股數與交易類型的資金紀錄 (含賣出扣股數邏輯)
+    // 寫入資產紀錄
 async function saveFundingRecord() {
   const targetUser = document.getElementById('fundingTargetUser').value.trim();
+  const assetName = document.getElementById('fundingAsset').value.trim().toUpperCase();
   const dateStr = document.getElementById('fundingDate').value;
   const type = document.getElementById('fundingType').value;
   const note = document.getElementById('fundingNote').value.trim();
@@ -512,147 +512,186 @@ async function saveFundingRecord() {
   const shares = parseFloat(document.getElementById('fundingShares').value) || 0;
   
   if (!targetUser) return alert('請輸入對象成員帳號');
+  if (!assetName) return alert('請輸入投資標的（例如: 0050）');
   if (!dateStr) return alert('請選擇異動日期');
   
-  // 驗證輸入
   if (type === 'buy') {
-    if (isNaN(amt) || amt <= 0) return alert('買入時請輸入有效正數總金額');
+    if (isNaN(amt) || amt <= 0) return alert('買入時請輸入有效總金額');
     if (isNaN(shares) || shares <= 0) return alert('買入時請輸入有效買到股數');
   } else if (type === 'sell') {
     if (isNaN(shares) || shares <= 0) return alert('賣出時請輸入有效賣出股數');
     
-    // 【檢查庫存】先讀取該成員目前的總股數，避免超賣
+    // 後台庫存驗證
     try {
       const snap = await db.ref(`family/fundingHistory/${targetUser}`).get();
-      let currentOwnedShares = 0;
+      let ownedAssetShares = 0;
       if (snap.exists()) {
         snap.forEach(child => {
           const item = child.val();
-          const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
-          if (isBuy) {
-            currentOwnedShares += parseFloat(item.shares || 0);
-          } else {
-            currentOwnedShares -= parseFloat(item.shares || 0); // 扣除之前的賣出
+          if ((item.asset || '').toUpperCase() === assetName) {
+            const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
+            if (isBuy) ownedAssetShares += parseFloat(item.shares || 0);
+            else ownedAssetShares -= parseFloat(item.shares || 0);
           }
         });
       }
-      if (shares > currentOwnedShares) {
-        return alert(`錯誤：該成員目前僅持有 ${currentOwnedShares.toLocaleString()} 股，無法賣出 ${shares.toLocaleString()} 股！`);
+      if (shares > ownedAssetShares) {
+        return alert(`錯誤：該成員持有的 ${assetName} 僅剩 ${ownedAssetShares.toLocaleString()} 股，不足以賣出 ${shares.toLocaleString()} 股！`);
       }
     } catch(e) {
-      return alert('讀取庫存失敗，請稍後再試');
+      return alert('庫存驗證失敗');
     }
-    
-    amt = 0; // 獲利了結，不記錄特定變動金額，由股數控制
+    amt = 0;
   }
   
   try {
-    // 寫入對應使用者的獨立節點
     await db.ref(`family/fundingHistory/${targetUser}`).push({
       date: dateStr,
+      asset: assetName,
       amount: amt,
-      shares: shares, // 買入或賣出都記錄股數
+      shares: shares,
       type: type,
-      note: note || (type === 'buy' ? "買入" : "獲利了結賣出"),
+      note: note || (type === 'buy' ? `買入 ${assetName}` : `賣出 ${assetName} 獲利了結`),
       timestamp: firebase.database.ServerValue.TIMESTAMP
     });
-    alert(`成功為成員 ${targetUser} 新增一筆紀錄！`);
-    // 重新載入明細
+    alert(`成功！已為成員 ${targetUser} 紀錄一筆 ${assetName} 的交易。`);
     loadFundingRecords();
   } catch (e) {
-    alert('寫入雲端失敗，請確認網路連線。');
+    alert('寫入失敗');
   }
 }
 
-    // 修改：載入資金明細並動態計算總股數、平均成本 (獲利了結不重算成本)
+    // 載入資金明細並做「分標的獨立計算」，一般使用者隱藏真實名稱、但保留分類卡片
 async function loadFundingRecords() {
   const currentUser = localStorage.getItem('currentUser') || '';
   const logsContainer = document.getElementById('fundingHistoryLogs');
-  const summarySharesEl = document.getElementById('summaryTotalShares');
-  const summaryAvgCostEl = document.getElementById('summaryAvgCost');
+  const cardsContainer = document.getElementById('assetSummaryCards');
   
-  logsContainer.innerHTML = "正在從雲端載入歷程...";
+  logsContainer.innerHTML = "正在載入歷程...";
+  cardsContainer.innerHTML = "";
   
   try {
     const snap = await db.ref(`family/fundingHistory/${currentUser}`).get();
     if (!snap.exists()) {
       logsContainer.innerHTML = "尚無歷史資金進出明細";
-      summarySharesEl.innerText = "0";
-      summaryAvgCostEl.innerText = "$0";
+      cardsContainer.innerHTML = "<div style='color:gray; font-size:0.85em;'>目前無任何項目持倉</div>";
       return;
     }
     
-    let html = "";
     const records = [];
+    snap.forEach(child => { records.push(child.val()); });
     
-    snap.forEach(child => {
-      records.push(child.val());
-    });
-    
-    // 依時間由舊到新排序，以便依序模擬資金與股數滾動計算平均成本
+    // 按時間由舊到新排序，確保滾動成本和項目指派順序一致
     records.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
     
-    let runningShares = 0;      // 滾動剩餘股數
-    let runningTotalCost = 0;   // 滾動剩餘總本金
-    let runningAvgCost = 0;     // 滾動即時平均成本
+    // 建立資產計算字典與動態代號表
+    const assetMap = {};
+    const aliasMap = {}; // 用來存放如 {"0050": "投資項目 A", "NVDA": "投資項目 B"}
+    let aliasIndex = 65; // 從 'A' 的 ASCII 碼開始
     
     records.forEach(item => {
+      const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
+      
+      // 如果這個標的還沒有編配匿名代號，且不是預設項目，就自動給它一個代號 (項目 A, 項目 B...)
+      if (!aliasMap[rawAssetName] && rawAssetName !== "預設項目") {
+        aliasMap[rawAssetName] = `投資項目 ${String.fromCharCode(aliasIndex)}`;
+        aliasIndex++;
+      } else if (rawAssetName === "預設項目") {
+        aliasMap[rawAssetName] = "其他常規項目";
+      }
+      
       const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
       const itemShares = parseFloat(item.shares || 0);
       const itemAmount = Math.abs(parseFloat(item.amount || 0));
       
+      if (!assetMap[rawAssetName]) {
+        assetMap[rawAssetName] = { shares: 0, totalCost: 0, avgCost: 0 };
+      }
+      
+      const asset = assetMap[rawAssetName];
+      
       if (isBuy) {
-        runningShares += itemShares;
-        runningTotalCost += itemAmount;
-        if (runningShares > 0) {
-          runningAvgCost = runningTotalCost / runningShares;
+        asset.shares += itemShares;
+        asset.totalCost += itemAmount;
+        if (asset.shares > 0) {
+          asset.avgCost = asset.totalCost / asset.shares;
         }
       } else {
-        // 獲利了結賣出邏輯：
-        // 1. 扣除股數
-        runningShares -= itemShares;
-        // 2. 依原本的平均成本等比例扣除剩餘總本金，使賣出後的「平均成本」保持不變
-        runningTotalCost -= (itemShares * runningAvgCost);
-        
-        if (runningShares <= 0) {
-          runningShares = 0;
-          runningTotalCost = 0;
-          runningAvgCost = 0;
+        // 獲利了結賣出：扣股數，按原成本等比例扣除總本金，維持成本不變
+        asset.shares -= itemShares;
+        asset.totalCost -= (itemShares * asset.avgCost);
+        if (asset.shares <= 0) {
+          asset.shares = 0;
+          asset.totalCost = 0;
+          asset.avgCost = 0;
         }
       }
     });
     
-    // 更新統計面板 (防呆顯示)
-    summarySharesEl.innerText = runningShares.toLocaleString();
-    summaryAvgCostEl.innerText = `$${runningAvgCost.toFixed(2)}`;
+    // --- 渲染分類持倉卡片 (分流隱藏名字) ---
+    let cardsHtml = "";
+    const isJason = (currentUser.toLowerCase() === 'jason');
     
-    // 顯示歷史明細時，改為由新到舊排序展示給使用者看
+    Object.keys(assetMap).forEach(rawKey => {
+      const data = assetMap[rawKey];
+      // 只顯示目前還有持倉（股數大於0）的項目
+      if (data.shares > 0) {
+        // 關鍵隱私遮蔽：如果是 Jason 顯示真實股票代號；一般人顯示 "投資項目 A"
+        const displayTitle = isJason ? `📈 標的：${rawKey}` : `📈 ${aliasMap[rawKey]}`;
+        
+        cardsHtml += `<div class="stock-summary-card" style="border-left: 4px solid #3182CE; background: #EBF8FF;">
+          <div style="display:flex; justify-content:space-between; font-weight:bold; color:#2B6CB0;">
+            <span>${displayTitle}</span>
+            <span>${data.shares.toLocaleString()} 股</span>
+          </div>
+          <div style="font-size:0.85em; color:var(--text-muted); margin-top:4px;">
+            項目平均成本：<span style="color:#C53030; font-weight:600;">$${data.avgCost.toFixed(2)}</span> / 股
+          </div>
+        </div>`;
+      }
+    });
+    cardsContainer.innerHTML = cardsHtml || "<div style='color:gray; font-size:0.85em;'>目前無任何項目持倉</div>";
+    
+    // --- 渲染下方歷史明細表 (由新到舊排序) ---
     records.sort((a, b) => new Date(b.date) - new Date(a.date));
+    let html = "";
     
     records.forEach(item => {
       const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
       const amtStyle = isBuy ? 'profit-positive' : 'profit-negative';
       const prefix = isBuy ? '➡️ 買入' : '⬅️ 賣出';
+      const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
+      const aliasName = aliasMap[rawAssetName];
+      
+      // 處理備註與文字中的標的隱藏
+      let displayNote = item.note;
+      if (!isJason) {
+        // 如果不是 Jason，將備註裡的真實代號 (如 0050) 替換為虛擬代號 (如 投資項目 A)
+        displayNote = displayNote.replace(rawAssetName, aliasName);
+      }
       
       let detailText = "";
       if (isBuy) {
-        detailText = `<br><small style="color:#4A5568;">💰 投入金額: $${Math.abs(item.amount).toLocaleString()} 元 | 📈 取得股數: ${parseFloat(item.shares || 0).toLocaleString()} 股</small>`;
+        detailText = `<br><small style="color:#4A5568;">💰 投入金額: $${Math.abs(item.amount).toLocaleString()} 元 | 數量: ${parseFloat(item.shares || 0).toLocaleString()} 股</small>`;
       } else {
-        detailText = `<br><small style="color:#4A5568;">📉 減少股數: ${parseFloat(item.shares || 0).toLocaleString()} 股 (獲利了結)</small>`;
+        detailText = `<br><small style="color:#4A5568;">📉 減少數量: ${parseFloat(item.shares || 0).toLocaleString()} 股 (獲利了結)</small>`;
       }
       
+      // 明細標題分流
+      const logTitle = isJason ? `[${rawAssetName}]` : `[${aliasName}]`;
+      
       html += `<div class="log-item">
-        <small style="color:var(--text-muted); font-weight:600;">${item.date}</small>
+        <small style="color:var(--text-muted); font-weight:600;">${item.date} ${logTitle}</small>
         <span style="float: right; font-weight: bold;" class="${amtStyle}">${prefix}</span>
         ${detailText}
-        <br><span style="color: var(--text-main); font-size: 0.9em;">📝 備註: ${item.note}</span>
+        <br><span style="color: var(--text-main); font-size: 0.9em;">📝 備註: ${displayNote}</span>
       </div>`;
     });
     
     logsContainer.innerHTML = html;
   } catch (e) {
     console.error(e);
-    logsContainer.innerHTML = "數據讀取失敗。";
+    logsContainer.innerHTML = "數據讀取或計算失敗。";
   }
 }
 
