@@ -561,7 +561,7 @@ async function saveFundingRecord() {
   }
 }
 
-    // 載入資金明細並做「分標的獨立計算」，一般使用者隱藏真實名稱、但保留分類卡片
+    // 載入資金明細並做「分標的獨立計算」，一般使用者隱藏真實名稱與股數控制
 async function loadFundingRecords() {
   const currentUser = localStorage.getItem('currentUser') || '';
   const logsContainer = document.getElementById('fundingHistoryLogs');
@@ -592,7 +592,6 @@ async function loadFundingRecords() {
     records.forEach(item => {
       const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
       
-      // 如果這個標的還沒有編配匿名代號，且不是預設項目，就自動給它一個代號 (項目 A, 項目 B...)
       if (!aliasMap[rawAssetName] && rawAssetName !== "預設項目") {
         aliasMap[rawAssetName] = `投資項目 ${String.fromCharCode(aliasIndex)}`;
         aliasIndex++;
@@ -617,7 +616,6 @@ async function loadFundingRecords() {
           asset.avgCost = asset.totalCost / asset.shares;
         }
       } else {
-        // 獲利了結賣出：扣股數，按原成本等比例扣除總本金，維持成本不變
         asset.shares -= itemShares;
         asset.totalCost -= (itemShares * asset.avgCost);
         if (asset.shares <= 0) {
@@ -628,24 +626,29 @@ async function loadFundingRecords() {
       }
     });
     
-    // --- 渲染分類持倉卡片 (分流隱藏名字) ---
-    let cardsHtml = "";
+    // --- 權限判斷：Jason 或是 全局開放時，才能看到詳細股數與名稱 ---
     const isJason = (currentUser.toLowerCase() === 'jason');
+    const hasAccess = isJason || globalCanSeeDetails; // 聯動管理員控制台開關
     
+    // --- 渲染分類持倉卡片 ---
+    let cardsHtml = "";
     Object.keys(assetMap).forEach(rawKey => {
       const data = assetMap[rawKey];
-      // 只顯示目前還有持倉（股數大於0）的項目
       if (data.shares > 0) {
-        // 關鍵隱私遮蔽：如果是 Jason 顯示真實股票代號；一般人顯示 "投資項目 A"
+        // 遮蔽股票代號分流
         const displayTitle = isJason ? `📈 標的：${rawKey}` : `📈 ${aliasMap[rawKey]}`;
+        // 遮蔽股數分流 (聯動控制台)
+        const displayShares = hasAccess ? `${data.shares.toLocaleString()} 股` : `**** 股`;
+        // 遮蔽平均成本分流
+        const displayAvgCost = hasAccess ? `$${data.avgCost.toFixed(2)}` : `--`;
         
-        cardsHtml += `<div class="stock-summary-card" style="border-left: 4px solid #3182CE; background: #EBF8FF;">
+        cardsHtml += `<div class="stock-summary-card" style="border-left: 4px solid #3182CE; background: #EBF8FF; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
           <div style="display:flex; justify-content:space-between; font-weight:bold; color:#2B6CB0;">
             <span>${displayTitle}</span>
-            <span>${data.shares.toLocaleString()} 股</span>
+            <span>${displayShares}</span>
           </div>
           <div style="font-size:0.85em; color:var(--text-muted); margin-top:4px;">
-            項目平均成本：<span style="color:#C53030; font-weight:600;">$${data.avgCost.toFixed(2)}</span> / 股
+            項目平均成本：<span style="color:#C53030; font-weight:600;">${displayAvgCost}</span> ${hasAccess ? '/ 股' : ''}
           </div>
         </div>`;
       }
@@ -663,21 +666,20 @@ async function loadFundingRecords() {
       const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
       const aliasName = aliasMap[rawAssetName];
       
-      // 處理備註與文字中的標的隱藏
       let displayNote = item.note;
       if (!isJason) {
-        // 如果不是 Jason，將備註裡的真實代號 (如 0050) 替換為虛擬代號 (如 投資項目 A)
         displayNote = displayNote.replace(rawAssetName, aliasName);
       }
       
       let detailText = "";
       if (isBuy) {
-        detailText = `<br><small style="color:#4A5568;">💰 投入金額: $${Math.abs(item.amount).toLocaleString()} 元 | 數量: ${parseFloat(item.shares || 0).toLocaleString()} 股</small>`;
+        const sharesText = hasAccess ? `${parseFloat(item.shares || 0).toLocaleString()} 股` : `**** 股`;
+        detailText = `<br><small style="color:#4A5568;">💰 投入金額: $${Math.abs(item.amount).toLocaleString()} 元 | 數量: ${sharesText}</small>`;
       } else {
-        detailText = `<br><small style="color:#4A5568;">📉 減少數量: ${parseFloat(item.shares || 0).toLocaleString()} 股 (獲利了結)</small>`;
+        const sharesText = hasAccess ? `${parseFloat(item.shares || 0).toLocaleString()} 股` : `**** 股`;
+        detailText = `<br><small style="color:#4A5568;">📉 減少數量: ${sharesText} (獲利了結)</small>`;
       }
       
-      // 明細標題分流
       const logTitle = isJason ? `[${rawAssetName}]` : `[${aliasName}]`;
       
       html += `<div class="log-item">
