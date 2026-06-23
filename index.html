@@ -354,15 +354,38 @@
     </div>
 
     <div class="container">
-      <h3>📈 收益儀表盤</h3>
-      <div class="stat-grid">
-        <div class="stat-box"><small>㊗️ 今日收益(13:50更新)</small><div id="profitDiffDisplay" style="font-size: 1.3em; font-weight: 700;">--</div></div>
-        <div class="stat-box"><small>💰 總收益</small><div id="autoTotalNetWorth" style="font-size: 1.3em; font-weight: 700; color: #2B6CB0;">--</div></div>
-        <div class="stat-box"><small>🚀 今年賺最多</small><div id="maxGainDay" style="font-size: 0.88em; line-height: 1.4; font-weight: 500;">--</div></div>
-        <div class="stat-box"><small>📉 今年最慘日</small><div id="maxLossDay" style="font-size: 0.88em; line-height: 1.4; font-weight: 500;">--</div></div>
-        <div class="stat-box"><small>🦖 本月幅度</small><div id="monthPerformance" style="font-size: 1.3em; font-weight: 700;">--</div></div>
-        <div class="stat-box" style="border-color: rgba(229, 62, 62, 0.2);"><small>⚠️ 歷史最大回撤</small><div id="maxDrawdownDisplay" style="font-size: 1.3em; font-weight: 700; color: #C53030;">--</div></div>
-      </div>
+      <div class="card">
+  <h3 style="margin-top:0; color: var(--primary); display: flex; justify-content: space-between; align-items: center;">
+    <span>📈 收益儀表盤</span>
+    <span style="font-size: 0.75em; color: #718096; font-weight: normal;" id="dashboardUpdateTime">更新時間: --:--</span>
+  </h3>
+  
+  <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: stretch; margin-bottom: 15px;">
+    
+    <div style="flex: 1; min-width: 250px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+      <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">今日收益</small><div id="profitDiffDisplay" style="font-size: 1.15em; font-weight: 700;">--</div></div>
+      <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">總收益</small><div id="autoTotalNetWorth" style="font-size: 1.15em; font-weight: 700; color: #2B6CB0;">--</div></div>
+      <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">本月幅度</small><div id="monthPerformance" style="font-size: 1.15em; font-weight: 700;">--</div></div>
+      <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">歷史最大回撤</small><div id="maxDrawdownDisplay" style="font-size: 1.15em; font-weight: 700; color: #35C530;">--</div></div>
+    </div>
+
+    <div style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #EBF8FF 0%, #BEE3F8 100%); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #90CDF4;">
+      <span style="font-size: 0.9em; color: #2B6CB0; font-weight: 600; margin-bottom: 5px;">💎 當前現值 (自動計算)</span>
+      <div id="dashboardCurrentValue" style="font-size: 2em; font-weight: 800; color: #2B6CB0; letter-spacing: 0.5px;">$--</div>
+    </div>
+
+    <div style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #EDF2F7 0%, #E2E8F0 100%); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #CBD5E0;">
+      <span style="font-size: 0.9em; color: #4A5568; font-weight: 600; margin-bottom: 5px;">💼 原始本金 (動態累計)</span>
+      <div id="dashboardTotalCost" style="font-size: 2em; font-weight: 800; color: #4A5568; letter-spacing: 0.5px;">$--</div>
+    </div>
+
+  </div>
+
+  <div style="display: flex; gap: 15px; border-top: 1px dashed #E2E8F0; padding-top: 10px; font-size: 0.85em; color: #718096;">
+    <div style="flex: 1;">🚀 今年賺最多：<span id="maxGainDay" style="font-weight:600; color:#C53030;">--</span></div>
+    <div style="flex: 1;">📉 今年最慘日：<span id="maxLossDay" style="font-weight:600; color:#2F855A;">--</span></div>
+  </div>
+</div>
 
       <div id="progressSection" style="margin-top: 25px; display: none;">
         <h4 style="margin: 0 0 8px 0; font-size: 0.95em; color: var(--text-muted); display: flex; justify-content: space-between;">
@@ -459,14 +482,12 @@
       setTimeout(() => modal.style.display = 'none', 300);
     }
 
-    // 開啟資金歷程彈窗
 function openFundingHistoryModal() {
   const currentUser = localStorage.getItem('currentUser') || '';
   const formBlock = document.getElementById('jasonFundingForm');
   
   document.getElementById('fundingDate').value = new Date().toISOString().split('T')[0];
   
-  // 聯動下拉選單切換效果
   document.getElementById('fundingType').onchange = function() {
     const amtInput = document.getElementById('fundingAmount');
     if (this.value === 'sell') {
@@ -480,7 +501,6 @@ function openFundingHistoryModal() {
     }
   };
   
-  // 權限分流：如果是 Jason，解鎖管理員表單
   if (currentUser.toLowerCase() === 'jason') {
     formBlock.style.display = 'block';
     document.getElementById('fundingTargetUser').value = '';
@@ -500,7 +520,6 @@ function openFundingHistoryModal() {
       closeModal('fundingHistoryModal');
     }
 
-    // 寫入資產紀錄
 async function saveFundingRecord() {
   const targetUser = document.getElementById('fundingTargetUser').value.trim();
   const assetName = document.getElementById('fundingAsset').value.trim().toUpperCase();
@@ -521,7 +540,6 @@ async function saveFundingRecord() {
   } else if (type === 'sell') {
     if (isNaN(shares) || shares <= 0) return alert('賣出時請輸入有效賣出股數');
     
-    // 後台庫存驗證
     try {
       const snap = await db.ref(`family/fundingHistory/${targetUser}`).get();
       let ownedAssetShares = 0;
@@ -561,7 +579,6 @@ async function saveFundingRecord() {
   }
 }
 
-    // 載入資金明細並做「分標的獨立計算」，一般使用者隱藏真實名稱與股數控制
 async function loadFundingRecords() {
   const currentUser = localStorage.getItem('currentUser') || '';
   const logsContainer = document.getElementById('fundingHistoryLogs');
@@ -581,13 +598,11 @@ async function loadFundingRecords() {
     const records = [];
     snap.forEach(child => { records.push(child.val()); });
     
-    // 按時間由舊到新排序，確保滾動成本和項目指派順序一致
     records.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
     
-    // 建立資產計算字典與動態代號表
     const assetMap = {};
-    const aliasMap = {}; // 用來存放如 {"0050": "投資項目 A", "NVDA": "投資項目 B"}
-    let aliasIndex = 65; // 從 'A' 的 ASCII 碼開始
+    const aliasMap = {}; 
+    let aliasIndex = 65; 
     
     records.forEach(item => {
       const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
@@ -626,20 +641,15 @@ async function loadFundingRecords() {
       }
     });
     
-    // --- 權限判斷：Jason 或是 全局開放時，才能看到詳細股數與名稱 ---
     const isJason = (currentUser.toLowerCase() === 'jason');
-    const hasAccess = isJason || globalCanSeeDetails; // 聯動管理員控制台開關
+    const hasAccess = isJason || globalCanSeeDetails; 
     
-    // --- 渲染分類持倉卡片 ---
     let cardsHtml = "";
     Object.keys(assetMap).forEach(rawKey => {
       const data = assetMap[rawKey];
       if (data.shares > 0) {
-        // 遮蔽股票代號分流
         const displayTitle = isJason ? `📈 標的：${rawKey}` : `📈 ${aliasMap[rawKey]}`;
-        // 遮蔽股數分流 (聯動控制台)
         const displayShares = hasAccess ? `${data.shares.toLocaleString()} 股` : `**** 股`;
-        // 遮蔽平均成本分流
         const displayAvgCost = hasAccess ? `$${data.avgCost.toFixed(2)}` : `--`;
         
         cardsHtml += `<div class="stock-summary-card" style="border-left: 4px solid #3182CE; background: #EBF8FF; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
@@ -1322,7 +1332,21 @@ async function loadFundingRecords() {
         });
       }
     }
-
+    function updateDashboardSummaryCards() {
+  if (document.getElementById('dashboardCurrentValue')) {
+    document.getElementById('dashboardCurrentValue').innerText = '$' + currentGlobalTotalValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+  }
+  if (document.getElementById('dashboardTotalCost')) {
+    document.getElementById('dashboardTotalCost').innerText = '$' + currentGlobalTotalCost.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+  }
+  
+  // 動態顯示當前更新時間
+  const now = new Date();
+  const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  if (document.getElementById('dashboardUpdateTime')) {
+    document.getElementById('dashboardUpdateTime').innerText = `更新時間: ${timeStr}`;
+  }
+}
     function renderChart(entries) {
       const ctx = document.getElementById('profitTrendChart').getContext('2d');
       if (profitChartInstance) profitChartInstance.destroy();
@@ -1344,6 +1368,29 @@ async function loadFundingRecords() {
           scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.03)' } } }
         }
       });
+
+      // 🟢【核心關鍵：強制背景自動計算現值與本金】
+      setTimeout(() => {
+        // 如果系統中存在提領試算函數，直接在背景偷偷執行它來計算最新數據
+        if (typeof calculateWithdrawalSimulation === 'function') {
+          calculateWithdrawalSimulation();
+        }
+        
+        // 執行完試算後，全域變數此時已經被賦予了真實的總計數字，立即刷新上方大看板 UI
+        if (document.getElementById('dashboardCurrentValue')) {
+          document.getElementById('dashboardCurrentValue').innerText = '$' + currentGlobalTotalValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+        }
+        if (document.getElementById('dashboardTotalCost')) {
+          document.getElementById('dashboardTotalCost').innerText = '$' + currentGlobalTotalCost.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+        }
+        
+        // 同步更新時間
+        const now = new Date();
+        const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        if (document.getElementById('dashboardUpdateTime')) {
+          document.getElementById('dashboardUpdateTime').innerText = `更新時間: ${timeStr}`;
+        }
+      }, 600); // 延遲 600 毫秒執行，保證 Firebase 資料在此時已經全部安全下載到本地端
     }
   </script>
 </body>
