@@ -37,9 +37,27 @@
     .target-btn { background-color: #3182CE; color: white; }
     .target-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
     
-    /* 新增資金歷程按鈕樣式 */
     .history-btn { background-color: #ED8936; color: white; }
     .history-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    /* 📈 資產成長按鈕樣式 */
+.growth-btn { background-color: #2F855A; color: white; }
+.growth-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+/* 日期篩選區塊樣式 */
+.filter-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 15px;
+  background: #EDF2F7;
+  padding: 10px;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+.filter-container label { font-size: 0.85em; font-weight: bold; color: #4A5568; }
+.filter-container input[type="date"] { padding: 4px 8px; border-radius: 4px; border: 1px solid #CBD5E0; margin: 0; }
+.filter-btn { background-color: #4A5568; color: white; padding: 5px 12px; font-size: 0.85em; margin: 0; }
 
     .progress-container {
       margin: 20px 0;
@@ -203,6 +221,7 @@
         <button class="compound-btn" onclick="openCompoundModal()">⏳ 複利計算</button>
         <button class="target-btn" onclick="openTargetModal()">🎯 目標設定</button>
         <button class="history-btn" onclick="openFundingHistoryModal()">📊 資金歷程</button>
+        <button class="growth-btn" onclick="openAssetGrowthModal()">📈 資產成長</button>
         <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
       </div>
       <button onclick="logout()" style="background-color: #A0AEC0; color: white;">登出</button>
@@ -343,7 +362,39 @@
         <div class="modal-footer"><button onclick="closeFundingHistoryModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
       </div>
     </div>
+    <div id="assetGrowthModal" class="modal">
+  <div class="modal-content" style="max-width: 700px;">
+    <div class="modal-header">
+      <h3 style="margin:0; color:#2F855A;">📈 本金 vs 現值 - 資產成長動態線圖</h3>
+    </div>
+    <div class="modal-body-scroll">
+      
+      <div class="filter-container">
+        <div>
+          <label>開始：</label>
+          <input type="date" id="growthStartDate">
+        </div>
+        <div>
+          <label>結束：</label>
+          <input type="date" id="growthEndDate">
+        </div>
+        <button class="filter-btn" onclick="filterGrowthChart()">搜尋篩選</button>
+        <button class="filter-btn" style="background:#718096;" onclick="resetGrowthFilter()">重設</button>
+      </div>
 
+      <div style="position: relative; height: 350px; width: 100%; background: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid #E2E8F0;">
+        <canvas id="assetGrowthChart"></canvas>
+      </div>
+      <div style="font-size: 0.8em; color: #718096; margin-top: 8px; text-align: center;">
+        ※ 提示：點擊圖表上方的標籤可單獨隱藏/顯示「本金總額」或「當前現值」。
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('assetGrowthModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
+    </div>
+  </div>
+</div>
     <div id="adminPanel" class="container" style="display:none;">
       <h3>⚙️ 管理員控制台 (Jason Only)</h3>
       <div style="display: flex; align-items: center; gap: 10px;">
@@ -592,17 +643,19 @@ async function loadFundingRecords() {
     if (!snap.exists()) {
       logsContainer.innerHTML = "尚無歷史資金進出明細";
       cardsContainer.innerHTML = "<div style='color:gray; font-size:0.85em;'>目前無任何項目持倉</div>";
-      return;
+      return 0; // 回傳 0 本金
     }
     
     const records = [];
     snap.forEach(child => { records.push(child.val()); });
     
+    // 依時間由舊到新，模擬真實資金流動歷程
     records.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
     
     const assetMap = {};
     const aliasMap = {}; 
     let aliasIndex = 65; 
+    let dynamicTotalCost = 0; // 🎯 新增：全域動態總本金累計變數
     
     records.forEach(item => {
       const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
@@ -627,12 +680,16 @@ async function loadFundingRecords() {
       if (isBuy) {
         asset.shares += itemShares;
         asset.totalCost += itemAmount;
+        dynamicTotalCost += itemAmount; // ➡️ 買入時，投入本金實際增加
         if (asset.shares > 0) {
           asset.avgCost = asset.totalCost / asset.shares;
         }
       } else {
+        // 賣出/提領時減去股數
         asset.shares -= itemShares;
-        asset.totalCost -= (itemShares * asset.avgCost);
+        const deduction = itemShares * asset.avgCost;
+        asset.totalCost -= deduction;
+        dynamicTotalCost -= deduction; // ⬅️ 賣出/提領獲利了結時，收回對應的移動平均成本本金
         if (asset.shares <= 0) {
           asset.shares = 0;
           asset.totalCost = 0;
@@ -641,6 +698,9 @@ async function loadFundingRecords() {
       }
     });
     
+    // 將計算出的歷程總本金即時同步至全域變數中
+    window.currentGlobalTotalCost = Math.max(0, Math.round(dynamicTotalCost));
+
     const isJason = (currentUser.toLowerCase() === 'jason');
     const hasAccess = isJason || globalCanSeeDetails; 
     
@@ -701,12 +761,15 @@ async function loadFundingRecords() {
     });
     
     logsContainer.innerHTML = html;
+    
+    // 回傳計算好的最新歷程本金
+    return window.currentGlobalTotalCost;
   } catch (e) {
     console.error(e);
     logsContainer.innerHTML = "數據讀取或計算失敗。";
+    return 0;
   }
 }
-
     // 績效排行分析
     async function openRankModal() {
       openModal('rankModal');
@@ -969,94 +1032,111 @@ async function loadFundingRecords() {
       }, 800);
     }
 
-    // 渲染持股資產明細與串接 API
     async function renderPortfolio(data, user, canSeeDetails) {
-      const listEl = document.getElementById("portfolioList");
-      const isJason = user.toLowerCase() === 'jason';
-      const hasAccess = isJason || canSeeDetails; 
-      if (!data) { listEl.innerHTML = "<li>無持股資料</li>"; return; }
+  const listEl = document.getElementById("portfolioList");
+  const isJason = user.toLowerCase() === 'jason';
+  const hasAccess = isJason || canSeeDetails; 
+  if (!data) { listEl.innerHTML = "<li>無持股資料</li>"; return; }
 
-      listEl.innerHTML = "<li>🔄 正在即時連線證交所，驗證數據精確度中...</li>";
-      document.getElementById("autoTotalNetWorth").textContent = "計算中...";
-      document.getElementById("profitDiffDisplay").textContent = "--";
+  listEl.innerHTML = "<li>🔄 正在即時連線證交所，驗證數據精確度中...</li>";
+  document.getElementById("autoTotalNetWorth").textContent = "計算中...";
+  document.getElementById("profitDiffDisplay").textContent = "--";
 
-      let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0;
-      let html = "";
-      let isAllDataAccurate = true; 
-      let sectorDataMap = {};
+  // 🎯 先去讀取並分析 Firebase 中的資金歷程，拿到最精準的動態累計本金
+  const calculatedHistoryCost = await loadFundingRecords();
 
-      const codes = Object.keys(data);
-      const fetchPromises = codes.map(async (code) => {
-        const info = data[code];
-        let price = null;
-        try {
-          const controller = new AbortController();
-          const id = setTimeout(() => controller.abort(), 6000);
-          const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`, { signal: controller.signal });
-          clearTimeout(id);
-          const s = await res.json();
-          if (s && s.stat === "OK" && s.data && s.data.length > 0) {
-            price = parseFloat(s.data[s.data.length - 1][6].replace(/,/g, ''));
-          } else { isAllDataAccurate = false; }
-        } catch (e) { isAllDataAccurate = false; }
+  let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0;
+  let html = "";
+  let isAllDataAccurate = true; 
+  let sectorDataMap = {};
 
-        if (price !== null) {
-          const costT = info.cost * info.shares;
-          const currT = price * info.shares;
-          const p = currT - costT;
-          return { code, info, costT, currT, p, price, success: true };
-        } else { return { success: false }; }
-      });
+  const codes = Object.keys(data);
+  const fetchPromises = codes.map(async (code) => {
+    const info = data[code];
+    let price = null;
+    try {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`, { signal: controller.signal });
+      clearTimeout(id);
+      const s = await res.json();
+      if (s && s.stat === "OK" && s.data && s.data.length > 0) {
+        price = parseFloat(s.data[s.data.length - 1][6].replace(/,/g, ''));
+      } else { isAllDataAccurate = false; }
+    } catch (e) { isAllDataAccurate = false; }
 
-      try {
-        const results = await Promise.all(fetchPromises);
-        if (!isAllDataAccurate || results.some(r => !r.success)) {
-          listEl.innerHTML = "<li style='color: #9B2C2C; font-weight: bold;'>⚠️ 證交所連線忙碌中，為了保障數據精確度，系統已暫停顯示。請稍後 10 秒再重新整理網頁。</li>";
-          document.getElementById("autoTotalNetWorth").innerHTML = "<span style='color:#9B2C2C; font-size:0.6em;'>暫時無法連線</span>";
-          return;
-        }
+    if (price !== null) {
+      const costT = info.cost * info.shares;
+      const currT = price * info.shares;
+      const p = currT - costT;
+      return { code, info, costT, currT, p, price, success: true };
+    } else { return { success: false }; }
+  });
 
-        results.forEach(({ code, info, costT, currT, p, price }) => {
-          totalProfit += p; totalCurrentValue += currT; totalCostT += costT;
-          
-          const mapping = STOCK_SECTORS[code] || "未分類/其他";
-          if (typeof mapping === "string") {
-            sectorDataMap[mapping] = (sectorDataMap[mapping] || 0) + currT;
-          } else {
-            for (let secName in mapping) {
-              const ratio = mapping[secName];
-              sectorDataMap[secName] = (sectorDataMap[secName] || 0) + (currT * ratio);
-            }
-          }
-
-          html += `<li class="stock-item">
-              <div class="stock-info-row"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏)'}</b><span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span></div>
-              <div class="stock-info-row" style="font-size:0.9em; color: var(--text-muted);">
-                ${hasAccess ? `<span>成本: ${info.cost}</span><span>現價: ${price}</span>` : '<span>成本: --</span><span>現價: --</span>'}
-                <span>損益: <span class="${p>=0?'profit-positive':'profit-negative'}">${p>=0?'+':''}${Math.round(p).toLocaleString()} (${((p/costT)*100).toFixed(1)}%)</span></span>
-              </div>
-              <div class="stock-info-row" style="border-top:1px dashed #E2E8F0; margin-top:8px; padding-top:8px; font-size:0.9em;">
-                 <span>成本總額: $${Math.round(costT).toLocaleString()}</span><span>現值總額: $${Math.round(currT).toLocaleString()}</span>
-              </div></li>`;
-        });
-
-        listEl.innerHTML = html;
-        currentGlobalTotalProfit = Math.round(totalProfit);
-        currentGlobalTotalValue = Math.round(totalCurrentValue);
-        currentGlobalTotalCost = Math.round(totalCostT);
-        
-        document.getElementById("autoTotalNetWorth").textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
-        updateProfitDifference(currentGlobalTotalProfit);
-        autoSaveToHistory(user, currentGlobalTotalProfit);
-
-        updateDynamicMetrics();
-        updateProgressBarVisual(); 
-        renderPieChart(sectorDataMap);
-
-      } catch (globalError) {
-        listEl.innerHTML = "<li>❌ 系統計算損益時發生錯誤。</li>";
-      }
+  try {
+    const results = await Promise.all(fetchPromises);
+    if (!isAllDataAccurate || results.some(r => !r.success)) {
+      listEl.innerHTML = "<li style='color: #9B2C2C; font-weight: bold;'>⚠️ 證交所連線忙碌中，為了保障數據精確度，系統已暫停顯示。請稍後 10 秒再重新整理網頁。</li>";
+      document.getElementById("autoTotalNetWorth").innerHTML = "<span style='color:#9B2C2C; font-size:0.6em;'>暫時無法連線</span>";
+      return;
     }
+
+    results.forEach(({ code, info, costT, currT, p, price }) => {
+      totalProfit += p; 
+      totalCurrentValue += currT; 
+      totalCostT += costT;
+      
+      const mapping = STOCK_SECTORS[code] || "未分類/其他";
+      if (typeof mapping === "string") {
+        sectorDataMap[mapping] = (sectorDataMap[mapping] || 0) + currT;
+      } else {
+        for (let secName in mapping) {
+          const ratio = mapping[secName];
+          sectorDataMap[secName] = (sectorDataMap[secName] || 0) + (currT * ratio);
+        }
+      }
+
+      html += `<li class="stock-item">
+          <div class="stock-info-row"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏)'}</b><span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span></div>
+          <div class="stock-info-row" style="font-size:0.9em; color: var(--text-muted);">
+            ${hasAccess ? `<span>成本: ${info.cost}</span><span>現價: ${price}</span>` : '<span>成本: --</span><span>現價: --</span>'}
+            <span>損益: <span class="${p>=0?'profit-positive':'profit-negative'}">${p>=0?'+':''}${Math.round(p).toLocaleString()} (${((p/costT)*100).toFixed(1)}%)</span></span>
+          </div>
+          <div class="stock-info-row" style="border-top:1px dashed #E2E8F0; margin-top:8px; padding-top:8px; font-size:0.9em;">
+             <span>成本總額: $${Math.round(costT).toLocaleString()}</span><span>現值總額: $${Math.round(currT).toLocaleString()}</span>
+          </div></li>`;
+    });
+
+    listEl.innerHTML = html;
+    
+    // 🎯 關鍵邏輯修正
+    currentGlobalTotalProfit = Math.round(totalProfit);
+    currentGlobalTotalValue = Math.round(totalCurrentValue);
+    
+    // 原始本金不再使用單純的 (成本*股數) 欄位，而是使用剛剛歷程算出來的動態總本金
+    currentGlobalTotalCost = calculatedHistoryCost > 0 ? calculatedHistoryCost : Math.round(totalCostT);
+    
+    document.getElementById("autoTotalNetWorth").textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
+    updateProfitDifference(currentGlobalTotalProfit);
+    autoSaveToHistory(user, currentGlobalTotalProfit);
+
+    updateDynamicMetrics();
+    updateProgressBarVisual(); 
+    renderPieChart(sectorDataMap);
+    
+    // 🎯 重新整理上方藍、灰色的現值與本金大看板
+    if (document.getElementById('dashboardCurrentValue')) {
+      document.getElementById('dashboardCurrentValue').innerText = '$' + currentGlobalTotalValue.toLocaleString();
+    }
+    if (document.getElementById('dashboardTotalCost')) {
+      document.getElementById('dashboardTotalCost').innerText = '$' + currentGlobalTotalCost.toLocaleString();
+    }
+
+  } catch (globalError) {
+    console.error(globalError);
+    listEl.innerHTML = "<li>❌ 系統計算損益時發生錯誤。</li>";
+  }
+}
 
     // 產業分佈圓餅圖
     function renderPieChart(sectorMap) {
@@ -1392,6 +1472,222 @@ async function loadFundingRecords() {
         }
       }, 600); // 延遲 600 毫秒執行，保證 Firebase 資料在此時已經全部安全下載到本地端
     }
+
+  // 宣告資產成長圖表的專屬實例變數與歷史暫存備份
+let assetGrowthChartInstance = null;
+let rawGrowthEntriesBackup = []; 
+
+// 🎯 完美修正版：動態回溯歷史時間軸的資產成長運算引擎
+async function openAssetGrowthModal() {
+  openModal('assetGrowthModal');
+  
+  const user = localStorage.getItem('currentUser');
+  if (!user) return;
+
+  try {
+    // 1. 先撈取「資金進出歷程」，用來建立歷史本金時間軸
+    const fundingSnap = await db.ref(`family/fundingHistory/${user}`).get();
+    let fundingRecords = [];
+    if (fundingSnap.exists()) {
+      fundingSnap.forEach(child => { fundingRecords.push(child.val()); });
+    }
+    // 依時間由舊到新排序
+    fundingRecords.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+    // 2. 撈取每日結算的「收益歷史快照」
+    const snapshot = await db.ref(`family/investSnapshot/${user}`).once('value');
+    const snapshotData = snapshot.val();
+    
+    if (!snapshotData) {
+      alert("目前尚無足夠的歷史結算數據可繪製成長線圖。");
+      return;
+    }
+
+    // 3. 開始對每一天的快照進行「動態本金回溯」
+    let entries = [];
+    
+    for (let dateStr in snapshotData) {
+      if (snapshotData[dateStr] && snapshotData[dateStr].profit !== undefined) {
+        let profit = parseFloat(snapshotData[dateStr].profit || 0);
+        
+        // 🚀 核心計算：動態計算「截至 dateStr 當天為止」的累計投入本金
+        let assetMapAtThatDay = {};
+        let accumulatedCostAtThatDay = 0;
+
+        fundingRecords.forEach(item => {
+          // 如果這筆資金變動的日期大於快照日期，代表是「未來發生的事」，當天不予計算
+          if (item.date > dateStr) return;
+
+          const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
+          const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
+          const itemShares = parseFloat(item.shares || 0);
+          const itemAmount = Math.abs(parseFloat(item.amount || 0));
+
+          if (!assetMapAtThatDay[rawAssetName]) {
+            assetMapAtThatDay[rawAssetName] = { shares: 0, totalCost: 0, avgCost: 0 };
+          }
+          const asset = assetMapAtThatDay[rawAssetName];
+
+          if (isBuy) {
+            asset.shares += itemShares;
+            asset.totalCost += itemAmount;
+            accumulatedCostAtThatDay += itemAmount; // 當天之前買入，本金增加
+            if (asset.shares > 0) {
+              asset.avgCost = asset.totalCost / asset.shares;
+            }
+          } else {
+            // 當天之前賣出/獲利了結，扣除對應的移動平均本金成本
+            asset.shares -= itemShares;
+            const deduction = itemShares * asset.avgCost;
+            accumulatedCostAtThatDay -= deduction;
+            if (asset.shares <= 0) {
+              asset.shares = 0;
+              asset.totalCost = 0;
+              asset.avgCost = 0;
+            }
+          }
+        });
+
+        // 確保本金不為負數
+        let totalCostAtThatDay = Math.max(0, Math.round(accumulatedCostAtThatDay));
+        // 當天現值 = 當天算出來的動態歷史本金 + 當天快照紀錄的累積損益
+        let currentValueAtThatDay = totalCostAtThatDay + profit;
+
+        entries.push({
+          date: dateStr,
+          cost: totalCostAtThatDay,
+          value: currentValueAtThatDay
+        });
+      }
+    }
+    
+    // 依日期由舊到新排序，確保圖表時間軸正確
+    entries.sort((a, b) => a.date.localeCompare(b.date));
+    
+    // 備份原始總資料，供前端日期篩選搜尋使用
+    rawGrowthEntriesBackup = entries;
+
+    // 設定日期輸入框的預設極限範圍與初始填入值 (預設顯示最近 30 天)
+    if (entries.length > 0) {
+      document.getElementById('growthStartDate').min = entries[0].date;
+      document.getElementById('growthStartDate').max = entries[entries.length - 1].date;
+      document.getElementById('growthEndDate').min = entries[0].date;
+      document.getElementById('growthEndDate').max = entries[entries.length - 1].date;
+      
+      // 預設填入最近 30 天的時間區間
+      document.getElementById('growthStartDate').value = entries[Math.max(0, entries.length - 30)].date;
+      document.getElementById('growthEndDate').value = entries[entries.length - 1].date;
+    }
+
+    // 呼叫繪圖引擎渲染雙線圖
+    filterGrowthChart();
+
+  } catch (error) {
+    console.error("載入動態資產成長數據失敗:", error);
+    alert("讀取歷史快照失敗，請確認網路連線。");
+  }
+}
+
+// 2. 依照搜尋日期篩選並繪製/更新雙線圖表
+function filterGrowthChart() {
+  const startDate = document.getElementById('growthStartDate').value;
+  const endDate = document.getElementById('growthEndDate').value;
+
+  // 過濾符合搜尋條件範圍內的歷史節點
+  let filtered = rawGrowthEntriesBackup;
+  if (startDate) filtered = filtered.filter(e => e.date >= startDate);
+  if (endDate) filtered = filtered.filter(e => e.date <= endDate);
+
+  if (filtered.length === 0) {
+    alert("該指定日期區間內查無資產快照紀錄！");
+    return;
+  }
+
+  const ctx = document.getElementById('assetGrowthChart').getContext('2d');
+  
+  // 安全銷毀舊實例，避免滑鼠移上去時圖表發生閃爍重疊現象
+  if (assetGrowthChartInstance) {
+    assetGrowthChartInstance.destroy();
+  }
+
+  // 建立全新雙線型 Chart.js 畫布
+  assetGrowthChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: filtered.map(e => e.date.substring(5)), // 縮短日期標籤顯示例如 "06-26"
+      datasets: [
+        {
+          label: '💰 投入本金總額',
+          data: filtered.map(e => e.cost),
+          borderColor: '#4A5568', // 穩重深灰/藍本金線
+          backgroundColor: 'transparent',
+          borderWidth: 2.5,
+          pointRadius: 2,
+          pointHoverRadius: 5,
+          tension: 0.15
+        },
+        {
+          label: '👑 當前資產現值',
+          data: filtered.map(e => e.value),
+          borderColor: '#D4AF37', // 尊爵金現值線
+          backgroundColor: 'rgba(212, 175, 55, 0.05)', // 微微的金色區塊陰影
+          fill: true,
+          borderWidth: 3,
+          pointRadius: 2,
+          pointHoverRadius: 6,
+          tension: 0.15
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: { font: { size: 12, weight: 'bold' } }
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) label += ': ';
+              if (context.parsed.y !== null) {
+                label += '$' + Math.round(context.parsed.y).toLocaleString();
+              }
+              return label;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { maxTicksLimit: 12 }
+        },
+        y: {
+          grid: { color: 'rgba(0, 0, 0, 0.04)' },
+          ticks: {
+            callback: function(value) {
+              return '$' + value.toLocaleString();
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// 3. 重設日期篩選器，還原顯示完整歷程
+function resetGrowthFilter() {
+  if (rawGrowthEntriesBackup.length === 0) return;
+  document.getElementById('growthStartDate').value = rawGrowthEntriesBackup[0].date;
+  document.getElementById('growthEndDate').value = rawGrowthEntriesBackup[rawGrowthEntriesBackup.length - 1].date;
+  filterGrowthChart();
+}
   </script>
 </body>
 </html>
