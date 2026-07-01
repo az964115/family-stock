@@ -396,12 +396,61 @@
   </div>
 </div>
     <div id="adminPanel" class="container" style="display:none;">
-      <h3>⚙️ 管理員控制台 (Jason Only)</h3>
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span>開放全體成員查看詳細持股：</span>
-        <label class="switch"><input type="checkbox" id="toggleShowAll" onchange="toggleGlobalPermission(this.checked)"><span class="slider"></span></label>
-        <b id="permissionStatus">讀取中...</b>
-      </div>
+  <h3>⚙️ 管理員控制台 (Jason Only)</h3>
+  
+  <div class="card" style="margin-bottom: 20px; border-left: 5px solid #4A5568;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span>開放全體成員查看詳細持股：</span>
+      <label class="switch">
+        <input type="checkbox" id="toggleShowAll" onchange="toggleGlobalPermission(this.checked)">
+        <span class="slider"></span>
+      </label>
+      <b id="permissionStatus">讀取中...</b>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 20px; border-left: 5px solid #4cbdaa;">
+    <h4 style="color: #4cbdaa; margin-top: 0; margin-bottom: 8px;">📈 60分K RSV 動能即時監控 (功能 1)</h4>
+    <p style="font-size: 13px; color: #718096; margin-bottom: 12px;">不用等整點推播，在此可直接向 GAS 請求這 20 檔股票目前的最新即時動能狀況。</p>
+    
+    <button onclick="fetchLiveRsvData()" style="background-color: #4cbdaa; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
+      🔄 立即整理最新 RSV 數據
+    </button>
+    
+    <div id="rsv-loading" style="display:none; margin-top: 10px; color: #4A5568; font-weight: bold; font-size: 13px;">
+      ⏳ 正在連線 Yahoo API 計算 60分K RSV 中，請稍候約 10~15 秒...
+    </div>
+    
+    <div style="overflow-x: auto; margin-top: 15px;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+        <thead>
+          <tr style="background: #edf2f7; color: #4a5568;">
+            <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">代號 / 名稱</th>
+            <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">即時股價</th>
+            <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">最新 RSV</th>
+            <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">近 5H 動能走勢</th>
+          </tr>
+        </thead>
+        <tbody id="rsv-table-body">
+          <tr><td colspan="4" style="padding: 15px; text-align: center; color: #a0aec0;">尚未載入數據，請點擊上方按鈕整理。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 20px; border-left: 5px solid #ed8936;">
+    <h4 style="color: #ed8936; margin-top: 0; margin-bottom: 8px;">⚙️ LINE 機器人監控股票清單 (功能 3)</h4>
+    <p style="font-size: 13px; color: #718096; margin-bottom: 12px;">直接修改雲端機器人正在盯盤的個股（JSON 陣列格式），修改後定時排程會自動同步。</p>
+    
+    <textarea id="stock-list-textarea" style="width: 100%; height: 160px; font-family: monospace; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; margin-bottom: 10px; box-sizing: border-box; font-size: 13px; background: #fafafa;"></textarea>
+    
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <button onclick="saveStockListToGas()" style="background-color: #ed8936; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
+        💾 儲存並同步至雲端機器人
+      </button>
+      <span id="stock-save-status" style="font-weight: bold; font-size: 13px;"></span>
+    </div>
+  </div>
     </div>
 
     <div class="container">
@@ -1345,7 +1394,10 @@ async function loadFundingRecords() {
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
-        if (user.toLowerCase() === 'jason') document.getElementById('adminPanel').style.display = 'block';
+        if (user.toLowerCase() === 'jason') {
+  document.getElementById('adminPanel').style.display = 'block';
+  loadStockListFromGas(); // 🎯 加上這一行！記住登入狀態開網頁時，自動讀取雲端股票清單
+}
         
         initAnnouncementAndMemo(user);
 
@@ -1687,6 +1739,101 @@ function resetGrowthFilter() {
   document.getElementById('growthStartDate').value = rawGrowthEntriesBackup[0].date;
   document.getElementById('growthEndDate').value = rawGrowthEntriesBackup[rawGrowthEntriesBackup.length - 1].date;
   filterGrowthChart();
+}
+// ==========================================
+// GAS Web App 整合 API 邏輯 (功能 1 & 3)
+// ==========================================
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxMiAWOTeYQrC9gzOZSAUcTLb99w8fX2e8uPr7Wdn3uQAABI-rxlfLBmkpgM1JLw4rV/exec";
+
+// 【功能 1】去 GAS 撈取即時 RSV 看盤動能數據
+function fetchLiveRsvData() {
+  const loadingDiv = document.getElementById("rsv-loading");
+  const tbody = document.getElementById("rsv-table-body");
+  
+  loadingDiv.style.display = "block";
+  tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #4cbdaa;">🔄 正在向雲端請求即時計算數據...</td></tr>`;
+  
+  fetch(`${GAS_WEB_APP_URL}?action=getLiveRsv`)
+    .then(res => res.json())
+    .then(response => {
+      loadingDiv.style.display = "none";
+      if(response.status === "success") {
+        if(response.data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #718096;">目前清單中無有效個股數據。</td></tr>`;
+          return;
+        }
+        let html = "";
+        response.data.forEach(stock => {
+          // 超過 55 顯示紅色偏多，低於 48 顯示藍色偏空
+          let rsvColor = stock.currentRsv >= 55 ? "#e53e3e" : (stock.currentRsv <= 48 ? "#3182ce" : "#4a5568");
+          let historyTrend = stock.history5H.map(v => `<span style="background:#edf2f7; padding:2px 6px; border-radius:4px; margin-right:3px; font-size:11px; font-weight:normal;">${Math.round(v)}</span>`).join('➔');
+          
+          html += `
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+              <td style="padding: 10px; font-weight:bold;">${stock.id.split('.')[0]} ${stock.name}</td>
+              <td style="padding: 10px; font-weight:bold; color:#2d3748;">$${stock.price}</td>
+              <td style="padding: 10px; color:${rsvColor}; font-weight:bold;">${stock.currentRsv.toFixed(2)}</td>
+              <td style="padding: 10px;">${historyTrend}</td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      } else {
+        tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: red;">錯誤: ${response.message}</td></tr>`;
+      }
+    })
+    .catch(err => {
+      loadingDiv.style.display = "none";
+      tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: red;">通訊失敗，請確認 GAS 部署是否正確設定為任何人可存取。</td></tr>`;
+    });
+}
+
+// 【功能 3】從 GAS 讀取目前監控清單到文字框內
+function loadStockListFromGas() {
+  const textarea = document.getElementById("stock-list-textarea");
+  textarea.value = "⏳ 正在同步讀取雲端機器人監控清單...";
+  
+  fetch(`${GAS_WEB_APP_URL}?action=getStocks`)
+    .then(res => res.json())
+    .then(response => {
+      if(response.status === "success") {
+        textarea.value = JSON.stringify(response.data, null, 2);
+      } else {
+        textarea.value = "❌ 讀取失敗：" + response.message;
+      }
+    })
+    .catch(err => {
+      textarea.value = "❌ 無法連線至 GAS API，請檢查部署與網路。";
+    });
+}
+
+// 【功能 3】將文字框內修改後的清單儲存回 GAS 雲端
+function saveStockListToGas() {
+  const textarea = document.getElementById("stock-list-textarea");
+  const statusSpan = document.getElementById("stock-save-status");
+  
+  statusSpan.innerText = "⏳ 正在同步至雲端...";
+  statusSpan.style.color = "#718096";
+  
+  try {
+    const parsedData = JSON.parse(textarea.value);
+    
+    fetch(`${GAS_WEB_APP_URL}?action=saveStocks&data=${encodeURIComponent(JSON.stringify(parsedData))}`)
+      .then(res => res.json())
+      .then(response => {
+        if(response.status === "success") {
+          statusSpan.innerText = "✅ " + response.message;
+          statusSpan.style.color = "green";
+          setTimeout(() => { statusSpan.innerText = ""; }, 3000);
+        } else {
+          statusSpan.innerText = "❌ 儲存失敗：" + response.message;
+          statusSpan.style.color = "red";
+        }
+      });
+  } catch(e) {
+    statusSpan.innerText = "❌ 格式錯誤！請確保格式符合 JSON 陣列範例 (包含 id 與 name)。";
+    statusSpan.style.color = "red";
+  }
 }
   </script>
 </body>
