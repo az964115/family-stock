@@ -363,71 +363,68 @@
         <div class="modal-footer"><button onclick="closeFundingHistoryModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
       </div>
     </div>
+    <!-- 📈 資產成長線圖 Modal -->
     <div id="assetGrowthModal" class="modal">
-  <div class="modal-content" style="max-width: 700px;">
-    <div class="modal-header">
-      <h3 style="margin:0; color:#2F855A;">📈 本金 vs 現值 - 資產成長動態線圖</h3>
-    </div>
-    <!-- 🔍 個股方向查詢 Modal -->
-<div id="stockDirectionModal" class="modal">
-  <div class="modal-content" style="max-width: 500px;">
-    <div class="modal-header">
-      <h3 style="margin:0; color:#4C6EF5;">🔍 60分K 即時動能監控 & 個股方向</h3>
-    </div>
-    <div class="modal-body-scroll">
-      <p style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px;">
-        請輸入台灣上市櫃股票代號（例如：2330、2454），系統將即時連線 Yahoo Finance 計算 60分K 之最新 RSV 趨勢，並進行多重指標判讀。
-      </p>
-      
-      <!-- 搜尋輸入區 -->
-      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-        <input type="text" id="searchStockId" placeholder="請輸入股票代號 (如: 2330)" style="margin:0; flex: 1;">
-        <button onclick="queryStockDirection()" style="background-color: #4C6EF5; color: white; margin:0; padding: 0 20px;">開始分析</button>
-      </div>
-
-      <!-- 讀取中提示 -->
-      <div id="stock-query-loading" style="display:none; text-align: center; margin: 20px 0; color: #4C6EF5; font-weight: bold;">
-        ⏳ 正在即時抓取 60分K 線數據並進行多因數運算，請稍候約 5~8 秒...
-      </div>
-
-      <!-- 分析結果顯示區 -->
-      <div id="stock-query-result" style="display: none; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 20px; border-radius: 12px; margin-top: 15px;">
-        <!-- 結果會動態插入在此 -->
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button onclick="closeModal('stockDirectionModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
-    </div>
-  </div>
-</div>
-    <div class="modal-body-scroll">
-      
-      <div class="filter-container">
-        <div>
-          <label>開始：</label>
-          <input type="date" id="growthStartDate">
+      <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+          <h3 style="margin:0; color:#2F855A;">📈 本金 vs 現值 - 資產成長動態線圖</h3>
         </div>
-        <div>
-          <label>結束：</label>
-          <input type="date" id="growthEndDate">
+        <div class="modal-body-scroll">
+          <div class="filter-container">
+            <div>
+              <label>開始：</label>
+              <input type="date" id="growthStartDate">
+            </div>
+            <div>
+              <label>結束：</label>
+              <input type="date" id="growthEndDate">
+            </div>
+            <button class="filter-btn" onclick="filterGrowthChart()">搜尋</button>
+            <button class="filter-btn" style="background:#718096;" onclick="resetGrowthFilter()">重設</button>
+          </div>
+
+          <div style="position: relative; height: 350px; width: 100%; background: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid #E2E8F0;">
+            <canvas id="assetGrowthChart"></canvas>
+          </div>
+          <div style="font-size: 0.8em; color: #718096; margin-top: 8px; text-align: center;">
+            ※ 提示：點擊圖表上方的標籤可單獨隱藏/顯示「本金總額」或「當前現值」。
+          </div>
         </div>
-        <button class="filter-btn" onclick="filterGrowthChart()">搜尋</button>
-        <button class="filter-btn" style="background:#718096;" onclick="resetGrowthFilter()">重設</button>
+        <div class="modal-footer">
+          <button onclick="closeModal('assetGrowthModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
+        </div>
       </div>
-
-      <div style="position: relative; height: 350px; width: 100%; background: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid #E2E8F0;">
-        <canvas id="assetGrowthChart"></canvas>
-      </div>
-      <div style="font-size: 0.8em; color: #718096; margin-top: 8px; text-align: center;">
-        ※ 提示：點擊圖表上方的標籤可單獨隱藏/顯示「本金總額」或「當前現值」。
-      </div>
-
     </div>
-    <div class="modal-footer">
-      <button onclick="closeModal('assetGrowthModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
+
+    <!-- 🔍 個股方向查詢 Modal (已獨立移至外層) -->
+    <div id="stockDirectionModal" class="modal">
+      <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+          <h3 style="margin:0; color:#4C6EF5;">🔍 即時動能監控 & 個股方向</h3>
+        </div>
+        <div class="modal-body-scroll">
+          <p style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px;">
+            請輸入台灣上市櫃股票代號（例如：2330、2454），系統將計算 技術分析 趨勢，並進行多重指標判讀。
+          </p>
+          
+          <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <input type="text" id="searchStockId" placeholder="請輸入股票代號 (如: 2330)" style="margin:0; flex: 1;">
+            <button onclick="queryStockDirection()" style="background-color: #4C6EF5; color: white; margin:0; padding: 0 20px;">開始分析</button>
+          </div>
+
+          <div id="stock-query-loading" style="display:none; text-align: center; margin: 20px 0; color: #4C6EF5; font-weight: bold;">
+            ⏳ 正在即時抓取數據並進行多因數運算，請稍候...
+          </div>
+
+          <div id="stock-query-result" style="display: none; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 20px; border-radius: 12px; margin-top: 15px;">
+            <!-- 結果會動態插入在此 -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeModal('stockDirectionModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
     <div id="adminPanel" class="container" style="display:none;">
   <h3>⚙️ 管理員控制台 (Jason Only)</h3>
   
@@ -690,17 +687,17 @@ function queryStockDirection() {
           if (isUpward) {
             directionText = "🔥 極度強勢 (高檔鈍化中)";
             directionColor = "#E53E3E";
-            adviceText = "個股多頭氣勢極強，RSV 進入超買鈍化區。此時不建議盲目放空，持股者可續抱並守好移動停利點，空手者不宜過度追高。";
+            adviceText = "個股多頭氣勢極強，進入超買鈍化區。此時不建議盲目放空，持股者可續抱並守好移動停利點，空手者不宜過度追高。";
           } else {
             directionText = "⚠️ 轉弱警告 (高檔動能背離)";
             directionColor = "#D69E2E";
-            adviceText = "雖然股價與 RSV 仍在高位，但近 2 小時動能已有轉弱、勾頭向下跡象。多單應留意獲利了結機會，防範技術性回檔。";
+            adviceText = "雖然股價仍在高位，但近 2 小時動能已有轉弱、勾頭向下跡象。多單應留意獲利了結機會，防範技術性回檔。";
           }
         } else if (currentRsv >= 55) {
           if (isUpward) {
             directionText = "📈 多頭轉強 (動能持續攀升)";
             directionColor = "#E53E3E";
-            adviceText = "RSV 站上多空分水嶺且動能穩步向上。屬於標準的動能轉強格局，適合順勢偏多思考，多單可繼續留明。";
+            adviceText = "站上多空分水嶺且動能穩步向上。屬於標準的動能轉強格局，適合順勢偏多思考，多單可繼續留明。";
           } else {
             directionText = "🔄 高檔整理 (動能稍微停滯)";
             directionColor = "#4A5568";
@@ -709,12 +706,12 @@ function queryStockDirection() {
         } else if (currentRsv >= 45) {
           directionText = "⚖️ 區間多空拉鋸 (無明顯方向)";
           directionColor = "#718096";
-          adviceText = "RSV 處於中性 50 附近徘徊，短期 5 小時動能方向混沌。建議先參考更長天期（如日K、週K）均線方向，此處短線不宜過度頻繁交易。";
+          adviceText = "處於中性 50 附近徘徊，短期 5 小時動能方向混沌。建議先參考更長天期（如日K、週K）均線方向，此處短線不宜過度頻繁交易。";
         } else if (currentRsv >= 20) {
           if (!isUpward) {
             directionText = "📉 空頭轉弱 (動能持續探底)";
             directionColor = "#3182CE";
-            adviceText = "RSV 低於中性水平且斜率持續向下。個股短線買盤空虛，建議多單暫避、勿貿然摸底，待打底訊號出現。";
+            adviceText = "低於中性水平且斜率持續向下。個股短線買盤空虛，建議多單暫避、勿貿然摸底，待打底訊號出現。";
           } else {
             directionText = "🩹 弱勢整理 (嘗試震盪止穩)";
             directionColor = "#4A5568";
@@ -724,11 +721,11 @@ function queryStockDirection() {
           if (!isUpward) {
             directionText = "❄️ 極度疲弱 (超賣區加速趕底)";
             directionColor = "#3182CE";
-            adviceText = "RSV 跌破 20 極端值，動能加速向下。此時短線殺低風險增加，但不代表安全，空手者應嚴禁接刀，靜待量縮築底。";
+            adviceText = "跌破 極端值，動能加速向下。此時短線殺低風險增加，但不代表安全，空手者應嚴禁接刀，靜待量縮築底。";
           } else {
             directionText = "🚀 低檔轉折 (醞釀反彈訊號)";
             directionColor = "#2F855A";
-            adviceText = "【轉折機會】RSV 處於極度超賣區（<20），但最新動能首度出現「強勁勾頭向上」。此為標準黃金交叉預備訊號，激進者可輕倉嘗試搶反彈，嚴設停損。";
+            adviceText = "【轉折機會】 處於極度超賣區（<20），但最新動能首度出現「強勁勾頭向上」。此為標準黃金交叉預備訊號，激進者可輕倉嘗試搶反彈，嚴設停損。";
           }
         }
 
@@ -740,7 +737,7 @@ function queryStockDirection() {
           </div>
           
           <div style="margin-bottom: 15px;">
-            <small style="color: var(--text-muted); display:block; margin-bottom: 4px;">🎯 60分K 動能狀態判讀：</small>
+            <small style="color: var(--text-muted); display:block; margin-bottom: 4px;">🎯 技術分析判讀：</small>
             <div style="font-size: 1.3em; font-weight: 800; color: ${directionColor};">${directionText}</div>
           </div>
 
@@ -750,7 +747,7 @@ function queryStockDirection() {
           </div>
 
           <div style="margin-top: 15px; text-align: right;">
-            <small style="color: var(--text-muted); font-size: 0.78em;">※ 量化模型當前 RSV 計算值：${currentRsv.toFixed(2)}</small>
+            <small style="color: var(--text-muted); font-size: 0.78em;">※ 量化模型當前  計算值：${currentRsv.toFixed(2)}</small>
           </div>
         `;
         resultDiv.style.display = "block";
