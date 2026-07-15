@@ -26,6 +26,43 @@
       --accent: #D4AF37;
     }
 
+    /* 🌓 深色模式主題變數 */
+    .dark-theme {
+      --primary: #CBD5E0;
+      --primary-light: #A0AEC0;
+      --bg-gradient: linear-gradient(135deg, #1A202C 0%, #2D3748 100%);
+      --card-bg: rgba(45, 55, 72, 0.88);
+      --text-main: #EDF2F7;
+      --text-muted: #A0AEC0;
+      --success: #48BB78;
+      --success-light: rgba(72, 187, 120, 0.15);
+      --danger: #F56565;
+      --danger-light: rgba(245, 101, 116, 0.15);
+      --accent: #ECC94B;
+    }
+
+    /* 深色模式下的額外原件微調 */
+    .dark-theme input, .dark-theme textarea, .dark-theme select {
+      background: rgba(26, 32, 44, 0.8) !important;
+      color: #FFF !important;
+      border-color: #4A5568 !important;
+    }
+    .dark-theme .modal-content, .dark-theme .calc-result, .dark-theme .rank-card, .dark-theme .log-container {
+      background-color: #2D3748 !important;
+      color: #FFF !important;
+      border-color: #4A5568 !important;
+    }
+    .dark-theme .filter-container {
+      background: #1A202C !important;
+    }
+    .dark-theme .filter-container label {
+      color: #CBD5E0 !important;
+    }
+    .dark-theme .stock-item, .dark-theme .stock-summary-card {
+      background: rgba(45, 55, 72, 0.9) !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+    }
+
     body { 
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       margin: 0; padding: 30px 20px; max-width: 1050px; margin: 0 auto;
@@ -215,6 +252,7 @@
     <div class="container flex-wrap-header">
       <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
         <h2 id="userNameDisplay" style="margin: 0 15px 0 0; font-size: 1.6em;">Hi, User</h2>
+        <button id="darkModeBtn" onclick="toggleDarkMode()" style="background-color: #1A202C; color: white;">🌓 深色模式</button>
         <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click()">🖼️ 更換背景</button>
         <button class="calc-btn" onclick="openWithdrawModal()">💰 提領試算</button>
         <button class="rank-btn" onclick="openRankModal()">🏆 績效排行</button>
@@ -1533,6 +1571,15 @@ async function loadFundingRecords() {
 
       const user = localStorage.getItem('currentUser');
       if (user) {
+        // 載入深色模式狀態
+        const darkModeStatus = localStorage.getItem(`dark_mode_${user}`);
+        if (darkModeStatus === 'enabled') {
+          document.body.classList.add('dark-theme');
+          updateDarkModeButton(true);
+        } else {
+          updateDarkModeButton(false);
+        }
+
         const bg = localStorage.getItem(`bg_${user}`);
         if(bg) document.body.style.backgroundImage = `url(${bg})`;
         document.getElementById('loginSection').style.display = 'none';
@@ -1950,9 +1997,26 @@ function loadStockListFromGas() {
       textarea.value = "❌ 無法連線至 GAS API，請檢查部署與網路。";
     });
 }
+// 🌓 深色模式切換邏輯
+    function toggleDarkMode() {
+      const isDark = document.body.classList.toggle('dark-theme');
+      localStorage.setItem(`dark_mode_${localStorage.getItem('currentUser')}`, isDark ? 'enabled' : 'disabled');
+      updateDarkModeButton(isDark);
+    }
 
-// 【功能 3】將文字框內修改後的清單儲存回 GAS 雲端
-// 【功能 3】將文字框內修改後的清單儲存回 GAS 雲端
+    function updateDarkModeButton(isDark) {
+      const btn = document.getElementById('darkModeBtn');
+      if (!btn) return;
+      if (isDark) {
+        btn.innerText = "☀️ 淺色模式";
+        btn.style.backgroundColor = "#EDF2F7";
+        btn.style.color = "#1A202C";
+      } else {
+        btn.innerText = "🌓 深色模式";
+        btn.style.backgroundColor = "#1A202C";
+        btn.style.color = "white";
+      }
+    }
 function saveStockListToGas() {
   const textarea = document.getElementById("stock-list-textarea");
   const statusSpan = document.getElementById("stock-save-status");
