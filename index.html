@@ -73,7 +73,7 @@
   text-shadow: none;
 }
 
-/* 4. 股海老牛：沉穩安定的深色大地、墨綠風格 */
+/* 4. 盤勢整理：沉穩安定的深色大地、墨綠風格 */
 .badge-veteran {
   background: linear-gradient(135deg, #373b44, #4286f4);
 }
@@ -851,8 +851,8 @@ function renderUserBadge(user) {
     badges.push('<span class="badge badge-young-god">⚡ 少年股神</span>');
   } else if (user.monthlyReturn > 10) {
     badges.push('<span class="badge badge-high-profit">🔥 獲利超群</span>');
-  } else if (user.monthlyReturn < -10) {
-    badges.push('<span class="badge badge-high-profit">🤦‍♀️ 盤勢整理</span>');
+  } else if (user.monthlyReturn > 0) {
+    badges.push('<span class="badge badge-badge-veteran">🤦‍♀️ 盤勢整理</span>');
   } 
 
 
@@ -875,7 +875,7 @@ function renderUserBadge(user) {
     } else if (totalProfit >= 100000 && totalProfit <= 500000) {
       badges.push('<span class="badge badge-sweet">🍬 嘗到甜頭</span>');
     } else { // 小於 10 萬（包含負值）
-      badges.push('<span class="badge badge-transform">🔄 財富轉變</span>');
+      badges.push('<span class="badge badge-odd-lot">🔄 財富轉變</span>');
     }
   }
 
