@@ -2318,7 +2318,7 @@ function loadStockListFromGas() {
     });
 }
 
-// 【功能 3】把修改好的 JSON 陣列更新回 GAS 雲端
+// 【功能 3】把修改好的 JSON 陣列更新回 GAS 雲端 (GET 方式)
 function saveStockListToGas() {
   const text = document.getElementById("stock-list-textarea").value;
   const statusSpan = document.getElementById("stock-save-status");
@@ -2335,17 +2335,21 @@ function saveStockListToGas() {
     statusSpan.style.color = "#718096";
     statusSpan.textContent = "🚀 正在將新陣列同步寫入 GAS 雲端... 請稍候";
     
-    // POST 送出跨網域同步
-    fetch(GAS_WEB_APP_URL, {
-      method: "POST",
-      mode: "no-cors", // 使用不透明請求跨網域避開 CORS 限制
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "saveTrackingStocks", data: parsed })
-    })
-    .then(() => {
-      statusSpan.style.color = "green";
-      statusSpan.textContent = "✅ 資料已提交至雲端！(請等待 5 秒後重載網頁)";
-      setTimeout(() => { loadStockListFromGas(); }, 4000);
+    // 使用 GET 傳送，將資料轉成 URI 編碼放入網址中
+    const targetUrl = `${GAS_WEB_APP_URL}?action=saveTrackingStocks&data=${encodeURIComponent(JSON.stringify(parsed))}`;
+    
+    fetch(targetUrl)
+    .then(res => res.json())
+    .then(response => {
+      if (response.status === "success") {
+        statusSpan.style.color = "green";
+        statusSpan.textContent = "✅ 資料已成功同步至雲端！";
+        // 成功後，隔 1 秒直接重新拉取最新資料更新欄位
+        setTimeout(() => { loadStockListFromGas(); }, 1000);
+      } else {
+        statusSpan.style.color = "red";
+        statusSpan.textContent = `❌ 同步失敗：${response.message}`;
+      }
     })
     .catch(err => {
       statusSpan.style.color = "red";
