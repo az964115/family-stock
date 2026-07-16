@@ -40,7 +40,81 @@
       --danger-light: rgba(245, 101, 116, 0.15);
       --accent: #ECC94B;
     }
+    /* 基礎勳章樣式 (繼承你原本 premium-badge 的字型與間距設定) */
+/* 基礎勳章樣式 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  margin-right: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
+/* 1. 獲利超群：亮眼熱情的橘紅漸層 */
+.badge-high-profit {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+/* 2. 百萬達人：尊榮感的深藍與紫色漸層 */
+.badge-millionaire {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+/* 3. 初出茅廬：生機盎然的淺綠色（新手感） */
+.badge-newbie {
+  background: linear-gradient(135deg, #96fbc4, #f9f586);
+  color: #333333; /* 淺色背景配深色字 */
+  text-shadow: none;
+}
+
+/* 4. 股海老牛：沉穩安定的深色大地、墨綠風格 */
+.badge-veteran {
+  background: linear-gradient(135deg, #373b44, #4286f4);
+}
+
+/* 5. 小資族：溫和親切的暖橘、黃銅色調 */
+.badge-budget {
+  background: linear-gradient(135deg, #f6d365, #fda085);
+}
+
+/* 6. 中產達人：代表財富穩固的皇家藍與金銅色邊框 */
+.badge-middle-class {
+  background: linear-gradient(135deg, #2b5876, #4e4376);
+  border: 1px solid #ffd700; /* 加上金邊點綴 */
+}
+
+/* 7. 穩健成長：代表持續向上的茂盛綠色 */
+.badge-steady-growth {
+  background: linear-gradient(135deg, #0ba360, #3cba92);
+}
+
+/* 「少年股神」：採用閃電與火熱的漸層，強調高績效的爆發力 */
+.badge-young-god {
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  color: #ffffff;
+  border: 1px solid #ff7b72;
+  animation: pulse 2s infinite; /* 可選：加一點呼吸燈效果 */
+}
+
+/* 「零股奇兵」：採用偏向草綠、敏捷的色彩，象徵小額累積的奇兵 */
+.badge-odd-lot {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+  color: #ffffff;
+  border: 1px solid #a8ff78;
+}
+
+/* 呼吸燈動畫（讓少年股神更炫炫） */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); box-shadow: 0 4px 8px rgba(255, 75, 43, 0.4); }
+  100% { transform: scale(1); }
+}
     /* 深色模式下的額外原件微調 */
     .dark-theme input, .dark-theme textarea, .dark-theme select {
       background: rgba(26, 32, 44, 0.8) !important;
@@ -237,6 +311,71 @@
 
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
     .memo-status { font-size: 0.82em; font-weight: normal; padding: 2px 8px; border-radius: 12px; background: #E2E8F0; color: #4A5568; }
+
+    /* ✨ 高級流光閃爍徽章關鍵幀動畫 */
+    @keyframes breathePulse {
+      0%, 100% {
+        opacity: 0.35;
+        text-shadow: 0 0 4px rgba(212, 175, 55, 0.2), 0 0 10px rgba(212, 175, 55, 0.1);
+        border-color: rgba(212, 175, 55, 0.3);
+      }
+      50% {
+        opacity: 1;
+        text-shadow: 0 0 12px rgba(212, 175, 55, 0.8), 0 0 20px rgba(212, 175, 55, 0.4);
+        border-color: rgba(212, 175, 55, 0.9);
+      }
+    }
+
+    @keyframes shineSweep {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* 頂部高級感徽章 */
+    .premium-badge {
+      font-size: 0.55em;
+      padding: 4px 10px;
+      border-radius: 30px;
+      border: 1.5px solid rgba(212, 175, 55, 0.5);
+      background: linear-gradient(120deg, rgba(255,255,255,0) 30%, rgba(255,251,225,0.7) 40%, rgba(255,255,255,0) 50%), rgba(212, 175, 55, 0.15);
+      background-size: 200% 100%;
+      color: #D4AF37;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      vertical-align: middle;
+      animation: breathePulse 3s infinite ease-in-out, shineSweep 5s infinite linear;
+      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1);
+    }
+
+    /* 排名徽章樣式 */
+    .rank-shining-badge {
+      font-size: 0.72em;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+      color: white;
+      margin-left: 8px;
+      display: inline-block;
+      vertical-align: middle;
+      background-size: 200% 100%;
+      animation: shineSweep 4s infinite linear;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .rank-shining-badge-win {
+      background-image: linear-gradient(120deg, #D4AF37 30%, #FFFDF0 45%, #D4AF37 60%);
+      border: 1px solid #ECC94B;
+      color: #744210;
+    }
+
+    .rank-shining-badge-def {
+      background-image: linear-gradient(120deg, #3182CE 30%, #EBF8FF 45%, #3182CE 60%);
+      border: 1px solid #4299E1;
+      color: #EBF8FF;
+    }
   </style>
 </head>
 <body>
@@ -249,27 +388,54 @@
   </div>
 
   <div id="mainContent" style="display:none;">
-    <div class="container flex-wrap-header">
-      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <h2 id="userNameDisplay" style="margin: 0 15px 0 0; font-size: 1.6em;">Hi, User</h2>
-        <button id="darkModeBtn" onclick="toggleDarkMode()" style="background-color: #1A202C; color: white;">🌓 深色模式</button>
-        <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click()">🖼️ 更換背景</button>
-        <button class="calc-btn" onclick="openWithdrawModal()">💰 提領試算</button>
-        <button class="rank-btn" onclick="openRankModal()">🏆 績效排行</button>
-        <button class="compound-btn" onclick="openCompoundModal()">⏳ 複利計算</button>
-        <button class="target-btn" onclick="openTargetModal()">🎯 目標設定</button>
-        <button class="history-btn" onclick="openFundingHistoryModal()">📊 資金歷程</button>
-        <button class="growth-btn" onclick="openAssetGrowthModal()">📈 資產成長</button>
-        <button class="trend-btn" onclick="openStockDirectionModal()" style="background-color: #4C6EF5; color: white;">🔍 個股方向</button>
-        <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
+    <!-- 頂部導航與功能整合區 -->
+    <div class="container flex-wrap-header" style="flex-direction: column; align-items: stretch; gap: 15px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <h2 id="userNameDisplay" style="margin: 0; font-size: 1.6em; display: inline-flex; align-items: center; gap: 10px;">
+            Hi, User
+          </h2>
+          <span id="user-badge-container"></span>
+        </div>
+        <button onclick="logout()" style="background-color: #A0AEC0; color: white; margin: 0;">登出</button>
       </div>
-      <button onclick="logout()" style="background-color: #A0AEC0; color: white;">登出</button>
+      
+      <!-- 下一行：整合功能按鈕 -->
+      <div style="border-top: 1px dashed rgba(0, 0, 0, 0.08); padding-top: 12px; display: flex; justify-content: flex-start; align-items: center;">
+        <button onclick="openModal('featuresPortalModal')" style="background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%); color: white; padding: 12px 24px; font-size: 1.05em; font-weight: bold; width: 100%; justify-content: center; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
+          💼 智慧功能區
+        </button>
+      </div>
+    </div>
+
+    <!-- 💼 整合功能區入口 Modal -->
+    <div id="featuresPortalModal" class="modal">
+      <div class="modal-content" style="max-width: 480px;">
+        <div class="modal-header">
+          <h3 style="margin:0; color:#3B82F6; display: flex; align-items: center; gap: 8px;">💼 豬豬智慧控制台</h3>
+        </div>
+        <div class="modal-body-scroll" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 5px;">
+          <button id="darkModeBtn" onclick="toggleDarkMode(); closeModal('featuresPortalModal');" style="background-color: #1A202C; color: white; margin:0; height: 50px;">🌓 深色模式</button>
+          <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🖼️ 更換背景</button>
+          <button class="calc-btn" onclick="openWithdrawModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">💰 提領試算</button>
+          <button class="rank-btn" onclick="openRankModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🏆 績效排行</button>
+          <button class="compound-btn" onclick="openCompoundModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">⏳ 複利計算</button>
+          <button class="target-btn" onclick="openTargetModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🎯 目標設定</button>
+          <button class="history-btn" onclick="openFundingHistoryModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">📊 資金歷程</button>
+          <button class="growth-btn" onclick="openAssetGrowthModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">📈 資產成長</button>
+          <button class="trend-btn" onclick="openStockDirectionModal(); closeModal('featuresPortalModal');" style="background-color: #4C6EF5; color: white; margin:0; height: 50px; ">🔍 個股方向</button>
+          <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
+        </div>
+        <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
+          <button onclick="closeModal('featuresPortalModal')" style="width:100%; background-color:#718096; color: white;">關閉控制台</button>
+        </div>
+      </div>
     </div>
 
     <div id="rankModal" class="modal">
       <div class="modal-content">
         <div class="modal-header"><h3 style="margin:0; color:#6B46C1;">🏆 成員績效排行</h3></div>
-        <p style="font-size: 0.82em; color: var(--text-muted); margin-bottom: 10px;">* 名字旁顯示今日帳號總變動；右側顯示單檔最強投報率</p>
+        <p style="font-size: 0.82em; color: var(--text-muted); margin-bottom: 10px;">* 名字旁顯示今日帳號總變動與動態勳章；右側顯示單檔最強投報率</p>
         <div id="rankList" class="modal-body-scroll"><p style="text-align:center; color: var(--text-muted);">正在計算...</p></div>
         <div class="modal-footer"><button onclick="closeModal('rankModal')" style="width:100%; background-color:#718096; color: white;">關閉</button></div>
       </div>
@@ -434,7 +600,7 @@
       </div>
     </div>
 
-    <!-- 🔍 個股方向查詢 Modal (已獨立移至外層) -->
+    <!-- 🔍 個股方向查詢 Modal -->
     <div id="stockDirectionModal" class="modal">
       <div class="modal-content" style="max-width: 500px;">
         <div class="modal-header">
@@ -649,7 +815,67 @@
       modal.classList.remove('show');
       setTimeout(() => modal.style.display = 'none', 300);
     }
+// 1. 模擬從後端或 API 取得的用戶數據（你可以將這裡替換成實際的用戶資料）
+const userData = {
+  monthlyReturn: 12,    // 近一個月獲利百分比 (例如：12 代表 12%)
+  totalAsset: 1500000,  // 總資產 (元)
+  growthDays: 100       // 資產成長時間 (天數)
+};
 
+function renderUserBadge(user) {
+  console.log("【偵錯】傳入的完整用戶資料為：", user);
+  
+  const container = document.getElementById('user-badge-container');
+  if (!container) {
+    console.error('找不到 id 為 "user-badge-container" 的 HTML 元素');
+    return;
+  }
+
+  // 1. 安全清洗資產現值
+  const rawValue = user.accountValue || user.totalAsset || "0";
+  const cleanAssetValue = typeof rawValue === 'string' 
+    ? Number(rawValue.replace(/[^0-9.-]+/g, "")) 
+    : Number(rawValue);
+
+  console.log("【偵錯】原始資產欄位值：", rawValue);
+  console.log("【偵錯】清洗後轉為數字：", cleanAssetValue);
+
+  // 用陣列來存放所有符合的徽章 HTML
+  let badges = [];
+
+  // ================= 每個條件獨立判斷 =================
+
+  // 1. 績效判斷（少年股神與獲利超群二選一，避免重複性質徽章）
+  if (user.monthlyReturn > 20) {
+    badges.push('<span class="badge badge-young-god">⚡ 少年股神</span>');
+  } else if (user.monthlyReturn > 10) {
+    badges.push('<span class="badge badge-high-profit">🔥 獲利超群</span>');
+  } 
+
+  // 2. 資產規模判斷（中產、百萬、小資三選一）
+  if (cleanAssetValue >= 3000000) {
+    badges.push('<span class="badge badge-middle-class">🏦 中產達人</span>');
+  } else if (cleanAssetValue >= 1000000) {
+    badges.push('<span class="badge badge-millionaire">💎 百萬達人</span>');
+  } else if (cleanAssetValue < 1000000 && cleanAssetValue > 0) {
+    badges.push('<span class="badge badge-budget">🪙 小資族</span>');
+  }
+
+  // 3. 資期 / 投資年資判斷（老牛、穩健、初出茅廬三選一）
+  if (user.growthDays >= 100) {
+    badges.push('<span class="badge badge-veteran">🐢 股海老牛</span>');
+  } else if (user.growthDays >= 60 && user.growthDays < 30) {
+    badges.push('<span class="badge badge-steady-growth">📈 穩健成長</span>');
+  } else if (user.growthDays < 30 && user.growthDays >= 0) {
+    badges.push('<span class="badge badge-newbie">🌱 初出茅廬</span>');
+  }
+
+  // 將所有符合的徽章用空格串接起來，一次渲染出來
+  container.innerHTML = badges.join(' ');
+}
+
+// 3. 執行判斷
+renderUserBadge(userData);
 function openFundingHistoryModal() {
   const currentUser = localStorage.getItem('currentUser') || '';
   const formBlock = document.getElementById('jasonFundingForm');
@@ -829,7 +1055,7 @@ async function saveFundingRecord() {
         snap.forEach(child => {
           const item = child.val();
           if ((item.asset || '').toUpperCase() === assetName) {
-            const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
+            const isBuy = item.type ? (item.type === 'buy' || item.type === undefined) : (item.amount > 0);
             if (isBuy) ownedAssetShares += parseFloat(item.shares || 0);
             else ownedAssetShares -= parseFloat(item.shares || 0);
           }
@@ -886,7 +1112,7 @@ async function loadFundingRecords() {
     const assetMap = {};
     const aliasMap = {}; 
     let aliasIndex = 65; 
-    let dynamicTotalCost = 0; // 🎯 新增：全域動態總本金累計變數
+    let dynamicTotalCost = 0; // 🎯 全域動態總本金累計變數
     
     records.forEach(item => {
       const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
@@ -1001,7 +1227,8 @@ async function loadFundingRecords() {
     return 0;
   }
 }
-    // 績效排行分析
+
+    // 績效排行分析（新增動態閃爍徽章邏輯）
     async function openRankModal() {
       openModal('rankModal');
       const listEl = document.getElementById('rankList');
@@ -1046,8 +1273,19 @@ async function loadFundingRecords() {
         let html = "";
         userRanks.forEach((user, i) => {
           const medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":"👤";
-          const badge = user.dailyChange !== 0 ? `<span class="daily-badge ${user.dailyChange > 0 ? 'badge-up' : 'badge-down'}">${user.dailyChange > 0 ? '↗️ ' : '↘️ '}${user.dailyChange}%</span>` : "";
-          html += `<div class="rank-card"><details><summary class="rank-summary"><span>${medal} <b>${user.name}</b> ${badge}</span><span class="${user.maxRate >= 0 ? 'profit-positive' : 'profit-negative'}">${user.maxRate >= 0 ? '+' : ''}${user.maxRate}%</span></summary>
+          const changeVal = user.dailyChange;
+          
+          // 2. 判斷是否大於、小於或等於 0，並增加動態炫彩閃爍徽章
+          let dynamicBadge = "";
+          if (changeVal > 0) {
+            dynamicBadge = `<span class="rank-shining-badge rank-shining-badge-win">🏆 獲利超群</span>`;
+          } else if (changeVal < 0) {
+            dynamicBadge = `<span class="rank-shining-badge rank-shining-badge-def">🛡️ 穩健守成</span>`;
+          } // 等於 0 時不顯示任何 badge
+
+          const badge = changeVal !== 0 ? `<span class="daily-badge ${changeVal > 0 ? 'badge-up' : 'badge-down'}">${changeVal > 0 ? '↗️ ' : '↘️ '}${changeVal}%</span>` : "";
+          
+          html += `<div class="rank-card"><details><summary class="rank-summary"><span>${medal} <b>${user.name}</b> ${badge}${dynamicBadge}</span><span class="${user.maxRate >= 0 ? 'profit-positive' : 'profit-negative'}">${user.maxRate >= 0 ? '+' : ''}${user.maxRate}%</span></summary>
             <div class="rank-details" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #E2E8F0;">${user.details.map((s, idx) => `<div style="display:flex; justify-content:space-between; font-size:0.9em; margin: 4px 0;"><span>項目 ${String.fromCharCode(65 + idx)}</span><span class="${s.rate >= 0 ? 'profit-positive' : 'profit-negative'}">${s.rate >= 0 ? '+' : ''}${s.rate}%</span></div>`).join('')}</div>
             </details></div>`;
         });
@@ -1970,82 +2208,92 @@ function fetchLiveRsvData() {
         });
         tbody.innerHTML = html;
       } else {
-        tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: red;">錯誤: ${response.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">讀取失敗：${response.message}</td></tr>`;
       }
     })
     .catch(err => {
       loadingDiv.style.display = "none";
-      tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: red;">通訊失敗，請確認 GAS 部署是否正確設定為任何人可存取。</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">連線失敗，請檢查 API 的 CORS 是否已開放。</td></tr>`;
     });
 }
 
-// 【功能 3】從 GAS 讀取目前監控清單到文字框內
+// 【功能 3】向 GAS API 連線取得當前雲端 LINE 機器人正在盯盤的股票 JSON 字串
 function loadStockListFromGas() {
   const textarea = document.getElementById("stock-list-textarea");
-  textarea.value = "⏳ 正在同步讀取雲端機器人監控清單...";
+  if(!textarea) return;
+  textarea.value = "正在自雲端抓取清單中...⌛";
   
-  fetch(`${GAS_WEB_APP_URL}?action=getStocks`)
+  fetch(`${GAS_WEB_APP_URL}?action=getTrackingStocks`)
     .then(res => res.json())
     .then(response => {
       if(response.status === "success") {
+        // 美化 JSON 排版印出在 Textarea 欄位中
         textarea.value = JSON.stringify(response.data, null, 2);
       } else {
-        textarea.value = "❌ 讀取失敗：" + response.message;
+        textarea.value = `讀取失敗：${response.message}`;
       }
     })
     .catch(err => {
-      textarea.value = "❌ 無法連線至 GAS API，請檢查部署與網路。";
+      textarea.value = "連線失敗，無法取得雲端追蹤個股清單。";
     });
 }
-// 🌓 深色模式切換邏輯
-    function toggleDarkMode() {
-      const isDark = document.body.classList.toggle('dark-theme');
-      localStorage.setItem(`dark_mode_${localStorage.getItem('currentUser')}`, isDark ? 'enabled' : 'disabled');
-      updateDarkModeButton(isDark);
-    }
 
-    function updateDarkModeButton(isDark) {
-      const btn = document.getElementById('darkModeBtn');
-      if (!btn) return;
-      if (isDark) {
-        btn.innerText = "☀️ 淺色模式";
-        btn.style.backgroundColor = "#EDF2F7";
-        btn.style.color = "#1A202C";
-      } else {
-        btn.innerText = "🌓 深色模式";
-        btn.style.backgroundColor = "#1A202C";
-        btn.style.color = "white";
-      }
-    }
+// 【功能 3】把修改好的 JSON 陣列更新回 GAS 雲端
 function saveStockListToGas() {
-  const textarea = document.getElementById("stock-list-textarea");
+  const text = document.getElementById("stock-list-textarea").value;
   const statusSpan = document.getElementById("stock-save-status");
   
-  statusSpan.innerText = "⏳ 正在同步至雲端...";
-  statusSpan.style.color = "#718096";
-  
   try {
-    const parsedData = JSON.parse(textarea.value);
+    // 嚴格本地格式驗證，非 JSON 則不送出
+    const parsed = JSON.parse(text);
+    if(!Array.isArray(parsed)) {
+      statusSpan.style.color = "red";
+      statusSpan.textContent = "❌ 格式錯誤：根節點必須是 JSON 陣列 Array 格式！";
+      return;
+    }
     
-    fetch(`${GAS_WEB_APP_URL}?action=saveStocks&data=${encodeURIComponent(JSON.stringify(parsedData))}`)
-      .then(res => res.json())
-      .then(response => {
-        if(response.status === "success") {
-          statusSpan.innerText = "✅ " + response.message;
-          statusSpan.style.color = "green";
-          setTimeout(() => { statusSpan.innerText = ""; }, 3000);
-        } else {
-          statusSpan.innerText = "❌ 儲存失敗：" + response.message;
-          statusSpan.style.color = "red";
-        }
-      })
-      .catch(err => {
-        statusSpan.innerText = "❌ 連線失敗，請稍後再試。";
-        statusSpan.style.color = "red";
-      });
-  } catch (e) {
-    statusSpan.innerText = "❌ JSON 格式錯誤，請檢查符號。";
+    statusSpan.style.color = "#718096";
+    statusSpan.textContent = "🚀 正在將新陣列同步寫入 GAS 雲端... 請稍候";
+    
+    // POST 送出跨網域同步
+    fetch(GAS_WEB_APP_URL, {
+      method: "POST",
+      mode: "no-cors", // 使用不透明請求跨網域避開 CORS 限制
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "saveTrackingStocks", data: parsed })
+    })
+    .then(() => {
+      statusSpan.style.color = "green";
+      statusSpan.textContent = "✅ 資料已提交至雲端！(請等待 5 秒後重載網頁)";
+      setTimeout(() => { loadStockListFromGas(); }, 4000);
+    })
+    .catch(err => {
+      statusSpan.style.color = "red";
+      statusSpan.textContent = "❌ 連線失敗，無法同步至 API。";
+    });
+
+  } catch(e) {
     statusSpan.style.color = "red";
+    statusSpan.textContent = "❌ JSON 語法格式解析失敗，請確認逗號與雙引號是否正確！";
+  }
+}
+
+// 深色模式開關與儲存狀態
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark-theme');
+  const user = localStorage.getItem('currentUser');
+  if (user) {
+    localStorage.setItem(`dark_mode_${user}`, isDark ? 'enabled' : 'disabled');
+  }
+  updateDarkModeButton(isDark);
+}
+
+function updateDarkModeButton(isDark) {
+  const btn = document.getElementById('darkModeBtn');
+  if (btn) {
+    btn.innerHTML = isDark ? "☀️ 淺色模式" : "🌓 深色模式";
+    btn.style.backgroundColor = isDark ? "#EDF2F7" : "#1A202C";
+    btn.style.color = isDark ? "#1A202C" : "white";
   }
 }
   </script>
