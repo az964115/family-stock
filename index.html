@@ -827,7 +827,8 @@ function renderUserBadge(user) {
   
   const container = document.getElementById('user-badge-container');
   if (!container) {
-    console.error('找不到 id 為 "user-badge-container" 的 HTML 元素');
+    console.warn('找不到 id 為 "user-badge-container" 的 HTML 元素，將於 50ms 後重試...');
+    setTimeout(() => renderUserBadge(user), 50);
     return;
   }
 
@@ -850,7 +851,10 @@ function renderUserBadge(user) {
     badges.push('<span class="badge badge-young-god">⚡ 少年股神</span>');
   } else if (user.monthlyReturn > 10) {
     badges.push('<span class="badge badge-high-profit">🔥 獲利超群</span>');
+  } else if (user.monthlyReturn < -10) {
+    badges.push('<span class="badge badge-high-profit">🤦‍♀️ 盤勢整理</span>');
   } 
+
 
   // 2. 資產規模判斷（中產、百萬、小資三選一）
   if (cleanAssetValue >= 3000000) {
@@ -861,13 +865,18 @@ function renderUserBadge(user) {
     badges.push('<span class="badge badge-budget">🪙 小資族</span>');
   }
 
-  // 3. 資期 / 投資年資判斷（老牛、穩健、初出茅廬三選一）
-  if (user.growthDays >= 100) {
-    badges.push('<span class="badge badge-veteran">🐢 股海老牛</span>');
-  } else if (user.growthDays >= 60 && user.growthDays < 30) {
-    badges.push('<span class="badge badge-steady-growth">📈 穩健成長</span>');
-  } else if (user.growthDays < 30 && user.growthDays >= 0) {
-    badges.push('<span class="badge badge-newbie">🌱 初出茅廬</span>');
+  // 3. 投資收益階段判斷（依據總收益金額分類）
+  if (cleanAssetValue > 0) { // 確保不是完全沒有資金的新帳戶
+    // 取得總收益，若欄位名稱不同，請將 user.totalProfit 替換為你實際使用的欄位（例如 user.totalGain）
+    const totalProfit = user.modalTotalProfit || 0; 
+
+    if (totalProfit > 500000) {
+      badges.push('<span class="badge badge-wealthy">💰 發家致富</span>');
+    } else if (totalProfit >= 100000 && totalProfit <= 500000) {
+      badges.push('<span class="badge badge-sweet">🍬 嘗到甜頭</span>');
+    } else { // 小於 10 萬（包含負值）
+      badges.push('<span class="badge badge-transform">🔄 財富轉變</span>');
+    }
   }
 
   // 將所有符合的徽章用空格串接起來，一次渲染出來
@@ -875,7 +884,7 @@ function renderUserBadge(user) {
 }
 
 // 3. 執行判斷
-renderUserBadge(userData);
+//renderUserBadge(userData);
 function openFundingHistoryModal() {
   const currentUser = localStorage.getItem('currentUser') || '';
   const formBlock = document.getElementById('jasonFundingForm');
@@ -1100,6 +1109,9 @@ async function loadFundingRecords() {
     if (!snap.exists()) {
       logsContainer.innerHTML = "尚無歷史資金進出明細";
       cardsContainer.innerHTML = "<div style='color:gray; font-size:0.85em;'>目前無任何項目持倉</div>";
+      
+      // 🎯 無資料時，以新創帳戶狀態安全調用，不拋出錯誤
+      renderUserBadge({ accountValue: 0, monthlyReturn: 0, growthDays: 0 });
       return 0; // 回傳 0 本金
     }
     
@@ -1113,6 +1125,25 @@ async function loadFundingRecords() {
     const aliasMap = {}; 
     let aliasIndex = 65; 
     let dynamicTotalCost = 0; // 🎯 全域動態總本金累計變數
+    
+    // ⏳ 記錄第一筆交易的時間戳記（確保遍歷所有紀錄，找出最古老的一筆）
+    let firstTransactionTime = Date.now();
+    if (records && records.length > 0) {
+      const timestamps = records
+        .map(item => {
+          // 這裡兼容 timestamp、date 或 time 欄位，並將其轉換成時間戳
+          const dateSource = item.timestamp || item.date || item.time;
+          if (!dateSource) return null;
+          const d = new Date(dateSource);
+          return isNaN(d.getTime()) ? null : d.getTime();
+        })
+        .filter(t => t !== null);
+
+      if (timestamps.length > 0) {
+        // 取出所有時間戳中「數值最小」（最古老）的那一筆
+        firstTransactionTime = Math.min(...timestamps);
+      }
+    }
     
     records.forEach(item => {
       const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
@@ -1218,6 +1249,44 @@ async function loadFundingRecords() {
     });
     
     logsContainer.innerHTML = html;
+
+    // ==========================================
+    // 🌟 【動態徽章處理區】 🌟
+    // ==========================================
+    
+    // 1. 計算資產成長天數 (當前時間 - 第一筆交易時間)
+    const diffTime = Math.abs(Date.now() - firstTransactionTime);
+    const calculatedGrowthDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+    // 2. 取得即時月幅度績效
+    const domReturnElement = document.getElementById('monthPerformance');
+    let monthlyReturnVal = 0;
+    
+    // 只有當元素存在，且內容不是 "--" 或空值時才進行解析
+    if (domReturnElement && domReturnElement.innerText && domReturnElement.innerText !== "--") {
+      const parsedVal = parseFloat(domReturnElement.innerText.replace(/[^0-9.-]+/g, ""));
+      // 避免在還沒算好、顯示為 0% 時被誤判為 -100%
+      if (!isNaN(parsedVal)) {
+        monthlyReturnVal = parsedVal;
+      }
+    }
+
+    // 3. 組合真實數據
+    // 如果現值 (currentGlobalTotalValue) 尚未算出來 (為 0)，先以總本金 (currentGlobalTotalCost) 代替
+    const finalAccountValue = (window.currentGlobalTotalValue && window.currentGlobalTotalValue !== 0) 
+      ? window.currentGlobalTotalValue 
+      : (window.currentGlobalTotalCost || 0);
+
+    const realUserData = {
+      accountValue: finalAccountValue, 
+      monthlyReturn: monthlyReturnVal,
+      growthDays: calculatedGrowthDays
+    };
+
+    console.log("【徽章診斷】當前傳入資料：", realUserData);
+
+    // 4. 呼叫整合了多徽章判斷的渲染函式
+    renderUserBadge(realUserData);
     
     // 回傳計算好的最新歷程本金
     return window.currentGlobalTotalCost;
@@ -1227,7 +1296,6 @@ async function loadFundingRecords() {
     return 0;
   }
 }
-
     // 績效排行分析（新增動態閃爍徽章邏輯）
     async function openRankModal() {
       openModal('rankModal');
@@ -1605,6 +1673,13 @@ async function loadFundingRecords() {
     console.error(globalError);
     listEl.innerHTML = "<li>❌ 系統計算損益時發生錯誤。</li>";
   }
+  // 在 renderPortfolio 結尾處加上：
+  setTimeout(() => {
+    if (typeof loadFundingRecords === 'function') {
+      console.log("【徽章重整】持股數據計算完畢，重新計算徽章...");
+      loadFundingRecords();
+    }
+  }, 100); // 延遲 100 毫秒確保 DOM 已經完全寫入
 }
 
     // 產業分佈圓餅圖
@@ -1809,7 +1884,12 @@ async function loadFundingRecords() {
 
       const user = localStorage.getItem('currentUser');
       if (user) {
-        // 載入深色模式狀態
+        // 1. 先顯示主畫面，讓 DOM 元素渲染出來
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
+
+        // 2. 載入深色模式狀態與背景
         const darkModeStatus = localStorage.getItem(`dark_mode_${user}`);
         if (darkModeStatus === 'enabled') {
           document.body.classList.add('dark-theme');
@@ -1820,22 +1900,22 @@ async function loadFundingRecords() {
 
         const bg = localStorage.getItem(`bg_${user}`);
         if(bg) document.body.style.backgroundImage = `url(${bg})`;
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
-        document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
+        
         if (user.toLowerCase() === 'jason') {
-  document.getElementById('adminPanel').style.display = 'block';
-  loadStockListFromGas(); // 🎯 加上這一行！記住登入狀態開網頁時，自動讀取雲端股票清單
-}
+          document.getElementById('adminPanel').style.display = 'block';
+          loadStockListFromGas(); 
+        }
         
         initAnnouncementAndMemo(user);
 
+        // 3. 開始建立資料庫即時監聽與計算
         db.ref('settings/global/showPortfolioToAll').on('value', snap => {
           globalCanSeeDetails = snap.val() || false;
-          if(document.getElementById("permissionStatus")) document.getElementById("permissionStatus").textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏標的";
+          if(document.getElementById("permissionStatus")) {
+            document.getElementById("permissionStatus").textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏標的";
+          }
           db.ref(`users/${user}/portfolio`).on("value", s => {
             renderPortfolio(s.val(), user, globalCanSeeDetails);
-            setupPushSubscription();
           });
         });
 
