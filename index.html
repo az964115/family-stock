@@ -611,9 +611,21 @@
             請輸入台股、美股票代號（例如：2330、2454），系統將計算 技術分析 趨勢，並進行多重指標判讀。
           </p>
           
-          <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+          <div style="display: flex; gap: 10px; margin-bottom: 10px;">
             <input type="text" id="searchStockId" placeholder="請輸入股票代號 (如: 2330)" style="margin:0; flex: 1;">
             <button onclick="queryStockDirection()" style="background-color: #4C6EF5; color: white; margin:0; padding: 0 20px;">開始分析</button>
+          </div>
+
+          <!-- ⭐️ 新增：自訂快捷代碼區塊 -->
+          <div style="margin-bottom: 15px; background: rgba(0,0,0,0.03); padding: 10px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <small style="color: var(--text-muted); font-weight: bold;">⚡ 我的快捷代碼 (點擊直接分析)：</small>
+              <button onclick="addQuickStock()" style="padding: 2px 8px; font-size: 0.78em; background: #319795; color: white; margin: 0;">+ 新增輸入的代碼</button>
+            </div>
+            <!-- 快捷按鈕動態渲染容器 -->
+            <div id="quickStockContainer" style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <!-- 快捷按鈕會動態顯示在這裡 -->
+            </div>
           </div>
 
           <div id="stock-query-loading" style="display:none; text-align: center; margin: 20px 0; color: #4C6EF5; font-weight: bold;">
@@ -918,14 +930,90 @@ function openFundingHistoryModal() {
   openModal('fundingHistoryModal');
   loadFundingRecords();
 }
-    // 開啟個股方向 Modal
+// 1. 開啟個股方向 Modal，並同時載入該使用者的快捷代碼
 function openStockDirectionModal() {
   document.getElementById("searchStockId").value = "";
   document.getElementById("stock-query-result").style.display = "none";
   document.getElementById("stock-query-loading").style.display = "none";
+  renderQuickStocks(); // 渲染快捷代碼按鈕
   openModal('stockDirectionModal');
 }
+// 2. 繪製/渲染快捷代碼按鈕
+async function renderQuickStocks() {
+  const container = document.getElementById("quickStockContainer");
+  const user = localStorage.getItem('currentUser');
+  if (!user) return;
 
+  container.innerHTML = "<small style='color: gray;'>載入快捷按鈕中...</small>";
+
+  try {
+    const snap = await db.ref(`users/${user}/quickStocks`).get();
+    const stocks = snap.exists() ? snap.val() : ["2330", "2454"]; // 若無資料，預設提供 2330, 2454 示範
+
+    if (!Array.isArray(stocks) || stocks.length === 0) {
+      container.innerHTML = "<small style='color: gray;'>尚未新增快捷代碼，請在上方輸入框輸入後點擊新增。</small>";
+      return;
+    }
+
+    let html = "";
+    stocks.forEach(code => {
+      html += `
+        <div style="display: inline-flex; align-items: center; background: #E2E8F0; border-radius: 16px; padding: 2px 8px; margin-right: 4px; margin-bottom: 4px;">
+          <button onclick="quickQueryStock('${code}')" style="background: none; border: none; padding: 2px 4px; color: #2B6CB0; font-weight: bold; cursor: pointer; margin:0; font-size: 0.88em;">
+            ${code}
+          </button>
+          <span onclick="removeQuickStock('${code}')" style="cursor: pointer; color: #E53E3E; margin-left: 4px; font-weight: bold; font-size: 0.8em;" title="刪除快捷代碼">✕</span>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  } catch (e) {
+    container.innerHTML = "<small style='color: red;'>快捷代碼載入失敗</small>";
+  }
+}
+// 3. 點擊快捷鍵，自動帶入代碼並直接執行查詢
+function quickQueryStock(code) {
+  document.getElementById("searchStockId").value = code;
+  queryStockDirection(); // 直接執行分析
+}
+// 4. 新增快捷代碼 (將輸入框現有的代碼存入雲端)
+async function addQuickStock() {
+  const user = localStorage.getItem('currentUser');
+  const code = document.getElementById("searchStockId").value.trim().toUpperCase();
+  if (!code) return alert("請先在輸入框填寫要新增的股票代號");
+
+  try {
+    const ref = db.ref(`users/${user}/quickStocks`);
+    const snap = await ref.get();
+    let list = snap.exists() ? snap.val() : ["2330", "2454"];
+    
+    if (!Array.isArray(list)) list = [];
+    if (list.includes(code)) return alert("該代碼已在快捷清單中");
+
+    list.push(code);
+    await ref.set(list);
+    renderQuickStocks(); // 重新渲染快捷區
+  } catch (e) {
+    alert("新增快捷代碼失敗");
+  }
+}
+// 5. 刪除指定的快捷代碼
+async function removeQuickStock(code) {
+  const user = localStorage.getItem('currentUser');
+  try {
+    const ref = db.ref(`users/${user}/quickStocks`);
+    const snap = await ref.get();
+    let list = snap.exists() ? snap.val() : [];
+
+    if (Array.isArray(list)) {
+      list = list.filter(item => item !== code);
+      await ref.set(list);
+      renderQuickStocks(); // 重新渲染快捷區
+    }
+  } catch (e) {
+    alert("刪除快捷代碼失敗");
+  }
+}
 // 查詢與分析邏輯
 function queryStockDirection() {
   const stockId = document.getElementById("searchStockId").value.trim();
