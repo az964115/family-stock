@@ -659,6 +659,7 @@
     <h4 style="color: #4cbdaa; margin-top: 0; margin-bottom: 8px;">📈 60分K RSV 動能即時監控 (功能 1)</h4>
     <p style="font-size: 13px; color: #718096; margin-bottom: 12px;">不用等整點推播，在此可直接向 GAS 請求這 20 檔股票目前的最新即時動能狀況。</p>
     
+    <!-- 1. 按鈕區 -->
     <button onclick="fetchLiveRsvData()" style="background-color: #4cbdaa; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
       🔄 立即整理最新 RSV 數據
     </button>
@@ -666,7 +667,25 @@
     <div id="rsv-loading" style="display:none; margin-top: 10px; color: #4A5568; font-weight: bold; font-size: 13px;">
       ⏳ 正在連線 Yahoo API 計算 60分K RSV 中，請稍候約 10~15 秒...
     </div>
+
+    <!-- 2. ✨【新增】按鈕下面、表格上面的推薦選股卡片 -->
+    <div id="rsv-recommendation-panel" style="display:none; margin-top: 15px; padding: 12px; background: #f7fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+      <div style="font-weight: bold; margin-bottom: 8px; color: #2d3748; font-size: 14px; border-bottom: 1px dashed #cbd5e0; padding-bottom: 4px;">
+        💡 5H 動能精選篩選結果
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px;">
+        <div style="flex: 1; min-width: 200px; background: #fff5f5; border-left: 4px solid #e53e3e; padding: 8px 10px; border-radius: 4px;">
+          <span style="font-weight: bold; color: #c53030;">🔥 轉強推薦：</span>
+          <div id="recommend-strong" style="margin-top: 4px; font-weight: 600; color: #2d3748;">無</div>
+        </div>
+        <div style="flex: 1; min-width: 200px; background: #ebf8ff; border-left: 4px solid #3182ce; padding: 8px 10px; border-radius: 4px;">
+          <span style="font-weight: bold; color: #2b6cb0;">⚠️ 轉弱注意：</span>
+          <div id="recommend-weak" style="margin-top: 4px; font-weight: 600; color: #2d3748;">無</div>
+        </div>
+      </div>
+    </div>
     
+    <!-- 3. 詳細表格區 -->
     <div style="overflow-x: auto; margin-top: 15px;">
       <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
         <thead>
@@ -2343,11 +2362,16 @@ function resetGrowthFilter() {
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxMiAWOTeYQrC9gzOZSAUcTLb99w8fX2e8uPr7Wdn3uQAABI-rxlfLBmkpgM1JLw4rV/exec";
 
 // 【功能 1】去 GAS 撈取即時 RSV 看盤動能數據
+// 【功能 1】去 GAS 撈取即時 RSV 看盤動能數據，並自動統計 5H 轉強/轉弱標的
 function fetchLiveRsvData() {
   const loadingDiv = document.getElementById("rsv-loading");
   const tbody = document.getElementById("rsv-table-body");
+  const recoPanel = document.getElementById("rsv-recommendation-panel");
+  const strongDiv = document.getElementById("recommend-strong");
+  const weakDiv = document.getElementById("recommend-weak");
   
   loadingDiv.style.display = "block";
+  if (recoPanel) recoPanel.style.display = "none";
   tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #4cbdaa;">🔄 正在向雲端請求即時計算數據...</td></tr>`;
   
   fetch(`${GAS_WEB_APP_URL}?action=getLiveRsv`)
@@ -2359,21 +2383,50 @@ function fetchLiveRsvData() {
           tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #718096;">目前清單中無有效個股數據。</td></tr>`;
           return;
         }
+        
         let html = "";
+        let strongList = []; // 轉強推薦
+        let weakList = [];   // 轉弱注意
+
         response.data.forEach(stock => {
+          const currentRsv = stock.currentRsv;
+          const history = stock.history5H || [];
+          const stockLabel = `${stock.id.split('.')[0]} ${stock.name}`;
+
+          // --- 依據近 5H 動能走勢進行演算法判讀 ---
+          if (history.length >= 2) {
+            const firstRsv = history[0]; // 5小時前 (H-4) 的 RSV
+            const prevRsv = history[history.length - 2]; // 上一小時的 RSV
+            
+            // 轉強條件：RSV 向上突破/持續向上，且最新 RSV >= 50
+            if (currentRsv >= 50 && currentRsv > firstRsv && currentRsv >= prevRsv) {
+              strongList.push(`${stockLabel} (RSV: ${currentRsv.toFixed(1)})`);
+            } 
+            // 轉弱條件：RSV 彎頭向下或跌破 50，且最新 RSV < 50
+            else if (currentRsv < 50 && currentRsv < firstRsv) {
+              weakList.push(`${stockLabel} (RSV: ${currentRsv.toFixed(1)})`);
+            }
+          }
+
           // 超過 55 顯示紅色偏多，低於 48 顯示藍色偏空
-          let rsvColor = stock.currentRsv >= 55 ? "#e53e3e" : (stock.currentRsv <= 48 ? "#3182ce" : "#4a5568");
-          let historyTrend = stock.history5H.map(v => `<span style="background:#edf2f7; padding:2px 6px; border-radius:4px; margin-right:3px; font-size:11px; font-weight:normal;">${Math.round(v)}</span>`).join('➔');
+          let rsvColor = currentRsv >= 55 ? "#e53e3e" : (currentRsv <= 48 ? "#3182ce" : "#4a5568");
+          let historyTrend = history.map(v => `<span style="background:#edf2f7; padding:2px 6px; border-radius:4px; margin-right:3px; font-size:11px; font-weight:normal;">${Math.round(v)}</span>`).join('➔');
           
           html += `
             <tr style="border-bottom: 1px solid #e2e8f0;">
-              <td style="padding: 10px; font-weight:bold;">${stock.id.split('.')[0]} ${stock.name}</td>
+              <td style="padding: 10px; font-weight:bold;">${stockLabel}</td>
               <td style="padding: 10px; font-weight:bold; color:#2d3748;">$${stock.price}</td>
-              <td style="padding: 10px; color:${rsvColor}; font-weight:bold;">${stock.currentRsv.toFixed(2)}</td>
+              <td style="padding: 10px; color:${rsvColor}; font-weight:bold;">${currentRsv.toFixed(2)}</td>
               <td style="padding: 10px;">${historyTrend}</td>
             </tr>
           `;
         });
+
+        // 渲染「推薦選股卡片」結果
+        if (strongDiv) strongDiv.innerHTML = strongList.length > 0 ? strongList.join("、 ") : "目前無明顯轉強標的";
+        if (weakDiv) weakDiv.innerHTML = weakList.length > 0 ? weakList.join("、 ") : "目前無明顯轉弱標的";
+        if (recoPanel) recoPanel.style.display = "block";
+
         tbody.innerHTML = html;
       } else {
         tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">讀取失敗：${response.message}</td></tr>`;
