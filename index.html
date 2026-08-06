@@ -668,7 +668,7 @@
       ⏳ 正在連線 Yahoo API 計算 60分K RSV 中，請稍候約 10~15 秒...
     </div>
 
-    <!-- ✨ 精細化推薦選股卡片 (置於按鈕下方、表格上方) -->
+    <!-- ✨ 精細化推薦選股 & 自訂持股智慧分析卡片 -->
     <div id="rsv-recommendation-panel" style="display:none; margin-top: 15px; padding: 14px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
       <div style="font-weight: bold; margin-bottom: 10px; color: #1a202c; font-size: 14px; border-bottom: 2px solid #cbd5e0; padding-bottom: 6px;">
         💡 5H 動能精細分類 & 買賣訊號選股
@@ -677,7 +677,7 @@
       <!-- 轉強 / 買進訊號區 -->
       <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
         <!-- 分類 1: 低轉高起漲發動 -->
-        <div style="flex: 1; min-width: 180px; background: #fff5f5; border-top: 4px solid #e53e3e; padding: 10px; border-radius: 6px; shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div style="flex: 1; min-width: 180px; background: #fff5f5; border-top: 4px solid #e53e3e; padding: 10px; border-radius: 6px;">
           <div style="font-weight: bold; color: #c53030; font-size: 13px;">🚀 起漲準備</div>
           <div style="font-size: 11px; color: #742a2a; margin-top: 2px;">近5H低於50 ➜ 今日強勢站上55</div>
           <div id="reco-breakout" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
@@ -698,7 +698,7 @@
         </div>
       </div>
 
-      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
         <div style="flex: 1; min-width: 180px; background: #edf2f7; border-top: 4px solid #718096; padding: 10px; border-radius: 6px;">
           <div style="font-weight: bold; color: #4a5568; font-size: 13px;">📉 動能減弱</div>
           <div style="font-size: 11px; color: #4a5568; margin-top: 2px;">高檔回落<50，離場/觀察</div>
@@ -711,7 +711,55 @@
           <div id="reco-weak" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
         </div>
       </div>
-    </div>
+
+      <!-- 🎯 持有所屬股票智慧分析與動態停利 (支援儲存與刪除記憶功能) -->
+      <div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">
+            🎯 持有股票智慧分析與動態停利試算
+          </div>
+          
+          <!-- 右側選單與刪除按鈕群 -->
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <select id="mySavedStocksSelect" onchange="loadSavedStockData()" style="padding: 3px 8px; font-size: 12px; border-radius: 4px; border: 1px solid #cbd5e0; max-width: 170px;">
+              <option value="">📂 快速載入已存個股...</option>
+            </select>
+            <button onclick="deleteCurrentSavedStock()" title="刪除選中的個股" style="background-color: #e53e3e; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; margin:0; font-weight:bold; cursor:pointer;">
+              🗑️ 刪除
+            </button>
+          </div>
+        </div>
+        
+        <!-- 第一排：最新波段 -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
+          <input type="text" id="myStockSymbol" placeholder="股票代號/名稱" style="flex:1; min-width:100px; padding:6px 10px; margin:0; font-size:12px;">
+          <input type="number" id="myBasePrice" placeholder="最新起漲價 (低於50站上60)" style="flex:1.2; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
+          <input type="number" id="myMaxPrice" placeholder="歷史最高點價位" style="flex:1.2; min-width:120px; padding:6px 10px; margin:0; font-size:12px;">
+        </div>
+
+        <!-- 第二排：上一波對照 (可自訂上一波起漲與高點) -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
+          <input type="number" id="myPrevBasePrice" placeholder="上一波起漲價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
+          <input type="number" id="myPrevMaxPrice" placeholder="上一波衝頂高價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
+        </div>
+
+        <!-- 第三排：操作按鈕群 -->
+        <div style="display: flex; gap: 8px;">
+          <button onclick="analyzeMyStockProfit(true)" style="background-color: #3182ce; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 2; cursor:pointer;">
+            🧠 執行智慧動態分析
+          </button>
+          <button onclick="saveCurrentStockData()" style="background-color: #38a169; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 1; cursor:pointer;">
+            💾 儲存此個股設定
+          </button>
+        </div>
+        
+        <!-- 即時提示與提醒 Banner -->
+        <div id="stockNotificationBanner" style="display:none; margin-top: 10px; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;"></div>
+
+        <!-- 分析結果顯示容器 -->
+        <div id="myStockAnalysisResult" style="display:none; margin-top: 10px; padding: 10px; background: #f7fafc; border-left: 4px solid #3182ce; border-radius: 4px; font-size: 12px; line-height: 1.6;">
+        </div>
+      </div>
     
     <!-- 3. 詳細表格區 -->
     <div style="overflow-x: auto; margin-top: 15px;">
@@ -2575,6 +2623,245 @@ function updateDarkModeButton(isDark) {
     btn.innerHTML = isDark ? "☀️ 淺色模式" : "🌓 深色模式";
     btn.style.backgroundColor = isDark ? "#EDF2F7" : "#1A202C";
     btn.style.color = isDark ? "#1A202C" : "white";
+  }
+}
+// 頁面初始化時自動載入已儲存的持股選單與上次輸入
+document.addEventListener("DOMContentLoaded", function() {
+  updateSavedStocksDropdown();
+  loadLastUsedStock();
+});
+
+// 1. 儲存目前個股設定至 localStorage
+function saveCurrentStockData() {
+  const symbol = document.getElementById("myStockSymbol").value.trim();
+  const basePrice = document.getElementById("myBasePrice").value;
+  const maxPrice = document.getElementById("myMaxPrice").value;
+  const prevBasePrice = document.getElementById("myPrevBasePrice").value;
+  const prevMaxPrice = document.getElementById("myPrevMaxPrice").value;
+
+  if (!symbol) {
+    alert("請輸入股票代號/名稱才能儲存！");
+    return;
+  }
+
+  const stockData = {
+    symbol, basePrice, maxPrice, prevBasePrice, prevMaxPrice,
+    updatedAt: new Date().toLocaleDateString()
+  };
+
+  // 讀取既有清單
+  let saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
+  saved[symbol] = stockData;
+  localStorage.setItem("jason_saved_stocks", JSON.stringify(saved));
+  
+  // 紀錄最後一次使用的股票代號
+  localStorage.setItem("jason_last_stock_symbol", symbol);
+
+  updateSavedStocksDropdown();
+  showNotification(`✅ 個股【${symbol}】設定已成功儲存！`, "#c6f6d5", "#22543d");
+}
+
+// 2. 更新下拉選單選項
+function updateSavedStocksDropdown() {
+  const select = document.getElementById("mySavedStocksSelect");
+  if (!select) return;
+
+  const saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
+  select.innerHTML = '<option value="">📂 快速載入已存個股...</option>';
+
+  Object.keys(saved).forEach(sym => {
+    const opt = document.createElement("option");
+    opt.value = sym;
+    opt.textContent = `📌 ${sym} (${saved[sym].updatedAt})`;
+    select.appendChild(opt);
+  });
+}
+
+// 3. 切換選單時自動填入資料並分析
+function loadSavedStockData() {
+  const symbol = document.getElementById("mySavedStocksSelect").value;
+  if (!symbol) return;
+
+  const saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
+  const data = saved[symbol];
+
+  if (data) {
+    document.getElementById("myStockSymbol").value = data.symbol || "";
+    document.getElementById("myBasePrice").value = data.basePrice || "";
+    document.getElementById("myMaxPrice").value = data.maxPrice || "";
+    document.getElementById("myPrevBasePrice").value = data.prevBasePrice || "";
+    document.getElementById("myPrevMaxPrice").value = data.prevMaxPrice || "";
+
+    localStorage.setItem("jason_last_stock_symbol", symbol);
+    analyzeMyStockProfit(false); // 自動執行分析
+    showNotification(`ℹ️ 已載入【${symbol}】資料`, "#ebf8ff", "#2c5282");
+  }
+}
+
+// 4. 預設自動讀取上次開啟的股票
+function loadLastUsedStock() {
+  const lastSym = localStorage.getItem("jason_last_stock_symbol");
+  if (lastSym) {
+    const select = document.getElementById("mySavedStocksSelect");
+    if (select) {
+      select.value = lastSym;
+      loadSavedStockData();
+    }
+  }
+}
+
+// 5. 顯示上方提示區塊
+function showNotification(msg, bgColor, textColor) {
+  const banner = document.getElementById("stockNotificationBanner");
+  banner.style.background = bgColor;
+  banner.style.color = textColor;
+  banner.style.border = `1px solid ${textColor}`;
+  banner.innerHTML = msg;
+  banner.style.display = "block";
+
+  setTimeout(() => {
+    banner.style.display = "none";
+  }, 4000);
+}
+
+// 6. 主分析邏輯 (包含 autoSave 選項)
+function analyzeMyStockProfit(autoSave = true) {
+  const symbol = document.getElementById("myStockSymbol").value.trim();
+  const basePrice = parseFloat(document.getElementById("myBasePrice").value);     
+  const maxPrice = parseFloat(document.getElementById("myMaxPrice").value);       
+  const prevBasePrice = parseFloat(document.getElementById("myPrevBasePrice").value);
+  const prevMaxPrice = parseFloat(document.getElementById("myPrevMaxPrice").value);
+
+  const resultDiv = document.getElementById("myStockAnalysisResult");
+
+  if (!symbol || isNaN(basePrice) || isNaN(maxPrice) || basePrice <= 0 || maxPrice <= 0) {
+    alert("請完整輸入股票代號、有效的最新起漲價與歷史最高價！");
+    return;
+  }
+
+  // 自動保存當前狀態為最新使用紀錄
+  if (autoSave) {
+    saveCurrentStockData();
+  }
+
+  // 1. 空間計算
+  const rawMaxReturn = ((maxPrice - basePrice) / basePrice) * 100;
+  
+  // 2. 動態計算下限 X% (上一波推升力道)
+  let lowerPct = 10.0; 
+  let lowerNote = "預設安全起步點";
+
+  if (!isNaN(prevBasePrice) && !isNaN(prevMaxPrice) && prevBasePrice > 0 && prevMaxPrice > prevBasePrice) {
+    lowerPct = parseFloat((((prevMaxPrice - prevBasePrice) / prevBasePrice) * 100).toFixed(1));
+    lowerNote = `參照上一波波段實際增幅 (${prevBasePrice} ➔ ${prevMaxPrice})`;
+  }
+
+  if (rawMaxReturn < lowerPct) {
+    lowerPct = Math.max(5, parseFloat((rawMaxReturn * 0.5).toFixed(1)));
+  }
+
+  // 3. 動態計算上限 A% (天花板機制)
+  let upperPct = 30.0;
+  let upperNote = "";
+
+  if (rawMaxReturn > 30.0) {
+    if (lowerPct > 30.0) {
+      upperPct = Math.min(parseFloat(rawMaxReturn.toFixed(1)), lowerPct);
+      upperNote = `(上一波動能強勁 +${lowerPct}%，解鎖 30% 天花板限制)`;
+    } else {
+      upperPct = 30.0;
+      upperNote = `(歷史空間 ${rawMaxReturn.toFixed(1)}% 過大，已啟動 30% 風控天花板)`;
+    }
+  } else {
+    upperPct = parseFloat(rawMaxReturn.toFixed(1));
+    upperNote = `(受限於歷史最高點 $${maxPrice} 空間)`;
+  }
+
+  if (lowerPct > upperPct) {
+    lowerPct = parseFloat((upperPct * 0.7).toFixed(1));
+  }
+
+  // 4. 計算目標價位
+  const minTargetPrice = (basePrice * (1 + lowerPct / 100)).toFixed(2);
+  const maxTargetPrice = (basePrice * (1 + upperPct / 100)).toFixed(2);
+
+  // 5. 渲染輸出
+  resultDiv.innerHTML = `
+    <div style="font-weight:bold; color:#2d3748; margin-bottom:4px;">
+      📊 【${symbol}】智慧波段動態停利報告：
+    </div>
+    <div>• <b>最新起漲基準價</b>：$${basePrice} | <b>歷史最高價</b>：$${maxPrice} (${rawMaxReturn.toFixed(1)}% 總空間)</div>
+    <div>• <b>第一階段動能參考 (X%)</b>：${lowerPct}% <span style="color:#718096; font-size:11px;">[${lowerNote}]</span></div>
+    
+    <div style="color:#c53030; font-weight:bold; margin-top:6px; font-size:13px;">
+      💡 建議分批獲利了結區間：<span style="font-size:14px; color:#c53030;">${lowerPct.toFixed(1)}% ～ ${upperPct.toFixed(1)}%</span>
+      <span style="font-size:11px; color:#d69e2e; font-weight:normal;">${upperNote}</span>
+      <br>（對應目標價位：<span style="color:#2b6cb0;">$${minTargetPrice} ～ $${maxTargetPrice}</span>）
+    </div>
+
+    <div style="margin-top:8px; color:#4a5568; background:#edf2f7; padding:8px; border-radius:4px; font-size:11px; line-height:1.5;">
+      <b>🧠 戰術操作指引：</b><br>
+      1. <b>第一階段目標 ($${minTargetPrice} / +${lowerPct.toFixed(1)}%)</b>：建議到達此價位落袋 30%～50% 持股鎖定利潤。<br>
+      2. <b>第二階段目標 ($${maxTargetPrice} / +${upperPct.toFixed(1)}%)</b>：若 1.5H/60分K RSV 持續鎖高，剩餘部位挑戰上限，達標後建議全數落袋。<br>
+      3. <b>風控防線</b>：若股價跌破最新起漲點低點或 RSV 跌破 50，應無條件停損/離場。
+    </div>
+  `;
+  resultDiv.style.display = "block";
+}
+// 新增：刪除目前選擇或輸入的個股紀錄
+function deleteCurrentSavedStock() {
+  const select = document.getElementById("mySavedStocksSelect");
+  let symbol = select ? select.value : "";
+
+  // 如果下拉選單沒有選擇，嘗試抓取輸入框內的代號
+  if (!symbol) {
+    symbol = document.getElementById("myStockSymbol").value.trim();
+  }
+
+  if (!symbol) {
+    alert("請先選擇或輸入要刪除的股票代號！");
+    return;
+  }
+
+  if (!confirm(`確定要刪除個股【${symbol}】的儲存紀錄嗎？`)) {
+    return;
+  }
+
+  // 1. 從 localStorage 移除該個股
+  let saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
+  if (saved[symbol]) {
+    delete saved[symbol];
+    localStorage.setItem("jason_saved_stocks", JSON.stringify(saved));
+  }
+
+  // 2. 清除最後使用紀錄
+  const lastSym = localStorage.getItem("jason_last_stock_symbol");
+  if (lastSym === symbol) {
+    localStorage.removeItem("jason_last_stock_symbol");
+  }
+
+  // 3. 清空輸入欄位與結果容器
+  clearStockInputFields();
+
+  // 4. 更新下拉選單
+  updateSavedStocksDropdown();
+
+  // 5. 提示使用者
+  showNotification(`🗑️ 個股【${symbol}】紀錄已順利刪除！`, "#fed7d7", "#9b2c2c");
+}
+
+// 輔助函式：清空輸入欄位
+function clearStockInputFields() {
+  document.getElementById("myStockSymbol").value = "";
+  document.getElementById("myBasePrice").value = "";
+  document.getElementById("myMaxPrice").value = "";
+  document.getElementById("myPrevBasePrice").value = "";
+  document.getElementById("myPrevMaxPrice").value = "";
+  
+  const resultDiv = document.getElementById("myStockAnalysisResult");
+  if (resultDiv) {
+    resultDiv.style.display = "none";
+    resultDiv.innerHTML = "";
   }
 }
   </script>
