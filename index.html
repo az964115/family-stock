@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#4A5568">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐷豬豬e網 - 資產管理🐷</title>
+  <title>🐷豬豬e網 - 資態管理🐷</title>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -26,7 +26,6 @@
       --accent: #D4AF37;
     }
 
-    /* 🌓 深色模式主題變數 */
     .dark-theme {
       --primary: #CBD5E0;
       --primary-light: #A0AEC0;
@@ -40,82 +39,37 @@
       --danger-light: rgba(245, 101, 116, 0.15);
       --accent: #ECC94B;
     }
-    /* 基礎勳章樣式 (繼承你原本 premium-badge 的字型與間距設定) */
-/* 基礎勳章樣式 */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: bold;
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  margin-right: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
 
-/* 1. 獲利超群：亮眼熱情的橘紅漸層 */
-.badge-high-profit {
-  background: linear-gradient(135deg, #f093fb, #f5576c);
-}
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      margin-right: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
-/* 2. 百萬達人：尊榮感的深藍與紫色漸層 */
-.badge-millionaire {
-  background: linear-gradient(135deg, #4facfe, #00f2fe);
-}
+    .badge-high-profit { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .badge-millionaire { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .badge-newbie { background: linear-gradient(135deg, #96fbc4, #f9f586); color: #333333; text-shadow: none; }
+    .badge-veteran { background: linear-gradient(135deg, #373b44, #4286f4); }
+    .badge-budget { background: linear-gradient(135deg, #f6d365, #fda085); }
+    .badge-middle-class { background: linear-gradient(135deg, #2b5876, #4e4376); border: 1px solid #ffd700; }
+    .badge-steady-growth { background: linear-gradient(135deg, #0ba360, #3cba92); }
+    .badge-young-god { background: linear-gradient(135deg, #ff416c, #ff4b2b); color: #ffffff; border: 1px solid #ff7b72; animation: pulse 2s infinite; }
+    .badge-odd-lot { background: linear-gradient(135deg, #11998e, #38ef7d); color: #ffffff; border: 1px solid #a8ff78; }
 
-/* 3. 初出茅廬：生機盎然的淺綠色（新手感） */
-.badge-newbie {
-  background: linear-gradient(135deg, #96fbc4, #f9f586);
-  color: #333333; /* 淺色背景配深色字 */
-  text-shadow: none;
-}
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); box-shadow: 0 4px 8px rgba(255, 75, 43, 0.4); }
+      100% { transform: scale(1); }
+    }
 
-/* 4. 盤勢整理：沉穩安定的深色大地、墨綠風格 */
-.badge-veteran {
-  background: linear-gradient(135deg, #373b44, #4286f4);
-}
-
-/* 5. 小資族：溫和親切的暖橘、黃銅色調 */
-.badge-budget {
-  background: linear-gradient(135deg, #f6d365, #fda085);
-}
-
-/* 6. 中產達人：代表財富穩固的皇家藍與金銅色邊框 */
-.badge-middle-class {
-  background: linear-gradient(135deg, #2b5876, #4e4376);
-  border: 1px solid #ffd700; /* 加上金邊點綴 */
-}
-
-/* 7. 穩健成長：代表持續向上的茂盛綠色 */
-.badge-steady-growth {
-  background: linear-gradient(135deg, #0ba360, #3cba92);
-}
-
-/* 「少年股神」：採用閃電與火熱的漸層，強調高績效的爆發力 */
-.badge-young-god {
-  background: linear-gradient(135deg, #ff416c, #ff4b2b);
-  color: #ffffff;
-  border: 1px solid #ff7b72;
-  animation: pulse 2s infinite; /* 可選：加一點呼吸燈效果 */
-}
-
-/* 「零股奇兵」：採用偏向草綠、敏捷的色彩，象徵小額累積的奇兵 */
-.badge-odd-lot {
-  background: linear-gradient(135deg, #11998e, #38ef7d);
-  color: #ffffff;
-  border: 1px solid #a8ff78;
-}
-
-/* 呼吸燈動畫（讓少年股神更炫炫） */
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.03); box-shadow: 0 4px 8px rgba(255, 75, 43, 0.4); }
-  100% { transform: scale(1); }
-}
-    /* 深色模式下的額外原件微調 */
     .dark-theme input, .dark-theme textarea, .dark-theme select {
       background: rgba(26, 32, 44, 0.8) !important;
       color: #FFF !important;
@@ -126,12 +80,8 @@
       color: #FFF !important;
       border-color: #4A5568 !important;
     }
-    .dark-theme .filter-container {
-      background: #1A202C !important;
-    }
-    .dark-theme .filter-container label {
-      color: #CBD5E0 !important;
-    }
+    .dark-theme .filter-container { background: #1A202C !important; }
+    .dark-theme .filter-container label { color: #CBD5E0 !important; }
     .dark-theme .stock-item, .dark-theme .stock-summary-card {
       background: rgba(45, 55, 72, 0.9) !important;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
@@ -151,53 +101,31 @@
     .history-btn { background-color: #ED8936; color: white; }
     .history-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-    /* 📈 資產成長按鈕樣式 */
-.growth-btn { background-color: #2F855A; color: white; }
-.growth-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .growth-btn { background-color: #2F855A; color: white; }
+    .growth-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-/* 日期篩選區塊樣式 */
-.filter-container {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 15px;
-  background: #EDF2F7;
-  padding: 10px;
-  border-radius: 8px;
-  flex-wrap: wrap;
-}
-.filter-container label { font-size: 0.85em; font-weight: bold; color: #4A5568; }
-.filter-container input[type="date"] { padding: 4px 8px; border-radius: 4px; border: 1px solid #CBD5E0; margin: 0; }
-.filter-btn { background-color: #4A5568; color: white; padding: 5px 12px; font-size: 0.85em; margin: 0; }
+    .filter-container {
+      display: flex; gap: 10px; align-items: center; margin-bottom: 15px;
+      background: #EDF2F7; padding: 10px; border-radius: 8px; flex-wrap: wrap;
+    }
+    .filter-container label { font-size: 0.85em; font-weight: bold; color: #4A5568; }
+    .filter-container input[type="date"] { padding: 4px 8px; border-radius: 4px; border: 1px solid #CBD5E0; margin: 0; }
+    .filter-btn { background-color: #4A5568; color: white; padding: 5px 12px; font-size: 0.85em; margin: 0; }
 
     .progress-container {
-      margin: 20px 0;
-      background: rgba(0, 0, 0, 0.05);
-      border-radius: 20px;
-      position: relative;
-      height: 24px;
-      width: 100%;
-      overflow: hidden;
+      margin: 20px 0; background: rgba(0, 0, 0, 0.05); border-radius: 20px;
+      position: relative; height: 24px; width: 100%; overflow: hidden;
       border: 1px solid rgba(0, 0, 0, 0.05);
     }
     .progress-bar {
       background: linear-gradient(90deg, #3182CE 0%, #319795 100%);
-      height: 100%;
-      width: 0%; 
-      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 100%; width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 20px;
     }
     .progress-text {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 0.85em;
-      font-weight: 700;
-      color: #2D3748;
-      text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.8);
+      position: absolute; width: 100%; text-align: center; top: 50%; left: 50%;
+      transform: translate(-50%, -50%); font-size: 0.85em; font-weight: 700;
+      color: #2D3748; text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.8);
     }
     .container { 
       background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -207,8 +135,7 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .container:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.12);
+      transform: translateY(-2px); box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.12);
     }
     
     h2, h3, h4 { margin-top: 0; color: var(--primary); font-weight: 600; letter-spacing: -0.5px; }
@@ -308,11 +235,9 @@
     .log-item:last-child { border-bottom: none; }
     
     .flex-wrap-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
     .memo-status { font-size: 0.82em; font-weight: normal; padding: 2px 8px; border-radius: 12px; background: #E2E8F0; color: #4A5568; }
 
-    /* ✨ 高級流光閃爍徽章關鍵幀動畫 */
     @keyframes breathePulse {
       0%, 100% {
         opacity: 0.35;
@@ -331,50 +256,30 @@
       100% { background-position: 200% 0; }
     }
 
-    /* 頂部高級感徽章 */
     .premium-badge {
-      font-size: 0.55em;
-      padding: 4px 10px;
-      border-radius: 30px;
+      font-size: 0.55em; padding: 4px 10px; border-radius: 30px;
       border: 1.5px solid rgba(212, 175, 55, 0.5);
       background: linear-gradient(120deg, rgba(255,255,255,0) 30%, rgba(255,251,225,0.7) 40%, rgba(255,255,255,0) 50%), rgba(212, 175, 55, 0.15);
-      background-size: 200% 100%;
-      color: #D4AF37;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      vertical-align: middle;
+      background-size: 200% 100%; color: #D4AF37; font-weight: 800; letter-spacing: 1.5px;
+      display: inline-flex; align-items: center; gap: 3px; vertical-align: middle;
       animation: breathePulse 3s infinite ease-in-out, shineSweep 5s infinite linear;
       box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1);
     }
 
-    /* 排名徽章樣式 */
     .rank-shining-badge {
-      font-size: 0.72em;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-weight: bold;
-      color: white;
-      margin-left: 8px;
-      display: inline-block;
-      vertical-align: middle;
-      background-size: 200% 100%;
-      animation: shineSweep 4s infinite linear;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      font-size: 0.72em; padding: 2px 8px; border-radius: 12px; font-weight: bold; color: white;
+      margin-left: 8px; display: inline-block; vertical-align: middle; background-size: 200% 100%;
+      animation: shineSweep 4s infinite linear; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
 
     .rank-shining-badge-win {
       background-image: linear-gradient(120deg, #D4AF37 30%, #FFFDF0 45%, #D4AF37 60%);
-      border: 1px solid #ECC94B;
-      color: #744210;
+      border: 1px solid #ECC94B; color: #744210;
     }
 
     .rank-shining-badge-def {
       background-image: linear-gradient(120deg, #3182CE 30%, #EBF8FF 45%, #3182CE 60%);
-      border: 1px solid #4299E1;
-      color: #EBF8FF;
+      border: 1px solid #4299E1; color: #EBF8FF;
     }
   </style>
 </head>
@@ -400,7 +305,6 @@
         <button onclick="logout()" style="background-color: #A0AEC0; color: white; margin: 0;">登出</button>
       </div>
       
-      <!-- 下一行：整合功能按鈕 -->
       <div style="border-top: 1px dashed rgba(0, 0, 0, 0.08); padding-top: 12px; display: flex; justify-content: flex-start; align-items: center;">
         <button onclick="openModal('featuresPortalModal')" style="background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%); color: white; padding: 12px 24px; font-size: 1.05em; font-weight: bold; width: 100%; justify-content: center; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
           💼 智慧功能區
@@ -420,14 +324,138 @@
           <button class="calc-btn" onclick="openWithdrawModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">💰 提領試算</button>
           <button class="rank-btn" onclick="openRankModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🏆 績效排行</button>
           <button class="compound-btn" onclick="openCompoundModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">⏳ 複利計算</button>
-          <button class="target-btn" onclick="openTargetModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🎯 目標設定</button>
+          <button class="target-btn" onclick="openTargetModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🎯 目態設定</button>
           <button class="history-btn" onclick="openFundingHistoryModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">📊 資金歷程</button>
           <button class="growth-btn" onclick="openAssetGrowthModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">📈 資產成長</button>
-          <button class="trend-btn" onclick="openStockDirectionModal(); closeModal('featuresPortalModal');" style="background-color: #4C6EF5; color: white; margin:0; height: 50px; ">🔍 個股方向</button>
+          <button class="trend-btn" onclick="openStockDirectionModal(); closeModal('featuresPortalModal');" style="background-color: #4C6EF5; color: white; margin:0; height: 50px;">🔍 個股方向</button>
+          <!-- 🔒 動能即時監控：經過權限檢查 -->
+          <button onclick="checkAndOpenRsvModal()" style="background-color: #4cbdaa; color: white; margin:0; height: 50px; font-weight: bold;">⚡ 動能即時監控</button>
           <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
         </div>
         <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
           <button onclick="closeModal('featuresPortalModal')" style="width:100%; background-color:#718096; color: white;">關閉控制台</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📈 動能即時監控 Modal -->
+    <div id="rsvMonitoringModal" class="modal">
+      <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+          <h3 style="margin:0; color:#4cbdaa; display: flex; align-items: center; gap: 8px;">📈 動能即時監控 (功能:A)</h3>
+        </div>
+        <div class="modal-body-scroll">
+          <p style="font-size: 13px; color: #718096; margin-bottom: 12px;">選股池目前的最新即時動能狀況。</p>
+
+          <button onclick="fetchLiveRsvData()" style="background-color: #4cbdaa; color: white; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; width: 100%;">
+            🔄 立即分析並分類
+          </button>
+          
+          <div id="rsv-loading" style="display:none; margin-top: 10px; text-align: center; color: #4A5568; font-weight: bold; font-size: 13px;">
+            ⏳ 正在連線並分析中，請稍候約 5 秒...
+          </div>
+
+          <!-- 精細化推薦選股 & 持股智慧分析卡片 -->
+          <div id="rsv-recommendation-panel" style="display:none; margin-top: 15px; padding: 14px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <div style="font-weight: bold; margin-bottom: 10px; color: #1a202c; font-size: 14px; border-bottom: 2px solid #cbd5e0; padding-bottom: 6px;">
+              💡 動能精細分類 & 買賣訊號選股
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+              <div style="flex: 1; min-width: 180px; background: #fff5f5; border-top: 4px solid #e53e3e; padding: 10px; border-radius: 6px;">
+                <div style="font-weight: bold; color: #c53030; font-size: 13px;">🚀 起漲準備</div>
+                <div style="font-size: 11px; color: #742a2a; margin-top: 2px;">近5H低於50 ➜ 今日強勢站上55</div>
+                <div id="reco-breakout" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
+              </div>
+
+              <div style="flex: 1; min-width: 180px; background: #fffaf0; border-top: 4px solid #dd6b20; padding: 10px; border-radius: 6px;">
+                <div style="font-weight: bold; color: #c05621; font-size: 13px;">⚡ 黃金策略買進</div>
+                <div style="font-size: 11px; color: #7b341e; margin-top: 2px;">最新 RSV 轉強站上 60</div>
+                <div id="reco-above60" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
+              </div>
+
+              <div style="flex: 1; min-width: 180px; background: #f0fff4; border-top: 4px solid #38a169; padding: 10px; border-radius: 6px;">
+                <div style="font-weight: bold; color: #276749; font-size: 13px;">🔥 高檔續強</div>
+                <div style="font-size: 11px; color: #22543d; margin-top: 2px;">強勢多頭格局>70，持續鎖高</div>
+                <div id="reco-strong" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+              <div style="flex: 1; min-width: 180px; background: #edf2f7; border-top: 4px solid #718096; padding: 10px; border-radius: 6px;">
+                <div style="font-weight: bold; color: #4a5568; font-size: 13px;">📉 動能減弱</div>
+                <div style="font-size: 11px; color: #4a5568; margin-top: 2px;">高檔回落<50，離場/觀察</div>
+                <div id="reco-below60" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
+              </div>
+
+              <div style="flex: 1; min-width: 180px; background: #ebf8ff; border-top: 4px solid #3182ce; padding: 10px; border-radius: 6px;">
+                <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">⚠️ 弱勢/低迷</div>
+                <div style="font-size: 11px; color: #2c5282; margin-top: 2px;">動能疲軟<40，暫不宜操作</div>
+                <div id="reco-weak" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
+              </div>
+            </div>
+
+            <!-- 🎯 持有所屬股票智慧分析與動態停利 -->
+            <div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">
+                  🎯 持有股票智慧分析與動態停利試算
+                </div>
+                
+                <div style="display: flex; gap: 4px; align-items: center;">
+                  <select id="mySavedStocksSelect" onchange="loadSavedStockData()" style="padding: 3px 8px; font-size: 12px; border-radius: 4px; border: 1px solid #cbd5e0; max-width: 170px;">
+                    <option value="">📂 快速載入已存個股...</option>
+                  </select>
+                  <button onclick="deleteCurrentSavedStock()" title="刪除選中的個股" style="background-color: #e53e3e; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; margin:0; font-weight:bold; cursor:pointer;">
+                    🗑️ 刪除
+                  </button>
+                </div>
+              </div>
+              
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
+                <input type="text" id="myStockSymbol" placeholder="股票代號/名稱" style="flex:1; min-width:100px; padding:6px 10px; margin:0; font-size:12px;">
+                <input type="number" id="myBasePrice" placeholder="最新起漲價 (低於50站上60)" style="flex:1.2; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
+                <input type="number" id="myMaxPrice" placeholder="歷史最高點價位" style="flex:1.2; min-width:120px; padding:6px 10px; margin:0; font-size:12px;">
+              </div>
+
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
+                <input type="number" id="myPrevBasePrice" placeholder="上一波起漲價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
+                <input type="number" id="myPrevMaxPrice" placeholder="上一波衝頂高價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
+              </div>
+
+              <div style="display: flex; gap: 8px;">
+                <button onclick="analyzeMyStockProfit(true)" style="background-color: #3182ce; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 2; cursor:pointer;">
+                  🧠 執行智慧動態分析
+                </button>
+                <button onclick="saveCurrentStockData()" style="background-color: #38a169; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 1; cursor:pointer;">
+                  💾 儲存此個股
+                </button>
+              </div>
+              
+              <div id="stockNotificationBanner" style="display:none; margin-top: 10px; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;"></div>
+              <div id="myStockAnalysisResult" style="display:none; margin-top: 10px; padding: 10px; background: #f7fafc; border-left: 4px solid #3182ce; border-radius: 4px; font-size: 12px; line-height: 1.6;"></div>
+            </div>
+          </div>
+          
+          <!-- 詳細表格區 -->
+          <div style="overflow-x: auto; margin-top: 15px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+              <thead>
+                <tr style="background: #edf2f7; color: #4a5568;">
+                  <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">代號 / 名稱</th>
+                  <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">即時股價</th>
+                  <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">最新</th>
+                  <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">近期動能走勢</th>
+                </tr>
+              </thead>
+              <tbody id="rsv-table-body">
+                <tr><td colspan="4" style="padding: 15px; text-align: center; color: #a0aec0;">尚未載入數據，請點擊上方按鈕整理。</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeModal('rsvMonitoringModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
         </div>
       </div>
     </div>
@@ -504,7 +532,7 @@
         <div class="modal-header"><h3 style="margin:0; color:#3182CE;">🎯 設定長期投資目標</h3></div>
         <div class="modal-body-scroll">
           <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
-            * 設定你預期的資產總額目標（現值基準），系統將自動為你計算目前的達成進度。
+            * 設定你預期的資態總額目標（現值基準），系統將自動為你計算目前的達成進度。
           </div>
           <div style="display: flex; flex-direction: column; gap: 4px;">
             <label>我的投資目標金額 (元)：</label>
@@ -554,8 +582,7 @@
 
           <div id="assetSummarySection" style="margin-bottom: 20px;">
             <h4 style="margin: 0 0 10px 0; color: #2B6CB0; font-size: 1em;">📈 持倉項目分類統計</h4>
-            <div id="assetSummaryCards" style="display: flex; flex-direction: column; gap: 10px;">
-              </div>
+            <div id="assetSummaryCards" style="display: flex; flex-direction: column; gap: 10px;"></div>
           </div>
 
           <div>
@@ -567,11 +594,12 @@
         <div class="modal-footer"><button onclick="closeFundingHistoryModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
       </div>
     </div>
-    <!-- 📈 資產成長線圖 Modal -->
+
+    <!-- 📈 資態成長線圖 Modal -->
     <div id="assetGrowthModal" class="modal">
       <div class="modal-content" style="max-width: 700px;">
         <div class="modal-header">
-          <h3 style="margin:0; color:#2F855A;">📈 本金 vs 現值 - 資產成長動態線圖</h3>
+          <h3 style="margin:0; color:#2F855A;">📈 本金 vs 現值 - 資態成長動態線圖</h3>
         </div>
         <div class="modal-body-scroll">
           <div class="filter-container">
@@ -616,31 +644,26 @@
             <button onclick="queryStockDirection()" style="background-color: #4C6EF5; color: white; margin:0; padding: 0 20px;">開始分析</button>
           </div>
 
-          <!-- ⭐️ 新增：自訂快捷代碼區塊 -->
           <div style="margin-bottom: 15px; background: rgba(0,0,0,0.03); padding: 10px; border-radius: 8px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <small style="color: var(--text-muted); font-weight: bold;">⚡ 我的快捷代碼 (點擊直接分析)：</small>
               <button onclick="addQuickStock()" style="padding: 2px 8px; font-size: 0.78em; background: #319795; color: white; margin: 0;">+ 新增輸入的代碼</button>
             </div>
-            <!-- 快捷按鈕動態渲染容器 -->
-            <div id="quickStockContainer" style="display: flex; flex-wrap: wrap; gap: 6px;">
-              <!-- 快捷按鈕會動態顯示在這裡 -->
-            </div>
+            <div id="quickStockContainer" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
           </div>
 
           <div id="stock-query-loading" style="display:none; text-align: center; margin: 20px 0; color: #4C6EF5; font-weight: bold;">
             ⏳ 正在即時抓取數據並進行多因數運算，請稍候...
           </div>
 
-          <div id="stock-query-result" style="display: none; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 20px; border-radius: 12px; margin-top: 15px;">
-            <!-- 結果會動態插入在此 -->
-          </div>
+          <div id="stock-query-result" style="display: none; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 20px; border-radius: 12px; margin-top: 15px;"></div>
         </div>
         <div class="modal-footer">
           <button onclick="closeModal('stockDirectionModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
         </div>
       </div>
     </div>
+
     <!-- ⚙️ 管理員控制台 (只有 Jason 登入才會顯示) -->
     <div id="adminPanel" class="container" style="display:none;">
       <h3>⚙️ 管理員控制台 (Jason Only)</h3>
@@ -656,138 +679,37 @@
         </div>
       </div>
 
+      <!-- 🔐 新增：動能即時監控權限開關控制區 -->
       <div class="card" style="margin-bottom: 20px; border-left: 5px solid #4cbdaa;">
-        <h4 style="color: #4cbdaa; margin-top: 0; margin-bottom: 8px;">📈 60分K RSV 動能即時監控 (功能 1)</h4>
-        <p style="font-size: 13px; color: #718096; margin-bottom: 12px;">不用等整點推播，在此可直接向 GAS 請求這 20 檔股票目前的最新即時動能狀況。</p>
+        <h4 style="color: #4cbdaa; margin-top: 0; margin-bottom: 8px;">🔐 管理「動能即時監控 (功能 A)」成員權限</h4>
+        <p style="font-size: 13px; color: #718096; margin-bottom: 10px;">開啓權限的成員點擊按鈕才能存取，否則提示無權限。</p>
         
-        <!-- 1. 按鈕區 -->
-        <button onclick="fetchLiveRsvData()" style="background-color: #4cbdaa; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
-          🔄 立即整理最新 RSV 數據
-        </button>
-        
-        <div id="rsv-loading" style="display:none; margin-top: 10px; color: #4A5568; font-weight: bold; font-size: 13px;">
-          ⏳ 正在連線 Yahoo API 計算 60分K RSV 中，請稍候約 10~15 秒...
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <input type="text" id="targetRsvUser" placeholder="請輸入欲設定的成員帳號 (如 user1)" style="margin:0; flex:1; font-size:13px;">
+          <button onclick="setRsvPermission(true)" style="background:#38a169; color:white; padding:6px 12px; font-size:13px; margin:0;">開啓權限</button>
+          <button onclick="setRsvPermission(false)" style="background:#e53e3e; color:white; padding:6px 12px; font-size:13px; margin:0;">關閉權限</button>
         </div>
-
-        <!-- ✨ 精細化推薦選股 & 自訂持股智慧分析卡片 (管理員專用) -->
-        <div id="rsv-recommendation-panel" style="display:none; margin-top: 15px; padding: 14px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-          <div style="font-weight: bold; margin-bottom: 10px; color: #1a202c; font-size: 14px; border-bottom: 2px solid #cbd5e0; padding-bottom: 6px;">
-            💡 5H 動能精細分類 & 買賣訊號選股
-          </div>
-          
-          <!-- 轉強 / 買進訊號區 -->
-          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
-            <div style="flex: 1; min-width: 180px; background: #fff5f5; border-top: 4px solid #e53e3e; padding: 10px; border-radius: 6px;">
-              <div style="font-weight: bold; color: #c53030; font-size: 13px;">🚀 起漲準備</div>
-              <div style="font-size: 11px; color: #742a2a; margin-top: 2px;">近5H低於50 ➜ 今日強勢站上55</div>
-              <div id="reco-breakout" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
-            </div>
-
-            <div style="flex: 1; min-width: 180px; background: #fffaf0; border-top: 4px solid #dd6b20; padding: 10px; border-radius: 6px;">
-              <div style="font-weight: bold; color: #c05621; font-size: 13px;">⚡ 黃金策略買進</div>
-              <div style="font-size: 11px; color: #7b341e; margin-top: 2px;">最新 RSV 轉強站上 60</div>
-              <div id="reco-above60" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
-            </div>
-
-            <div style="flex: 1; min-width: 180px; background: #f0fff4; border-top: 4px solid #38a169; padding: 10px; border-radius: 6px;">
-              <div style="font-weight: bold; color: #276749; font-size: 13px;">🔥 高檔續強</div>
-              <div style="font-size: 11px; color: #22543d; margin-top: 2px;">強勢多頭格局>70，持續鎖高</div>
-              <div id="reco-strong" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
-            </div>
-          </div>
-
-          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
-            <div style="flex: 1; min-width: 180px; background: #edf2f7; border-top: 4px solid #718096; padding: 10px; border-radius: 6px;">
-              <div style="font-weight: bold; color: #4a5568; font-size: 13px;">📉 動能減弱</div>
-              <div style="font-size: 11px; color: #4a5568; margin-top: 2px;">高檔回落<50，離場/觀察</div>
-              <div id="reco-below60" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
-            </div>
-
-            <div style="flex: 1; min-width: 180px; background: #ebf8ff; border-top: 4px solid #3182ce; padding: 10px; border-radius: 6px;">
-              <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">⚠️ 弱勢/低迷</div>
-              <div style="font-size: 11px; color: #2c5282; margin-top: 2px;">動能疲軟<40，暫不宜操作</div>
-              <div id="reco-weak" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
-            </div>
-          </div>
-
-          <!-- 🎯 持有所屬股票智慧分析與動態停利 (管理員控制台內建) -->
-          <div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">
-                🎯 持有股票智慧分析與動態停利試算
-              </div>
-              
-              <div style="display: flex; gap: 4px; align-items: center;">
-                <select id="mySavedStocksSelect" onchange="loadSavedStockData()" style="padding: 3px 8px; font-size: 12px; border-radius: 4px; border: 1px solid #cbd5e0; max-width: 170px;">
-                  <option value="">📂 快速載入已存個股...</option>
-                </select>
-                <button onclick="deleteCurrentSavedStock()" title="刪除選中的個股" style="background-color: #e53e3e; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; margin:0; font-weight:bold; cursor:pointer;">
-                  🗑️ 刪除
-                </button>
-              </div>
-            </div>
-            
-            <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
-              <input type="text" id="myStockSymbol" placeholder="股票代號/名稱" style="flex:1; min-width:100px; padding:6px 10px; margin:0; font-size:12px;">
-              <input type="number" id="myBasePrice" placeholder="最新起漲價 (低於50站上60)" style="flex:1.2; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
-              <input type="number" id="myMaxPrice" placeholder="歷史最高點價位" style="flex:1.2; min-width:120px; padding:6px 10px; margin:0; font-size:12px;">
-            </div>
-
-            <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
-              <input type="number" id="myPrevBasePrice" placeholder="上一波起漲價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
-              <input type="number" id="myPrevMaxPrice" placeholder="上一波衝頂高價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
-            </div>
-
-            <div style="display: flex; gap: 8px;">
-              <button onclick="analyzeMyStockProfit(true)" style="background-color: #3182ce; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 2; cursor:pointer;">
-                🧠 執行智慧動態分析
-              </button>
-              <button onclick="saveCurrentStockData()" style="background-color: #38a169; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 1; cursor:pointer;">
-                💾 儲存此個股設定
-              </button>
-            </div>
-            
-            <div id="stockNotificationBanner" style="display:none; margin-top: 10px; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;"></div>
-
-            <div id="myStockAnalysisResult" style="display:none; margin-top: 10px; padding: 10px; background: #f7fafc; border-left: 4px solid #3182ce; border-radius: 4px; font-size: 12px; line-height: 1.6;">
-            </div>
-          </div>
-        </div>
-        
-        <!-- 3. 詳細表格區 -->
-        <div style="overflow-x: auto; margin-top: 15px;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
-            <thead>
-              <tr style="background: #edf2f7; color: #4a5568;">
-                <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">代號 / 名稱</th>
-                <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">即時股價</th>
-                <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">最新 RSV</th>
-                <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">近 5H 動能走勢</th>
-              </tr>
-            </thead>
-            <tbody id="rsv-table-body">
-              <tr><td colspan="4" style="padding: 15px; text-align: center; color: #a0aec0;">尚未載入數據，請點擊上方按鈕整理。</td></tr>
-            </tbody>
-          </table>
+        <div id="rsvUsersList" style="font-size: 12px; color: #4a5568; background: #edf2f7; padding: 8px; border-radius: 6px;">
+          載入權限清單中...
         </div>
       </div>
 
+      <!-- 🔒 功能 B 獨佔管理員編輯面板 -->
       <div class="card" style="margin-bottom: 20px; border-left: 5px solid #ed8936;">
-        <h4 style="color: #ed8936; margin-top: 0; margin-bottom: 8px;">⚙️ LINE 機器人監控股票清單 (功能 3)</h4>
-        <p style="font-size: 13px; color: #718096; margin-bottom: 12px;">直接修改雲端機器人正在盯盤的個股（JSON 陣列格式），修改後定時排程會自動同步。</p>
+        <h4 style="color: #ed8936; margin-top: 0; margin-bottom: 8px;">⚙️ 選股池清單 (功能:B)</h4>
+        <p style="font-size: 13px; color: #718096; margin-bottom: 12px;">修改後定時排程會自動同步。其他同仁使用動能即時監控（功能 A）時，將以此清單為依據讀取。</p>
         
         <textarea id="stock-list-textarea" style="width: 100%; height: 160px; font-family: monospace; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; margin-bottom: 10px; box-sizing: border-box; font-size: 13px; background: #fafafa;"></textarea>
         
         <div style="display: flex; align-items: center; gap: 12px;">
           <button onclick="saveStockListToGas()" style="background-color: #ed8936; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
-            💾 儲存並同步至雲端機器人
+            💾 儲存並同步Google Apps Script
           </button>
           <span id="stock-save-status" style="font-weight: bold; font-size: 13px;"></span>
         </div>
       </div>
-    </div> <!-- 👈 關鍵修正：adminPanel 在這裡封口閉合 -->
+    </div>
 
-    <!-- 下方為全體使用者公開容器 (收益儀表盤等) -->
     <div class="container">
       <div class="card">
         <h3 style="margin-top:0; color: var(--primary); display: flex; justify-content: space-between; align-items: center;">
@@ -795,36 +717,34 @@
           <span style="font-size: 0.75em; color: #718096; font-weight: normal;" id="dashboardUpdateTime">更新時間: --:--</span>
         </h3>
   
-  <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: stretch; margin-bottom: 15px;">
-    
-    <div style="flex: 1; min-width: 250px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-      <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">今日收益</small><div id="profitDiffDisplay" style="font-size: 1.15em; font-weight: 700;">--</div></div>
-      <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">總收益</small><div id="autoTotalNetWorth" style="font-size: 1.15em; font-weight: 700; color: #2B6CB0;">--</div></div>
-      <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">本月幅度</small><div id="monthPerformance" style="font-size: 1.15em; font-weight: 700;">--</div></div>
-      <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">歷史最大回撤</small><div id="maxDrawdownDisplay" style="font-size: 1.15em; font-weight: 700; color: #35C530;">--</div></div>
-    </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: stretch; margin-bottom: 15px;">
+          <div style="flex: 1; min-width: 250px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">今日收益</small><div id="profitDiffDisplay" style="font-size: 1.15em; font-weight: 700;">--</div></div>
+            <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">總收益</small><div id="autoTotalNetWorth" style="font-size: 1.15em; font-weight: 700; color: #2B6CB0;">--</div></div>
+            <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">本月幅度</small><div id="monthPerformance" style="font-size: 1.15em; font-weight: 700;">--</div></div>
+            <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">歷史最大回撤</small><div id="maxDrawdownDisplay" style="font-size: 1.15em; font-weight: 700; color: #35C530;">--</div></div>
+          </div>
 
-    <div style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #EBF8FF 0%, #BEE3F8 100%); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #90CDF4;">
-      <span style="font-size: 0.9em; color: #2B6CB0; font-weight: 600; margin-bottom: 5px;">💎 當前現值 (自動計算)</span>
-      <div id="dashboardCurrentValue" style="font-size: 2em; font-weight: 800; color: #2B6CB0; letter-spacing: 0.5px;">$--</div>
-    </div>
+          <div style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #EBF8FF 0%, #BEE3F8 100%); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #90CDF4;">
+            <span style="font-size: 0.9em; color: #2B6CB0; font-weight: 600; margin-bottom: 5px;">💎 當前現值 (自動計算)</span>
+            <div id="dashboardCurrentValue" style="font-size: 2em; font-weight: 800; color: #2B6CB0; letter-spacing: 0.5px;">$--</div>
+          </div>
 
-    <div style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #EDF2F7 0%, #E2E8F0 100%); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #CBD5E0;">
-      <span style="font-size: 0.9em; color: #4A5568; font-weight: 600; margin-bottom: 5px;">💼 原始本金 (動態累計)</span>
-      <div id="dashboardTotalCost" style="font-size: 2em; font-weight: 800; color: #4A5568; letter-spacing: 0.5px;">$--</div>
-    </div>
+          <div style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #EDF2F7 0%, #E2E8F0 100%); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #CBD5E0;">
+            <span style="font-size: 0.9em; color: #4A5568; font-weight: 600; margin-bottom: 5px;">💼 原始本金 (動態累計)</span>
+            <div id="dashboardTotalCost" style="font-size: 2em; font-weight: 800; color: #4A5568; letter-spacing: 0.5px;">$--</div>
+          </div>
+        </div>
 
-  </div>
-
-  <div style="display: flex; gap: 15px; border-top: 1px dashed #E2E8F0; padding-top: 10px; font-size: 0.85em; color: #718096;">
-    <div style="flex: 1;">🚀 今年賺最多：<span id="maxGainDay" style="font-weight:600; color:#C53030;">--</span></div>
-    <div style="flex: 1;">📉 今年最慘日：<span id="maxLossDay" style="font-weight:600; color:#2F855A;">--</span></div>
-  </div>
-</div>
+        <div style="display: flex; gap: 15px; border-top: 1px dashed #E2E8F0; padding-top: 10px; font-size: 0.85em; color: #718096;">
+          <div style="flex: 1;">🚀 今年最高：<span id="maxGainDay" style="font-weight:600; color:#C53030;">--</span></div>
+          <div style="flex: 1;">📉 今年最低：<span id="maxLossDay" style="font-weight:600; color:#2F855A;">--</span></div>
+        </div>
+      </div>
 
       <div id="progressSection" style="margin-top: 25px; display: none;">
         <h4 style="margin: 0 0 8px 0; font-size: 0.95em; color: var(--text-muted); display: flex; justify-content: space-between;">
-          <span>🎯 長期資產目標達成進度</span>
+          <span>🎯 長期目標達成進度</span>
           <span id="progressPercentText" style="color: #3182CE; font-weight: bold;">0%</span>
         </h4>
         <div class="progress-container">
@@ -901,9 +821,9 @@
 
     const STOCK_SECTORS = {
       "3653": "電子零組件",
-      "0050": { "半導體業": 0.73, "金融保險業": 0.08, "電子零組件業": 0.07, "電腦及週邊設備業": 0.04,"其他電子業": 0.04,"通信網路業":0.02,"塑膠工業":0.01,"食品工業":0.01 },
-      "009816": { "半導體業": 0.52, "金融保險業": 0.19, "電子零組件業": 0.12, "其他電子業": 0.06,"電腦及週邊設備業":0.04,"通信網路業":0.03,"生技醫療業":0.01 ,"航運業":0.01,"塑膠工業":0.01,"食品工業":0.01 },
-      "00981A": { "電子零組件業": 0.35, "半導體業": 0.31, "電腦及週邊設備業\t": 0.08, "其他電子業": 0.06,"通信網路業":0.05,"塑膠工業":0.02,"上櫃電腦及週邊設備業":0.02,"現金保留":0.12 }
+      "0050": { "半導態業": 0.73, "金融保險業": 0.08, "電子零組件業": 0.07, "電腦及週邊設備業": 0.04,"其他電子業": 0.04,"通信網路業":0.02,"塑膠工業":0.01,"食品工業":0.01 },
+      "009816": { "半導態業": 0.52, "金融保險業": 0.19, "電子零組件業": 0.12, "其他電子業": 0.06,"電腦及週邊設備業":0.04,"通信網路業":0.03,"生技醫療業":0.01 ,"航運業":0.01,"塑膠工業":0.01,"食品工業":0.01 },
+      "00981A": { "電子零組件業": 0.35, "半導態業": 0.31, "電腦及週邊設備業\t": 0.08, "其他電子業": 0.06,"通信網路業":0.05,"塑膠工業":0.02,"上櫃電腦及週邊設備業":0.02,"現金保留":0.12 }
     };
 
     function openModal(id) {
@@ -916,566 +836,568 @@
       modal.classList.remove('show');
       setTimeout(() => modal.style.display = 'none', 300);
     }
-// 1. 模擬從後端或 API 取得的用戶數據（你可以將這裡替換成實際的用戶資料）
-const userData = {
-  monthlyReturn: 12,    // 近一個月獲利百分比 (例如：12 代表 12%)
-  totalAsset: 1500000,  // 總資產 (元)
-  growthDays: 100       // 資產成長時間 (天數)
-};
 
-function renderUserBadge(user) {
-  console.log("【偵錯】傳入的完整用戶資料為：", user);
-  
-  const container = document.getElementById('user-badge-container');
-  if (!container) {
-    console.warn('找不到 id 為 "user-badge-container" 的 HTML 元素，將於 50ms 後重試...');
-    setTimeout(() => renderUserBadge(user), 50);
-    return;
-  }
+    // 🔒 檢查動能即時監控權限
+    async function checkAndOpenRsvModal() {
+      const user = localStorage.getItem('currentUser');
+      if (!user) return alert("請先登入！");
 
-  // 1. 安全清洗資產現值
-  const rawValue = user.accountValue || user.totalAsset || "0";
-  const cleanAssetValue = typeof rawValue === 'string' 
-    ? Number(rawValue.replace(/[^0-9.-]+/g, "")) 
-    : Number(rawValue);
+      // Jason 預設擁有一切權限
+      if (user.toLowerCase() === 'jason') {
+        closeModal('featuresPortalModal');
+        openModal('rsvMonitoringModal');
+        return;
+      }
 
-  console.log("【偵錯】原始資產欄位值：", rawValue);
-  console.log("【偵錯】清洗後轉為數字：", cleanAssetValue);
-
-  // 用陣列來存放所有符合的徽章 HTML
-  let badges = [];
-
-  // ================= 每個條件獨立判斷 =================
-
-  // 1. 績效判斷（少年股神與獲利超群二選一，避免重複性質徽章）
-  if (user.monthlyReturn > 20) {
-    badges.push('<span class="badge badge-young-god">⚡ 少年股神</span>');
-  } else if (user.monthlyReturn > 10) {
-    badges.push('<span class="badge badge-high-profit">🔥 獲利超群</span>');
-  } else if (user.monthlyReturn < 0) {
-    badges.push('<span class="badge badge-newbie">🤦‍♀️ 盤勢整理</span>');
-  } 
-
-
-  // 2. 資產規模判斷（中產、百萬、小資三選一）
-  if (cleanAssetValue >= 3000000) {
-    badges.push('<span class="badge badge-middle-class">🏦 中產達人</span>');
-  } else if (cleanAssetValue >= 1000000) {
-    badges.push('<span class="badge badge-millionaire">💎 百萬達人</span>');
-  } else if (cleanAssetValue < 1000000 && cleanAssetValue > 0) {
-    badges.push('<span class="badge badge-budget">🪙 小資族</span>');
-  }
-
-  // 3. 投資收益階段判斷（依據總收益金額分類）
-  if (cleanAssetValue > 0) { // 確保不是完全沒有資金的新帳戶
-    // 取得總收益，若欄位名稱不同，請將 user.totalProfit 替換為你實際使用的欄位（例如 user.totalGain）
-    const totalProfit = user.modalTotalProfit || 0; 
-
-    if (totalProfit > 500000) {
-      badges.push('<span class="badge badge-wealthy">💰 發家致富</span>');
-    } else if (totalProfit >= 100000 && totalProfit <= 500000) {
-      badges.push('<span class="badge badge-sweet">🍬 嘗到甜頭</span>');
-    } else { // 小於 10 萬（包含負值）
-      badges.push('<span class="badge badge-odd-lot">🔄 財富轉變</span>');
-    }
-  }
-
-  // 將所有符合的徽章用空格串接起來，一次渲染出來
-  container.innerHTML = badges.join(' ');
-}
-
-// 3. 執行判斷
-//renderUserBadge(userData);
-function openFundingHistoryModal() {
-  const currentUser = localStorage.getItem('currentUser') || '';
-  const formBlock = document.getElementById('jasonFundingForm');
-  
-  document.getElementById('fundingDate').value = new Date().toISOString().split('T')[0];
-  
-  document.getElementById('fundingType').onchange = function() {
-    const amtInput = document.getElementById('fundingAmount');
-    if (this.value === 'sell') {
-      amtInput.value = '0';
-      amtInput.disabled = true;
-      amtInput.placeholder = "獲利了結無需填寫金額";
-    } else {
-      amtInput.value = '';
-      amtInput.disabled = false;
-      amtInput.placeholder = "請輸入總金額";
-    }
-  };
-  
-  db.ref(`settings/admins/${currentUser.toLowerCase()}`).once('value').then(snap => {
-  if (snap.exists() && snap.val() === true) {
-    formBlock.style.display = 'block';
-    document.getElementById('fundingTargetUser').value = '';
-    document.getElementById('fundingAsset').value = '';
-    document.getElementById('fundingAmount').value = '';
-    document.getElementById('fundingShares').value = '0';
-    document.getElementById('fundingNote').value = '';
-  } else {
-    formBlock.style.display = 'none';
-  }
-});
-  
-  openModal('fundingHistoryModal');
-  loadFundingRecords();
-}
-// 1. 開啟個股方向 Modal，並同時載入該使用者的快捷代碼
-function openStockDirectionModal() {
-  document.getElementById("searchStockId").value = "";
-  document.getElementById("stock-query-result").style.display = "none";
-  document.getElementById("stock-query-loading").style.display = "none";
-  renderQuickStocks(); // 渲染快捷代碼按鈕
-  openModal('stockDirectionModal');
-}
-// 2. 繪製/渲染快捷代碼按鈕
-async function renderQuickStocks() {
-  const container = document.getElementById("quickStockContainer");
-  const user = localStorage.getItem('currentUser');
-  if (!user) return;
-
-  container.innerHTML = "<small style='color: gray;'>載入快捷按鈕中...</small>";
-
-  try {
-    const snap = await db.ref(`users/${user}/quickStocks`).get();
-    const stocks = snap.exists() ? snap.val() : ["2330", "2454"]; // 若無資料，預設提供 2330, 2454 示範
-
-    if (!Array.isArray(stocks) || stocks.length === 0) {
-      container.innerHTML = "<small style='color: gray;'>尚未新增快捷代碼，請在上方輸入框輸入後點擊新增。</small>";
-      return;
+      try {
+        const snap = await db.ref(`settings/permissions/rsvUsers/${user.toLowerCase()}`).get();
+        if (snap.exists() && snap.val() === true) {
+          closeModal('featuresPortalModal');
+          openModal('rsvMonitoringModal');
+        } else {
+          alert("無權限，請洽管理員!");
+        }
+      } catch (e) {
+        alert("權限驗證失敗，請檢查網路連線。");
+      }
     }
 
-    let html = "";
-    stocks.forEach(code => {
-      html += `
-        <div style="display: inline-flex; align-items: center; background: #E2E8F0; border-radius: 16px; padding: 2px 8px; margin-right: 4px; margin-bottom: 4px;">
-          <button onclick="quickQueryStock('${code}')" style="background: none; border: none; padding: 2px 4px; color: #2B6CB0; font-weight: bold; cursor: pointer; margin:0; font-size: 0.88em;">
-            ${code}
-          </button>
-          <span onclick="removeQuickStock('${code}')" style="cursor: pointer; color: #E53E3E; margin-left: 4px; font-weight: bold; font-size: 0.8em;" title="刪除快捷代碼">✕</span>
-        </div>
-      `;
-    });
-    container.innerHTML = html;
-  } catch (e) {
-    container.innerHTML = "<small style='color: red;'>快捷代碼載入失敗</small>";
-  }
-}
-// 3. 點擊快捷鍵，自動帶入代碼並直接執行查詢
-function quickQueryStock(code) {
-  document.getElementById("searchStockId").value = code;
-  queryStockDirection(); // 直接執行分析
-}
-// 4. 新增快捷代碼 (將輸入框現有的代碼存入雲端)
-async function addQuickStock() {
-  const user = localStorage.getItem('currentUser');
-  const code = document.getElementById("searchStockId").value.trim().toUpperCase();
-  if (!code) return alert("請先在輸入框填寫要新增的股票代號");
-
-  try {
-    const ref = db.ref(`users/${user}/quickStocks`);
-    const snap = await ref.get();
-    let list = snap.exists() ? snap.val() : ["2330", "2454"];
-    
-    if (!Array.isArray(list)) list = [];
-    if (list.includes(code)) return alert("該代碼已在快捷清單中");
-
-    list.push(code);
-    await ref.set(list);
-    renderQuickStocks(); // 重新渲染快捷區
-  } catch (e) {
-    alert("新增快捷代碼失敗");
-  }
-}
-// 5. 刪除指定的快捷代碼
-async function removeQuickStock(code) {
-  const user = localStorage.getItem('currentUser');
-  try {
-    const ref = db.ref(`users/${user}/quickStocks`);
-    const snap = await ref.get();
-    let list = snap.exists() ? snap.val() : [];
-
-    if (Array.isArray(list)) {
-      list = list.filter(item => item !== code);
-      await ref.set(list);
-      renderQuickStocks(); // 重新渲染快捷區
+    // 🔐 管理員設定/關閉成員權限
+    async function setRsvPermission(enable) {
+      const target = document.getElementById('targetRsvUser').value.trim().toLowerCase();
+      if (!target) return alert("請輸入欲設定的成員帳號");
+      
+      try {
+        await db.ref(`settings/permissions/rsvUsers/${target}`).set(enable);
+        alert(`已成功將成員 ${target} 的動能監控權限改為：${enable ? "開啟" : "關閉"}`);
+        document.getElementById('targetRsvUser').value = "";
+        loadRsvUsersList();
+      } catch (e) {
+        alert("設定權限失敗！");
+      }
     }
-  } catch (e) {
-    alert("刪除快捷代碼失敗");
-  }
-}
-// 查詢與分析邏輯
-function queryStockDirection() {
-  const stockId = document.getElementById("searchStockId").value.trim();
-  if (!stockId) return alert("請輸入有效的股票代號");
 
-  const loadingDiv = document.getElementById("stock-query-loading");
-  const resultDiv = document.getElementById("stock-query-result");
+    // 🔐 讀取擁有權限的成員清單 (管理員顯示用)
+    function loadRsvUsersList() {
+      const container = document.getElementById('rsvUsersList');
+      if (!container) return;
 
-  loadingDiv.style.display = "block";
-  resultDiv.style.display = "none";
+      db.ref('settings/permissions/rsvUsers').on('value', snap => {
+        if (!snap.exists()) {
+          container.innerHTML = "目前尚無一般成員獲得開放（僅 Jason 預設開啟）。";
+          return;
+        }
+        let list = [];
+        snap.forEach(child => {
+          if (child.val() === true) list.push(child.key);
+        });
+        container.innerHTML = list.length > 0 
+          ? `<b>已開放權限成員：</b> ${list.join('、 ')}`
+          : "目前尚無一般成員獲得開放（僅 Jason 預設開啟）。";
+      });
+    }
 
-  // 發送請求給 GAS Web App，傳入參數 action=querySingleStock 與 stockId
-  fetch(`${GAS_WEB_APP_URL}?action=querySingleStock&stockId=${stockId}`)
-    .then(res => res.json())
-    .then(response => {
-      loadingDiv.style.display = "none";
-      if (response.status === "success") {
-        const data = response.data;
-        const currentRsv = data.currentRsv;
-        const history = data.history5H; // [H-4, H-3, H-2, H-1, Current]
-        
-        // 核心動能演算法判斷
-        let directionText = "";
-        let directionColor = "";
-        let adviceText = "";
-        
-        // 計算近 5 小時的動能方向斜率 (最後一根減去四小時前的差別)
-        const slope = currentRsv - history[0]; 
-        const isUpward = slope > 0;
+    function renderUserBadge(user) {
+      const container = document.getElementById('user-badge-container');
+      if (!container) {
+        setTimeout(() => renderUserBadge(user), 50);
+        return;
+      }
 
-        if (currentRsv >= 80) {
-          if (isUpward) {
-            directionText = "🔥 極度強勢 (高檔鈍化中)";
-            directionColor = "#E53E3E";
-            adviceText = "個股多頭氣勢極強，進入超買鈍化區。此時不建議盲目放空，持股者可續抱並守好移動停利點，空手者不宜過度追高。";
-          } else {
-            directionText = "⚠️ 轉弱警告 (高檔動能背離)";
-            directionColor = "#D69E2E";
-            adviceText = "雖然股價仍在高位，但近 2 小時動能已有轉弱、勾頭向下跡象。多單應留意獲利了結機會，防範技術性回檔。";
-          }
-        } else if (currentRsv >= 55) {
-          if (isUpward) {
-            directionText = "📈 多頭轉強 (動能持續攀升)";
-            directionColor = "#E53E3E";
-            adviceText = "站上多空分水嶺且動能穩步向上。屬於標準的動能轉強格局，適合順勢偏多思考，多單可繼續留明。";
-          } else {
-            directionText = "🔄 高檔整理 (動能稍微停滯)";
-            directionColor = "#4A5568";
-            adviceText = "股價處於偏多區間，但短期動能有所熄火。預期短線可能轉為高檔震盪整理，建議暫時靜待方向明朗再行操作。";
-          }
-        } else if (currentRsv >= 45) {
-          directionText = "⚖️ 區間多空拉鋸 (無明顯方向)";
-          directionColor = "#718096";
-          adviceText = "處於中性 50 附近徘徊，短期 5 小時動能方向混沌。建議先參考更長天期（如日K、週K）均線方向，此處短線不宜過度頻繁交易。";
-        } else if (currentRsv >= 20) {
-          if (!isUpward) {
-            directionText = "📉 空頭轉弱 (動能持續探底)";
-            directionColor = "#3182CE";
-            adviceText = "低於中性水平且斜率持續向下。個股短線買盤空虛，建議多單暫避、勿貿然摸底，待打底訊號出現。";
-          } else {
-            directionText = "🩹 弱勢整理 (嘗試震盪止穩)";
-            directionColor = "#4A5568";
-            adviceText = "個股仍屬弱勢區間，但近幾小時動能有微幅勾頭跡象。短線有機會進入橫盤整理或技術性反彈，但不宜視為全面反轉。";
-          }
-        } else { // RSV < 20
-          if (!isUpward) {
-            directionText = "❄️ 極度疲弱 (超賣區加速趕底)";
-            directionColor = "#3182CE";
-            adviceText = "跌破 極端值，動能加速向下。此時短線殺低風險增加，但不代表安全，空手者應嚴禁接刀，靜待量縮築底。";
-          } else {
-            directionText = "🚀 低檔轉折 (醞釀反彈訊號)";
-            directionColor = "#2F855A";
-            adviceText = "【轉折機會】 處於極度超賣區（<20），但最新動能首度出現「強勁勾頭向上」。此為標準黃金交叉預備訊號，激進者可輕倉嘗試搶反彈，嚴設停損。";
-          }
+      const rawValue = user.accountValue || user.totalAsset || "0";
+      const cleanAssetValue = typeof rawValue === 'string' 
+        ? Number(rawValue.replace(/[^0-9.-]+/g, "")) 
+        : Number(rawValue);
+
+      let badges = [];
+
+      if (user.monthlyReturn > 20) {
+        badges.push('<span class="badge badge-young-god">⚡ 少年股神</span>');
+      } else if (user.monthlyReturn > 10) {
+        badges.push('<span class="badge badge-high-profit">🔥 獲利超群</span>');
+      } else if (user.monthlyReturn < 0) {
+        badges.push('<span class="badge badge-newbie">🤦‍♀️ 盤勢整理</span>');
+      } 
+
+      if (cleanAssetValue >= 3000000) {
+        badges.push('<span class="badge badge-middle-class">🏦 中產達人</span>');
+      } else if (cleanAssetValue >= 1000000) {
+        badges.push('<span class="badge badge-millionaire">💎 百萬達人</span>');
+      } else if (cleanAssetValue < 1000000 && cleanAssetValue > 0) {
+        badges.push('<span class="badge badge-budget">🪙 小資族</span>');
+      }
+
+      if (cleanAssetValue > 0) {
+        const totalProfit = user.modalTotalProfit || 0; 
+        if (totalProfit > 500000) {
+          badges.push('<span class="badge badge-wealthy">💰 發家致富</span>');
+        } else if (totalProfit >= 100000 && totalProfit <= 500000) {
+          badges.push('<span class="badge badge-sweet">🍬 嘗到甜頭</span>');
+        } else {
+          badges.push('<span class="badge badge-odd-lot">🔄 財富轉變</span>');
+        }
+      }
+
+      container.innerHTML = badges.join(' ');
+    }
+
+    function openFundingHistoryModal() {
+      const currentUser = localStorage.getItem('currentUser') || '';
+      const formBlock = document.getElementById('jasonFundingForm');
+      
+      document.getElementById('fundingDate').value = new Date().toISOString().split('T')[0];
+      
+      document.getElementById('fundingType').onchange = function() {
+        const amtInput = document.getElementById('fundingAmount');
+        if (this.value === 'sell') {
+          amtInput.value = '0';
+          amtInput.disabled = true;
+          amtInput.placeholder = "獲利了結無需填寫金額";
+        } else {
+          amtInput.value = '';
+          amtInput.disabled = false;
+          amtInput.placeholder = "請輸入總金額";
+        }
+      };
+      
+      db.ref(`settings/admins/${currentUser.toLowerCase()}`).once('value').then(snap => {
+        if (snap.exists() && snap.val() === true) {
+          formBlock.style.display = 'block';
+          document.getElementById('fundingTargetUser').value = '';
+          document.getElementById('fundingAsset').value = '';
+          document.getElementById('fundingAmount').value = '';
+          document.getElementById('fundingShares').value = '0';
+          document.getElementById('fundingNote').value = '';
+        } else {
+          formBlock.style.display = 'none';
+        }
+      });
+      
+      openModal('fundingHistoryModal');
+      loadFundingRecords();
+    }
+
+    function openStockDirectionModal() {
+      document.getElementById("searchStockId").value = "";
+      document.getElementById("stock-query-result").style.display = "none";
+      document.getElementById("stock-query-loading").style.display = "none";
+      renderQuickStocks();
+      openModal('stockDirectionModal');
+    }
+
+    async function renderQuickStocks() {
+      const container = document.getElementById("quickStockContainer");
+      const user = localStorage.getItem('currentUser');
+      if (!user) return;
+
+      container.innerHTML = "<small style='color: gray;'>載入快捷按鈕中...</small>";
+
+      try {
+        const snap = await db.ref(`users/${user}/quickStocks`).get();
+        const stocks = snap.exists() ? snap.val() : ["2330", "2454"];
+
+        if (!Array.isArray(stocks) || stocks.length === 0) {
+          container.innerHTML = "<small style='color: gray;'>尚未新增快捷代碼，請在上方輸入框輸入後點擊新增。</small>";
+          return;
         }
 
-        // 渲染專業分析卡片 HTML
-        resultDiv.innerHTML = `
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E8F0; padding-bottom: 10px; margin-bottom: 15px;">
-            <span style="font-size: 1.2em; font-weight: bold; color: #2D3748;">${data.id} ${data.name}</span>
-            <span style="font-size: 1.1em; font-weight: bold; color: #2D3748;">即時價: <span style="color:#C53030;">$${data.price}</span></span>
-          </div>
-          
-          <div style="margin-bottom: 15px;">
-            <small style="color: var(--text-muted); display:block; margin-bottom: 4px;">🎯 技術分析判讀：</small>
-            <div style="font-size: 1.3em; font-weight: 800; color: ${directionColor};">${directionText}</div>
-          </div>
-
-          <div style="background: white; border-left: 4px solid ${directionColor}; padding: 12px; border-radius: 4px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
-            <small style="color: var(--text-muted); font-weight: bold; display:block; margin-bottom: 4px;">💡 豬豬量化策略建議：</small>
-            <p style="margin:0; font-size: 0.92em; line-height: 1.6; color: #2D3748; font-weight: 500;">${adviceText}</p>
-          </div>
-
-          <div style="margin-top: 15px; text-align: right;">
-            <small style="color: var(--text-muted); font-size: 0.78em;">※ 量化模型當前  計算值：${currentRsv.toFixed(2)}</small>
-          </div>
-        `;
-        resultDiv.style.display = "block";
-      } else {
-        alert("查詢失敗：" + response.message);
+        let html = "";
+        stocks.forEach(code => {
+          html += `
+            <div style="display: inline-flex; align-items: center; background: #E2E8F0; border-radius: 16px; padding: 2px 8px; margin-right: 4px; margin-bottom: 4px;">
+              <button onclick="quickQueryStock('${code}')" style="background: none; border: none; padding: 2px 4px; color: #2B6CB0; font-weight: bold; cursor: pointer; margin:0; font-size: 0.88em;">
+                ${code}
+              </button>
+              <span onclick="removeQuickStock('${code}')" style="cursor: pointer; color: #E53E3E; margin-left: 4px; font-weight: bold; font-size: 0.8em;" title="刪除快捷代碼">✕</span>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = "<small style='color: red;'>快捷代碼載入失敗</small>";
       }
-    })
-    .catch(err => {
-      loadingDiv.style.display = "none";
-      alert("與雲端 API 通訊失敗，請確認代號是否輸入正確，或稍後再試。");
-    });
-}
-    function closeFundingHistoryModal() {
-      closeModal('fundingHistoryModal');
     }
 
-async function saveFundingRecord() {
-  const targetUser = document.getElementById('fundingTargetUser').value.trim();
-  const assetName = document.getElementById('fundingAsset').value.trim().toUpperCase();
-  const dateStr = document.getElementById('fundingDate').value;
-  const type = document.getElementById('fundingType').value;
-  const note = document.getElementById('fundingNote').value.trim();
-  
-  let amt = parseFloat(document.getElementById('fundingAmount').value) || 0;
-  const shares = parseFloat(document.getElementById('fundingShares').value) || 0;
-  
-  if (!targetUser) return alert('請輸入對象成員帳號');
-  if (!assetName) return alert('請輸入投資標的（例如: 0050）');
-  if (!dateStr) return alert('請選擇異動日期');
-  
-  if (type === 'buy') {
-    if (isNaN(amt) || amt <= 0) return alert('買入時請輸入有效總金額');
-    if (isNaN(shares) || shares <= 0) return alert('買入時請輸入有效買到股數');
-  } else if (type === 'sell') {
-    if (isNaN(shares) || shares <= 0) return alert('賣出時請輸入有效賣出股數');
-    
-    try {
-      const snap = await db.ref(`family/fundingHistory/${targetUser}`).get();
-      let ownedAssetShares = 0;
-      if (snap.exists()) {
-        snap.forEach(child => {
-          const item = child.val();
-          if ((item.asset || '').toUpperCase() === assetName) {
-            const isBuy = item.type ? (item.type === 'buy' || item.type === undefined) : (item.amount > 0);
-            if (isBuy) ownedAssetShares += parseFloat(item.shares || 0);
-            else ownedAssetShares -= parseFloat(item.shares || 0);
+    function quickQueryStock(code) {
+      document.getElementById("searchStockId").value = code;
+      queryStockDirection();
+    }
+
+    async function addQuickStock() {
+      const user = localStorage.getItem('currentUser');
+      const code = document.getElementById("searchStockId").value.trim().toUpperCase();
+      if (!code) return alert("請先在輸入框填寫要新增的股票代號");
+
+      try {
+        const ref = db.ref(`users/${user}/quickStocks`);
+        const snap = await ref.get();
+        let list = snap.exists() ? snap.val() : ["2330", "2454"];
+        
+        if (!Array.isArray(list)) list = [];
+        if (list.includes(code)) return alert("該代碼已在快捷清單中");
+
+        list.push(code);
+        await ref.set(list);
+        renderQuickStocks();
+      } catch (e) {
+        alert("新增快捷代碼失敗");
+      }
+    }
+
+    async function removeQuickStock(code) {
+      const user = localStorage.getItem('currentUser');
+      try {
+        const ref = db.ref(`users/${user}/quickStocks`);
+        const snap = await ref.get();
+        let list = snap.exists() ? snap.val() : [];
+
+        if (Array.isArray(list)) {
+          list = list.filter(item => item !== code);
+          await ref.set(list);
+          renderQuickStocks();
+        }
+      } catch (e) {
+        alert("刪除快捷代碼失敗");
+      }
+    }
+
+    function queryStockDirection() {
+      const stockId = document.getElementById("searchStockId").value.trim();
+      if (!stockId) return alert("請輸入有效的股票代號");
+
+      const loadingDiv = document.getElementById("stock-query-loading");
+      const resultDiv = document.getElementById("stock-query-result");
+
+      loadingDiv.style.display = "block";
+      resultDiv.style.display = "none";
+
+      fetch(`${GAS_WEB_APP_URL}?action=querySingleStock&stockId=${stockId}`)
+        .then(res => res.json())
+        .then(response => {
+          loadingDiv.style.display = "none";
+          if (response.status === "success") {
+            const data = response.data;
+            const currentRsv = data.currentRsv;
+            const history = data.history5H;
+            
+            let directionText = "";
+            let directionColor = "";
+            let adviceText = "";
+            
+            const slope = currentRsv - history[0]; 
+            const isUpward = slope > 0;
+
+            if (currentRsv >= 80) {
+              if (isUpward) {
+                directionText = "🔥 極度強勢 (高檔鈍化中)";
+                directionColor = "#E53E3E";
+                adviceText = "個股多頭氣勢極強，進入超買鈍化區。此時不建議盲目放空，持股者可續抱並守好移動停利點，空手者不宜過度追高。";
+              } else {
+                directionText = "⚠️ 轉弱警告 (高檔動能背離)";
+                directionColor = "#D69E2E";
+                adviceText = "雖然股價仍在高位，但近 2 小時動能已有轉弱、勾頭向下跡象。多單應留意獲利了結機會，防態技術性回檔。";
+              }
+            } else if (currentRsv >= 55) {
+              if (isUpward) {
+                directionText = "📈 多頭轉強 (動能持續攀升)";
+                directionColor = "#E53E3E";
+                adviceText = "站上多空分水嶺且動能穩步向上。屬於標準的動能轉強格局，適合順勢偏多思考，多單可繼續留明。";
+              } else {
+                directionText = "🔄 高檔整理 (動能稍微停滯)";
+                directionColor = "#4A5568";
+                adviceText = "股價處於偏多區間，但短期動能有所熄火。預期短線可能轉為高檔震盪整理，建議暫時靜待方向明朗再行操作。";
+              }
+            } else if (currentRsv >= 45) {
+              directionText = "⚖️ 區間多空拉鋸 (無明顯方向)";
+              directionColor = "#718096";
+              adviceText = "處於中性 50 附近徘徊，短期 5 小時動能方向混沌。建議先參考更長天期（如日K、週K）均線方向，此處短線不宜過度頻繁交易。";
+            } else if (currentRsv >= 20) {
+              if (!isUpward) {
+                directionText = "📉 空頭轉弱 (動能持續探底)";
+                directionColor = "#3182CE";
+                adviceText = "低於中性水平且斜率持續向下。個股短線買盤空虛，建議多單暫避、勿貿然摸底，待打底訊號出現。";
+              } else {
+                directionText = "🩹 弱勢整理 (嘗試震盪止穩)";
+                directionColor = "#4A5568";
+                adviceText = "個股仍屬弱勢區間，但近幾小時動能有微幅勾頭跡象。短線有機會進入橫盤整理或技術性反彈，但不宜視為全面反轉。";
+              }
+            } else {
+              if (!isUpward) {
+                directionText = "❄️ 極度疲弱 (超賣區加速趕底)";
+                directionColor = "#3182CE";
+                adviceText = "跌破 極端值，動能加速向下。此時短線殺低風險增加，但不代表安全，空手者應嚴禁接刀，靜待量縮築底。";
+              } else {
+                directionText = "🚀 低檔轉折 (醞釀反彈訊號)";
+                directionColor = "#2F855A";
+                adviceText = "【轉折機會】 處於極度超賣區（<20），但最新動能首度出現「強勁勾頭向上」。此為標準黃金交叉預備訊號，激進者可輕倉嘗試搶反彈，嚴設停損。";
+              }
+            }
+
+            resultDiv.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E8F0; padding-bottom: 10px; margin-bottom: 15px;">
+                <span style="font-size: 1.2em; font-weight: bold; color: #2D3748;">${data.id} ${data.name}</span>
+                <span style="font-size: 1.1em; font-weight: bold; color: #2D3748;">即時價: <span style="color:#C53030;">$${data.price}</span></span>
+              </div>
+              <div style="margin-bottom: 15px;">
+                <small style="color: var(--text-muted); display:block; margin-bottom: 4px;">🎯 技術分析判讀：</small>
+                <div style="font-size: 1.3em; font-weight: 800; color: ${directionColor};">${directionText}</div>
+              </div>
+              <div style="background: white; border-left: 4px solid ${directionColor}; padding: 12px; border-radius: 4px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
+                <small style="color: var(--text-muted); font-weight: bold; display:block; margin-bottom: 4px;">💡 豬豬量化策略建議：</small>
+                <p style="margin:0; font-size: 0.92em; line-height: 1.6; color: #2D3748; font-weight: 500;">${adviceText}</p>
+              </div>
+              <div style="margin-top: 15px; text-align: right;">
+                <small style="color: var(--text-muted); font-size: 0.78em;">※ 量化模型當前 計算值：${currentRsv.toFixed(2)}</small>
+              </div>
+            `;
+            resultDiv.style.display = "block";
+          } else {
+            alert("查詢失敗：" + response.message);
+          }
+        })
+        .catch(err => {
+          loadingDiv.style.display = "none";
+          alert("與雲端 API 通訊失敗，請確認代號是否輸入正確，或稍後再試。");
+        });
+    }
+
+    function closeFundingHistoryModal() { closeModal('fundingHistoryModal'); }
+
+    async function saveFundingRecord() {
+      const targetUser = document.getElementById('fundingTargetUser').value.trim();
+      const assetName = document.getElementById('fundingAsset').value.trim().toUpperCase();
+      const dateStr = document.getElementById('fundingDate').value;
+      const type = document.getElementById('fundingType').value;
+      const note = document.getElementById('fundingNote').value.trim();
+      
+      let amt = parseFloat(document.getElementById('fundingAmount').value) || 0;
+      const shares = parseFloat(document.getElementById('fundingShares').value) || 0;
+      
+      if (!targetUser) return alert('請輸入對象成員帳號');
+      if (!assetName) return alert('請輸入投資標的（例如: 0050）');
+      if (!dateStr) return alert('請選擇異動日期');
+      
+      if (type === 'buy') {
+        if (isNaN(amt) || amt <= 0) return alert('買入時請輸入有效總金額');
+        if (isNaN(shares) || shares <= 0) return alert('買入時請輸入有效買到股數');
+      } else if (type === 'sell') {
+        if (isNaN(shares) || shares <= 0) return alert('賣出時請輸入有效賣出股數');
+        
+        try {
+          const snap = await db.ref(`family/fundingHistory/${targetUser}`).get();
+          let ownedAssetShares = 0;
+          if (snap.exists()) {
+            snap.forEach(child => {
+              const item = child.val();
+              if ((item.asset || '').toUpperCase() === assetName) {
+                const isBuy = item.type ? (item.type === 'buy' || item.type === undefined) : (item.amount > 0);
+                if (isBuy) ownedAssetShares += parseFloat(item.shares || 0);
+                else ownedAssetShares -= parseFloat(item.shares || 0);
+              }
+            });
+          }
+          if (shares > ownedAssetShares) {
+            return alert(`錯誤：該成員持有的 ${assetName} 僅剩 ${ownedAssetShares.toLocaleString()} 股，不足以賣出 ${shares.toLocaleString()} 股！`);
+          }
+        } catch(e) {
+          return alert('庫存驗證失敗');
+        }
+        amt = 0;
+      }
+      
+      try {
+        await db.ref(`family/fundingHistory/${targetUser}`).push({
+          date: dateStr,
+          asset: assetName,
+          amount: amt,
+          shares: shares,
+          type: type,
+          note: note || (type === 'buy' ? `買入 ${assetName}` : `賣出 ${assetName} 獲利了結`),
+          timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        alert(`成功！已為成員 ${targetUser} 紀錄一筆 ${assetName} 的交易。`);
+        loadFundingRecords();
+      } catch (e) {
+        alert('寫入失敗');
+      }
+    }
+
+    async function loadFundingRecords() {
+      const currentUser = localStorage.getItem('currentUser') || '';
+      const logsContainer = document.getElementById('fundingHistoryLogs');
+      const cardsContainer = document.getElementById('assetSummaryCards');
+      
+      logsContainer.innerHTML = "正在載入歷程...";
+      cardsContainer.innerHTML = "";
+      
+      try {
+        const snap = await db.ref(`family/fundingHistory/${currentUser}`).get();
+        if (!snap.exists()) {
+          logsContainer.innerHTML = "尚無歷史資金進出明細";
+          cardsContainer.innerHTML = "<div style='color:gray; font-size:0.85em;'>目前無任何項目持倉</div>";
+          renderUserBadge({ accountValue: 0, monthlyReturn: 0, growthDays: 0 });
+          return 0;
+        }
+        
+        const records = [];
+        snap.forEach(child => { records.push(child.val()); });
+        records.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        
+        const assetMap = {};
+        const aliasMap = {}; 
+        let aliasIndex = 65; 
+        let dynamicTotalCost = 0; 
+        
+        let firstTransactionTime = Date.now();
+        if (records && records.length > 0) {
+          const timestamps = records
+            .map(item => {
+              const dateSource = item.timestamp || item.date || item.time;
+              if (!dateSource) return null;
+              const d = new Date(dateSource);
+              return isNaN(d.getTime()) ? null : d.getTime();
+            })
+            .filter(t => t !== null);
+
+          if (timestamps.length > 0) {
+            firstTransactionTime = Math.min(...timestamps);
+          }
+        }
+        
+        records.forEach(item => {
+          const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
+          
+          if (!aliasMap[rawAssetName] && rawAssetName !== "預設項目") {
+            aliasMap[rawAssetName] = `投資項目 ${String.fromCharCode(aliasIndex)}`;
+            aliasIndex++;
+          } else if (rawAssetName === "預設項目") {
+            aliasMap[rawAssetName] = "其他常規項目";
+          }
+          
+          const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
+          const itemShares = parseFloat(item.shares || 0);
+          const itemAmount = Math.abs(parseFloat(item.amount || 0));
+          
+          if (!assetMap[rawAssetName]) {
+            assetMap[rawAssetName] = { shares: 0, totalCost: 0, avgCost: 0 };
+          }
+          
+          const asset = assetMap[rawAssetName];
+          
+          if (isBuy) {
+            asset.shares += itemShares;
+            asset.totalCost += itemAmount;
+            dynamicTotalCost += itemAmount;
+            if (asset.shares > 0) {
+              asset.avgCost = asset.totalCost / asset.shares;
+            }
+          } else {
+            asset.shares -= itemShares;
+            const deduction = itemShares * asset.avgCost;
+            asset.totalCost -= deduction;
+            dynamicTotalCost -= deduction;
+            if (asset.shares <= 0) {
+              asset.shares = 0;
+              asset.totalCost = 0;
+              asset.avgCost = 0;
+            }
           }
         });
-      }
-      if (shares > ownedAssetShares) {
-        return alert(`錯誤：該成員持有的 ${assetName} 僅剩 ${ownedAssetShares.toLocaleString()} 股，不足以賣出 ${shares.toLocaleString()} 股！`);
-      }
-    } catch(e) {
-      return alert('庫存驗證失敗');
-    }
-    amt = 0;
-  }
-  
-  try {
-    await db.ref(`family/fundingHistory/${targetUser}`).push({
-      date: dateStr,
-      asset: assetName,
-      amount: amt,
-      shares: shares,
-      type: type,
-      note: note || (type === 'buy' ? `買入 ${assetName}` : `賣出 ${assetName} 獲利了結`),
-      timestamp: firebase.database.ServerValue.TIMESTAMP
-    });
-    alert(`成功！已為成員 ${targetUser} 紀錄一筆 ${assetName} 的交易。`);
-    loadFundingRecords();
-  } catch (e) {
-    alert('寫入失敗');
-  }
-}
-
-async function loadFundingRecords() {
-  const currentUser = localStorage.getItem('currentUser') || '';
-  const logsContainer = document.getElementById('fundingHistoryLogs');
-  const cardsContainer = document.getElementById('assetSummaryCards');
-  
-  logsContainer.innerHTML = "正在載入歷程...";
-  cardsContainer.innerHTML = "";
-  
-  try {
-    const snap = await db.ref(`family/fundingHistory/${currentUser}`).get();
-    if (!snap.exists()) {
-      logsContainer.innerHTML = "尚無歷史資金進出明細";
-      cardsContainer.innerHTML = "<div style='color:gray; font-size:0.85em;'>目前無任何項目持倉</div>";
-      
-      // 🎯 無資料時，以新創帳戶狀態安全調用，不拋出錯誤
-      renderUserBadge({ accountValue: 0, monthlyReturn: 0, growthDays: 0 });
-      return 0; // 回傳 0 本金
-    }
-    
-    const records = [];
-    snap.forEach(child => { records.push(child.val()); });
-    
-    // 依時間由舊到新，模擬真實資金流動歷程
-    records.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-    
-    const assetMap = {};
-    const aliasMap = {}; 
-    let aliasIndex = 65; 
-    let dynamicTotalCost = 0; // 🎯 全域動態總本金累計變數
-    
-    // ⏳ 記錄第一筆交易的時間戳記（確保遍歷所有紀錄，找出最古老的一筆）
-    let firstTransactionTime = Date.now();
-    if (records && records.length > 0) {
-      const timestamps = records
-        .map(item => {
-          // 這裡兼容 timestamp、date 或 time 欄位，並將其轉換成時間戳
-          const dateSource = item.timestamp || item.date || item.time;
-          if (!dateSource) return null;
-          const d = new Date(dateSource);
-          return isNaN(d.getTime()) ? null : d.getTime();
-        })
-        .filter(t => t !== null);
-
-      if (timestamps.length > 0) {
-        // 取出所有時間戳中「數值最小」（最古老）的那一筆
-        firstTransactionTime = Math.min(...timestamps);
-      }
-    }
-    
-    records.forEach(item => {
-      const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
-      
-      if (!aliasMap[rawAssetName] && rawAssetName !== "預設項目") {
-        aliasMap[rawAssetName] = `投資項目 ${String.fromCharCode(aliasIndex)}`;
-        aliasIndex++;
-      } else if (rawAssetName === "預設項目") {
-        aliasMap[rawAssetName] = "其他常規項目";
-      }
-      
-      const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
-      const itemShares = parseFloat(item.shares || 0);
-      const itemAmount = Math.abs(parseFloat(item.amount || 0));
-      
-      if (!assetMap[rawAssetName]) {
-        assetMap[rawAssetName] = { shares: 0, totalCost: 0, avgCost: 0 };
-      }
-      
-      const asset = assetMap[rawAssetName];
-      
-      if (isBuy) {
-        asset.shares += itemShares;
-        asset.totalCost += itemAmount;
-        dynamicTotalCost += itemAmount; // ➡️ 買入時，投入本金實際增加
-        if (asset.shares > 0) {
-          asset.avgCost = asset.totalCost / asset.shares;
-        }
-      } else {
-        // 賣出/提領時減去股數
-        asset.shares -= itemShares;
-        const deduction = itemShares * asset.avgCost;
-        asset.totalCost -= deduction;
-        dynamicTotalCost -= deduction; // ⬅️ 賣出/提領獲利了結時，收回對應的移動平均成本本金
-        if (asset.shares <= 0) {
-          asset.shares = 0;
-          asset.totalCost = 0;
-          asset.avgCost = 0;
-        }
-      }
-    });
-    
-    // 將計算出的歷程總本金即時同步至全域變數中
-    window.currentGlobalTotalCost = Math.max(0, Math.round(dynamicTotalCost));
-
-    const isJason = (currentUser.toLowerCase() === 'jason');
-    const hasAccess = isJason || globalCanSeeDetails; 
-    
-    let cardsHtml = "";
-    Object.keys(assetMap).forEach(rawKey => {
-      const data = assetMap[rawKey];
-      if (data.shares > 0) {
-        const displayTitle = isJason ? `📈 標的：${rawKey}` : `📈 ${aliasMap[rawKey]}`;
-        const displayShares = hasAccess ? `${data.shares.toLocaleString()} 股` : `**** 股`;
-        const displayAvgCost = hasAccess ? `$${data.avgCost.toFixed(2)}` : `--`;
         
-        cardsHtml += `<div class="stock-summary-card" style="border-left: 4px solid #3182CE; background: #EBF8FF; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
-          <div style="display:flex; justify-content:space-between; font-weight:bold; color:#2B6CB0;">
-            <span>${displayTitle}</span>
-            <span>${displayShares}</span>
-          </div>
-          <div style="font-size:0.85em; color:var(--text-muted); margin-top:4px;">
-            項目平均成本：<span style="color:#C53030; font-weight:600;">${displayAvgCost}</span> ${hasAccess ? '/ 股' : ''}
-          </div>
-        </div>`;
-      }
-    });
-    cardsContainer.innerHTML = cardsHtml || "<div style='color:gray; font-size:0.85em;'>目前無任何項目持倉</div>";
-    
-    // --- 渲染下方歷史明細表 (由新到舊排序) ---
-    records.sort((a, b) => new Date(b.date) - new Date(a.date));
-    let html = "";
-    
-    records.forEach(item => {
-      const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
-      const amtStyle = isBuy ? 'profit-positive' : 'profit-negative';
-      const prefix = isBuy ? '➡️ 買入' : '⬅️ 賣出';
-      const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
-      const aliasName = aliasMap[rawAssetName];
-      
-      let displayNote = item.note;
-      if (!isJason) {
-        displayNote = displayNote.replace(rawAssetName, aliasName);
-      }
-      
-      let detailText = "";
-      if (isBuy) {
-        const sharesText = hasAccess ? `${parseFloat(item.shares || 0).toLocaleString()} 股` : `**** 股`;
-        detailText = `<br><small style="color:#4A5568;">💰 投入金額: $${Math.abs(item.amount).toLocaleString()} 元 | 數量: ${sharesText}</small>`;
-      } else {
-        const sharesText = hasAccess ? `${parseFloat(item.shares || 0).toLocaleString()} 股` : `**** 股`;
-        detailText = `<br><small style="color:#4A5568;">📉 減少數量: ${sharesText} (獲利了結)</small>`;
-      }
-      
-      const logTitle = isJason ? `[${rawAssetName}]` : `[${aliasName}]`;
-      
-      html += `<div class="log-item">
-        <small style="color:var(--text-muted); font-weight:600;">${item.date} ${logTitle}</small>
-        <span style="float: right; font-weight: bold;" class="${amtStyle}">${prefix}</span>
-        ${detailText}
-        <br><span style="color: var(--text-main); font-size: 0.9em;">📝 備註: ${displayNote}</span>
-      </div>`;
-    });
-    
-    logsContainer.innerHTML = html;
+        window.currentGlobalTotalCost = Math.max(0, Math.round(dynamicTotalCost));
 
-    // ==========================================
-    // 🌟 【動態徽章處理區】 🌟
-    // ==========================================
-    
-    // 1. 計算資產成長天數 (當前時間 - 第一筆交易時間)
-    const diffTime = Math.abs(Date.now() - firstTransactionTime);
-    const calculatedGrowthDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const isJason = (currentUser.toLowerCase() === 'jason');
+        const hasAccess = isJason || globalCanSeeDetails; 
+        
+        let cardsHtml = "";
+        Object.keys(assetMap).forEach(rawKey => {
+          const data = assetMap[rawKey];
+          if (data.shares > 0) {
+            const displayTitle = isJason ? `📈 標的：${rawKey}` : `📈 ${aliasMap[rawKey]}`;
+            const displayShares = hasAccess ? `${data.shares.toLocaleString()} 股` : `**** 股`;
+            const displayAvgCost = hasAccess ? `$${data.avgCost.toFixed(2)}` : `--`;
+            
+            cardsHtml += `<div class="stock-summary-card" style="border-left: 4px solid #3182CE; background: #EBF8FF; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
+              <div style="display:flex; justify-content:space-between; font-weight:bold; color:#2B6CB0;">
+                <span>${displayTitle}</span>
+                <span>${displayShares}</span>
+              </div>
+              <div style="font-size:0.85em; color:var(--text-muted); margin-top:4px;">
+                項目平均成本：<span style="color:#C53030; font-weight:600;">${displayAvgCost}</span> ${hasAccess ? '/ 股' : ''}
+              </div>
+            </div>`;
+          }
+        });
+        cardsContainer.innerHTML = cardsHtml || "<div style='color:gray; font-size:0.85em;'>目前無任何項目持倉</div>";
+        
+        records.sort((a, b) => new Date(b.date) - new Date(a.date));
+        let html = "";
+        
+        records.forEach(item => {
+          const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
+          const amtStyle = isBuy ? 'profit-positive' : 'profit-negative';
+          const prefix = isBuy ? '➡️ 買入' : '⬅️ 賣出';
+          const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
+          const aliasName = aliasMap[rawAssetName];
+          
+          let displayNote = item.note;
+          if (!isJason) {
+            displayNote = displayNote.replace(rawAssetName, aliasName);
+          }
+          
+          let detailText = "";
+          if (isBuy) {
+            const sharesText = hasAccess ? `${parseFloat(item.shares || 0).toLocaleString()} 股` : `**** 股`;
+            detailText = `<br><small style="color:#4A5568;">💰 投入金額: $${Math.abs(item.amount).toLocaleString()} 元 | 數量: ${sharesText}</small>`;
+          } else {
+            const sharesText = hasAccess ? `${parseFloat(item.shares || 0).toLocaleString()} 股` : `**** 股`;
+            detailText = `<br><small style="color:#4A5568;">📉 減少數量: ${sharesText} (獲利了結)</small>`;
+          }
+          
+          const logTitle = isJason ? `[${rawAssetName}]` : `[${aliasName}]`;
+          
+          html += `<div class="log-item">
+            <small style="color:var(--text-muted); font-weight:600;">${item.date} ${logTitle}</small>
+            <span style="float: right; font-weight: bold;" class="${amtStyle}">${prefix}</span>
+            ${detailText}
+            <br><span style="color: var(--text-main); font-size: 0.9em;">📝 備註: ${displayNote}</span>
+          </div>`;
+        });
+        
+        logsContainer.innerHTML = html;
 
-    // 2. 取得即時月幅度績效
-    const domReturnElement = document.getElementById('monthPerformance');
-    let monthlyReturnVal = 0;
-    
-    // 只有當元素存在，且內容不是 "--" 或空值時才進行解析
-    if (domReturnElement && domReturnElement.innerText && domReturnElement.innerText !== "--") {
-      const parsedVal = parseFloat(domReturnElement.innerText.replace(/[^0-9.-]+/g, ""));
-      // 避免在還沒算好、顯示為 0% 時被誤判為 -100%
-      if (!isNaN(parsedVal)) {
-        monthlyReturnVal = parsedVal;
+        const diffTime = Math.abs(Date.now() - firstTransactionTime);
+        const calculatedGrowthDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+        const domReturnElement = document.getElementById('monthPerformance');
+        let monthlyReturnVal = 0;
+        
+        if (domReturnElement && domReturnElement.innerText && domReturnElement.innerText !== "--") {
+          const parsedVal = parseFloat(domReturnElement.innerText.replace(/[^0-9.-]+/g, ""));
+          if (!isNaN(parsedVal)) {
+            monthlyReturnVal = parsedVal;
+          }
+        }
+
+        const finalAccountValue = (window.currentGlobalTotalValue && window.currentGlobalTotalValue !== 0) 
+          ? window.currentGlobalTotalValue 
+          : (window.currentGlobalTotalCost || 0);
+
+        const realUserData = {
+          accountValue: finalAccountValue, 
+          monthlyReturn: monthlyReturnVal,
+          growthDays: calculatedGrowthDays
+        };
+
+        renderUserBadge(realUserData);
+        return window.currentGlobalTotalCost;
+      } catch (e) {
+        console.error(e);
+        logsContainer.innerHTML = "數據讀取或計算失敗。";
+        return 0;
       }
     }
 
-    // 3. 組合真實數據
-    // 如果現值 (currentGlobalTotalValue) 尚未算出來 (為 0)，先以總本金 (currentGlobalTotalCost) 代替
-    const finalAccountValue = (window.currentGlobalTotalValue && window.currentGlobalTotalValue !== 0) 
-      ? window.currentGlobalTotalValue 
-      : (window.currentGlobalTotalCost || 0);
-
-    const realUserData = {
-      accountValue: finalAccountValue, 
-      monthlyReturn: monthlyReturnVal,
-      growthDays: calculatedGrowthDays
-    };
-
-    console.log("【徽章診斷】當前傳入資料：", realUserData);
-
-    // 4. 呼叫整合了多徽章判斷的渲染函式
-    renderUserBadge(realUserData);
-    
-    // 回傳計算好的最新歷程本金
-    return window.currentGlobalTotalCost;
-  } catch (e) {
-    console.error(e);
-    logsContainer.innerHTML = "數據讀取或計算失敗。";
-    return 0;
-  }
-}
-    // 績效排行分析（新增動態閃爍徽章邏輯）
     async function openRankModal() {
       openModal('rankModal');
       const listEl = document.getElementById('rankList');
@@ -1522,13 +1444,12 @@ async function loadFundingRecords() {
           const medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":"👤";
           const changeVal = user.dailyChange;
           
-          // 2. 判斷是否大於、小於或等於 0，並增加動態炫彩閃爍徽章
           let dynamicBadge = "";
           if (changeVal > 0) {
             dynamicBadge = `<span class="rank-shining-badge rank-shining-badge-win">🏆 獲利超群</span>`;
           } else if (changeVal < 0) {
             dynamicBadge = `<span class="rank-shining-badge rank-shining-badge-def">🛡️ 穩健守成</span>`;
-          } // 等於 0 時不顯示任何 badge
+          }
 
           const badge = changeVal !== 0 ? `<span class="daily-badge ${changeVal > 0 ? 'badge-up' : 'badge-down'}">${changeVal > 0 ? '↗️ ' : '↘️ '}${changeVal}%</span>` : "";
           
@@ -1548,7 +1469,6 @@ async function loadFundingRecords() {
     }
     function closeCompoundModal() { closeModal('compoundModal'); }
 
-    // 複利標籤切換
     function switchCompoundTab(mode) {
       const tabNormal = document.getElementById('tabNormalComp');
       const tabInverse = document.getElementById('tabInverseComp');
@@ -1568,7 +1488,6 @@ async function loadFundingRecords() {
       }
     }
 
-    // 正向複利計算
     function calculateCompound() {
       const principal = parseFloat(document.getElementById('compPrincipal').value) || 0;
       const monthly = parseFloat(document.getElementById('compMonthly').value) || 0;
@@ -1587,11 +1506,10 @@ async function loadFundingRecords() {
         <span style="font-weight:600; color:#D69E2E;">📈 ${years} 年後預估財富成果：</span><br>
         📍 累計投入本金: $${totalInvested.toLocaleString()} 元<br>
         📍 累計滾出利息: <span class="profit-positive">$${totalInterest.toLocaleString()} 元</span>
-        <div style="font-size:1.1em; color:#B8860B; margin-top:8px; font-weight:bold; border-top:1px solid #E2E8F0; padding-top:8px;">💰 資產預估總額: $${totalEstimated.toLocaleString()} 元</div>`;
+        <div style="font-size:1.1em; color:#B8860B; margin-top:8px; font-weight:bold; border-top:1px solid #E2E8F0; padding-top:8px;">💰 資態預估總額: $${totalEstimated.toLocaleString()} 元</div>`;
       document.getElementById('compoundResult').style.display = 'block';
     }
 
-    // 逆向圓夢計算機
     function calculateInverseCompound() {
       const targetAmt = parseFloat(document.getElementById('invTargetAmount').value) || 0;
       const principal = parseFloat(document.getElementById('invPrincipal').value) || 0;
@@ -1669,7 +1587,6 @@ async function loadFundingRecords() {
       document.getElementById("progressDetailsText").textContent = `目前現值 $${currentGlobalTotalValue.toLocaleString()} / 目標 $${userTargetAmount.toLocaleString()}`;
     }
 
-    // --- 備忘與公告欄邏輯 ---
     function initAnnouncementAndMemo(username) {
       if (!username) return;
       const editBtn = document.getElementById("editAnnouncementBtn");
@@ -1680,14 +1597,12 @@ async function loadFundingRecords() {
         if (editBtn) editBtn.style.display = "none";
       }
 
-      // 接軌 Firebase 公告監聽
       db.ref("family/globalAnnouncement").on("value", (snap) => {
-        const text = snap.val() || "歡迎使用豬豬e網資產管理平台。目前尚無全體公告。";
+        const text = snap.val() || "歡迎使用豬豬e網資態管理平台。目前尚無全體公告。";
         document.getElementById("announcementDisplay").textContent = text;
         document.getElementById("announcementInput").value = text;
       });
 
-      // 載入個人獨立備忘錄
       document.getElementById("memoStatus").textContent = "讀取中...";
       db.ref(`users/${username}/memo`).once("value").then((snap) => {
         document.getElementById("personalMemoInput").value = snap.val() || "";
@@ -1726,7 +1641,6 @@ async function loadFundingRecords() {
       } catch (e) { alert("儲存公告失敗"); }
     }
 
-    // 個人備忘錄自動防抖儲存 (停止輸入 0.8 秒後觸發)
     function handleMemoInput() {
       const statusSpan = document.getElementById("memoStatus");
       statusSpan.textContent = "正在輸入...⏳";
@@ -1749,119 +1663,112 @@ async function loadFundingRecords() {
     }
 
     async function renderPortfolio(data, user, canSeeDetails) {
-  const listEl = document.getElementById("portfolioList");
-  const isJason = user.toLowerCase() === 'jason';
-  const hasAccess = isJason || canSeeDetails; 
-  if (!data) { listEl.innerHTML = "<li>無持股資料</li>"; return; }
+      const listEl = document.getElementById("portfolioList");
+      const isJason = user.toLowerCase() === 'jason';
+      const hasAccess = isJason || canSeeDetails; 
+      if (!data) { listEl.innerHTML = "<li>無持股資料</li>"; return; }
 
-  listEl.innerHTML = "<li>🔄 正在即時連線證交所，驗證數據精確度中...</li>";
-  document.getElementById("autoTotalNetWorth").textContent = "計算中...";
-  document.getElementById("profitDiffDisplay").textContent = "--";
+      listEl.innerHTML = "<li>🔄 正在即時連線證交所，驗證數據精確度中...</li>";
+      document.getElementById("autoTotalNetWorth").textContent = "計算中...";
+      document.getElementById("profitDiffDisplay").textContent = "--";
 
-  // 🎯 先去讀取並分析 Firebase 中的資金歷程，拿到最精準的動態累計本金
-  const calculatedHistoryCost = await loadFundingRecords();
+      const calculatedHistoryCost = await loadFundingRecords();
 
-  let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0;
-  let html = "";
-  let isAllDataAccurate = true; 
-  let sectorDataMap = {};
+      let totalProfit = 0, totalCurrentValue = 0, totalCostT = 0;
+      let html = "";
+      let isAllDataAccurate = true; 
+      let sectorDataMap = {};
 
-  const codes = Object.keys(data);
-  const fetchPromises = codes.map(async (code) => {
-    const info = data[code];
-    let price = null;
-    try {
-      const controller = new AbortController();
-      const id = setTimeout(() => controller.abort(), 6000);
-      const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`, { signal: controller.signal });
-      clearTimeout(id);
-      const s = await res.json();
-      if (s && s.stat === "OK" && s.data && s.data.length > 0) {
-        price = parseFloat(s.data[s.data.length - 1][6].replace(/,/g, ''));
-      } else { isAllDataAccurate = false; }
-    } catch (e) { isAllDataAccurate = false; }
+      const codes = Object.keys(data);
+      const fetchPromises = codes.map(async (code) => {
+        const info = data[code];
+        let price = null;
+        try {
+          const controller = new AbortController();
+          const id = setTimeout(() => controller.abort(), 6000);
+          const res = await fetch(`https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&stockNo=${code}`, { signal: controller.signal });
+          clearTimeout(id);
+          const s = await res.json();
+          if (s && s.stat === "OK" && s.data && s.data.length > 0) {
+            price = parseFloat(s.data[s.data.length - 1][6].replace(/,/g, ''));
+          } else { isAllDataAccurate = false; }
+        } catch (e) { isAllDataAccurate = false; }
 
-    if (price !== null) {
-      const costT = info.cost * info.shares;
-      const currT = price * info.shares;
-      const p = currT - costT;
-      return { code, info, costT, currT, p, price, success: true };
-    } else { return { success: false }; }
-  });
+        if (price !== null) {
+          const costT = info.cost * info.shares;
+          const currT = price * info.shares;
+          const p = currT - costT;
+          return { code, info, costT, currT, p, price, success: true };
+        } else { return { success: false }; }
+      });
 
-  try {
-    const results = await Promise.all(fetchPromises);
-    if (!isAllDataAccurate || results.some(r => !r.success)) {
-      listEl.innerHTML = "<li style='color: #9B2C2C; font-weight: bold;'>⚠️ 證交所連線忙碌中，為了保障數據精確度，系統已暫停顯示。請稍後 10 秒再重新整理網頁。</li>";
-      document.getElementById("autoTotalNetWorth").innerHTML = "<span style='color:#9B2C2C; font-size:0.6em;'>暫時無法連線</span>";
-      return;
-    }
-
-    results.forEach(({ code, info, costT, currT, p, price }) => {
-      totalProfit += p; 
-      totalCurrentValue += currT; 
-      totalCostT += costT;
-      
-      const mapping = STOCK_SECTORS[code] || "未分類/其他";
-      if (typeof mapping === "string") {
-        sectorDataMap[mapping] = (sectorDataMap[mapping] || 0) + currT;
-      } else {
-        for (let secName in mapping) {
-          const ratio = mapping[secName];
-          sectorDataMap[secName] = (sectorDataMap[secName] || 0) + (currT * ratio);
+      try {
+        const results = await Promise.all(fetchPromises);
+        if (!isAllDataAccurate || results.some(r => !r.success)) {
+          listEl.innerHTML = "<li style='color: #9B2C2C; font-weight: bold;'>⚠️ 證交所連線忙碌中，為了保障數據精確度，系統已暫停顯示。請稍後 10 秒再重新整理網頁。</li>";
+          document.getElementById("autoTotalNetWorth").innerHTML = "<span style='color:#9B2C2C; font-size:0.6em;'>暫時無法連線</span>";
+          return;
         }
+
+        results.forEach(({ code, info, costT, currT, p, price }) => {
+          totalProfit += p; 
+          totalCurrentValue += currT; 
+          totalCostT += costT;
+          
+          const mapping = STOCK_SECTORS[code] || "未分類/其他";
+          if (typeof mapping === "string") {
+            sectorDataMap[mapping] = (sectorDataMap[mapping] || 0) + currT;
+          } else {
+            for (let secName in mapping) {
+              const ratio = mapping[secName];
+              sectorDataMap[secName] = (sectorDataMap[secName] || 0) + (currT * ratio);
+            }
+          }
+
+          html += `<li class="stock-item">
+              <div class="stock-info-row"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏)'}</b><span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span></div>
+              <div class="stock-info-row" style="font-size:0.9em; color: var(--text-muted);">
+                ${hasAccess ? `<span>成本: ${info.cost}</span><span>現價: ${price}</span>` : '<span>成本: --</span><span>現價: --</span>'}
+                <span>損益: <span class="${p>=0?'profit-positive':'profit-negative'}">${p>=0?'+':''}${Math.round(p).toLocaleString()} (${((p/costT)*100).toFixed(1)}%)</span></span>
+              </div>
+              <div class="stock-info-row" style="border-top:1px dashed #E2E8F0; margin-top:8px; padding-top:8px; font-size:0.9em;">
+                 <span>成本總額: $${Math.round(costT).toLocaleString()}</span><span>現值總額: $${Math.round(currT).toLocaleString()}</span>
+              </div></li>`;
+        });
+
+        listEl.innerHTML = html;
+        
+        currentGlobalTotalProfit = Math.round(totalProfit);
+        currentGlobalTotalValue = Math.round(totalCurrentValue);
+        currentGlobalTotalCost = calculatedHistoryCost > 0 ? calculatedHistoryCost : Math.round(totalCostT);
+        
+        document.getElementById("autoTotalNetWorth").textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
+        updateProfitDifference(currentGlobalTotalProfit);
+        autoSaveToHistory(user, currentGlobalTotalProfit);
+
+        updateDynamicMetrics();
+        updateProgressBarVisual(); 
+        renderPieChart(sectorDataMap);
+        
+        if (document.getElementById('dashboardCurrentValue')) {
+          document.getElementById('dashboardCurrentValue').innerText = '$' + currentGlobalTotalValue.toLocaleString();
+        }
+        if (document.getElementById('dashboardTotalCost')) {
+          document.getElementById('dashboardTotalCost').innerText = '$' + currentGlobalTotalCost.toLocaleString();
+        }
+
+      } catch (globalError) {
+        console.error(globalError);
+        listEl.innerHTML = "<li>❌ 系統計算損益時發生錯誤。</li>";
       }
 
-      html += `<li class="stock-item">
-          <div class="stock-info-row"><b>${hasAccess ? '標的: '+code : '投資項目 (隱藏)'}</b><span>股數: ${hasAccess ? info.shares.toLocaleString() : '****'}</span></div>
-          <div class="stock-info-row" style="font-size:0.9em; color: var(--text-muted);">
-            ${hasAccess ? `<span>成本: ${info.cost}</span><span>現價: ${price}</span>` : '<span>成本: --</span><span>現價: --</span>'}
-            <span>損益: <span class="${p>=0?'profit-positive':'profit-negative'}">${p>=0?'+':''}${Math.round(p).toLocaleString()} (${((p/costT)*100).toFixed(1)}%)</span></span>
-          </div>
-          <div class="stock-info-row" style="border-top:1px dashed #E2E8F0; margin-top:8px; padding-top:8px; font-size:0.9em;">
-             <span>成本總額: $${Math.round(costT).toLocaleString()}</span><span>現值總額: $${Math.round(currT).toLocaleString()}</span>
-          </div></li>`;
-    });
-
-    listEl.innerHTML = html;
-    
-    // 🎯 關鍵邏輯修正
-    currentGlobalTotalProfit = Math.round(totalProfit);
-    currentGlobalTotalValue = Math.round(totalCurrentValue);
-    
-    // 原始本金不再使用單純的 (成本*股數) 欄位，而是使用剛剛歷程算出來的動態總本金
-    currentGlobalTotalCost = calculatedHistoryCost > 0 ? calculatedHistoryCost : Math.round(totalCostT);
-    
-    document.getElementById("autoTotalNetWorth").textContent = `$${currentGlobalTotalProfit.toLocaleString()}`;
-    updateProfitDifference(currentGlobalTotalProfit);
-    autoSaveToHistory(user, currentGlobalTotalProfit);
-
-    updateDynamicMetrics();
-    updateProgressBarVisual(); 
-    renderPieChart(sectorDataMap);
-    
-    // 🎯 重新整理上方藍、灰色的現值與本金大看板
-    if (document.getElementById('dashboardCurrentValue')) {
-      document.getElementById('dashboardCurrentValue').innerText = '$' + currentGlobalTotalValue.toLocaleString();
-    }
-    if (document.getElementById('dashboardTotalCost')) {
-      document.getElementById('dashboardTotalCost').innerText = '$' + currentGlobalTotalCost.toLocaleString();
+      setTimeout(() => {
+        if (typeof loadFundingRecords === 'function') {
+          loadFundingRecords();
+        }
+      }, 100);
     }
 
-  } catch (globalError) {
-    console.error(globalError);
-    listEl.innerHTML = "<li>❌ 系統計算損益時發生錯誤。</li>";
-  }
-  // 在 renderPortfolio 結尾處加上：
-  setTimeout(() => {
-    if (typeof loadFundingRecords === 'function') {
-      console.log("【徽章重整】持股數據計算完畢，重新計算徽章...");
-      loadFundingRecords();
-    }
-  }, 100); // 延遲 100 毫秒確保 DOM 已經完全寫入
-}
-
-    // 產業分佈圓餅圖
     function renderPieChart(sectorMap) {
       const ctx = document.getElementById('portfolioPieChart').getContext('2d');
       if (pieChartInstance) pieChartInstance.destroy();
@@ -1903,7 +1810,6 @@ async function loadFundingRecords() {
       });
     }
 
-    // 指標動態演算
     function updateDynamicMetrics() {
       const monthEl = document.getElementById("monthPerformance");
       const mddEl = document.getElementById("maxDrawdownDisplay");
@@ -1959,28 +1865,6 @@ async function loadFundingRecords() {
     async function autoSaveToHistory(user, profit) {
       const today = new Date().toISOString().split('T')[0];
       await db.ref(`family/investSnapshot/${user}/${today}`).set({ profit: profit });
-      console.log(`📊 已成功自動將 ${user} 的今日損益 $${profit.toLocaleString()} 寫入折線圖歷史。`);
-    }
-
-    // 🛠️ 輔助函式：產生符合標準 Web Push 的 VAPID 認證字串
-    function generateVapidToken(privateKey, publicKey) {
-      const header = btoa(JSON.stringify({ typ: "JWT", alg: "ES256" })).replace(/=/g, "");
-      const now = Math.floor(Date.now() / 1000);
-      const claims = btoa(JSON.stringify({
-        aud: "https://fcm.googleapis.com",
-        exp: now + 3600,
-        sub: "mailto:jason@piggynet.com"
-      })).replace(/=/g, "");
-      
-      const signature = CryptoJS.HmacSHA256(header + "." + claims, privateKey);
-      const base64Sign = CryptoJS.enc.Base64.stringify(signature)
-        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-      return `${header}.${claims}.${base64Sign}`;
-    }
-
-    // 🛠️ 輔助函式：將推播內容進行基本的傳輸編碼處理
-    function encryptWebPushPayload(text, p256dh, auth) {
-      return new TextEncoder().encode(text);
     }
 
     async function calculateWithdraw() {
@@ -2046,13 +1930,11 @@ async function loadFundingRecords() {
     function logout() { localStorage.removeItem('currentUser'); location.reload(); }
     function toggleGlobalPermission(isOpen) { db.ref('settings/global/showPortfolioToAll').set(isOpen); }
 
-    // 主程式生命週期初始化
     window.onload = () => {
       if ('Notification' in window) {
         if (Notification.permission !== 'granted') {
           Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-              console.log('🎉 豬豬e網通知權限允許成功！');
               setupPushSubscription();
             }
           });
@@ -2063,12 +1945,10 @@ async function loadFundingRecords() {
 
       const user = localStorage.getItem('currentUser');
       if (user) {
-        // 1. 先顯示主畫面，讓 DOM 元素渲染出來
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
         document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
 
-        // 2. 載入深色模式狀態與背景
         const darkModeStatus = localStorage.getItem(`dark_mode_${user}`);
         if (darkModeStatus === 'enabled') {
           document.body.classList.add('dark-theme');
@@ -2084,6 +1964,7 @@ async function loadFundingRecords() {
           if (snap.exists() && snap.val() === true) {
             document.getElementById('adminPanel').style.display = 'block';
             loadStockListFromGas(); 
+            loadRsvUsersList(); // 載入權限清單
           } else {
             document.getElementById('adminPanel').style.display = 'none';
           }
@@ -2091,7 +1972,6 @@ async function loadFundingRecords() {
         
         initAnnouncementAndMemo(user);
 
-        // 3. 開始建立資料庫即時監聽與計算
         db.ref('settings/global/showPortfolioToAll').on('value', snap => {
           globalCanSeeDetails = snap.val() || false;
           if(document.getElementById("permissionStatus")) {
@@ -2129,9 +2009,7 @@ async function loadFundingRecords() {
     function setupPushSubscription() {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(async (registration) => {
-          console.log('Service Worker 註冊成功！');
           if (!registration.pushManager) return;
-          
           try {
             let subscription = await registration.pushManager.getSubscription();
             if (!subscription) {
@@ -2140,37 +2018,16 @@ async function loadFundingRecords() {
                 applicationServerKey: 'BL5SsIhlF93Pp32HI1VxmqTLvYGMgv0Bdg3tV0qF4iArM1-r1jDHM_t7twcVidXVVuN5IhyoARHI6z5ftEU-kPo'
               });
             }
-            
             const tokenData = subscription.toJSON();
             const user = localStorage.getItem('currentUser');
-            
             if (user && tokenData) {
               await db.ref(`users/${user}/pushToken`).set(tokenData);
-              console.log(`🎉 ${user} 的手機通知 Token 已連線同步至 Firebase！`);
             }
-          } catch (e) {
-            console.error('取得推播 Token 失敗:', e);
-          }
-        }).catch(err => {
-          console.error('Service Worker 註冊失敗:', err);
+          } catch (e) {}
         });
       }
     }
-    function updateDashboardSummaryCards() {
-  if (document.getElementById('dashboardCurrentValue')) {
-    document.getElementById('dashboardCurrentValue').innerText = '$' + currentGlobalTotalValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-  }
-  if (document.getElementById('dashboardTotalCost')) {
-    document.getElementById('dashboardTotalCost').innerText = '$' + currentGlobalTotalCost.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-  }
-  
-  // 動態顯示當前更新時間
-  const now = new Date();
-  const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  if (document.getElementById('dashboardUpdateTime')) {
-    document.getElementById('dashboardUpdateTime').innerText = `更新時間: ${timeStr}`;
-  }
-}
+
     function renderChart(entries) {
       const ctx = document.getElementById('profitTrendChart').getContext('2d');
       if (profitChartInstance) profitChartInstance.destroy();
@@ -2193,677 +2050,551 @@ async function loadFundingRecords() {
         }
       });
 
-      // 🟢【核心關鍵：強制背景自動計算現值與本金】
       setTimeout(() => {
-        // 如果系統中存在提領試算函數，直接在背景偷偷執行它來計算最新數據
         if (typeof calculateWithdrawalSimulation === 'function') {
           calculateWithdrawalSimulation();
         }
-        
-        // 執行完試算後，全域變數此時已經被賦予了真實的總計數字，立即刷新上方大看板 UI
         if (document.getElementById('dashboardCurrentValue')) {
           document.getElementById('dashboardCurrentValue').innerText = '$' + currentGlobalTotalValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
         }
         if (document.getElementById('dashboardTotalCost')) {
           document.getElementById('dashboardTotalCost').innerText = '$' + currentGlobalTotalCost.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
         }
-        
-        // 同步更新時間
         const now = new Date();
         const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
         if (document.getElementById('dashboardUpdateTime')) {
           document.getElementById('dashboardUpdateTime').innerText = `更新時間: ${timeStr}`;
         }
-      }, 600); // 延遲 600 毫秒執行，保證 Firebase 資料在此時已經全部安全下載到本地端
+      }, 600);
     }
 
-  // 宣告資產成長圖表的專屬實例變數與歷史暫存備份
-let assetGrowthChartInstance = null;
-let rawGrowthEntriesBackup = []; 
+    let assetGrowthChartInstance = null;
+    let rawGrowthEntriesBackup = []; 
 
-// 🎯 完美修正版：動態回溯歷史時間軸的資產成長運算引擎
-async function openAssetGrowthModal() {
-  openModal('assetGrowthModal');
-  
-  const user = localStorage.getItem('currentUser');
-  if (!user) return;
+    async function openAssetGrowthModal() {
+      openModal('assetGrowthModal');
+      const user = localStorage.getItem('currentUser');
+      if (!user) return;
 
-  try {
-    // 1. 先撈取「資金進出歷程」，用來建立歷史本金時間軸
-    const fundingSnap = await db.ref(`family/fundingHistory/${user}`).get();
-    let fundingRecords = [];
-    if (fundingSnap.exists()) {
-      fundingSnap.forEach(child => { fundingRecords.push(child.val()); });
-    }
-    // 依時間由舊到新排序
-    fundingRecords.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+      try {
+        const fundingSnap = await db.ref(`family/fundingHistory/${user}`).get();
+        let fundingRecords = [];
+        if (fundingSnap.exists()) {
+          fundingSnap.forEach(child => { fundingRecords.push(child.val()); });
+        }
+        fundingRecords.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
-    // 2. 撈取每日結算的「收益歷史快照」
-    const snapshot = await db.ref(`family/investSnapshot/${user}`).once('value');
-    const snapshotData = snapshot.val();
-    
-    if (!snapshotData) {
-      alert("目前尚無足夠的歷史結算數據可繪製成長線圖。");
-      return;
-    }
-
-    // 3. 開始對每一天的快照進行「動態本金回溯」
-    let entries = [];
-    
-    for (let dateStr in snapshotData) {
-      if (snapshotData[dateStr] && snapshotData[dateStr].profit !== undefined) {
-        let profit = parseFloat(snapshotData[dateStr].profit || 0);
+        const snapshot = await db.ref(`family/investSnapshot/${user}`).once('value');
+        const snapshotData = snapshot.val();
         
-        // 🚀 核心計算：動態計算「截至 dateStr 當天為止」的累計投入本金
-        let assetMapAtThatDay = {};
-        let accumulatedCostAtThatDay = 0;
-
-        fundingRecords.forEach(item => {
-          // 如果這筆資金變動的日期大於快照日期，代表是「未來發生的事」，當天不予計算
-          if (item.date > dateStr) return;
-
-          const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
-          const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
-          const itemShares = parseFloat(item.shares || 0);
-          const itemAmount = Math.abs(parseFloat(item.amount || 0));
-
-          if (!assetMapAtThatDay[rawAssetName]) {
-            assetMapAtThatDay[rawAssetName] = { shares: 0, totalCost: 0, avgCost: 0 };
-          }
-          const asset = assetMapAtThatDay[rawAssetName];
-
-          if (isBuy) {
-            asset.shares += itemShares;
-            asset.totalCost += itemAmount;
-            accumulatedCostAtThatDay += itemAmount; // 當天之前買入，本金增加
-            if (asset.shares > 0) {
-              asset.avgCost = asset.totalCost / asset.shares;
-            }
-          } else {
-            // 當天之前賣出/獲利了結，扣除對應的移動平均本金成本
-            asset.shares -= itemShares;
-            const deduction = itemShares * asset.avgCost;
-            accumulatedCostAtThatDay -= deduction;
-            if (asset.shares <= 0) {
-              asset.shares = 0;
-              asset.totalCost = 0;
-              asset.avgCost = 0;
-            }
-          }
-        });
-
-        // 確保本金不為負數
-        let totalCostAtThatDay = Math.max(0, Math.round(accumulatedCostAtThatDay));
-        // 當天現值 = 當天算出來的動態歷史本金 + 當天快照紀錄的累積損益
-        let currentValueAtThatDay = totalCostAtThatDay + profit;
-
-        entries.push({
-          date: dateStr,
-          cost: totalCostAtThatDay,
-          value: currentValueAtThatDay
-        });
-      }
-    }
-    
-    // 依日期由舊到新排序，確保圖表時間軸正確
-    entries.sort((a, b) => a.date.localeCompare(b.date));
-    
-    // 備份原始總資料，供前端日期篩選搜尋使用
-    rawGrowthEntriesBackup = entries;
-
-    // 設定日期輸入框的預設極限範圍與初始填入值 (預設顯示最近 30 天)
-    if (entries.length > 0) {
-      document.getElementById('growthStartDate').min = entries[0].date;
-      document.getElementById('growthStartDate').max = entries[entries.length - 1].date;
-      document.getElementById('growthEndDate').min = entries[0].date;
-      document.getElementById('growthEndDate').max = entries[entries.length - 1].date;
-      
-      // 預設填入最近 30 天的時間區間
-      document.getElementById('growthStartDate').value = entries[Math.max(0, entries.length - 30)].date;
-      document.getElementById('growthEndDate').value = entries[entries.length - 1].date;
-    }
-
-    // 呼叫繪圖引擎渲染雙線圖
-    filterGrowthChart();
-
-  } catch (error) {
-    console.error("載入動態資產成長數據失敗:", error);
-    alert("讀取歷史快照失敗，請確認網路連線。");
-  }
-}
-
-// 2. 依照搜尋日期篩選並繪製/更新雙線圖表
-function filterGrowthChart() {
-  const startDate = document.getElementById('growthStartDate').value;
-  const endDate = document.getElementById('growthEndDate').value;
-
-  // 過濾符合搜尋條件範圍內的歷史節點
-  let filtered = rawGrowthEntriesBackup;
-  if (startDate) filtered = filtered.filter(e => e.date >= startDate);
-  if (endDate) filtered = filtered.filter(e => e.date <= endDate);
-
-  if (filtered.length === 0) {
-    alert("該指定日期區間內查無資產快照紀錄！");
-    return;
-  }
-
-  const ctx = document.getElementById('assetGrowthChart').getContext('2d');
-  
-  // 安全銷毀舊實例，避免滑鼠移上去時圖表發生閃爍重疊現象
-  if (assetGrowthChartInstance) {
-    assetGrowthChartInstance.destroy();
-  }
-
-  // 建立全新雙線型 Chart.js 畫布
-  assetGrowthChartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: filtered.map(e => e.date.substring(5)), // 縮短日期標籤顯示例如 "06-26"
-      datasets: [
-        {
-          label: '💰 投入本金總額',
-          data: filtered.map(e => e.cost),
-          borderColor: '#4A5568', // 穩重深灰/藍本金線
-          backgroundColor: 'transparent',
-          borderWidth: 2.5,
-          pointRadius: 2,
-          pointHoverRadius: 5,
-          tension: 0.15
-        },
-        {
-          label: '👑 當前資產現值',
-          data: filtered.map(e => e.value),
-          borderColor: '#D4AF37', // 尊爵金現值線
-          backgroundColor: 'rgba(212, 175, 55, 0.05)', // 微微的金色區塊陰影
-          fill: true,
-          borderWidth: 3,
-          pointRadius: 2,
-          pointHoverRadius: 6,
-          tension: 0.15
+        if (!snapshotData) {
+          alert("目前尚無足夠的歷史結算數據可繪製成長線圖。");
+          return;
         }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          labels: { font: { size: 12, weight: 'bold' } }
-        },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          callbacks: {
-            label: function(context) {
-              let label = context.dataset.label || '';
-              if (label) label += ': ';
-              if (context.parsed.y !== null) {
-                label += '$' + Math.round(context.parsed.y).toLocaleString();
+
+        let entries = [];
+        for (let dateStr in snapshotData) {
+          if (snapshotData[dateStr] && snapshotData[dateStr].profit !== undefined) {
+            let profit = parseFloat(snapshotData[dateStr].profit || 0);
+            let assetMapAtThatDay = {};
+            let accumulatedCostAtThatDay = 0;
+
+            fundingRecords.forEach(item => {
+              if (item.date > dateStr) return;
+              const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
+              const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
+              const itemShares = parseFloat(item.shares || 0);
+              const itemAmount = Math.abs(parseFloat(item.amount || 0));
+
+              if (!assetMapAtThatDay[rawAssetName]) {
+                assetMapAtThatDay[rawAssetName] = { shares: 0, totalCost: 0, avgCost: 0 };
               }
-              return label;
-            }
+              const asset = assetMapAtThatDay[rawAssetName];
+
+              if (isBuy) {
+                asset.shares += itemShares;
+                asset.totalCost += itemAmount;
+                accumulatedCostAtThatDay += itemAmount;
+                if (asset.shares > 0) asset.avgCost = asset.totalCost / asset.shares;
+              } else {
+                asset.shares -= itemShares;
+                const deduction = itemShares * asset.avgCost;
+                accumulatedCostAtThatDay -= deduction;
+                if (asset.shares <= 0) {
+                  asset.shares = 0; asset.totalCost = 0; asset.avgCost = 0;
+                }
+              }
+            });
+
+            let totalCostAtThatDay = Math.max(0, Math.round(accumulatedCostAtThatDay));
+            let currentValueAtThatDay = totalCostAtThatDay + profit;
+
+            entries.push({ date: dateStr, cost: totalCostAtThatDay, value: currentValueAtThatDay });
           }
         }
-      },
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: { maxTicksLimit: 12 }
-        },
-        y: {
-          grid: { color: 'rgba(0, 0, 0, 0.04)' },
-          ticks: {
-            callback: function(value) {
-              return '$' + value.toLocaleString();
-            }
-          }
+        
+        entries.sort((a, b) => a.date.localeCompare(b.date));
+        rawGrowthEntriesBackup = entries;
+
+        if (entries.length > 0) {
+          document.getElementById('growthStartDate').min = entries[0].date;
+          document.getElementById('growthStartDate').max = entries[entries.length - 1].date;
+          document.getElementById('growthEndDate').min = entries[0].date;
+          document.getElementById('growthEndDate').max = entries[entries.length - 1].date;
+          document.getElementById('growthStartDate').value = entries[Math.max(0, entries.length - 30)].date;
+          document.getElementById('growthEndDate').value = entries[entries.length - 1].date;
         }
+
+        filterGrowthChart();
+      } catch (error) {
+        alert("讀取歷史快照失敗，請確認網路連線。");
       }
     }
-  });
-}
 
-// 3. 重設日期篩選器，還原顯示完整歷程
-function resetGrowthFilter() {
-  if (rawGrowthEntriesBackup.length === 0) return;
-  document.getElementById('growthStartDate').value = rawGrowthEntriesBackup[0].date;
-  document.getElementById('growthEndDate').value = rawGrowthEntriesBackup[rawGrowthEntriesBackup.length - 1].date;
-  filterGrowthChart();
-}
-// ==========================================
-// GAS Web App 整合 API 邏輯 (功能 1 & 3)
-// ==========================================
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxMiAWOTeYQrC9gzOZSAUcTLb99w8fX2e8uPr7Wdn3uQAABI-rxlfLBmkpgM1JLw4rV/exec";
+    function filterGrowthChart() {
+      const startDate = document.getElementById('growthStartDate').value;
+      const endDate = document.getElementById('growthEndDate').value;
 
-function fetchLiveRsvData() {
-  const loadingDiv = document.getElementById("rsv-loading");
-  const tbody = document.getElementById("rsv-table-body");
-  const recoPanel = document.getElementById("rsv-recommendation-panel");
+      let filtered = rawGrowthEntriesBackup;
+      if (startDate) filtered = filtered.filter(e => e.date >= startDate);
+      if (endDate) filtered = filtered.filter(e => e.date <= endDate);
 
-  // 選股分類的容器
-  const elemBreakout = document.getElementById("reco-breakout");
-  const elemAbove60  = document.getElementById("reco-above60");
-  const elemStrong   = document.getElementById("reco-strong");
-  const elemBelow60  = document.getElementById("reco-below60");
-  const elemWeak     = document.getElementById("reco-weak");
-  
-  loadingDiv.style.display = "block";
-  if (recoPanel) recoPanel.style.display = "none";
-  tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #4cbdaa;">🔄 正在向雲端請求即時計算數據...</td></tr>`;
-  
-  fetch(`${GAS_WEB_APP_URL}?action=getLiveRsv`)
-    .then(res => res.json())
-    .then(response => {
-      loadingDiv.style.display = "none";
-      if(response.status === "success") {
-        if(response.data.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #718096;">目前清單中無有效個股數據。</td></tr>`;
+      if (filtered.length === 0) {
+        alert("該指定日期區間內查無資態快照紀錄！");
+        return;
+      }
+
+      const ctx = document.getElementById('assetGrowthChart').getContext('2d');
+      if (assetGrowthChartInstance) assetGrowthChartInstance.destroy();
+
+      assetGrowthChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: filtered.map(e => e.date.substring(5)),
+          datasets: [
+            {
+              label: '💰 投入本金總額',
+              data: filtered.map(e => e.cost),
+              borderColor: '#4A5568',
+              backgroundColor: 'transparent',
+              borderWidth: 2.5,
+              pointRadius: 2,
+              tension: 0.15
+            },
+            {
+              label: '👑 當前資產現值',
+              data: filtered.map(e => e.value),
+              borderColor: '#D4AF37',
+              backgroundColor: 'rgba(212, 175, 55, 0.05)',
+              fill: true,
+              borderWidth: 3,
+              pointRadius: 2,
+              tension: 0.15
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top' },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) label += ': ';
+                  if (context.parsed.y !== null) {
+                    label += '$' + Math.round(context.parsed.y).toLocaleString();
+                  }
+                  return label;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: {
+              grid: { color: 'rgba(0, 0, 0, 0.04)' },
+              ticks: { callback: function(v) { return '$' + v.toLocaleString(); } }
+            }
+          }
+        }
+      });
+    }
+
+    function resetGrowthFilter() {
+      if (rawGrowthEntriesBackup.length === 0) return;
+      document.getElementById('growthStartDate').value = rawGrowthEntriesBackup[0].date;
+      document.getElementById('growthEndDate').value = rawGrowthEntriesBackup[rawGrowthEntriesBackup.length - 1].date;
+      filterGrowthChart();
+    }
+
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxMiAWOTeYQrC9gzOZSAUcTLb99w8fX2e8uPr7Wdn3uQAABI-rxlfLBmkpgM1JLw4rV/exec";
+
+    function fetchLiveRsvData() {
+      const loadingDiv = document.getElementById("rsv-loading");
+      const tbody = document.getElementById("rsv-table-body");
+      const recoPanel = document.getElementById("rsv-recommendation-panel");
+
+      const elemBreakout = document.getElementById("reco-breakout");
+      const elemAbove60  = document.getElementById("reco-above60");
+      const elemStrong   = document.getElementById("reco-strong");
+      const elemBelow60  = document.getElementById("reco-below60");
+      const elemWeak     = document.getElementById("reco-weak");
+      
+      loadingDiv.style.display = "block";
+      if (recoPanel) recoPanel.style.display = "none";
+      tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #4cbdaa;">🔄 正在向雲端請求即時計算數據...</td></tr>`;
+      
+      fetch(`${GAS_WEB_APP_URL}?action=getLiveRsv`)
+        .then(res => res.json())
+        .then(response => {
+          loadingDiv.style.display = "none";
+          if(response.status === "success") {
+            if(response.data.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #718096;">目前清單中無有效個股數據。</td></tr>`;
+              return;
+            }
+            
+            let html = "";
+            let listBreakout = [], listAbove60 = [], listStrong = [], listBelow60 = [], listWeak = [];
+
+            response.data.forEach(stock => {
+              const currentRsv = stock.currentRsv;
+              const history = stock.history5H || [];
+              const stockLabel = `${stock.id.split('.')[0]} ${stock.name}`;
+              const rsvText = `${stockLabel} <span style="color:#718096; font-weight:normal;">(${currentRsv.toFixed(1)})</span>`;
+
+              if (history.length >= 2) {
+                const prevRsv = history[history.length - 2];
+                const minHistRsv = Math.min(...history.slice(0, -1));
+
+                if (minHistRsv < 50 && currentRsv >= 55) listBreakout.push(rsvText);
+                if (prevRsv < 60 && currentRsv >= 60) listAbove60.push(rsvText);
+                if (currentRsv >= 60) listStrong.push(rsvText);
+                if (prevRsv >= 60 && currentRsv < 60) listBelow60.push(rsvText);
+                if (currentRsv <= 40) listWeak.push(rsvText);
+              }
+
+              let rsvColor = currentRsv >= 60 ? "#e53e3e" : (currentRsv <= 40 ? "#3182ce" : "#4a5568");
+              let historyTrend = history.map(v => `<span style="background:#edf2f7; padding:2px 6px; border-radius:4px; margin-right:3px; font-size:11px; font-weight:normal;">${Math.round(v)}</span>`).join('➔');
+              
+              html += `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 10px; font-weight:bold;">${stockLabel}</td>
+                  <td style="padding: 10px; font-weight:bold; color:#2d3748;">$${stock.price}</td>
+                  <td style="padding: 10px; color:${rsvColor}; font-weight:bold;">${currentRsv.toFixed(2)}</td>
+                  <td style="padding: 10px;">${historyTrend}</td>
+                </tr>
+              `;
+            });
+
+            if (elemBreakout) elemBreakout.innerHTML = listBreakout.length > 0 ? listBreakout.join("、 ") : "<span style='color:#a0aec0; font-weight:normal;'>無符合個股</span>";
+            if (elemAbove60)  elemAbove60.innerHTML  = listAbove60.length  > 0 ? listAbove60.join("、 ")  : "<span style='color:#a0aec0; font-weight:normal;'>無符合個股</span>";
+            if (elemStrong)   elemStrong.innerHTML   = listStrong.length   > 0 ? listStrong.join("、 ")   : "<span style='color:#a0aec0; font-weight:normal;'>無符合個股</span>";
+            if (elemBelow60)  elemBelow60.innerHTML  = listBelow60.length  > 0 ? listBelow60.join("、 ")  : "<span style='color:#a0aec0; font-weight:normal;'>無符合個股</span>";
+            if (elemWeak)     elemWeak.innerHTML     = listWeak.length     > 0 ? listWeak.join("、 ")     : "<span style='color:#a0aec0; font-weight:normal;'>無符合個股</span>";
+
+            if (recoPanel) recoPanel.style.display = "block";
+            tbody.innerHTML = html;
+
+          } else {
+            tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">讀取失敗：${response.message}</td></tr>`;
+          }
+        })
+        .catch(err => {
+          loadingDiv.style.display = "none";
+          tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">連線失敗，請檢查 API 的 CORS 是否已開放。</td></tr>`;
+        });
+    }
+
+    function loadStockListFromGas() {
+      const textarea = document.getElementById("stock-list-textarea");
+      if(!textarea) return;
+      textarea.value = "正在自雲端抓取清單中...⌛";
+      
+      fetch(`${GAS_WEB_APP_URL}?action=getTrackingStocks`)
+        .then(res => res.json())
+        .then(response => {
+          if(response.status === "success") {
+            textarea.value = JSON.stringify(response.data, null, 2);
+          } else {
+            textarea.value = `讀取失敗：${response.message}`;
+          }
+        })
+        .catch(err => {
+          textarea.value = "連線失敗，無法取得雲端追蹤個股清單。";
+        });
+    }
+
+    function saveStockListToGas() {
+      const text = document.getElementById("stock-list-textarea").value;
+      const statusSpan = document.getElementById("stock-save-status");
+      
+      try {
+        const parsed = JSON.parse(text);
+        if(!Array.isArray(parsed)) {
+          statusSpan.style.color = "red";
+          statusSpan.textContent = "❌ 格式錯誤：根節點必須是 JSON 陣列 Array 格式！";
           return;
         }
         
-        let html = "";
+        statusSpan.style.color = "#718096";
+        statusSpan.textContent = "🚀 正在將新陣列同步寫入 GAS 雲端... 請稍候";
         
-        // 建立各類別的收集陣列
-        let listBreakout = []; // 剛突破 55 (原本低於50)
-        let listAbove60  = []; // 站上 60 買進
-        let listStrong   = []; // 80 以上高檔強勢
-        let listBelow60  = []; // 高檔跌破 60
-        let listWeak     = []; // 40 以下弱勢
-
-        response.data.forEach(stock => {
-          const currentRsv = stock.currentRsv;
-          const history = stock.history5H || [];
-          const stockLabel = `${stock.id.split('.')[0]} ${stock.name}`;
-          const rsvText = `${stockLabel} <span style="color:#718096; font-weight:normal;">(${currentRsv.toFixed(1)})</span>`;
-
-          if (history.length >= 2) {
-            const prevRsv = history[history.length - 2]; // 上一小時 (H-1) 的 RSV
-            const minHistRsv = Math.min(...history.slice(0, -1)); // 前幾小時的最低點
-
-            // 1. 剛起漲發動：過去 5H 低於 50，且最新一小時強勢「突破站上 55」
-            if (minHistRsv < 50 && currentRsv >= 55) {
-              listBreakout.push(rsvText);
-            }
-
-            // 2. 站上 60 買進：上一小時還不到 60，最新一小時「剛站上 60」
-            if (prevRsv < 60 && currentRsv >= 60) {
-              listAbove60.push(rsvText);
-            }
-
-            // 3. 高檔續強：最新 RSV >= 60
-            if (currentRsv >= 60) {
-              listStrong.push(rsvText);
-            }
-
-            // 4. 動能減弱：上一小時 >= 60，最新一小時跌破 60
-            if (prevRsv >= 60 && currentRsv < 60) {
-              listBelow60.push(rsvText);
-            }
-
-            // 5. 弱勢低迷：最新 RSV <= 40
-            if (currentRsv <= 40) {
-              listWeak.push(rsvText);
-            }
+        const targetUrl = `${GAS_WEB_APP_URL}?action=saveTrackingStocks&data=${encodeURIComponent(JSON.stringify(parsed))}`;
+        
+        fetch(targetUrl)
+        .then(res => res.json())
+        .then(response => {
+          if (response.status === "success") {
+            statusSpan.style.color = "green";
+            statusSpan.textContent = "✅ 資料已成功同步至雲端！";
+            setTimeout(() => { loadStockListFromGas(); }, 1000);
+          } else {
+            statusSpan.style.color = "red";
+            statusSpan.textContent = `❌ 同步失敗：${response.message}`;
           }
-
-          // 表格樣式顏色
-          let rsvColor = currentRsv >= 60 ? "#e53e3e" : (currentRsv <= 40 ? "#3182ce" : "#4a5568");
-          let historyTrend = history.map(v => `<span style="background:#edf2f7; padding:2px 6px; border-radius:4px; margin-right:3px; font-size:11px; font-weight:normal;">${Math.round(v)}</span>`).join('➔');
-          
-          html += `
-            <tr style="border-bottom: 1px solid #e2e8f0;">
-              <td style="padding: 10px; font-weight:bold;">${stockLabel}</td>
-              <td style="padding: 10px; font-weight:bold; color:#2d3748;">$${stock.price}</td>
-              <td style="padding: 10px; color:${rsvColor}; font-weight:bold;">${currentRsv.toFixed(2)}</td>
-              <td style="padding: 10px;">${historyTrend}</td>
-            </tr>
-          `;
+        })
+        .catch(err => {
+          statusSpan.style.color = "red";
+          statusSpan.textContent = "❌ 連線失敗，無法同步至 API。";
         });
 
-        // 將結果寫入分類卡片中
-        if (elemBreakout) elemBreakout.innerHTML = listBreakout.length > 0 ? listBreakout.join("、 ") : "<span style='color:#a0aec0; font-weight:normal;'>無符合個股</span>";
-        if (elemAbove60)  elemAbove60.innerHTML  = listAbove60.length  > 0 ? listAbove60.join("、 ")  : "<span style='color:#a0aec0; font-weight:normal;'>無符合個股</span>";
-        if (elemStrong)   elemStrong.innerHTML   = listStrong.length   > 0 ? listStrong.join("、 ")   : "<span style='color:#a0aec0; font-weight:normal;'>無符合個股</span>";
-        if (elemBelow60)  elemBelow60.innerHTML  = listBelow60.length  > 0 ? listBelow60.join("、 ")  : "<span style='color:#a0aec0; font-weight:normal;'>無符合個股</span>";
-        if (elemWeak)     elemWeak.innerHTML     = listWeak.length     > 0 ? listWeak.join("、 ")     : "<span style='color:#a0aec0; font-weight:normal;'>無符合個股</span>";
-
-        if (recoPanel) recoPanel.style.display = "block";
-        tbody.innerHTML = html;
-
-      } else {
-        tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">讀取失敗：${response.message}</td></tr>`;
-      }
-    })
-    .catch(err => {
-      loadingDiv.style.display = "none";
-      tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">連線失敗，請檢查 API 的 CORS 是否已開放。</td></tr>`;
-    });
-}
-
-// 【功能 3】向 GAS API 連線取得當前雲端 LINE 機器人正在盯盤的股票 JSON 字串
-function loadStockListFromGas() {
-  const textarea = document.getElementById("stock-list-textarea");
-  if(!textarea) return;
-  textarea.value = "正在自雲端抓取清單中...⌛";
-  
-  fetch(`${GAS_WEB_APP_URL}?action=getTrackingStocks`)
-    .then(res => res.json())
-    .then(response => {
-      if(response.status === "success") {
-        // 美化 JSON 排版印出在 Textarea 欄位中
-        textarea.value = JSON.stringify(response.data, null, 2);
-      } else {
-        textarea.value = `讀取失敗：${response.message}`;
-      }
-    })
-    .catch(err => {
-      textarea.value = "連線失敗，無法取得雲端追蹤個股清單。";
-    });
-}
-
-// 【功能 3】把修改好的 JSON 陣列更新回 GAS 雲端 (GET 方式)
-function saveStockListToGas() {
-  const text = document.getElementById("stock-list-textarea").value;
-  const statusSpan = document.getElementById("stock-save-status");
-  
-  try {
-    // 嚴格本地格式驗證，非 JSON 則不送出
-    const parsed = JSON.parse(text);
-    if(!Array.isArray(parsed)) {
-      statusSpan.style.color = "red";
-      statusSpan.textContent = "❌ 格式錯誤：根節點必須是 JSON 陣列 Array 格式！";
-      return;
-    }
-    
-    statusSpan.style.color = "#718096";
-    statusSpan.textContent = "🚀 正在將新陣列同步寫入 GAS 雲端... 請稍候";
-    
-    // 使用 GET 傳送，將資料轉成 URI 編碼放入網址中
-    const targetUrl = `${GAS_WEB_APP_URL}?action=saveTrackingStocks&data=${encodeURIComponent(JSON.stringify(parsed))}`;
-    
-    fetch(targetUrl)
-    .then(res => res.json())
-    .then(response => {
-      if (response.status === "success") {
-        statusSpan.style.color = "green";
-        statusSpan.textContent = "✅ 資料已成功同步至雲端！";
-        // 成功後，隔 1 秒直接重新拉取最新資料更新欄位
-        setTimeout(() => { loadStockListFromGas(); }, 1000);
-      } else {
+      } catch(e) {
         statusSpan.style.color = "red";
-        statusSpan.textContent = `❌ 同步失敗：${response.message}`;
+        statusSpan.textContent = "❌ JSON 語法格式解析失敗，請確認逗號與雙引號是否正確！";
       }
-    })
-    .catch(err => {
-      statusSpan.style.color = "red";
-      statusSpan.textContent = "❌ 連線失敗，無法同步至 API。";
+    }
+
+    function toggleDarkMode() {
+      const isDark = document.body.classList.toggle('dark-theme');
+      const user = localStorage.getItem('currentUser');
+      if (user) {
+        localStorage.setItem(`dark_mode_${user}`, isDark ? 'enabled' : 'disabled');
+      }
+      updateDarkModeButton(isDark);
+    }
+
+    function updateDarkModeButton(isDark) {
+      const btn = document.getElementById('darkModeBtn');
+      if (btn) {
+        btn.innerHTML = isDark ? "☀️ 淺色模式" : "🌓 深色模式";
+        btn.style.backgroundColor = isDark ? "#EDF2F7" : "#1A202C";
+        btn.style.color = isDark ? "#1A202C" : "white";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      updateSavedStocksDropdown();
+      loadLastUsedStock();
     });
 
-  } catch(e) {
-    statusSpan.style.color = "red";
-    statusSpan.textContent = "❌ JSON 語法格式解析失敗，請確認逗號與雙引號是否正確！";
-  }
-}
+    function saveCurrentStockData() {
+      const symbol = document.getElementById("myStockSymbol").value.trim();
+      const basePrice = document.getElementById("myBasePrice").value;
+      const maxPrice = document.getElementById("myMaxPrice").value;
+      const prevBasePrice = document.getElementById("myPrevBasePrice").value;
+      const prevMaxPrice = document.getElementById("myPrevMaxPrice").value;
 
-// 深色模式開關與儲存狀態
-function toggleDarkMode() {
-  const isDark = document.body.classList.toggle('dark-theme');
-  const user = localStorage.getItem('currentUser');
-  if (user) {
-    localStorage.setItem(`dark_mode_${user}`, isDark ? 'enabled' : 'disabled');
-  }
-  updateDarkModeButton(isDark);
-}
+      if (!symbol) {
+        alert("請輸入股票代號/名稱才能儲存！");
+        return;
+      }
 
-function updateDarkModeButton(isDark) {
-  const btn = document.getElementById('darkModeBtn');
-  if (btn) {
-    btn.innerHTML = isDark ? "☀️ 淺色模式" : "🌓 深色模式";
-    btn.style.backgroundColor = isDark ? "#EDF2F7" : "#1A202C";
-    btn.style.color = isDark ? "#1A202C" : "white";
-  }
-}
-// 頁面初始化時自動載入已儲存的持股選單與上次輸入
-document.addEventListener("DOMContentLoaded", function() {
-  updateSavedStocksDropdown();
-  loadLastUsedStock();
-});
+      const stockData = {
+        symbol, basePrice, maxPrice, prevBasePrice, prevMaxPrice,
+        updatedAt: new Date().toLocaleDateString()
+      };
 
-// 1. 儲存目前個股設定至 localStorage
-function saveCurrentStockData() {
-  const symbol = document.getElementById("myStockSymbol").value.trim();
-  const basePrice = document.getElementById("myBasePrice").value;
-  const maxPrice = document.getElementById("myMaxPrice").value;
-  const prevBasePrice = document.getElementById("myPrevBasePrice").value;
-  const prevMaxPrice = document.getElementById("myPrevMaxPrice").value;
+      let saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
+      saved[symbol] = stockData;
+      localStorage.setItem("jason_saved_stocks", JSON.stringify(saved));
+      localStorage.setItem("jason_last_stock_symbol", symbol);
 
-  if (!symbol) {
-    alert("請輸入股票代號/名稱才能儲存！");
-    return;
-  }
-
-  const stockData = {
-    symbol, basePrice, maxPrice, prevBasePrice, prevMaxPrice,
-    updatedAt: new Date().toLocaleDateString()
-  };
-
-  // 讀取既有清單
-  let saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
-  saved[symbol] = stockData;
-  localStorage.setItem("jason_saved_stocks", JSON.stringify(saved));
-  
-  // 紀錄最後一次使用的股票代號
-  localStorage.setItem("jason_last_stock_symbol", symbol);
-
-  updateSavedStocksDropdown();
-  showNotification(`✅ 個股【${symbol}】設定已成功儲存！`, "#c6f6d5", "#22543d");
-}
-
-// 2. 更新下拉選單選項
-function updateSavedStocksDropdown() {
-  const select = document.getElementById("mySavedStocksSelect");
-  if (!select) return;
-
-  const saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
-  select.innerHTML = '<option value="">📂 快速載入已存個股...</option>';
-
-  Object.keys(saved).forEach(sym => {
-    const opt = document.createElement("option");
-    opt.value = sym;
-    opt.textContent = `📌 ${sym} (${saved[sym].updatedAt})`;
-    select.appendChild(opt);
-  });
-}
-
-// 3. 切換選單時自動填入資料並分析
-function loadSavedStockData() {
-  const symbol = document.getElementById("mySavedStocksSelect").value;
-  if (!symbol) return;
-
-  const saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
-  const data = saved[symbol];
-
-  if (data) {
-    document.getElementById("myStockSymbol").value = data.symbol || "";
-    document.getElementById("myBasePrice").value = data.basePrice || "";
-    document.getElementById("myMaxPrice").value = data.maxPrice || "";
-    document.getElementById("myPrevBasePrice").value = data.prevBasePrice || "";
-    document.getElementById("myPrevMaxPrice").value = data.prevMaxPrice || "";
-
-    localStorage.setItem("jason_last_stock_symbol", symbol);
-    analyzeMyStockProfit(false); // 自動執行分析
-    showNotification(`ℹ️ 已載入【${symbol}】資料`, "#ebf8ff", "#2c5282");
-  }
-}
-
-// 4. 預設自動讀取上次開啟的股票
-function loadLastUsedStock() {
-  const lastSym = localStorage.getItem("jason_last_stock_symbol");
-  if (lastSym) {
-    const select = document.getElementById("mySavedStocksSelect");
-    if (select) {
-      select.value = lastSym;
-      loadSavedStockData();
+      updateSavedStocksDropdown();
+      showNotification(`✅ 個股【${symbol}】設定已成功儲存！`, "#c6f6d5", "#22543d");
     }
-  }
-}
 
-// 5. 顯示上方提示區塊
-function showNotification(msg, bgColor, textColor) {
-  const banner = document.getElementById("stockNotificationBanner");
-  banner.style.background = bgColor;
-  banner.style.color = textColor;
-  banner.style.border = `1px solid ${textColor}`;
-  banner.innerHTML = msg;
-  banner.style.display = "block";
+    function updateSavedStocksDropdown() {
+      const select = document.getElementById("mySavedStocksSelect");
+      if (!select) return;
 
-  setTimeout(() => {
-    banner.style.display = "none";
-  }, 4000);
-}
+      const saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
+      select.innerHTML = '<option value="">📂 快速載入已存個股...</option>';
 
-// 6. 主分析邏輯 (包含 autoSave 選項)
-function analyzeMyStockProfit(autoSave = true) {
-  const symbol = document.getElementById("myStockSymbol").value.trim();
-  const basePrice = parseFloat(document.getElementById("myBasePrice").value);     
-  const maxPrice = parseFloat(document.getElementById("myMaxPrice").value);       
-  const prevBasePrice = parseFloat(document.getElementById("myPrevBasePrice").value);
-  const prevMaxPrice = parseFloat(document.getElementById("myPrevMaxPrice").value);
-
-  const resultDiv = document.getElementById("myStockAnalysisResult");
-
-  if (!symbol || isNaN(basePrice) || isNaN(maxPrice) || basePrice <= 0 || maxPrice <= 0) {
-    alert("請完整輸入股票代號、有效的最新起漲價與歷史最高價！");
-    return;
-  }
-
-  // 自動保存當前狀態為最新使用紀錄
-  if (autoSave) {
-    saveCurrentStockData();
-  }
-
-  // 1. 空間計算
-  const rawMaxReturn = ((maxPrice - basePrice) / basePrice) * 100;
-  
-  // 2. 動態計算下限 X% (上一波推升力道)
-  let lowerPct = 10.0; 
-  let lowerNote = "預設安全起步點";
-
-  if (!isNaN(prevBasePrice) && !isNaN(prevMaxPrice) && prevBasePrice > 0 && prevMaxPrice > prevBasePrice) {
-    lowerPct = parseFloat((((prevMaxPrice - prevBasePrice) / prevBasePrice) * 100).toFixed(1));
-    lowerNote = `參照上一波波段實際增幅 (${prevBasePrice} ➔ ${prevMaxPrice})`;
-  }
-
-  if (rawMaxReturn < lowerPct) {
-    lowerPct = Math.max(5, parseFloat((rawMaxReturn * 0.5).toFixed(1)));
-  }
-
-  // 3. 動態計算上限 A% (天花板機制)
-  let upperPct = 30.0;
-  let upperNote = "";
-
-  if (rawMaxReturn > 30.0) {
-    if (lowerPct > 30.0) {
-      upperPct = Math.min(parseFloat(rawMaxReturn.toFixed(1)), lowerPct);
-      upperNote = `(上一波動能強勁 +${lowerPct}%，解鎖 30% 天花板限制)`;
-    } else {
-      upperPct = 30.0;
-      upperNote = `(歷史空間 ${rawMaxReturn.toFixed(1)}% 過大，已啟動 30% 風控天花板)`;
+      Object.keys(saved).forEach(sym => {
+        const opt = document.createElement("option");
+        opt.value = sym;
+        opt.textContent = `📌 ${sym} (${saved[sym].updatedAt})`;
+        select.appendChild(opt);
+      });
     }
-  } else {
-    upperPct = parseFloat(rawMaxReturn.toFixed(1));
-    upperNote = `(受限於歷史最高點 $${maxPrice} 空間)`;
-  }
 
-  if (lowerPct > upperPct) {
-    lowerPct = parseFloat((upperPct * 0.7).toFixed(1));
-  }
+    function loadSavedStockData() {
+      const symbol = document.getElementById("mySavedStocksSelect").value;
+      if (!symbol) return;
 
-  // 4. 計算目標價位
-  const minTargetPrice = (basePrice * (1 + lowerPct / 100)).toFixed(2);
-  const maxTargetPrice = (basePrice * (1 + upperPct / 100)).toFixed(2);
+      const saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
+      const data = saved[symbol];
 
-  // 5. 渲染輸出
-  resultDiv.innerHTML = `
-    <div style="font-weight:bold; color:#2d3748; margin-bottom:4px;">
-      📊 【${symbol}】智慧波段動態停利報告：
-    </div>
-    <div>• <b>最新起漲基準價</b>：$${basePrice} | <b>歷史最高價</b>：$${maxPrice} (${rawMaxReturn.toFixed(1)}% 總空間)</div>
-    <div>• <b>第一階段動能參考 (X%)</b>：${lowerPct}% <span style="color:#718096; font-size:11px;">[${lowerNote}]</span></div>
-    
-    <div style="color:#c53030; font-weight:bold; margin-top:6px; font-size:13px;">
-      💡 建議分批獲利了結區間：<span style="font-size:14px; color:#c53030;">${lowerPct.toFixed(1)}% ～ ${upperPct.toFixed(1)}%</span>
-      <span style="font-size:11px; color:#d69e2e; font-weight:normal;">${upperNote}</span>
-      <br>（對應目標價位：<span style="color:#2b6cb0;">$${minTargetPrice} ～ $${maxTargetPrice}</span>）
-    </div>
+      if (data) {
+        document.getElementById("myStockSymbol").value = data.symbol || "";
+        document.getElementById("myBasePrice").value = data.basePrice || "";
+        document.getElementById("myMaxPrice").value = data.maxPrice || "";
+        document.getElementById("myPrevBasePrice").value = data.prevBasePrice || "";
+        document.getElementById("myPrevMaxPrice").value = data.prevMaxPrice || "";
 
-    <div style="margin-top:8px; color:#4a5568; background:#edf2f7; padding:8px; border-radius:4px; font-size:11px; line-height:1.5;">
-      <b>🧠 戰術操作指引：</b><br>
-      1. <b>第一階段目標 ($${minTargetPrice} / +${lowerPct.toFixed(1)}%)</b>：建議到達此價位落袋 30%～50% 持股鎖定利潤。<br>
-      2. <b>第二階段目標 ($${maxTargetPrice} / +${upperPct.toFixed(1)}%)</b>：若 1.5H/60分K RSV 持續鎖高，剩餘部位挑戰上限，達標後建議全數落袋。<br>
-      3. <b>風控防線</b>：若股價跌破最新起漲點低點或 RSV 跌破 50，應無條件停損/離場。
-    </div>
-  `;
-  resultDiv.style.display = "block";
-}
-// 新增：刪除目前選擇或輸入的個股紀錄
-function deleteCurrentSavedStock() {
-  const select = document.getElementById("mySavedStocksSelect");
-  let symbol = select ? select.value : "";
+        localStorage.setItem("jason_last_stock_symbol", symbol);
+        analyzeMyStockProfit(false);
+        showNotification(`ℹ️ 已載入【${symbol}】資料`, "#ebf8ff", "#2c5282");
+      }
+    }
 
-  // 如果下拉選單沒有選擇，嘗試抓取輸入框內的代號
-  if (!symbol) {
-    symbol = document.getElementById("myStockSymbol").value.trim();
-  }
+    function loadLastUsedStock() {
+      const lastSym = localStorage.getItem("jason_last_stock_symbol");
+      if (lastSym) {
+        const select = document.getElementById("mySavedStocksSelect");
+        if (select) {
+          select.value = lastSym;
+          loadSavedStockData();
+        }
+      }
+    }
 
-  if (!symbol) {
-    alert("請先選擇或輸入要刪除的股票代號！");
-    return;
-  }
+    function showNotification(msg, bgColor, textColor) {
+      const banner = document.getElementById("stockNotificationBanner");
+      banner.style.background = bgColor;
+      banner.style.color = textColor;
+      banner.style.border = `1px solid ${textColor}`;
+      banner.innerHTML = msg;
+      banner.style.display = "block";
 
-  if (!confirm(`確定要刪除個股【${symbol}】的儲存紀錄嗎？`)) {
-    return;
-  }
+      setTimeout(() => {
+        banner.style.display = "none";
+      }, 4000);
+    }
 
-  // 1. 從 localStorage 移除該個股
-  let saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
-  if (saved[symbol]) {
-    delete saved[symbol];
-    localStorage.setItem("jason_saved_stocks", JSON.stringify(saved));
-  }
+    function analyzeMyStockProfit(autoSave = true) {
+      const symbol = document.getElementById("myStockSymbol").value.trim();
+      const basePrice = parseFloat(document.getElementById("myBasePrice").value);     
+      const maxPrice = parseFloat(document.getElementById("myMaxPrice").value);       
+      const prevBasePrice = parseFloat(document.getElementById("myPrevBasePrice").value);
+      const prevMaxPrice = parseFloat(document.getElementById("myPrevMaxPrice").value);
 
-  // 2. 清除最後使用紀錄
-  const lastSym = localStorage.getItem("jason_last_stock_symbol");
-  if (lastSym === symbol) {
-    localStorage.removeItem("jason_last_stock_symbol");
-  }
+      const resultDiv = document.getElementById("myStockAnalysisResult");
 
-  // 3. 清空輸入欄位與結果容器
-  clearStockInputFields();
+      if (!symbol || isNaN(basePrice) || isNaN(maxPrice) || basePrice <= 0 || maxPrice <= 0) {
+        alert("請完整輸入股票代號、有效的最新起漲價與歷史最高價！");
+        return;
+      }
 
-  // 4. 更新下拉選單
-  updateSavedStocksDropdown();
+      if (autoSave) saveCurrentStockData();
 
-  // 5. 提示使用者
-  showNotification(`🗑️ 個股【${symbol}】紀錄已順利刪除！`, "#fed7d7", "#9b2c2c");
-}
+      const rawMaxReturn = ((maxPrice - basePrice) / basePrice) * 100;
+      
+      let lowerPct = 10.0; 
+      let lowerNote = "預設安全起步點";
 
-// 輔助函式：清空輸入欄位
-function clearStockInputFields() {
-  document.getElementById("myStockSymbol").value = "";
-  document.getElementById("myBasePrice").value = "";
-  document.getElementById("myMaxPrice").value = "";
-  document.getElementById("myPrevBasePrice").value = "";
-  document.getElementById("myPrevMaxPrice").value = "";
-  
-  const resultDiv = document.getElementById("myStockAnalysisResult");
-  if (resultDiv) {
-    resultDiv.style.display = "none";
-    resultDiv.innerHTML = "";
-  }
-}
+      if (!isNaN(prevBasePrice) && !isNaN(prevMaxPrice) && prevBasePrice > 0 && prevMaxPrice > prevBasePrice) {
+        lowerPct = parseFloat((((prevMaxPrice - prevBasePrice) / prevBasePrice) * 100).toFixed(1));
+        lowerNote = `參照上一波波段實際增幅 (${prevBasePrice} ➔ ${prevMaxPrice})`;
+      }
+
+      if (rawMaxReturn < lowerPct) {
+        lowerPct = Math.max(5, parseFloat((rawMaxReturn * 0.5).toFixed(1)));
+      }
+
+      let upperPct = 30.0;
+      let upperNote = "";
+
+      if (rawMaxReturn > 30.0) {
+        if (lowerPct > 30.0) {
+          upperPct = Math.min(parseFloat(rawMaxReturn.toFixed(1)), lowerPct);
+          upperNote = `(上一波動能強勁 +${lowerPct}%，解鎖 30% 天花板限制)`;
+        } else {
+          upperPct = 30.0;
+          upperNote = `(歷史空間 ${rawMaxReturn.toFixed(1)}% 過大，已啟動 30% 風控天花板)`;
+        }
+      } else {
+        upperPct = parseFloat(rawMaxReturn.toFixed(1));
+        upperNote = `(受限於歷史最高點 $${maxPrice} 空間)`;
+      }
+
+      if (lowerPct > upperPct) {
+        lowerPct = parseFloat((upperPct * 0.7).toFixed(1));
+      }
+
+      const minTargetPrice = (basePrice * (1 + lowerPct / 100)).toFixed(2);
+      const maxTargetPrice = (basePrice * (1 + upperPct / 100)).toFixed(2);
+
+      resultDiv.innerHTML = `
+        <div style="font-weight:bold; color:#2d3748; margin-bottom:4px;">
+          📊 【${symbol}】智慧波段動態停利報告：
+        </div>
+        <div>• <b>最新起漲基準價</b>：$${basePrice} | <b>歷史最高價</b>：$${maxPrice} (${rawMaxReturn.toFixed(1)}% 總空間)</div>
+        <div>• <b>第一階段動能參考 (X%)</b>：${lowerPct}% <span style="color:#718096; font-size:11px;">[${lowerNote}]</span></div>
+        
+        <div style="color:#c53030; font-weight:bold; margin-top:6px; font-size:13px;">
+          💡 建議分批獲利了結區間：<span style="font-size:14px; color:#c53030;">${lowerPct.toFixed(1)}% ～ ${upperPct.toFixed(1)}%</span>
+          <span style="font-size:11px; color:#d69e2e; font-weight:normal;">${upperNote}</span>
+          <br>（對應目標價位：<span style="color:#2b6cb0;">$${minTargetPrice} ～ $${maxTargetPrice}</span>）
+        </div>
+
+        <div style="margin-top:8px; color:#4a5568; background:#edf2f7; padding:8px; border-radius:4px; font-size:11px; line-height:1.5;">
+          <b>🧠 戰術操作指引：</b><br>
+          1. <b>第一階段目標 ($${minTargetPrice} / +${lowerPct.toFixed(1)}%)</b>：建議到達此價位落袋 30%～50% 持股鎖定利潤。<br>
+          2. <b>第二階段目標 ($${maxTargetPrice} / +${upperPct.toFixed(1)}%)</b>：若 1.5H/60分K RSV 持續鎖高，剩餘部位挑戰上限，達標後建議全數落袋。<br>
+          3. <b>風控防線</b>：若股價跌破最新起漲點低點或 RSV 跌破 50，應無條件停損/離場。
+        </div>
+      `;
+      resultDiv.style.display = "block";
+    }
+
+    function deleteCurrentSavedStock() {
+      const select = document.getElementById("mySavedStocksSelect");
+      let symbol = select ? select.value : "";
+
+      if (!symbol) symbol = document.getElementById("myStockSymbol").value.trim();
+
+      if (!symbol) {
+        alert("請先選擇或輸入要刪除的股票代號！");
+        return;
+      }
+
+      if (!confirm(`確定要刪除個股【${symbol}】的儲存紀錄嗎？`)) return;
+
+      let saved = JSON.parse(localStorage.getItem("jason_saved_stocks") || "{}");
+      if (saved[symbol]) {
+        delete saved[symbol];
+        localStorage.setItem("jason_saved_stocks", JSON.stringify(saved));
+      }
+
+      const lastSym = localStorage.getItem("jason_last_stock_symbol");
+      if (lastSym === symbol) {
+        localStorage.removeItem("jason_last_stock_symbol");
+      }
+
+      clearStockInputFields();
+      updateSavedStocksDropdown();
+      showNotification(`🗑️ 個股【${symbol}】紀錄已順利刪除！`, "#fed7d7", "#9b2c2c");
+    }
+
+    function clearStockInputFields() {
+      document.getElementById("myStockSymbol").value = "";
+      document.getElementById("myBasePrice").value = "";
+      document.getElementById("myMaxPrice").value = "";
+      document.getElementById("myPrevBasePrice").value = "";
+      document.getElementById("myPrevMaxPrice").value = "";
+      
+      const resultDiv = document.getElementById("myStockAnalysisResult");
+      if (resultDiv) {
+        resultDiv.style.display = "none";
+        resultDiv.innerHTML = "";
+      }
+    }
   </script>
 </body>
 </html>
