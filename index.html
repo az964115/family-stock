@@ -1005,7 +1005,8 @@ function openFundingHistoryModal() {
     }
   };
   
-  if (currentUser.toLowerCase() === 'jason') {
+  db.ref(`settings/admins/${currentUser.toLowerCase()}`).once('value').then(snap => {
+  if (snap.exists() && snap.val() === true) {
     formBlock.style.display = 'block';
     document.getElementById('fundingTargetUser').value = '';
     document.getElementById('fundingAsset').value = '';
@@ -1015,6 +1016,7 @@ function openFundingHistoryModal() {
   } else {
     formBlock.style.display = 'none';
   }
+});
   
   openModal('fundingHistoryModal');
   loadFundingRecords();
@@ -2078,10 +2080,14 @@ async function loadFundingRecords() {
         const bg = localStorage.getItem(`bg_${user}`);
         if(bg) document.body.style.backgroundImage = `url(${bg})`;
         
-        if (user.toLowerCase() === 'jason') {
-          document.getElementById('adminPanel').style.display = 'block';
-          loadStockListFromGas(); 
-        }
+        db.ref(`settings/admins/${user.toLowerCase()}`).once('value').then(snap => {
+          if (snap.exists() && snap.val() === true) {
+            document.getElementById('adminPanel').style.display = 'block';
+            loadStockListFromGas(); 
+          } else {
+            document.getElementById('adminPanel').style.display = 'none';
+          }
+        });
         
         initAnnouncementAndMemo(user);
 
