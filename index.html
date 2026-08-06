@@ -363,34 +363,34 @@
             
             <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
               <div style="flex: 1; min-width: 180px; background: #fff5f5; border-top: 4px solid #e53e3e; padding: 10px; border-radius: 6px;">
-                <div style="font-weight: bold; color: #c53030; font-size: 13px;">🚀 起漲準備</div>
-                <div style="font-size: 11px; color: #742a2a; margin-top: 2px;">原先疲弱 ➜ 準備轉強</div>
+                <div style="font-weight: bold; color: #c53030; font-size: 13px;">🚀 低檔打底轉折</div>
+                <div style="font-size: 11px; color: #742a2a; margin-top: 2px;">技術指標自低位向上勾頭</div>
                 <div id="reco-breakout" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
               </div>
 
               <div style="flex: 1; min-width: 180px; background: #fffaf0; border-top: 4px solid #dd6b20; padding: 10px; border-radius: 6px;">
-                <div style="font-weight: bold; color: #c05621; font-size: 13px;">⚡ 黃金策略買進</div>
-                <div style="font-size: 11px; color: #7b341e; margin-top: 2px;">轉強站上起漲點</div>
+                <div style="font-weight: bold; color: #c05621; font-size: 13px;">⚡ 多頭動能發動</div>
+                <div style="font-size: 11px; color: #7b341e; margin-top: 2px;">技術指標突破中軸分水嶺</div>
                 <div id="reco-above60" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
               </div>
 
               <div style="flex: 1; min-width: 180px; background: #f0fff4; border-top: 4px solid #38a169; padding: 10px; border-radius: 6px;">
-                <div style="font-weight: bold; color: #276749; font-size: 13px;">🔥 高檔續強</div>
-                <div style="font-size: 11px; color: #22543d; margin-top: 2px;">強勢多頭格局，持續鎖高</div>
+                <div style="font-weight: bold; color: #276749; font-size: 13px;">🔥 強勢多頭巡航</div>
+                <div style="font-size: 11px; color: #22543d; margin-top: 2px;">維持於高階動能區間</div>
                 <div id="reco-strong" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
               </div>
             </div>
 
             <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
               <div style="flex: 1; min-width: 180px; background: #edf2f7; border-top: 4px solid #718096; padding: 10px; border-radius: 6px;">
-                <div style="font-weight: bold; color: #4a5568; font-size: 13px;">📉 動能減弱</div>
-                <div style="font-size: 11px; color: #4a5568; margin-top: 2px;">高檔回落，考慮離場/觀察</div>
+                <div style="font-weight: bold; color: #4a5568; font-size: 13px;">📉 高檔動能回落</div>
+                <div style="font-size: 11px; color: #4a5568; margin-top: 2px;">技術指標自高階區間降回</div>
                 <div id="reco-below60" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
               </div>
 
               <div style="flex: 1; min-width: 180px; background: #ebf8ff; border-top: 4px solid #3182ce; padding: 10px; border-radius: 6px;">
-                <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">⚠️ 弱勢/低迷</div>
-                <div style="font-size: 11px; color: #2c5282; margin-top: 2px;">動能疲軟，暫不宜操作</div>
+                <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">⚠️ 弱勢沉悶區間</div>
+                <div style="font-size: 11px; color: #2c5282; margin-top: 2px;">處於低階動能區間</div>
                 <div id="reco-weak" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
               </div>
             </div>
@@ -414,7 +414,7 @@
               
               <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
                 <input type="text" id="myStockSymbol" placeholder="股票代號/名稱" style="flex:1; min-width:100px; padding:6px 10px; margin:0; font-size:12px;">
-                <input type="number" id="myBasePrice" placeholder="最新起漲價 (低於50站上60)" style="flex:1.2; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
+                <input type="number" id="myBasePrice" placeholder="最新起漲基準價 (如波段低點價位)" style="flex:1.2; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
                 <input type="number" id="myMaxPrice" placeholder="歷史最高點價位" style="flex:1.2; min-width:120px; padding:6px 10px; margin:0; font-size:12px;">
               </div>
 
@@ -455,6 +455,9 @@
           </div>
         </div>
         <div class="modal-footer">
+          <div style="font-size: 11px; color: #a0aec0; margin: 12px 0; text-align: center; line-height: 1.5; background: rgba(0,0,0,0.02); padding: 8px; border-radius: 6px;">
+            🔒 <b>智慧財產與免責聲明</b>：本系統採用獨家量化模型進行相對動能運算，不公開具體參數與門檻數值。所有評估結果僅為客觀技術面狀態分類與數據統計，不代表任何買賣推薦或投資建議，使用者請自行評估風險。
+          </div>
           <button onclick="closeModal('rsvMonitoringModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
         </div>
       </div>
@@ -1089,47 +1092,47 @@
 
             if (currentRsv >= 80) {
               if (isUpward) {
-                directionText = "🔥 極度強勢 (高檔鈍化中)";
+                directionText = "🔥 動能區間：高階強勢區";
                 directionColor = "#E53E3E";
-                adviceText = "個股多頭氣勢極強，進入超買鈍化區。此時不建議盲目放空，持股者可續抱並守好移動停利點，空手者不宜過度追高。";
+                adviceText = "個股多頭氣勢極強，進入超買鈍化區。技術指標進入高階鈍化狀態，代表當前買盤力道強勁，屬於高動能格局。";
               } else {
-                directionText = "⚠️ 轉弱警告 (高檔動能背離)";
+                directionText = "⚠️ 動能區間：高檔拉回態勢";
                 directionColor = "#D69E2E";
-                adviceText = "雖然股價仍在高位，但近 2 小時動能已有轉弱、勾頭向下跡象。多單應留意獲利了結機會，防態技術性回檔。";
+                adviceText = "雖然股價仍在高位，技術指標高位出現勾頭向下跡象，短線多頭推進動能有所趨緩。";
               }
             } else if (currentRsv >= 55) {
               if (isUpward) {
-                directionText = "📈 多頭轉強 (動能持續攀升)";
+                directionText = "📈 動能區間：多頭動能擴張";
                 directionColor = "#E53E3E";
-                adviceText = "站上多空分水嶺且動能穩步向上。屬於標準的動能轉強格局，適合順勢偏多思考，多單可繼續留明。";
+                adviceText = "技術指標跨越中軸水準且斜率向上，顯示短線市場多頭關注度提升。";
               } else {
                 directionText = "🔄 高檔整理 (動能稍微停滯)";
                 directionColor = "#4A5568";
-                adviceText = "股價處於偏多區間，但短期動能有所熄火。預期短線可能轉為高檔震盪整理，建議暫時靜待方向明朗再行操作。";
+                adviceText = "股價處於偏多區間，但短期動能有所熄火。技術指標維持在中高水準，但短期斜率趨平，短線呈現高位盤整格局。";
               }
             } else if (currentRsv >= 45) {
-              directionText = "⚖️ 區間多空拉鋸 (無明顯方向)";
+              directionText = "⚖️ 動能區間：中性多空平衡";
               directionColor = "#718096";
-              adviceText = "處於中性 50 附近徘徊，短期 5 小時動能方向混沌。建議先參考更長天期（如日K、週K）均線方向，此處短線不宜過度頻繁交易。";
+              adviceText = "技術指標於中軸區域震盪，顯示當前多空力道相對均衡，方向尚待確立。";
             } else if (currentRsv >= 20) {
               if (!isUpward) {
-                directionText = "📉 空頭轉弱 (動能持續探底)";
+                directionText = "📉 動能區間：低階整理區間";
                 directionColor = "#3182CE";
-                adviceText = "低於中性水平且斜率持續向下。個股短線買盤空虛，建議多單暫避、勿貿然摸底，待打底訊號出現。";
+                adviceText = "低於中性水平且斜率持續向下。個股短線買盤空虛，技術指標維持於中軸下方，短線多頭動能較為沉悶，技術面屬弱勢震盪。";
               } else {
-                directionText = "🩹 弱勢整理 (嘗試震盪止穩)";
+                directionText = "🩹 動能區間：低階整理區間";
                 directionColor = "#4A5568";
                 adviceText = "個股仍屬弱勢區間，但近幾小時動能有微幅勾頭跡象。短線有機會進入橫盤整理或技術性反彈，但不宜視為全面反轉。";
               }
             } else {
               if (!isUpward) {
-                directionText = "❄️ 極度疲弱 (超賣區加速趕底)";
+                directionText = "❄️ 動能區間：低階極端區";
                 directionColor = "#3182CE";
-                adviceText = "跌破 極端值，動能加速向下。此時短線殺低風險增加，但不代表安全，空手者應嚴禁接刀，靜待量縮築底。";
+                adviceText = "指標跌至低位極端區域，顯示短期價格下探動能較強，技術面尚待打底止穩。";
               } else {
-                directionText = "🚀 低檔轉折 (醞釀反彈訊號)";
+                directionText = "🚀 動能區間：低檔極端區勾頭";
                 directionColor = "#2F855A";
-                adviceText = "【轉折機會】 處於極度超賣區（<20），但最新動能首度出現「強勁勾頭向上」。此為標準黃金交叉預備訊號，激進者可輕倉嘗試搶反彈，嚴設停損。";
+                adviceText = "【轉折機會】 處於極度超賣區（<20），但最新動能首度出現「強勁勾頭向上」。技術指標處於低位極端區域並出現向上勾頭，顯示技術面有自低位尋求支撐之跡象。";
               }
             }
 
@@ -1143,11 +1146,11 @@
                 <div style="font-size: 1.3em; font-weight: 800; color: ${directionColor};">${directionText}</div>
               </div>
               <div style="background: white; border-left: 4px solid ${directionColor}; padding: 12px; border-radius: 4px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
-                <small style="color: var(--text-muted); font-weight: bold; display:block; margin-bottom: 4px;">💡 豬豬量化策略建議：</small>
+                <small style="color: var(--text-muted); font-weight: bold; display:block; margin-bottom: 4px;">💡 客觀指標動能狀態說明：</small>
                 <p style="margin:0; font-size: 0.92em; line-height: 1.6; color: #2D3748; font-weight: 500;">${adviceText}</p>
               </div>
               <div style="margin-top: 15px; text-align: right;">
-                <small style="color: var(--text-muted); font-size: 0.78em;">※ 量化模型當前 計算值：${currentRsv.toFixed(2)}</small>
+                <small style="color: var(--text-muted); font-size: 0.78em;">※ 系統狀態：即時多因數量化模型運算完成</small>
               </div>
             `;
             resultDiv.style.display = "block";
@@ -2265,7 +2268,27 @@
               const currentRsv = stock.currentRsv;
               const history = stock.history5H || [];
               const stockLabel = `${stock.id.split('.')[0]} ${stock.name}`;
-              const rsvText = `${stockLabel} <span style="color:#718096; font-weight:normal;">(${currentRsv.toFixed(1)})</span>`;
+
+              // 判斷狀態文字與顏色
+              let statusText = "中性";
+              let rsvColor = "#4a5568";
+
+              if (currentRsv >= 70) {
+                statusText = "強勢";
+                rsvColor = "#e53e3e"; // 紅色
+              } else if (currentRsv >= 55) {
+                statusText = "偏多";
+                rsvColor = "#dd6b20"; // 橘色
+              } else if (currentRsv >= 40) {
+                statusText = "中性";
+                rsvColor = "#4a5568"; // 灰色
+              } else {
+                statusText = "偏弱";
+                rsvColor = "#3182ce"; // 藍色
+              }
+
+              // 清單顯示的文字（不再包含 RSV 數字）
+              const rsvText = `${stockLabel} <span style="color:${rsvColor}; font-weight:bold;">(${statusText})</span>`;
 
               if (history.length >= 2) {
                 const prevRsv = history[history.length - 2];
@@ -2278,14 +2301,19 @@
                 if (currentRsv <= 40) listWeak.push(rsvText);
               }
 
-              let rsvColor = currentRsv >= 60 ? "#e53e3e" : (currentRsv <= 40 ? "#3182ce" : "#4a5568");
-              let historyTrend = history.map(v => `<span style="background:#edf2f7; padding:2px 6px; border-radius:4px; margin-right:3px; font-size:11px; font-weight:normal;">${Math.round(v)}</span>`).join('➔');
+              let historyTrend = history.map((v, i, arr) => {
+                if (i === 0) return `<span style="background:#edf2f7; padding:2px 6px; border-radius:4px; margin-right:3px; font-size:11px;">起</span>`;
+                const diff = v - arr[i - 1];
+                const arrow = diff > 0 ? "↗" : (diff < 0 ? "↘" : "➔");
+                const color = diff > 0 ? "#e53e3e" : (diff < 0 ? "#3182ce" : "#4a5568");
+                return `<span style="color:${color}; font-weight:bold; margin-right:3px;">${arrow}</span>`;
+              }).join('');
               
               html += `
                 <tr style="border-bottom: 1px solid #e2e8f0;">
                   <td style="padding: 10px; font-weight:bold;">${stockLabel}</td>
                   <td style="padding: 10px; font-weight:bold; color:#2d3748;">$${stock.price}</td>
-                  <td style="padding: 10px; color:${rsvColor}; font-weight:bold;">${currentRsv.toFixed(2)}</td>
+                  <td style="padding: 10px; color:${rsvColor}; font-weight:bold;">${statusText}</td>
                   <td style="padding: 10px;">${historyTrend}</td>
                 </tr>
               `;
@@ -2516,7 +2544,7 @@
           upperNote = `(上一波動能強勁 +${lowerPct}%，解鎖 30% 天花板限制)`;
         } else {
           upperPct = 30.0;
-          upperNote = `(歷史空間 ${rawMaxReturn.toFixed(1)}% 過大，已啟動 30% 風控天花板)`;
+          upperNote = `(數據已自動套用波段上限風險控制機制)`;
         }
       } else {
         upperPct = parseFloat(rawMaxReturn.toFixed(1));
@@ -2538,16 +2566,16 @@
         <div>• <b>第一階段動能參考 (X%)</b>：${lowerPct}% <span style="color:#718096; font-size:11px;">[${lowerNote}]</span></div>
         
         <div style="color:#c53030; font-weight:bold; margin-top:6px; font-size:13px;">
-          💡 建議分批獲利了結區間：<span style="font-size:14px; color:#c53030;">${lowerPct.toFixed(1)}% ～ ${upperPct.toFixed(1)}%</span>
+          💡 依歷史波幅演算之區間對照：<span style="font-size:14px; color:#c53030;">${lowerPct.toFixed(1)}% ～ ${upperPct.toFixed(1)}%</span>
           <span style="font-size:11px; color:#d69e2e; font-weight:normal;">${upperNote}</span>
           <br>（對應目標價位：<span style="color:#2b6cb0;">$${minTargetPrice} ～ $${maxTargetPrice}</span>）
         </div>
 
         <div style="margin-top:8px; color:#4a5568; background:#edf2f7; padding:8px; border-radius:4px; font-size:11px; line-height:1.5;">
-          <b>🧠 戰術操作指引：</b><br>
-          1. <b>第一階段目標 ($${minTargetPrice} / +${lowerPct.toFixed(1)}%)</b>：建議到達此價位落袋 30%～50% 持股鎖定利潤。<br>
-          2. <b>第二階段目標 ($${maxTargetPrice} / +${upperPct.toFixed(1)}%)</b>：若持續鎖高，剩餘部位挑戰上限，達標後建議全數落袋。<br>
-          3. <b>風控防線</b>：若股價跌破最新起漲點低點，應考慮停損/離場。
+          <b>🧠 數據對照參考：</b><br>
+          1. <b>第一階段參考點 ($${minTargetPrice} / +${lowerPct.toFixed(1)}%)</b>：達到低階波幅對照位置。<br>
+          2. <b>第二階段參考點 ($${maxTargetPrice} / +${upperPct.toFixed(1)}%)</b>：達到高階波幅對照位置。<br>
+          3. <b>基準線參考</b>：若價格低於起漲基準價，代表動能結構趨弱。
         </div>
       `;
       resultDiv.style.display = "block";
