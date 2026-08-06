@@ -364,19 +364,19 @@
             <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
               <div style="flex: 1; min-width: 180px; background: #fff5f5; border-top: 4px solid #e53e3e; padding: 10px; border-radius: 6px;">
                 <div style="font-weight: bold; color: #c53030; font-size: 13px;">🚀 起漲準備</div>
-                <div style="font-size: 11px; color: #742a2a; margin-top: 2px;">近5H低於50 ➜ 今日強勢站上55</div>
+                <div style="font-size: 11px; color: #742a2a; margin-top: 2px;">原先疲弱 ➜ 準備轉強</div>
                 <div id="reco-breakout" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
               </div>
 
               <div style="flex: 1; min-width: 180px; background: #fffaf0; border-top: 4px solid #dd6b20; padding: 10px; border-radius: 6px;">
                 <div style="font-weight: bold; color: #c05621; font-size: 13px;">⚡ 黃金策略買進</div>
-                <div style="font-size: 11px; color: #7b341e; margin-top: 2px;">最新 RSV 轉強站上 60</div>
+                <div style="font-size: 11px; color: #7b341e; margin-top: 2px;">轉強站上起漲點</div>
                 <div id="reco-above60" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
               </div>
 
               <div style="flex: 1; min-width: 180px; background: #f0fff4; border-top: 4px solid #38a169; padding: 10px; border-radius: 6px;">
                 <div style="font-weight: bold; color: #276749; font-size: 13px;">🔥 高檔續強</div>
-                <div style="font-size: 11px; color: #22543d; margin-top: 2px;">強勢多頭格局>70，持續鎖高</div>
+                <div style="font-size: 11px; color: #22543d; margin-top: 2px;">強勢多頭格局，持續鎖高</div>
                 <div id="reco-strong" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
               </div>
             </div>
@@ -384,13 +384,13 @@
             <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
               <div style="flex: 1; min-width: 180px; background: #edf2f7; border-top: 4px solid #718096; padding: 10px; border-radius: 6px;">
                 <div style="font-weight: bold; color: #4a5568; font-size: 13px;">📉 動能減弱</div>
-                <div style="font-size: 11px; color: #4a5568; margin-top: 2px;">高檔回落<50，離場/觀察</div>
+                <div style="font-size: 11px; color: #4a5568; margin-top: 2px;">高檔回落，考慮離場/觀察</div>
                 <div id="reco-below60" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
               </div>
 
               <div style="flex: 1; min-width: 180px; background: #ebf8ff; border-top: 4px solid #3182ce; padding: 10px; border-radius: 6px;">
                 <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">⚠️ 弱勢/低迷</div>
-                <div style="font-size: 11px; color: #2c5282; margin-top: 2px;">動能疲軟<40，暫不宜操作</div>
+                <div style="font-size: 11px; color: #2c5282; margin-top: 2px;">動能疲軟，暫不宜操作</div>
                 <div id="reco-weak" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
               </div>
             </div>
@@ -399,7 +399,7 @@
             <div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e0;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">
-                  🎯 持有股票智慧分析與動態停利試算
+                  🎯 持有股票分析&停利試算
                 </div>
                 
                 <div style="display: flex; gap: 4px; align-items: center;">
@@ -407,7 +407,7 @@
                     <option value="">📂 快速載入已存個股...</option>
                   </select>
                   <button onclick="deleteCurrentSavedStock()" title="刪除選中的個股" style="background-color: #e53e3e; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; margin:0; font-weight:bold; cursor:pointer;">
-                    🗑️ 刪除
+                    🗑️
                   </button>
                 </div>
               </div>
@@ -2546,8 +2546,8 @@
         <div style="margin-top:8px; color:#4a5568; background:#edf2f7; padding:8px; border-radius:4px; font-size:11px; line-height:1.5;">
           <b>🧠 戰術操作指引：</b><br>
           1. <b>第一階段目標 ($${minTargetPrice} / +${lowerPct.toFixed(1)}%)</b>：建議到達此價位落袋 30%～50% 持股鎖定利潤。<br>
-          2. <b>第二階段目標 ($${maxTargetPrice} / +${upperPct.toFixed(1)}%)</b>：若 1.5H/60分K RSV 持續鎖高，剩餘部位挑戰上限，達標後建議全數落袋。<br>
-          3. <b>風控防線</b>：若股價跌破最新起漲點低點或 RSV 跌破 50，應無條件停損/離場。
+          2. <b>第二階段目標 ($${maxTargetPrice} / +${upperPct.toFixed(1)}%)</b>：若持續鎖高，剩餘部位挑戰上限，達標後建議全數落袋。<br>
+          3. <b>風控防線</b>：若股價跌破最新起漲點低點，應考慮停損/離場。
         </div>
       `;
       resultDiv.style.display = "block";
