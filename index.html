@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <link rel="manifest" href="manifest.json">
+  <!--<link rel="manifest" href="manifest.json">-->
   <meta name="theme-color" content="#4A5568">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,26 +43,75 @@
     .badge {
       display: inline-flex;
       align-items: center;
-      padding: 4px 10px;
-      border-radius: 12px;
+      padding: 5px 12px;
+      border-radius: 20px;
       font-size: 12px;
-      font-weight: bold;
+      font-weight: 800;
       color: #ffffff;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.6);
       margin-right: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background-size: 200% 200%;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
     }
 
-    .badge-high-profit { background: linear-gradient(135deg, #f093fb, #f5576c); }
-    .badge-millionaire { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-    .badge-newbie { background: linear-gradient(135deg, #96fbc4, #f9f586); color: #333333; text-shadow: none; }
+    .badge-high-profit { 
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
+      animation: shineSweep 4s infinite linear;
+    }
+    .badge-sweet {
+      background: linear-gradient(135deg, #a8edd2 0%, #fed6e3 100%);
+      color: #2d3748;
+      text-shadow: none;
+    }
+    .badge-millionaire { 
+      background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); 
+      border: 1px solid #7928ca;
+      box-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
+    }
+    .badge-newbie { 
+      background: linear-gradient(135deg, #718096 0%, #a0aec0 100%); 
+      color: #ffffff; 
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5); 
+      border: 1px solid rgba(255,255,255,0.2);
+    }
     .badge-veteran { background: linear-gradient(135deg, #373b44, #4286f4); }
-    .badge-budget { background: linear-gradient(135deg, #f6d365, #fda085); }
-    .badge-middle-class { background: linear-gradient(135deg, #2b5876, #4e4376); border: 1px solid #ffd700; }
+    .badge-budget { 
+      background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); 
+      color: #333;
+      text-shadow: none;
+    }
+    .badge-middle-class { 
+      background: linear-gradient(135deg, #1f1c2c 0%, #928dab 50%, #1f1c2c 100%); 
+      border: 1.5px solid #ffd700; 
+      color: #ffd700;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+      animation: shineSweep 5s infinite linear;
+    }
     .badge-steady-growth { background: linear-gradient(135deg, #0ba360, #3cba92); }
-    .badge-young-god { background: linear-gradient(135deg, #ff416c, #ff4b2b); color: #ffffff; border: 1px solid #ff7b72; animation: pulse 2s infinite; }
-    .badge-odd-lot { background: linear-gradient(135deg, #11998e, #38ef7d); color: #ffffff; border: 1px solid #a8ff78; }
+    .badge-young-god { 
+      background: linear-gradient(135deg, #ff0844 0%, #ffb199 50%, #ff0844 100%);
+      color: #ffffff; 
+      border: 1.5px solid #ff7b72; 
+      animation: pulseGlow 1.8s infinite ease-in-out, shineSweep 3s infinite linear; 
+      box-shadow: 0 0 12px rgba(255, 8, 68, 0.6), inset 0 0 6px rgba(255, 255, 255, 0.8);
+    }
+    .badge-odd-lot { 
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); 
+      color: #ffffff; 
+    }
+    .badge-wealthy {
+      background: linear-gradient(135deg, #ffe000 0%, #799f0c 100%);
+      color: #1a202c;
+      text-shadow: none;
+      font-weight: 900;
+      border: 1.5px solid #fff;
+      animation: pulseGlow 2.5s infinite ease-in-out;
+    }
 
     @keyframes pulse {
       0% { transform: scale(1); }
@@ -252,8 +301,15 @@
     }
 
     @keyframes shineSweep {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(1); box-shadow: 0 0 8px rgba(255, 8, 68, 0.4); }
+      50% { transform: scale(1.06); box-shadow: 0 0 18px rgba(255, 8, 68, 0.8), 0 0 25px rgba(255, 177, 153, 0.6); }
+      100% { transform: scale(1); box-shadow: 0 0 8px rgba(255, 8, 68, 0.4); }
     }
 
     .premium-badge {
@@ -313,30 +369,30 @@
     </div>
 
     <!-- 💼 整合功能區入口 Modal -->
-    <div id="featuresPortalModal" class="modal">
-      <div class="modal-content" style="max-width: 480px;">
-        <div class="modal-header">
-          <h3 style="margin:0; color:#3B82F6; display: flex; align-items: center; gap: 8px;">💼 豬豬智慧控制台</h3>
-        </div>
-        <div class="modal-body-scroll" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 5px;">
-          <button id="darkModeBtn" onclick="toggleDarkMode(); closeModal('featuresPortalModal');" style="background-color: #1A202C; color: white; margin:0; height: 50px;">🌓 深色模式</button>
-          <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🖼️ 更換背景</button>
-          <button class="calc-btn" onclick="openWithdrawModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">💰 提領試算</button>
-          <button class="rank-btn" onclick="openRankModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🏆 績效排行</button>
-          <button class="compound-btn" onclick="openCompoundModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">⏳ 複利計算</button>
-          <button class="target-btn" onclick="openTargetModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🎯 目態設定</button>
-          <button class="history-btn" onclick="openFundingHistoryModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">📊 資金歷程</button>
-          <button class="growth-btn" onclick="openAssetGrowthModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">📈 資產成長</button>
-          <button class="trend-btn" onclick="openStockDirectionModal(); closeModal('featuresPortalModal');" style="background-color: #4C6EF5; color: white; margin:0; height: 50px;">🔍 個股方向</button>
-          <!-- 🔒 動能即時監控：經過權限檢查 -->
-          <button onclick="checkAndOpenRsvModal()" style="background-color: #4cbdaa; color: white; margin:0; height: 50px; font-weight: bold;">⚡ 動能即時監控</button>
-          <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
-        </div>
-        <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
-          <button onclick="closeModal('featuresPortalModal')" style="width:100%; background-color:#718096; color: white;">關閉控制台</button>
-        </div>
-      </div>
+<div id="featuresPortalModal" class="modal">
+  <div class="modal-content" style="max-width: 480px;">
+    <div class="modal-header">
+      <h3 style="margin:0; color:#3B82F6; display: flex; align-items: center; gap: 8px;">💼 豬豬智慧控制台</h3>
     </div>
+    <div class="modal-body-scroll" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 5px;">
+      <button id="darkModeBtn" onclick="toggleDarkMode(); closeModal('featuresPortalModal');" style="background-color: #1A202C; color: white; margin:0; height: 50px;">🌓 深色模式</button>
+      <button class="bg-upload-btn" onclick="document.getElementById('bgInput').click(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🖼️ 更換背景</button>
+      <button class="calc-btn" onclick="openWithdrawModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">💰 提領試算</button>
+      <button class="rank-btn" onclick="openRankModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🏆 績效排行</button>
+      <button class="compound-btn" onclick="openCompoundModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">⏳ 複利計算</button>
+      <button class="target-btn" onclick="openTargetModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">🎯 目態設定</button>
+      <button class="history-btn" onclick="openFundingHistoryModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">📊 資金歷程</button>
+      <button class="growth-btn" onclick="openAssetGrowthModal(); closeModal('featuresPortalModal');" style="margin:0; height: 50px;">📈 資產成長</button>
+      <button class="trend-btn" onclick="openStockDirectionModal(); closeModal('featuresPortalModal');" style="background-color: #4C6EF5; color: white; margin:0; height: 50px;">🔍 個股方向</button>
+      <button onclick="checkAndOpenRsvModal()" style="background-color: #4cbdaa; color: white; margin:0; height: 50px; font-weight: bold;">⚡ 動能即時監控</button>
+      <button class="trend-btn" onclick="openAiAnalysisModal(); closeModal('featuresPortalModal');" style="background-color: #4F4CF5; color: white; margin:0; height: 50px; font-weight: bold;">🧐 智慧分析</button>
+      <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
+    </div>
+    <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
+      <button onclick="closeModal('featuresPortalModal')" style="width:100%; background-color:#718096; color: white;">關閉控制台</button>
+    </div>
+  </div>
+</div>
 
     <!-- 📈 動能即時監控 Modal -->
     <div id="rsvMonitoringModal" class="modal">
@@ -395,47 +451,48 @@
               </div>
             </div>
 
-            <!-- 🎯 持有所屬股票智慧分析與動態停利 -->
-            <div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e0;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">
-                  🎯 持有股票分析&停利試算
-                </div>
-                
-                <div style="display: flex; gap: 4px; align-items: center;">
-                  <select id="mySavedStocksSelect" onchange="loadSavedStockData()" style="padding: 3px 8px; font-size: 12px; border-radius: 4px; border: 1px solid #cbd5e0; max-width: 170px;">
-                    <option value="">📂 快速載入已存個股...</option>
-                  </select>
-                  <button onclick="deleteCurrentSavedStock()" title="刪除選中的個股" style="background-color: #e53e3e; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; margin:0; font-weight:bold; cursor:pointer;">
-                    🗑️
-                  </button>
-                </div>
-              </div>
-              
-              <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
-                <input type="text" id="myStockSymbol" placeholder="股票代號/名稱" style="flex:1; min-width:100px; padding:6px 10px; margin:0; font-size:12px;">
-                <input type="number" id="myBasePrice" placeholder="最新起漲基準價 (如波段低點價位)" style="flex:1.2; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
-                <input type="number" id="myMaxPrice" placeholder="歷史最高點價位" style="flex:1.2; min-width:120px; padding:6px 10px; margin:0; font-size:12px;">
-              </div>
+            <!-- 🎯 持有所屬股票智慧分析與動態停利 (雲端同步版) -->
+<div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e0; margin-top: 15px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+    <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">
+      🎯 持有股票分析&停利試算 (雲端同步)
+    </div>
+    
+    <div style="display: flex; gap: 4px; align-items: center;">
+      <!-- 雲端個股選擇下拉選單 -->
+      <select id="mySavedStocksSelect" onchange="loadSavedStockData()" style="padding: 3px 8px; font-size: 12px; border-radius: 4px; border: 1px solid #cbd5e0; max-width: 170px;">
+        <option value="">📂 載入雲端個股...</option>
+      </select>
+      <!-- 刪除雲端紀錄按鈕 -->
+      <button onclick="deleteCurrentSavedStock()" title="刪除選中的個股" style="background-color: #e53e3e; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; margin:0; font-weight:bold; cursor:pointer; border: none;">
+        🗑️
+      </button>
+    </div>
+  </div>
+  
+  <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
+    <input type="text" id="myStockSymbol" placeholder="股票代號/名稱" style="flex:1; min-width:100px; padding:6px 10px; margin:0; font-size:12px;">
+    <input type="number" id="myBasePrice" placeholder="最新起漲基準價 (如波段低點價位)" style="flex:1.2; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
+    <input type="number" id="myMaxPrice" placeholder="歷史最高點價位" style="flex:1.2; min-width:120px; padding:6px 10px; margin:0; font-size:12px;">
+  </div>
 
-              <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
-                <input type="number" id="myPrevBasePrice" placeholder="上一波起漲價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
-                <input type="number" id="myPrevMaxPrice" placeholder="上一波衝頂高價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
-              </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
+    <input type="number" id="myPrevBasePrice" placeholder="上一波起漲價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
+    <input type="number" id="myPrevMaxPrice" placeholder="上一波衝頂高價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
+  </div>
 
-              <div style="display: flex; gap: 8px;">
-                <button onclick="analyzeMyStockProfit(true)" style="background-color: #3182ce; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 2; cursor:pointer;">
-                  🧠 執行智慧動態分析
-                </button>
-                <button onclick="saveCurrentStockData()" style="background-color: #38a169; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 1; cursor:pointer;">
-                  💾 儲存此個股
-                </button>
-              </div>
-              
-              <div id="stockNotificationBanner" style="display:none; margin-top: 10px; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;"></div>
-              <div id="myStockAnalysisResult" style="display:none; margin-top: 10px; padding: 10px; background: #f7fafc; border-left: 4px solid #3182ce; border-radius: 4px; font-size: 12px; line-height: 1.6;"></div>
-            </div>
-          </div>
+  <div style="display: flex; gap: 8px;">
+    <button onclick="analyzeMyStockProfit(true)" style="background-color: #3182ce; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 2; cursor:pointer; border: none;">
+      🧠 執行智慧動態分析
+    </button>
+    <button onclick="saveCurrentStockData()" style="background-color: #38a169; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 1; cursor:pointer; border: none;">
+      💾 儲存至雲端
+    </button>
+  </div>
+  
+  <div id="stockNotificationBanner" style="display:none; margin-top: 10px; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;"></div>
+  <div id="myStockAnalysisResult" style="display:none; margin-top: 10px; padding: 10px; background: #f7fafc; border-left: 4px solid #3182ce; border-radius: 4px; font-size: 12px; line-height: 1.6;"></div>
+</div>
           
           <!-- 詳細表格區 -->
           <div style="overflow-x: auto; margin-top: 15px;">
@@ -462,7 +519,11 @@
         </div>
       </div>
     </div>
-
+  <div id="aiLoading" style="display:none; margin-top: 8px; color: #4f46e5; font-size: 12px; font-weight: bold;">
+    ⏳ AI 正在檢視市場數據與基本面分析中...
+  </div>
+  <div id="aiResultBox" style="display:none; margin-top: 10px; padding: 12px; background: #ffffff; border-left: 4px solid #6366f1; border-radius: 6px; font-size: 12.5px; line-height: 1.6; color: #1e1b4b; white-space: pre-wrap;"></div>
+</div>
     <div id="rankModal" class="modal">
       <div class="modal-content">
         <div class="modal-header"><h3 style="margin:0; color:#6B46C1;">🏆 成員績效排行</h3></div>
@@ -499,6 +560,8 @@
       </div>
     </div>
 
+    
+    
     <div id="compoundModal" class="modal">
       <div class="modal-content">
         <div class="modal-header"><h3 style="margin:0; color:#D69E2E;">⏳ 長期複利效益計算</h3></div>
@@ -630,7 +693,48 @@
         </div>
       </div>
     </div>
+    <!-- 🧐 智慧分析 Modal -->
+<div id="aiAnalysisModal" class="modal">
+  <div class="modal-content" style="max-width: 550px;">
+    <div class="modal-header">
+      <h3 style="margin:0; color:#4F4CF5; display: flex; align-items: center; gap: 8px;">
+        🧐 AI 智慧股票分析
+      </h3>
+    </div>
+    <div class="modal-body-scroll">
+      <p style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 12px;">
+        輸入想查詢的個股或提問，系統將送出給 AI 進行多維度綜合分析（包含基本面本益比、營運近況與技術面警語）。
+      </p>
 
+      <!-- 問答輸入框 -->
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <input type="text" id="aiAnalysisQueryInput" value="台積電 這檔股票最近好嗎? 分析一下" placeholder="請輸入股票代號或名稱，例如：台積電 最近好嗎？" style="flex: 1; margin: 0; font-size: 13px; padding: 10px 12px;">
+        <button onclick="askGeminiAIAnalysis()" style="background-color: #4F4CF5; color: white; padding: 10px 18px; margin: 0; font-size: 13px; font-weight: bold; cursor: pointer; border: none; border-radius: 8px; flex-shrink: 0;">
+          🧠 開始分析
+        </button>
+      </div>
+
+      <!-- 快捷問題與代碼標籤 -->
+      <div style="margin-bottom: 12px; background: rgba(79, 76, 245, 0.05); padding: 10px; border-radius: 8px; border: 1px dashed #c7d2fe;">
+        <small style="color: #4F4CF5; font-weight: bold; display: block; margin-bottom: 6px;">💡 快捷發問範本 (點擊帶入)：</small>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          <button onclick="applyAiPreset('2330 台積電')" style="background: #ffffff; border: 1px solid #c7d2fe; color: #3730a3; border-radius: 12px; padding: 3px 10px; font-size: 11px; margin: 0;">2330 台積電</button>
+          <button onclick="applyAiPreset('2454 聯發科')" style="background: #ffffff; border: 1px solid #c7d2fe; color: #3730a3; border-radius: 12px; padding: 3px 10px; font-size: 11px; margin: 0;">2454 聯發科</button>
+          <button onclick="applyAiPreset('2317 鴻海')" style="background: #ffffff; border: 1px solid #c7d2fe; color: #3730a3; border-radius: 12px; padding: 3px 10px; font-size: 11px; margin: 0;">2317 鴻海</button>
+        </div>
+      </div>
+
+      <div id="aiAnalysisLoading" style="display:none; text-align: center; margin: 20px 0; color: #4F4CF5; font-weight: bold; font-size: 13px;">
+        ⏳ AI 正在即時調閱市場資訊與基本面數據，請稍候約 3~5 秒...
+      </div>
+
+      <div id="aiAnalysisResultBox" style="display: none; background: #ffffff; border-left: 4px solid #4F4CF5; border-radius: 8px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-top: 10px; font-size: 13px; line-height: 1.6; color: #1e1b4b; white-space: pre-wrap;"></div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('aiAnalysisModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
+    </div>
+  </div>
+</div>
     <!-- 🔍 個股方向查詢 Modal -->
     <div id="stockDirectionModal" class="modal">
       <div class="modal-content" style="max-width: 500px;">
@@ -900,49 +1004,93 @@
       });
     }
 
-    function renderUserBadge(user) {
-      const container = document.getElementById('user-badge-container');
-      if (!container) {
-        setTimeout(() => renderUserBadge(user), 50);
-        return;
-      }
+      function renderUserBadge(user) {
+  const container = document.getElementById('user-badge-container');
+  if (!container) {
+    setTimeout(() => renderUserBadge(user), 50);
+    return;
+  }
 
-      const rawValue = user.accountValue || user.totalAsset || "0";
-      const cleanAssetValue = typeof rawValue === 'string' 
+  // 1. 資產現值取值順序：全域變數 -> DOM 儀表板現值 -> 傳入參數
+  let cleanAssetValue = window.currentGlobalTotalValue || 0;
+  
+  if (!cleanAssetValue) {
+    const domAsset = document.getElementById('dashboardCurrentValue');
+    if (domAsset && domAsset.innerText && domAsset.innerText !== "$--") {
+      cleanAssetValue = Number(domAsset.innerText.replace(/[^0-9.-]+/g, "")) || 0;
+    }
+  }
+
+  if (!cleanAssetValue && user) {
+    let rawValue = user.accountValue !== undefined ? user.accountValue : user.totalAsset;
+    if (rawValue) {
+      cleanAssetValue = typeof rawValue === 'string' 
         ? Number(rawValue.replace(/[^0-9.-]+/g, "")) 
         : Number(rawValue);
-
-      let badges = [];
-
-      if (user.monthlyReturn > 20) {
-        badges.push('<span class="badge badge-young-god">⚡ 少年股神</span>');
-      } else if (user.monthlyReturn > 10) {
-        badges.push('<span class="badge badge-high-profit">🔥 獲利超群</span>');
-      } else if (user.monthlyReturn < 0) {
-        badges.push('<span class="badge badge-newbie">🤦‍♀️ 盤勢整理</span>');
-      } 
-
-      if (cleanAssetValue >= 3000000) {
-        badges.push('<span class="badge badge-middle-class">🏦 中產達人</span>');
-      } else if (cleanAssetValue >= 1000000) {
-        badges.push('<span class="badge badge-millionaire">💎 百萬達人</span>');
-      } else if (cleanAssetValue < 1000000 && cleanAssetValue > 0) {
-        badges.push('<span class="badge badge-budget">🪙 小資族</span>');
-      }
-
-      if (cleanAssetValue > 0) {
-        const totalProfit = user.modalTotalProfit || 0; 
-        if (totalProfit > 500000) {
-          badges.push('<span class="badge badge-wealthy">💰 發家致富</span>');
-        } else if (totalProfit >= 100000 && totalProfit <= 500000) {
-          badges.push('<span class="badge badge-sweet">🍬 嘗到甜頭</span>');
-        } else {
-          badges.push('<span class="badge badge-odd-lot">🔄 財富轉變</span>');
-        }
-      }
-
-      container.innerHTML = badges.join(' ');
     }
+  }
+
+  // 2. 本月幅度取值順序
+  let monthlyReturn = 0;
+  const domReturn = document.getElementById('monthPerformance');
+  if (domReturn && domReturn.innerText && domReturn.innerText !== "--") {
+    monthlyReturn = parseFloat(domReturn.innerText.replace(/[^0-9.-]+/g, "")) || 0;
+  } else if (user && user.monthlyReturn) {
+    monthlyReturn = typeof user.monthlyReturn === 'string'
+      ? parseFloat(user.monthlyReturn.replace(/[^0-9.-]+/g, ""))
+      : Number(user.monthlyReturn);
+  }
+  if (isNaN(monthlyReturn)) monthlyReturn = 0;
+
+  // 3. 獲利累積金額取值順序
+  let totalProfit = (window.currentGlobalTotalProfit !== undefined && window.currentGlobalTotalProfit !== 0) 
+    ? window.currentGlobalTotalProfit 
+    : (user ? user.modalTotalProfit : 0);
+
+  if ((!totalProfit || totalProfit === 0) && cleanAssetValue > 0) {
+    const domCost = document.getElementById('dashboardTotalCost');
+    if (domCost && domCost.innerText && domCost.innerText !== "$--") {
+      const costValue = Number(domCost.innerText.replace(/[^0-9.-]+/g, "")) || 0;
+      totalProfit = cleanAssetValue - costValue;
+    }
+  }
+  if (isNaN(totalProfit)) totalProfit = 0;
+
+  let badges = [];
+
+  // 【本月績效勳章】
+  if (monthlyReturn >= 20) {
+    badges.push('<span class="badge badge-young-god">⚡ 少年股神</span>');
+  } else if (monthlyReturn >= 10) {
+    badges.push('<span class="badge badge-high-profit">🔥 獲利超群</span>');
+  } else if (monthlyReturn > 0) {
+    badges.push('<span class="badge badge-steady-growth">🌱 穩健成長</span>');
+  } else if (monthlyReturn < 0) {
+    badges.push('<span class="badge badge-newbie">🤦‍♀️ 盤勢整理</span>');
+  } 
+
+  // 【資產規模勳章】(只要資產 > 0 就一定顯示)
+  if (cleanAssetValue >= 3000000) {
+    badges.push('<span class="badge badge-middle-class">🏦 中產達人</span>');
+  } else if (cleanAssetValue >= 1000000) {
+    badges.push('<span class="badge badge-millionaire">💎 百萬達人</span>');
+  } else if (cleanAssetValue > 0) {
+    badges.push('<span class="badge badge-budget">🪙 小資族</span>');
+  }
+
+  // 【獲利累積勳章】
+  if (cleanAssetValue > 0) {
+    if (totalProfit > 500000) {
+      badges.push('<span class="badge badge-wealthy">💰 發家致富</span>');
+    } else if (totalProfit >= 100000) {
+      badges.push('<span class="badge badge-sweet">🍬 嘗到甜頭</span>');
+    } else {
+      badges.push('<span class="badge badge-odd-lot">🔄 財富轉態</span>');
+    }
+  }
+
+  container.innerHTML = badges.join(' ');
+}
 
     function openFundingHistoryModal() {
       const currentUser = localStorage.getItem('currentUser') || '';
@@ -1238,7 +1386,9 @@
         if (!snap.exists()) {
           logsContainer.innerHTML = "尚無歷史資金進出明細";
           cardsContainer.innerHTML = "<div style='color:gray; font-size:0.85em;'>目前無任何項目持倉</div>";
-          renderUserBadge({ accountValue: 0, monthlyReturn: 0, growthDays: 0 });
+          
+          // 重新渲染勳章，會自動抓取全域變數或 DOM 儀表板現值
+          renderUserBadge();
           return 0;
         }
         
@@ -1764,12 +1914,11 @@
         console.error(globalError);
         listEl.innerHTML = "<li>❌ 系統計算損益時發生錯誤。</li>";
       }
-
-      setTimeout(() => {
-        if (typeof loadFundingRecords === 'function') {
-          loadFundingRecords();
-        }
-      }, 100);
+      renderUserBadge({
+        accountValue: currentGlobalTotalValue,
+        monthlyReturn: parseFloat(document.getElementById("monthPerformance")?.innerText.replace(/[^0-9.-]+/g, "")) || 0,
+        modalTotalProfit: currentGlobalTotalProfit
+      });
     }
 
     function renderPieChart(sectorMap) {
@@ -1856,6 +2005,11 @@
         }
       });
       mddEl.textContent = `-${maxDropPercent.toFixed(1)}%`;
+      renderUserBadge({
+        accountValue: window.currentGlobalTotalValue,
+        monthlyReturn: parseFloat(document.getElementById("monthPerformance").innerText.replace(/[^0-9.-]+/g, "")) || 0,
+        modalTotalProfit: window.currentGlobalTotalProfit
+      });
     }
 
     function updateProfitDifference(curr) {
@@ -2623,6 +2777,85 @@
         resultDiv.innerHTML = "";
       }
     }
+
+const GEMINI_API_KEY = "AQ.Ab8RN6L-BOkB4eQzTBqOX7lofl9Wk0ZxsCXF__jp_Scvdy0-kw";
+
+function openAiAnalysisModal() {
+  openModal('aiAnalysisModal');
+}
+
+function applyAiPreset(stockName) {
+  const input = document.getElementById("aiAnalysisQueryInput");
+  if (input) {
+    input.value = `${stockName} 這檔股票最近好嗎? 分析一下`;
+  }
+}
+
+async function askGeminiAIAnalysis() {
+  const queryInput = document.getElementById("aiAnalysisQueryInput");
+  const loading = document.getElementById("aiAnalysisLoading");
+  const resultBox = document.getElementById("aiAnalysisResultBox");
+
+  const query = queryInput ? queryInput.value.trim() : "";
+  if (!query) {
+    alert("請輸入要分析的股票名稱或問題！");
+    return;
+  }
+
+  loading.style.display = "block";
+  resultBox.style.display = "none";
+
+  const systemPrompt = `你是一位客觀、專業的台股與美股投資分析師。
+請根據使用者詢問的個股資訊進行綜合剖析，回答請涵蓋以下三個維度：
+1. **營運近況與產業趨勢**：說明該個股近期市場焦點、產業景氣與營運動向。
+2. **基本面與估值分析**：
+   - 分析其本益比 (P/E) 與估值狀態。
+   - 一般原則下，本益比超過 20 倍屬偏高/成長期待高，20 倍以內屬相對健康或合理區間，請結合該產業特性給出評估。
+3. **投資風險與觀點摘要**：給出客觀總結與注意事項。
+
+【回答格式要求】：
+- 請使用繁體中文。
+- 使用清晰的條列式說明，文字簡潔直觀，方便手機閱讀。
+- 結尾請附帶警語：「※ 以上評估僅供參考，不構成投資建議，投資人應獨立思考並自負風險。」`;
+
+  try {
+    // 💡 將模型名稱改為 gemini-flash-latest 或 gemini-2.5-flash
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-goog-api-key': GEMINI_API_KEY
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: `${systemPrompt}\n\n使用者提問：${query}` }]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    loading.style.display = "none";
+
+    if (data.error) {
+      resultBox.textContent = `⚠️ API 錯誤 (${data.error.code})：${data.error.message}`;
+      resultBox.style.display = "block";
+      return;
+    }
+
+    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+      resultBox.textContent = data.candidates[0].content.parts[0].text;
+      resultBox.style.display = "block";
+    } else {
+      resultBox.textContent = "⚠️ 無法取得分析結果，請確認輸入內容或稍後再試。";
+      resultBox.style.display = "block";
+    }
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    loading.style.display = "none";
+    resultBox.textContent = "❌ 連線至 AI 服務失敗，請檢查網路連線。";
+    resultBox.style.display = "block";
+  }
+}
   </script>
 </body>
 </html>
