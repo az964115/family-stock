@@ -2531,11 +2531,26 @@
         statusSpan.style.color = "#718096";
         statusSpan.textContent = "🚀 正在將新陣列同步寫入 GAS 雲端... 請稍候";
         
-        const targetUrl = `${GAS_WEB_APP_URL}?action=saveTrackingStocks&data=${encodeURIComponent(JSON.stringify(parsed))}`;
-        
-        fetch(targetUrl)
-        .then(res => res.json())
-        .then(response => {
+        // 使用 POST 方式傳送大量資料，解決 URL 過長連線失敗問題
+        fetch(GAS_WEB_APP_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            action: "saveTrackingStocks",
+            data: parsed
+          })
+        })
+        .then(res => res.text())
+        .then(textData => {
+          let response;
+          try {
+            response = JSON.parse(textData);
+          } catch(e) {
+            throw new Error("伺服器回應格式異常");
+          }
+
           if (response.status === "success") {
             statusSpan.style.color = "green";
             statusSpan.textContent = "✅ 資料已成功同步至雲端！";
