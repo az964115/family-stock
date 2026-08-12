@@ -2531,16 +2531,17 @@
         statusSpan.style.color = "#718096";
         statusSpan.textContent = "🚀 正在將新陣列同步寫入 GAS 雲端... 請稍候";
         
-        // 使用 POST 方式傳送大量資料，解決 URL 過長連線失敗問題
+        // 💡 關鍵：使用 application/x-www-form-urlencoded 格式發送，避開 CORS Preflight 檢查
+        const formData = new URLSearchParams();
+        formData.append("action", "saveTrackingStocks");
+        formData.append("data", JSON.stringify(parsed));
+
         fetch(GAS_WEB_APP_URL, {
           method: "POST",
           headers: {
-            "Content-Type": "text/plain;charset=utf-8"
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
           },
-          body: JSON.stringify({
-            action: "saveTrackingStocks",
-            data: parsed
-          })
+          body: formData.toString()
         })
         .then(res => res.text())
         .then(textData => {
@@ -2548,7 +2549,7 @@
           try {
             response = JSON.parse(textData);
           } catch(e) {
-            throw new Error("伺服器回應格式異常");
+            throw new Error("伺服器回應解析異常");
           }
 
           if (response.status === "success") {
