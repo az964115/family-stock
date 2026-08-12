@@ -2406,12 +2406,12 @@
       tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #4cbdaa;">🔄 正在向雲端請求即時計算數據...</td></tr>`;
       
       fetch(`${GAS_WEB_APP_URL}?action=getLiveRsv`)
-        .then(res => res.text()) // 1. 先用 text 取回內容，避免直接 .json() 導致 HTML 崩潰
+        .then(res => res.text())
         .then(text => {
           loadingDiv.style.display = "none";
           let response;
           try {
-            response = JSON.parse(text); // 2. 安全解析 JSON
+            response = JSON.parse(text);
           } catch (e) {
             throw new Error("伺服器發送了非 JSON 格式（可能為 Google 404 / 逾時），請稍後再試。");
           }
@@ -2461,7 +2461,7 @@
               }
 
               let historyTrend = history.map((v, i, arr) => {
-                if (i === 0) return `<span style="background:#edf2f7; padding:2px 6px; border-radius:4px; margin-right:3px; font-size:11px;">起</span>`;
+                if (i === 0) return `<span style="background:#edf2f7; padding:2px 6px; border-radius:4px; font-size:11px;">起</span>`;
                 const diff = v - arr[i - 1];
                 const arrow = diff > 0 ? "↗" : (diff < 0 ? "↘" : "➔");
                 const color = diff > 0 ? "#e53e3e" : (diff < 0 ? "#3182ce" : "#4a5568");
@@ -2497,22 +2497,40 @@
         });
     }
 
-    function loadStockListFromGas() {
+    function loadStockListFromGas(retryCount = 0) {
       const textarea = document.getElementById("stock-list-textarea");
-      if(!textarea) return;
-      textarea.value = "正在自雲端抓取清單中...⌛";
+      if (!textarea) return;
+
+      if (retryCount === 0) {
+        textarea.value = "正在自雲端抓取清單中...⌛";
+      } else {
+        textarea.value = `連線重試中 (第 ${retryCount}/3 次)...⌛`;
+      }
       
       fetch(`${GAS_WEB_APP_URL}?action=getTrackingStocks`)
-        .then(res => res.json())
-        .then(response => {
-          if(response.status === "success") {
+        .then(res => res.text())
+        .then(textData => {
+          let response;
+          try {
+            response = JSON.parse(textData);
+          } catch (e) {
+            throw new Error("伺服器傳回非 JSON 格式（可能為 Google 冷啟動）");
+          }
+
+          if (response.status === "success") {
             textarea.value = JSON.stringify(response.data, null, 2);
           } else {
             textarea.value = `讀取失敗：${response.message}`;
           }
         })
         .catch(err => {
-          textarea.value = "連線失敗，無法取得雲端追蹤個股清單。";
+          if (retryCount < 3) {
+            setTimeout(() => {
+              loadStockListFromGas(retryCount + 1);
+            }, 1200);
+          } else {
+            textarea.value = "⚠️ 連線失敗，無法取得雲端追蹤個股清單。\n\n請點擊「智慧功能區」重新開啟控制台即可。";
+          }
         });
     }
 
@@ -2531,7 +2549,6 @@
         statusSpan.style.color = "#718096";
         statusSpan.textContent = "🚀 正在將新陣列同步寫入 GAS 雲端... 請稍候";
         
-        // 💡 關鍵：使用 application/x-www-form-urlencoded 格式發送，避開 CORS Preflight 檢查
         const formData = new URLSearchParams();
         formData.append("action", "saveTrackingStocks");
         formData.append("data", JSON.stringify(parsed));
