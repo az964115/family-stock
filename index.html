@@ -2406,11 +2406,18 @@
       tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #4cbdaa;">🔄 正在向雲端請求即時計算數據...</td></tr>`;
       
       fetch(`${GAS_WEB_APP_URL}?action=getLiveRsv`)
-        .then(res => res.json())
-        .then(response => {
+        .then(res => res.text()) // 1. 先用 text 取回內容，避免直接 .json() 導致 HTML 崩潰
+        .then(text => {
           loadingDiv.style.display = "none";
+          let response;
+          try {
+            response = JSON.parse(text); // 2. 安全解析 JSON
+          } catch (e) {
+            throw new Error("伺服器發送了非 JSON 格式（可能為 Google 404 / 逾時），請稍後再試。");
+          }
+
           if(response.status === "success") {
-            if(response.data.length === 0) {
+            if(!response.data || response.data.length === 0) {
               tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #718096;">目前清單中無有效個股數據。</td></tr>`;
               return;
             }
@@ -2423,25 +2430,23 @@
               const history = stock.history5H || [];
               const stockLabel = `${stock.id.split('.')[0]} ${stock.name}`;
 
-              // 判斷狀態文字與顏色
               let statusText = "中性";
               let rsvColor = "#4a5568";
 
               if (currentRsv >= 70) {
                 statusText = "強勢";
-                rsvColor = "#e53e3e"; // 紅色
+                rsvColor = "#e53e3e";
               } else if (currentRsv >= 55) {
                 statusText = "偏多";
-                rsvColor = "#dd6b20"; // 橘色
+                rsvColor = "#dd6b20";
               } else if (currentRsv >= 40) {
                 statusText = "中性";
-                rsvColor = "#4a5568"; // 灰色
+                rsvColor = "#4a5568";
               } else {
                 statusText = "偏弱";
-                rsvColor = "#3182ce"; // 藍色
+                rsvColor = "#3182ce";
               }
 
-              // 清單顯示的文字（不再包含 RSV 數字）
               const rsvText = `${stockLabel} <span style="color:${rsvColor}; font-weight:bold;">(${statusText})</span>`;
 
               if (history.length >= 2) {
@@ -2488,7 +2493,7 @@
         })
         .catch(err => {
           loadingDiv.style.display = "none";
-          tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">連線失敗，請檢查 API 的 CORS 是否已開放。</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">${err.message}</td></tr>`;
         });
     }
 
@@ -2809,7 +2814,7 @@ async function askGeminiAIAnalysis() {
     const targetUrl = `${GAS_WEB_APP_URL}?action=askAi&query=${encodeURIComponent(query)}`;
     const response = await fetch(targetUrl);
     
-    // 取得原始文字內容，先不直接轉 json 避免 404 HTML 導致 Crash
+    // 取回原始文字內容進行驗證
     const responseText = await response.text();
     
     let responseData;
@@ -2817,7 +2822,7 @@ async function askGeminiAIAnalysis() {
       responseData = JSON.parse(responseText);
     } catch (parseError) {
       console.error("非 JSON 回應內容：", responseText);
-      throw new Error("伺服器回傳格式錯誤（可能為 404 網址失效或重新導向錯誤），請檢查 GAS 部署網址是否正確。");
+      throw new Error("伺服器發送了非 JSON 格式頁面（可能為 404 或 Google 登入驗證頁），請確認 GAS 已部署為「所有人」存取。");
     }
 
     loading.style.display = "none";
@@ -2832,7 +2837,7 @@ async function askGeminiAIAnalysis() {
   } catch (error) {
     console.error("Gemini AI Request Error:", error);
     loading.style.display = "none";
-    resultBox.textContent = `❌ 連線至智慧分析服務失敗：${error.message}`;
+    resultBox.textContent = `❌ 連線失敗：${error.message}`;
     resultBox.style.display = "block";
   }
 }
