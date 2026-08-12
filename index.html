@@ -2808,13 +2808,16 @@ async function askGeminiAIAnalysis() {
   try {
     const targetUrl = `${GAS_WEB_APP_URL}?action=askAi&query=${encodeURIComponent(query)}`;
     const response = await fetch(targetUrl);
+    
+    // 取得原始文字內容，先不直接轉 json 避免 404 HTML 導致 Crash
     const responseText = await response.text();
     
     let responseData;
     try {
       responseData = JSON.parse(responseText);
     } catch (parseError) {
-      throw new Error("伺服器忙碌中或逾時，回傳了非 JSON 格式。請稍候 5 秒再點一次。");
+      console.error("非 JSON 回應內容：", responseText);
+      throw new Error("伺服器回傳格式錯誤（可能為 404 網址失效或重新導向錯誤），請檢查 GAS 部署網址是否正確。");
     }
 
     loading.style.display = "none";
@@ -2827,8 +2830,9 @@ async function askGeminiAIAnalysis() {
       resultBox.style.display = "block";
     }
   } catch (error) {
+    console.error("Gemini AI Request Error:", error);
     loading.style.display = "none";
-    resultBox.textContent = `❌ 連線失敗：${error.message}`;
+    resultBox.textContent = `❌ 連線至智慧分析服務失敗：${error.message}`;
     resultBox.style.display = "block";
   }
 }
