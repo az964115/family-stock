@@ -2893,6 +2893,7 @@ function openEveningExpressModal() {
   fetchEveningData(); // 開啓同時自動刷新載入
 }
 
+// 核心晚間快報刷新邏輯 (含雙重備用與即時美股)
 async function fetchEveningData() {
   const loading = document.getElementById("expressLoading");
   if (loading) loading.style.display = "block";
@@ -2901,33 +2902,48 @@ async function fetchEveningData() {
   document.getElementById("marginSell").innerText = "抓取中...";
   document.getElementById("institutionalNet").innerText = "抓取中...";
 
-  // --- A. 讀取專案內 GitHub Actions 自動更新的資券餘額 JSON ---
+  // --- A. 讀取台股資券餘額 (優先讀取專案 JSON，失敗時退回直連) ---
   try {
-    const marginRes = await fetch('./data/margin.json');
-    const marginData = await marginRes.json();
+    let marginData = null;
+    
+    // 嘗試 1: 讀取 GitHub Actions 定時產生的 static json
+    const res = await fetch('./data/margin.json?t=' + Date.now()).catch(() => null);
+    if (res && res.ok) {
+      marginData = await res.json();
+    }
+
+    // 嘗試 2: 若專案內無檔案，嘗試直連 TWSE OpenAPI
+    if (!Array.isArray(marginData) || marginData.length === 0) {
+      const directRes = await fetch("https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN").catch(() => null);
+      if (directRes && directRes.ok) marginData = await directRes.json();
+    }
     
     if (Array.isArray(marginData) && marginData.length > 0) {
       const latest = marginData[marginData.length - 1]; 
-      
       const buyMargin = latest["融資餘額(張)"] || latest["融資餘額"] || latest["買進"];
       const sellMargin = latest["融券餘額(張)"] || latest["融券餘額"] || latest["賣出"];
 
       document.getElementById("marginBuy").innerText = buyMargin ? `${Number(buyMargin).toLocaleString()} 張` : "已結算";
       document.getElementById("marginSell").innerText = sellMargin ? `${Number(sellMargin).toLocaleString()} 張` : "已結算";
     } else {
-      document.getElementById("marginBuy").innerText = "統計中";
-      document.getElementById("marginSell").innerText = "統計中";
+      document.getElementById("marginBuy").innerText = "約 21:00 結算發布";
+      document.getElementById("marginSell").innerText = "約 21:00 結算發布";
     }
   } catch (e) {
-    console.warn("資券餘額讀取失敗:", e);
     document.getElementById("marginBuy").innerText = "暫無數據";
     document.getElementById("marginSell").innerText = "暫無數據";
   }
 
-  // --- B. 讀取三大法人買賣超 JSON ---
+  // --- B. 讀取三大法人買賣超 ---
   try {
-    const instRes = await fetch('./data/fund.json');
-    const instData = await instRes.json();
+    let instData = null;
+    const res = await fetch('./data/fund.json?t=' + Date.now()).catch(() => null);
+    if (res && res.ok) instData = await res.json();
+
+    if (!Array.isArray(instData) || instData.length === 0) {
+      const directRes = await fetch("https://openapi.twse.com.tw/v1/fund/BFI82U").catch(() => null);
+      if (directRes && directRes.ok) instData = await directRes.json();
+    }
 
     if (Array.isArray(instData) && instData.length > 0) {
       let totalNet = 0;
@@ -2940,51 +2956,56 @@ async function fetchEveningData() {
       const color = totalNet >= 0 ? "#DC2626" : "#16A34A"; // 紅買綠賣
       document.getElementById("institutionalNet").innerHTML = `<span style="color:${color}; font-weight:bold;">${netInMillions > 0 ? '+' : ''}${netInMillions} 億</span>`;
     } else {
-      document.getElementById("institutionalNet").innerText = "統計中";
+      document.getElementById("institutionalNet").innerText = "約 18:30 結算發布";
     }
   } catch (e) {
-    console.warn("三大法人數據讀取失敗:", e);
     document.getElementById("institutionalNet").innerText = "暫無數據";
   }
 
-  // --- C. 美股數據 ---
+  // --- C. 即時美股數據 ---
   await fetchUsStockData();
 
+  // --- D. 財經新聞 ---
   fetchMarketNews();
+
   if (loading) loading.style.display = "none";
 }
 
-// 美股四大指數 (使用 Yahoo API JSONP 避免被代理主機衝擊)
+// 修正：強健型美股指數解析 ( Stooq CSV 即時資料流 )
 async function fetchUsStockData() {
   const symbols = [
-    { id: "usDJI", code: "%5EDJI" },   // 道瓊
-    { id: "usIXIC", code: "%5EIXIC" }, // 那斯達克
-    { id: "usGSPC", code: "%5EGSPC" }, // S&P 500
-    { id: "usSOX", code: "%5ESOX" }    // 費半
+    { id: "usDJI", code: "^dji" },   // 道瓊
+    { id: "usIXIC", code: "^ndq" }, // 那斯達克
+    { id: "usGSPC", code: "^spx" }, // S&P 500
+    { id: "usSOX", code: "^sox" }    // 費半
   ];
 
   for (const item of symbols) {
     try {
-      // 透過 JSONP 注入 script，不經過第三方 Proxy 即可繞過 CORS
-      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${item.code}?interval=1d&range=1d`;
-      const data = await fetchJsonp(url);
+      const res = await fetch(`https://stooq.com/q/l/?s=${item.code}&f=sdal12c&e=csv`);
+      const text = await res.text();
       
-      if (data && data.chart && data.chart.result && data.chart.result.length > 0) {
-        const meta = data.chart.result[0].meta;
-        const currentPrice = meta.regularMarketPrice;
-        const prevClose = meta.chartPreviousClose || meta.previousClose;
-        const changePct = ((currentPrice - prevClose) / prevClose) * 100;
+      const lines = text.trim().split('\n');
+      if (lines.length >= 2) {
+        const cols = lines[1].split(',');
+        const currentPrice = parseFloat(cols[6]); 
+        const changePctStr = cols[cols.length - 1]; 
+        const changePct = parseFloat(changePctStr ? changePctStr.replace('%', '') : 0);
 
-        const color = changePct >= 0 ? "#DC2626" : "#16A34A";
-        const sign = changePct >= 0 ? "+" : "";
+        if (!isNaN(currentPrice)) {
+          const color = changePct >= 0 ? "#DC2626" : "#16A34A";
+          const sign = changePct >= 0 ? "+" : "";
 
-        const elem = document.getElementById(item.id);
-        if (elem) {
-          elem.innerHTML = `<b>${currentPrice.toLocaleString(undefined, {maximumFractionDigits: 2})}</b> <span style="color:${color}; font-weight:bold;">(${sign}${changePct.toFixed(2)}%)</span>`;
+          const elem = document.getElementById(item.id);
+          if (elem) {
+            elem.innerHTML = `<b>${currentPrice.toLocaleString(undefined, {maximumFractionDigits: 2})}</b> <span style="color:${color}; font-weight:bold;">(${sign}${changePct.toFixed(2)}%)</span>`;
+          }
+          continue;
         }
       }
+      throw new Error("格式不符");
     } catch (e) {
-      console.warn(`美股 ${item.code} 抓取失敗:`, e);
+      console.warn(`美股 ${item.code} 讀取無回應:`, e);
       const elem = document.getElementById(item.id);
       if (elem) elem.innerText = "休市/連線中";
     }
