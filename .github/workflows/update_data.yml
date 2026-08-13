@@ -1,0 +1,30 @@
+name: Update Evening Stock Data
+
+on:
+  schedule:
+    # 每天晚上 18:30 與 21:30 (UTC 10:30, 13:30) 自動執行抓取
+    - cron: '30 10,13 * * *'
+  workflow_dispatch: # 支援在 GitHub 網頁上手動點擊執行
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Fetch Evening Data from TWSE
+        run: |
+          mkdir -p data
+          # 抓取資券餘額
+          curl -s "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN" > data/margin.json || echo "[]" > data/margin.json
+          # 抓取三大法人
+          curl -s "https://openapi.twse.com.tw/v1/fund/BFI82U" > data/fund.json || echo "[]" > data/fund.json
+
+      - name: Commit and Push Updated Data
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+          git add data/
+          git commit -m "Auto update evening stock data" || exit 0
+          git push
