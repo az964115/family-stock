@@ -2901,11 +2901,9 @@ async function fetchEveningData() {
   document.getElementById("marginSell").innerText = "抓取中...";
   document.getElementById("institutionalNet").innerText = "抓取中...";
 
-  const proxyUrl = "https://api.allorigins.win/raw?url=";
-
+  // --- A. 讀取專案內 GitHub Actions 自動更新的資券餘額 JSON ---
   try {
-    const marginUrl = encodeURIComponent("https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN");
-    const marginRes = await fetch(proxyUrl + marginUrl);
+    const marginRes = await fetch('./data/margin.json');
     const marginData = await marginRes.json();
     
     if (Array.isArray(marginData) && marginData.length > 0) {
@@ -2921,14 +2919,14 @@ async function fetchEveningData() {
       document.getElementById("marginSell").innerText = "統計中";
     }
   } catch (e) {
-    console.warn("TWSE 資券餘額抓取失敗或未發布:", e);
+    console.warn("資券餘額讀取失敗:", e);
     document.getElementById("marginBuy").innerText = "暫無數據";
     document.getElementById("marginSell").innerText = "暫無數據";
   }
 
+  // --- B. 讀取三大法人買賣超 JSON ---
   try {
-    const instUrl = encodeURIComponent("https://openapi.twse.com.tw/v1/fund/BFI82U");
-    const instRes = await fetch(proxyUrl + instUrl);
+    const instRes = await fetch('./data/fund.json');
     const instData = await instRes.json();
 
     if (Array.isArray(instData) && instData.length > 0) {
@@ -2945,49 +2943,84 @@ async function fetchEveningData() {
       document.getElementById("institutionalNet").innerText = "統計中";
     }
   } catch (e) {
-    console.warn("三大法人數據抓取失敗:", e);
+    console.warn("三大法人數據讀取失敗:", e);
     document.getElementById("institutionalNet").innerText = "暫無數據";
   }
 
+  // --- C. 美股數據 ---
   await fetchUsStockData();
 
   fetchMarketNews();
   if (loading) loading.style.display = "none";
 }
 
+// 美股四大指數 (使用 Yahoo API JSONP 避免被代理主機衝擊)
 async function fetchUsStockData() {
-  const proxyUrl = "https://api.allorigins.win/raw?url=";
   const symbols = [
-    { id: "usDJI", code: "^DJI" },   // 道瓊
-    { id: "usIXIC", code: "^IXIC" }, // 那斯達克
-    { id: "usGSPC", code: "^GSPC" }, // S&P 500
-    { id: "usSOX", code: "^SOX" }    // 費城半導體
+    { id: "usDJI", code: "%5EDJI" },   // 道瓊
+    { id: "usIXIC", code: "%5EIXIC" }, // 那斯達克
+    { id: "usGSPC", code: "%5EGSPC" }, // S&P 500
+    { id: "usSOX", code: "%5ESOX" }    // 費半
   ];
 
   for (const item of symbols) {
     try {
-      const targetUrl = encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${item.code}?interval=1d&range=1d`);
-      const res = await fetch(proxyUrl + targetUrl);
-      const data = await res.json();
+      // 透過 JSONP 注入 script，不經過第三方 Proxy 即可繞過 CORS
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${item.code}?interval=1d&range=1d`;
+      const data = await fetchJsonp(url);
       
-      const meta = data.chart.result[0].meta;
-      const currentPrice = meta.regularMarketPrice;
-      const prevClose = meta.chartPreviousClose || meta.previousClose;
-      const changePct = ((currentPrice - prevClose) / prevClose) * 100;
+      if (data && data.chart && data.chart.result && data.chart.result.length > 0) {
+        const meta = data.chart.result[0].meta;
+        const currentPrice = meta.regularMarketPrice;
+        const prevClose = meta.chartPreviousClose || meta.previousClose;
+        const changePct = ((currentPrice - prevClose) / prevClose) * 100;
 
-      const color = changePct >= 0 ? "#DC2626" : "#16A34A";
-      const sign = changePct >= 0 ? "+" : "";
+        const color = changePct >= 0 ? "#DC2626" : "#16A34A";
+        const sign = changePct >= 0 ? "+" : "";
 
-      const elem = document.getElementById(item.id);
-      if (elem) {
-        elem.innerHTML = `<b>${currentPrice.toLocaleString()}</b> <span style="color:${color}; font-weight:bold;">(${sign}${changePct.toFixed(2)}%)</span>`;
+        const elem = document.getElementById(item.id);
+        if (elem) {
+          elem.innerHTML = `<b>${currentPrice.toLocaleString(undefined, {maximumFractionDigits: 2})}</b> <span style="color:${color}; font-weight:bold;">(${sign}${changePct.toFixed(2)}%)</span>`;
+        }
       }
     } catch (e) {
       console.warn(`美股 ${item.code} 抓取失敗:`, e);
       const elem = document.getElementById(item.id);
-      if (elem) elem.innerText = "休市/無數據";
+      if (elem) elem.innerText = "休市/連線中";
     }
   }
+}
+
+// JSONP 工具函式
+function fetchJsonp(url) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'jsonp_cb_' + Math.round(100000 * Math.random());
+    const script = document.createElement('script');
+    
+    const timeout = setTimeout(() => {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      reject(new Error('JSONP 超時'));
+    }, 6000);
+
+    window[callbackName] = (data) => {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+
+    const separator = url.includes('?') ? '&' : '?';
+    script.src = `${url}${separator}callback=${callbackName}`;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      document.body.removeChild(script);
+      reject(new Error('JSONP 載入失敗'));
+    };
+
+    document.body.appendChild(script);
+  });
 }
 
 // 國際財經新聞
