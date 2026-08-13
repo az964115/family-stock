@@ -4,10 +4,10 @@ on:
   schedule:
     # 台灣時間 18:30 與 21:30 (UTC 10:30, 13:30)
     - cron: '30 10,13 * * *'
-  workflow_dispatch: # 支援手動觸發按鈕
+  workflow_dispatch: # 支援手動觸發
 
 permissions:
-  contents: write # 開啟 Push 權限
+  contents: write # 開啟 Git Push 權限
 
 jobs:
   update-data:
@@ -16,14 +16,53 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Fetch Evening Data
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch Evening Data via Python
         run: |
           mkdir -p data
-          # 帶上瀏覽器 Header，防止 TWSE 防火牆擋掉
-          curl -s -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN" > data/margin.json || echo "[]" > data/margin.json
-          curl -s -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" "https://openapi.twse.com.tw/v1/fund/BFI82U" > data/fund.json || echo "[]" > data/fund.json
+          python3 -c "
+          import requests, json
 
-      - name: Commit & Push
+          headers = {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Accept': 'application/json, text/plain, */*',
+              'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+              'Referer': 'https://www.twse.com.tw/'
+          }
+
+          # 1. 抓取資券餘額
+          try:
+              r1 = requests.get('https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN', headers=headers, timeout=15)
+              if r1.status_code == 200 and r1.text.startswith('['):
+                  with open('data/margin.json', 'w', encoding='utf-8') as f:
+                      f.write(r1.text)
+                  print('Margin data successfully updated.')
+              else:
+                  print(f'Margin fetch failed, status: {r1.status_code}')
+          except Exception as e:
+              print('Margin error:', e)
+
+          # 2. 抓取三大法人
+          try:
+              r2 = requests.get('https://openapi.twse.com.tw/v1/fund/BFI82U', headers=headers, timeout=15)
+              if r2.status_code == 200 and r2.text.startswith('['):
+                  with open('data/fund.json', 'w', encoding='utf-8') as f:
+                      f.write(r2.text)
+                  print('Fund data successfully updated.')
+              else:
+                  print(f'Fund fetch failed, status: {r2.status_code}')
+          except Exception as e:
+              print('Fund error:', e)
+          "
+
+      - name: Commit & Push Data
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
