@@ -2893,80 +2893,45 @@ function openEveningExpressModal() {
   fetchEveningData(); // 開啓同時自動刷新載入
 }
 
-// 核心晚間快報刷新邏輯
 async function fetchEveningData() {
   const loading = document.getElementById("expressLoading");
   if (loading) loading.style.display = "block";
 
-  document.getElementById("marginBuy").innerText = "抓取中...";
-  document.getElementById("marginSell").innerText = "抓取中...";
-  document.getElementById("institutionalNet").innerText = "抓取中...";
+  document.getElementById("marginBuy").innerText = "載入中...";
+  document.getElementById("marginSell").innerText = "載入中...";
+  document.getElementById("institutionalNet").innerText = "載入中...";
 
-  // --- A. 讀取台股資券餘額 ---
+  // 1. 讀取資券餘額
   try {
-    let marginData = null;
-    // 優先讀取 GitHub Actions 定時產生的 static json (帶時間戳防快取)
-    const res = await fetch('./data/margin.json?t=' + Date.now()).catch(() => null);
-    if (res && res.ok) {
-      marginData = await res.json();
-    }
-
-    // 備用方案：直連 TWSE
-    if (!Array.isArray(marginData) || marginData.length === 0) {
-      const directRes = await fetch("https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN").catch(() => null);
-      if (directRes && directRes.ok) marginData = await directRes.json();
-    }
-    
-    if (Array.isArray(marginData) && marginData.length > 0) {
-      const latest = marginData[marginData.length - 1]; 
-      const buyMargin = latest["融資餘額(張)"] || latest["融資餘額"] || latest["買進"];
-      const sellMargin = latest["融券餘額(張)"] || latest["融券餘額"] || latest["賣出"];
-
-      document.getElementById("marginBuy").innerText = buyMargin ? `${Number(buyMargin).toLocaleString()} 張` : "已結算";
-      document.getElementById("marginSell").innerText = sellMargin ? `${Number(sellMargin).toLocaleString()} 張` : "已結算";
-    } else {
-      document.getElementById("marginBuy").innerText = "約 21:00 發布 (請執行 Actions)";
-      document.getElementById("marginSell").innerText = "約 21:00 發布 (請執行 Actions)";
+    const res = await fetch('./data/margin.json?t=' + Date.now());
+    const data = await res.json();
+    if (data && data.length > 0) {
+      document.getElementById("marginBuy").innerText = data[0]["融資餘額(張)"] ? `${data[0]["融資餘額(張)"]} 張` : "統計中";
+      document.getElementById("marginSell").innerText = data[0]["融券餘額(張)"] ? `${data[0]["融券餘額(張)"]} 張` : "統計中";
     }
   } catch (e) {
     document.getElementById("marginBuy").innerText = "暫無數據";
     document.getElementById("marginSell").innerText = "暫無數據";
   }
 
-  // --- B. 讀取三大法人買賣超 ---
+  // 2. 讀取三大法人
   try {
-    let instData = null;
-    const res = await fetch('./data/fund.json?t=' + Date.now()).catch(() => null);
-    if (res && res.ok) instData = await res.json();
-
-    if (!Array.isArray(instData) || instData.length === 0) {
-      const directRes = await fetch("https://openapi.twse.com.tw/v1/fund/BFI82U").catch(() => null);
-      if (directRes && directRes.ok) instData = await directRes.json();
-    }
-
-    if (Array.isArray(instData) && instData.length > 0) {
-      let totalNet = 0;
-      instData.forEach(item => {
-        if (item["買賣差額"]) {
-          totalNet += parseFloat(item["買賣差額"].toString().replace(/,/g, '')) || 0;
-        }
-      });
-      const netInMillions = (totalNet / 100000000).toFixed(2);
-      const color = totalNet >= 0 ? "#DC2626" : "#16A34A";
+    const res = await fetch('./data/fund.json?t=' + Date.now());
+    const data = await res.json();
+    if (data && data.length > 0) {
+      const net = parseFloat(data[0]["買賣差額"] || 0);
+      const netInMillions = (net / 100000000).toFixed(2);
+      const color = net >= 0 ? "#DC2626" : "#16A34A";
       document.getElementById("institutionalNet").innerHTML = `<span style="color:${color}; font-weight:bold;">${netInMillions > 0 ? '+' : ''}${netInMillions} 億</span>`;
-    } else {
-      document.getElementById("institutionalNet").innerText = "約 18:30 發布 (請執行 Actions)";
     }
   } catch (e) {
     document.getElementById("institutionalNet").innerText = "暫無數據";
   }
 
-  // --- C. 美股四大指數 (修復 404 問題) ---
-  await fetchUsStockData();
+  // 3. 讀取美股四大指數
+  fetchUsStockData();
 
-  // --- D. 財經焦點新聞 ---
   fetchMarketNews();
-
   if (loading) loading.style.display = "none";
 }
 
