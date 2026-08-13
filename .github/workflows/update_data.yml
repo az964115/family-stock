@@ -2,9 +2,12 @@ name: Update Evening Stock Data
 
 on:
   schedule:
-    # 每天晚上 18:30 與 21:30 (UTC 10:30, 13:30) 自動執行抓取
+    # 台灣時間 18:30 與 21:30 (UTC 10:30, 13:30)
     - cron: '30 10,13 * * *'
-  workflow_dispatch: # 支援在 GitHub 網頁上手動點擊執行
+  workflow_dispatch: # 支援手動觸發
+
+permissions:
+  contents: write # 允許寫入/Push 回儲存庫
 
 jobs:
   update-data:
@@ -16,15 +19,14 @@ jobs:
       - name: Fetch Evening Data from TWSE
         run: |
           mkdir -p data
-          # 抓取資券餘額
-          curl -s "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN" > data/margin.json || echo "[]" > data/margin.json
-          # 抓取三大法人
-          curl -s "https://openapi.twse.com.tw/v1/fund/BFI82U" > data/fund.json || echo "[]" > data/fund.json
+          # 使用 Chrome User-Agent 避免被證交所檔 curl
+          curl -s -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN" > data/margin.json || echo "[]" > data/margin.json
+          curl -s -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "https://openapi.twse.com.tw/v1/fund/BFI82U" > data/fund.json || echo "[]" > data/fund.json
 
       - name: Commit and Push Updated Data
         run: |
-          git config --global user.name "GitHub Action Bot"
-          git config --global user.email "action@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/
           git commit -m "Auto update evening stock data" || exit 0
           git push
