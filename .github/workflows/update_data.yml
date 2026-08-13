@@ -38,6 +38,7 @@ jobs:
           }
 
           # 1. 爬取 Yahoo 奇摩股市 - 資券餘額 (精確解析表格)
+          # 1. 爬取 Yahoo 奇摩股市 - 資券餘額 (精確匹配 DOM 結構)
           try:
               print("Scraping Yahoo Margin Balance Page...")
               url_margin = "https://tw.stock.yahoo.com/margin-balance"
@@ -47,35 +48,46 @@ jobs:
               margin_buy = "統計中"
               margin_sell = "統計中"
 
-              # 尋找表格列 (li 或 tr)
-              rows = soup.find_all(['li', 'tr'])
-              for row in rows:
-                  text = row.get_text()
-                  # 尋找包含「融資」或「增減」的表格列
-                  if '融資' in text and ('增' in text or '減' in text or '億' in text):
-                      # 抓取該列裡所有的數字 (含正負號與小數點)
-                      vals = re.findall(r'[\+\-]?[\d,]+\.?\d*', text)
-                      if vals:
-                          margin_buy = vals[0]
-                  if '融券' in text and ('張' in text or '增' in text or '減' in text):
-                      vals = re.findall(r'[\+\-]?[\d,]+\.?\d*', text)
-                      if vals:
-                          margin_sell = vals[0]
+              # 方案 A：針對提供之 HTML 結構 Flx(a) Mend(12px) 進行精確定位
+              containers = soup.find_all('div', class_=re.compile(r'Mend\(12px\)'))
+              
+              if containers:
+                  # 第一個區塊通常為融資 (增減金額、餘額)
+                  buy_spans = containers[0].find_all('span')
+                  if buy_spans:
+                      # 抓取第一個 span (增減金額, 如 39.32)
+                      val = buy_spans[0].get_text(strip=True)
+                      # 判斷是否帶有趨勢顏色類別來加上正負號
+                      if 'c-trend-up' in str(buy_spans[0]) and not val.startswith('+'):
+                          val = '+' + val
+                      elif 'c-trend-down' in str(buy_spans[0]) and not val.startswith('-'):
+                          val = '-' + val
+                      margin_buy = f"{val} 億"
 
-              # 如果上面表格找不到，備用全文正則精確定位
+                  # 第二個區塊通常為融券 (增減張數、餘額)
+                  if len(containers) > 1:
+                      sell_spans = containers[1].find_all('span')
+                      if sell_spans:
+                          val = sell_spans[0].get_text(strip=True)
+                          if 'c-trend-up' in str(sell_spans[1] if len(sell_spans)>1 else sell_spans[0]) and not val.startswith('+'):
+                              val = '+' + val
+                          margin_sell = f"{val} 張"
+
+              # 備用保險機制：若 class 名稱改變，則搜尋頁面上包含 "+XX.XX" 或 "-XX.XX" 的增減數據
               if margin_buy == "統計中":
-                  buy_match = re.search(r'融資[^\d\-+]*([\-+]?[\d,]+(?:\.\d+)?)\s*(?:億|張)?', soup.get_text())
-                  if buy_match:
-                      margin_buy = buy_match.group(1)
+                  text = soup.get_text()
+                  match = re.search(r'融資[^\d\-+]*([\-+]?\d+(?:\.\d+)?)\s*億', text)
+                  if match:
+                      margin_buy = f"{match.group(1)} 億"
 
               margin_json = [{
-                  '融資餘額(張)': margin_buy,  # 可顯示例如 "+39.32 億" 或張數
+                  '融資餘額(張)': margin_buy,
                   '融券餘額(張)': margin_sell
               }]
 
               with open('data/margin.json', 'w', encoding='utf-8') as f:
                   json.dump(margin_json, f, ensure_ascii=False, indent=2)
-              print("✅ Margin data updated:", margin_json)
+              print("✅ Margin data updated successfully:", margin_json)
           except Exception as e:
               print("❌ Scrape Margin error:", e)
 
