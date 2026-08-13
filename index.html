@@ -386,6 +386,7 @@
       <button class="trend-btn" onclick="openStockDirectionModal(); closeModal('featuresPortalModal');" style="background-color: #4C6EF5; color: white; margin:0; height: 50px;">🔍 個股方向</button>
       <button onclick="checkAndOpenRsvModal()" style="background-color: #4cbdaa; color: white; margin:0; height: 50px; font-weight: bold;">⚡ 動能即時監控</button>
       <button class="trend-btn" onclick="openAiAnalysisModal(); closeModal('featuresPortalModal');" style="background-color: #F54C4C; color: white; margin:0; height: 50px; font-weight: bold;">🧐 智慧分析</button>
+      <button class="trend-btn" onclick="openEveningExpressModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #1E293B 0%, #334155 100%); color: #F8FAFC; margin:0;">🌙晚間快報</button>
       <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
     </div>
     <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
@@ -590,6 +591,63 @@
           <div id="compoundResult" class="calc-result" style="background: #FFFDF5; border-color: #FEFCBF;"><div id="compoundDetails"></div></div>
         </div>
         <div class="modal-footer"><button onclick="closeCompoundModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
+      </div>
+    </div>
+
+            <!-- 🌙 晚間快報 Modal -->
+    <div id="eveningExpressModal" class="modal">
+      <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+          <h3 style="margin:0; color:#38BDF8; display: flex; align-items: center; gap: 8px;">
+            🌙 晚間財經快報
+          </h3>
+        </div>
+        <div class="modal-body-scroll">
+          
+          <!-- 載入中狀態提示 -->
+          <div id="expressLoading" style="display:none; text-align: center; margin: 12px 0; color: #0EA5E9; font-weight: bold; font-size: 14px;">
+            ⏳ 正在更新最新籌碼與美股盤勢...
+          </div>
+
+          <!-- 區塊 1: 台股籌碼資券 -->
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="font-weight: bold; color: #1E293B; border-bottom: 2px solid #CBD5E1; padding-bottom: 4px; margin-bottom: 8px;">
+              📊 今日台股籌碼 & 資券餘額
+            </div>
+            <div id="marginDataBox" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px;">
+              <div>融資餘額：<b id="marginBuy">載入中...</b></div>
+              <div>融券餘額：<b id="marginSell">載入中...</b></div>
+              <div>三大法人買賣超：<b id="institutionalNet">載入中...</b></div>
+            </div>
+          </div>
+
+          <!-- 區塊 2: 美股主要指數 -->
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="font-weight: bold; color: #1E293B; border-bottom: 2px solid #CBD5E1; padding-bottom: 4px; margin-bottom: 8px;">
+              🌎 國際美股指數
+            </div>
+            <div id="usStocksBox" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px;">
+              <div>道瓊指數：<span id="usDJI">--</span></div>
+              <div>那斯達克：<span id="usIXIC">--</span></div>
+              <div>S&P 500：<span id="usGSPC">--</span></div>
+              <div>費城半導體：<span id="usSOX">--</span></div>
+            </div>
+          </div>
+
+          <!-- 區塊 3: 國際財經焦點 -->
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: 8px;">
+            <div style="font-weight: bold; color: #1E293B; border-bottom: 2px solid #CBD5E1; padding-bottom: 4px; margin-bottom: 8px;">
+              📰 國際財經即時焦點
+            </div>
+            <ul id="newsListBox" style="margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.6; color: #334155;">
+              <li>更新中...</li>
+            </ul>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeModal('eveningExpressModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
+        </div>
       </div>
     </div>
 
@@ -2827,6 +2885,119 @@ function applyAiPreset(stockName) {
   if (input) {
     input.value = `${stockName} 這檔股票最近好嗎? 分析一下`;
   }
+}
+
+// 1. 打開 Modal 並【自動觸發】資料更新
+function openEveningExpressModal() {
+  openModal('eveningExpressModal');
+  fetchEveningData(); // 開啓同時自動刷新載入
+}
+
+async function fetchEveningData() {
+  const loading = document.getElementById("expressLoading");
+  if (loading) loading.style.display = "block";
+
+  document.getElementById("marginBuy").innerText = "抓取中...";
+  document.getElementById("marginSell").innerText = "抓取中...";
+  document.getElementById("institutionalNet").innerText = "抓取中...";
+
+  const proxyUrl = "https://api.allorigins.win/raw?url=";
+
+  try {
+    const marginUrl = encodeURIComponent("https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN");
+    const marginRes = await fetch(proxyUrl + marginUrl);
+    const marginData = await marginRes.json();
+    
+    if (Array.isArray(marginData) && marginData.length > 0) {
+      const latest = marginData[marginData.length - 1]; 
+      
+      const buyMargin = latest["融資餘額(張)"] || latest["融資餘額"] || latest["買進"];
+      const sellMargin = latest["融券餘額(張)"] || latest["融券餘額"] || latest["賣出"];
+
+      document.getElementById("marginBuy").innerText = buyMargin ? `${Number(buyMargin).toLocaleString()} 張` : "已結算";
+      document.getElementById("marginSell").innerText = sellMargin ? `${Number(sellMargin).toLocaleString()} 張` : "已結算";
+    } else {
+      document.getElementById("marginBuy").innerText = "統計中";
+      document.getElementById("marginSell").innerText = "統計中";
+    }
+  } catch (e) {
+    console.warn("TWSE 資券餘額抓取失敗或未發布:", e);
+    document.getElementById("marginBuy").innerText = "暫無數據";
+    document.getElementById("marginSell").innerText = "暫無數據";
+  }
+
+  try {
+    const instUrl = encodeURIComponent("https://openapi.twse.com.tw/v1/fund/BFI82U");
+    const instRes = await fetch(proxyUrl + instUrl);
+    const instData = await instRes.json();
+
+    if (Array.isArray(instData) && instData.length > 0) {
+      let totalNet = 0;
+      instData.forEach(item => {
+        if (item["買賣差額"]) {
+          totalNet += parseFloat(item["買賣差額"].toString().replace(/,/g, '')) || 0;
+        }
+      });
+      const netInMillions = (totalNet / 100000000).toFixed(2);
+      const color = totalNet >= 0 ? "#DC2626" : "#16A34A"; // 紅買綠賣
+      document.getElementById("institutionalNet").innerHTML = `<span style="color:${color}; font-weight:bold;">${netInMillions > 0 ? '+' : ''}${netInMillions} 億</span>`;
+    } else {
+      document.getElementById("institutionalNet").innerText = "統計中";
+    }
+  } catch (e) {
+    console.warn("三大法人數據抓取失敗:", e);
+    document.getElementById("institutionalNet").innerText = "暫無數據";
+  }
+
+  await fetchUsStockData();
+
+  fetchMarketNews();
+  if (loading) loading.style.display = "none";
+}
+
+async function fetchUsStockData() {
+  const proxyUrl = "https://api.allorigins.win/raw?url=";
+  const symbols = [
+    { id: "usDJI", code: "^DJI" },   // 道瓊
+    { id: "usIXIC", code: "^IXIC" }, // 那斯達克
+    { id: "usGSPC", code: "^GSPC" }, // S&P 500
+    { id: "usSOX", code: "^SOX" }    // 費城半導體
+  ];
+
+  for (const item of symbols) {
+    try {
+      const targetUrl = encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${item.code}?interval=1d&range=1d`);
+      const res = await fetch(proxyUrl + targetUrl);
+      const data = await res.json();
+      
+      const meta = data.chart.result[0].meta;
+      const currentPrice = meta.regularMarketPrice;
+      const prevClose = meta.chartPreviousClose || meta.previousClose;
+      const changePct = ((currentPrice - prevClose) / prevClose) * 100;
+
+      const color = changePct >= 0 ? "#DC2626" : "#16A34A";
+      const sign = changePct >= 0 ? "+" : "";
+
+      const elem = document.getElementById(item.id);
+      if (elem) {
+        elem.innerHTML = `<b>${currentPrice.toLocaleString()}</b> <span style="color:${color}; font-weight:bold;">(${sign}${changePct.toFixed(2)}%)</span>`;
+      }
+    } catch (e) {
+      console.warn(`美股 ${item.code} 抓取失敗:`, e);
+      const elem = document.getElementById(item.id);
+      if (elem) elem.innerText = "休市/無數據";
+    }
+  }
+}
+
+// 國際財經新聞
+function fetchMarketNews() {
+  const newsBox = document.getElementById("newsListBox");
+  if (!newsBox) return;
+  newsBox.innerHTML = `
+    <li><a href="https://news.google.com/search?q=美股&hl=zh-TW&gl=TW&ceid=TW:zh-Hant" target="_blank" style="color:#2563EB; text-decoration:none;">美股最新動態與國際市場焦點 (點擊檢視)</a></li>
+    <li style="margin-top:6px;"><a href="https://news.google.com/search?q=台積電ADR&hl=zh-TW&gl=TW&ceid=TW:zh-Hant" target="_blank" style="color:#2563EB; text-decoration:none;">台積電 ADR 與半導體板塊盤前夜脈動</a></li>
+  `;
 }
 
 async function askGeminiAIAnalysis() {
