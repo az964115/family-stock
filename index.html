@@ -611,13 +611,13 @@
 
           <!-- 區塊 1: 台股籌碼資券 -->
           <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-            <div style="font-weight: bold; color: #1E293B; border-bottom: 2px solid #CBD5E1; padding-bottom: 4px; margin-bottom: 8px;">
-              📊 今日台股籌碼 & 資券餘額
+            <div style="font-weight: bold; color: #1E293B; border-bottom: 2px solid #CBD5E1; padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <span>📊 今日台股籌碼 & 資券餘額</span>
+              <span id="marginDate" style="font-size: 12px; color: #64748B; font-weight: normal;">----/--/--</span>
             </div>
             <div id="marginDataBox" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px;">
               <div>融資餘額：<b id="marginBuy">載入中...</b></div>
               <div>融券餘額：<b id="marginSell">載入中...</b></div>
-              <div>三大法人買賣超：<b id="institutionalNet">載入中...</b></div>
             </div>
           </div>
 
@@ -2899,20 +2899,23 @@ async function fetchEveningData() {
 
   document.getElementById("marginBuy").innerText = "載入中...";
   document.getElementById("marginSell").innerText = "載入中...";
-  document.getElementById("institutionalNet").innerText = "載入中...";
+  document.getElementById("marginDate").innerText = "----/--/--";
 
-    // 1. 讀取資券餘額 (修正版：自動判斷單位避免重複顯示「張」)
+  // 1. 讀取資券餘額與日期
   try {
     const res = await fetch('./data/margin.json?t=' + Date.now());
     const data = await res.json();
-    
     if (data && data.length > 0) {
-      const buyVal = data[0]["融資餘額(張)"] ? String(data[0]["融資餘額(張)"]) : "";
-      const sellVal = data[0]["融券餘額(張)"] ? String(data[0]["融券餘額(張)"]) : "";
+      const item = data[0];
+      
+      // 更新日期
+      if (item["日期"]) {
+        document.getElementById("marginDate").innerText = item["日期"];
+      }
 
       // 融資顯示處理
+      const buyVal = item["融資餘額(張)"] ? String(item["融資餘額(張)"]) : "";
       if (buyVal && buyVal !== "統計中") {
-        // 若已帶有單位 (如「億」、「張」、「萬」) 則直接顯示，否則加上單位
         const hasUnit = /[億張萬]/.test(buyVal);
         document.getElementById("marginBuy").innerText = hasUnit ? buyVal : `${buyVal} 億`;
       } else {
@@ -2920,6 +2923,7 @@ async function fetchEveningData() {
       }
 
       // 融券顯示處理
+      const sellVal = item["融券餘額(張)"] ? String(item["融券餘額(張)"]) : "";
       if (sellVal && sellVal !== "統計中") {
         const hasUnit = /[億張萬]/.test(sellVal);
         document.getElementById("marginSell").innerText = hasUnit ? sellVal : `${sellVal} 張`;
@@ -2932,24 +2936,12 @@ async function fetchEveningData() {
     document.getElementById("marginSell").innerText = "暫無數據";
   }
 
-  // 2. 讀取三大法人
-  try {
-    const res = await fetch('./data/fund.json?t=' + Date.now());
-    const data = await res.json();
-    if (data && data.length > 0) {
-      const net = parseFloat(data[0]["買賣差額"] || 0);
-      const netInMillions = (net / 100000000).toFixed(2);
-      const color = net >= 0 ? "#DC2626" : "#16A34A";
-      document.getElementById("institutionalNet").innerHTML = `<span style="color:${color}; font-weight:bold;">${netInMillions > 0 ? '+' : ''}${netInMillions} 億</span>`;
-    }
-  } catch (e) {
-    document.getElementById("institutionalNet").innerText = "暫無數據";
-  }
-
-  // 3. 讀取美股四大指數
+  // 2. 讀取美股四大指數
   fetchUsStockData();
 
+  // 3. 讀取財經新聞
   fetchMarketNews();
+
   if (loading) loading.style.display = "none";
 }
 
