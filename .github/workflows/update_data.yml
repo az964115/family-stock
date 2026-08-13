@@ -4,10 +4,10 @@ on:
   schedule:
     # 台灣時間 18:30 與 21:30 (UTC 10:30, 13:30)
     - cron: '30 10,13 * * *'
-  workflow_dispatch: # 支援手動觸發
+  workflow_dispatch: # 支援手動觸發按鈕
 
 permissions:
-  contents: write # 允許寫入/Push 回儲存庫
+  contents: write # 開啟 Push 權限
 
 jobs:
   update-data:
@@ -16,14 +16,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Fetch Evening Data from TWSE
+      - name: Fetch Evening Data
         run: |
           mkdir -p data
-          # 使用 Chrome User-Agent 避免被證交所檔 curl
-          curl -s -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN" > data/margin.json || echo "[]" > data/margin.json
-          curl -s -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "https://openapi.twse.com.tw/v1/fund/BFI82U" > data/fund.json || echo "[]" > data/fund.json
+          # 帶上瀏覽器 Header，防止 TWSE 防火牆擋掉
+          curl -s -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" "https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN" > data/margin.json || echo "[]" > data/margin.json
+          curl -s -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)" "https://openapi.twse.com.tw/v1/fund/BFI82U" > data/fund.json || echo "[]" > data/fund.json
 
-      - name: Commit and Push Updated Data
+      - name: Commit & Push
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
