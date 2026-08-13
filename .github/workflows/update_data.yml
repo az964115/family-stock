@@ -37,51 +37,51 @@ jobs:
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
           }
 
-          # 1. 爬取 Yahoo 奇摩股市 - 資券餘額 (從 window._INITIAL_DATA_ 解析)
+          # 1. 爬取 Yahoo 奇摩股市 - 資券餘額與日期
           try:
               print("Scraping Yahoo Margin Balance Page...")
               url_margin = "https://tw.stock.yahoo.com/margin-balance"
               r = requests.get(url_margin, headers=headers, timeout=15)
-              
+              soup = BeautifulSoup(r.text, 'html.parser')
+
+              margin_date = "--"
               margin_buy = "統計中"
               margin_sell = "統計中"
 
-              # 策略 A: 直接解析網頁內部的 window._INITIAL_DATA_ JSON 資料
-              json_match = re.search(r'window\._INITIAL_DATA_\s*=\s*(\{.*?\});</script>', r.text)
-              if json_match:
-                  try:
-                      raw_json = json.loads(json_match.group(1))
-                      # 在 Initial Data 中遞迴搜尋包含 margin/balance 的數據區塊
-                      raw_str = json.dumps(raw_json, ensure_ascii=False)
-                      
-                      # 利用正則尋找融資增減與融券增減
-                      # 尋找 "融資" 相關的增減數值 (如 39.32)
-                      buy_match = re.search(r'"marginPurchase"[^}]*?"change"\s*:\s*"([\-+]?[\d,\.]+)"', raw_str)
-                      if not buy_match:
-                          buy_match = re.search(r'融資[^\d\-+]*([\-+]?\d+(?:\.\d+)?)\s*(?:億|張)', raw_str)
-                      if buy_match:
-                          margin_buy = f"{buy_match.group(1)} 億"
+              # 尋找第一筆表格列
+              rows = soup.find_all('div', class_=re.compile(r'table-row'))
+              
+              target_row = None
+              for row in rows:
+                  date_match = re.search(r'\d{4}/\d{2}/\d{2}', row.get_text())
+                  if date_match:
+                      target_row = row
+                      margin_date = date_match.group(0) # 抓取 2026/08/12
+                      break
 
-                      sell_match = re.search(r'"shortSale"[^}]*?"change"\s*:\s*"([\-+]?[\d,\.]+)"', raw_str)
-                      if not sell_match:
-                          sell_match = re.search(r'融券[^\d\-+]*([\-+]?\d+(?:\.\d+)?)\s*(?:張|億)', raw_str)
-                      if sell_match:
-                          margin_sell = f"{sell_match.group(1)} 張"
-                  except Exception as err:
-                      print("JSON parsing inner data error:", err)
+              if target_row:
+                  mend_blocks = target_row.find_all('div', class_=re.compile(r'Mend\(12px\)'))
+                  
+                  # 解析融資 (第一區塊)
+                  if len(mend_blocks) > 0:
+                      buy_span = mend_blocks[0].find('span')
+                      if buy_span:
+                          val = buy_span.get_text(strip=True)
+                          if 'c-trend-up' in str(buy_span) and not val.startswith('+'):
+                              val = '+' + val
+                          margin_buy = f"{val} 億"
 
-              # 策略 B: 備用全頁面文字正則掃描 (比對 +39.32 或 -XX 等格式)
-              if margin_buy == "統計中":
-                  soup = BeautifulSoup(r.text, 'html.parser')
-                  text = soup.get_text()
-                  # 尋找帶有 +/- 的浮點數 (如 39.32)
-                  diff_matches = re.findall(r'[\+\-]\d+(?:\.\d+)?', text)
-                  if diff_matches:
-                      margin_buy = f"{diff_matches[0]} 億"
-                      if len(diff_matches) > 1:
-                          margin_sell = f"{diff_matches[1]} 張"
+                  # 解析融券 (第二區塊)
+                  if len(mend_blocks) > 1:
+                      sell_span = mend_blocks[1].find('span')
+                      if sell_span:
+                          val = sell_span.get_text(strip=True)
+                          if 'c-trend-up' in str(sell_span) and not val.startswith('+'):
+                              val = '+' + val
+                          margin_sell = f"{val} 張"
 
               margin_json = [{
+                  '日期': margin_date,
                   '融資餘額(張)': margin_buy,
                   '融券餘額(張)': margin_sell
               }]
@@ -93,28 +93,7 @@ jobs:
           except Exception as e:
               print("❌ Scrape Margin error:", e)
 
-          # 2. 爬取 Yahoo 奇摩股市 - 三大法人籌碼
-          try:
-              print("Scraping Yahoo Institutional Investors Page...")
-              url_inst = "https://tw.stock.yahoo.com/institutional-investors"
-              r = requests.get(url_inst, headers=headers, timeout=15)
-              soup = BeautifulSoup(r.text, 'html.parser')
-              text_content = soup.get_text()
-
-              net_match = re.search(r'(?:買賣超|合計)[^\d\-+]*([\-+]?[\d,]+(?:\.\d+)?)\s*(?:億|萬)?', text_content)
-              total_net = "0"
-              if net_match:
-                  total_net = net_match.group(1).replace(',', '')
-
-              fund_json = [{'買賣差額': total_net}]
-
-              with open('data/fund.json', 'w', encoding='utf-8') as f:
-                  json.dump(fund_json, f, ensure_ascii=False, indent=2)
-              print("✅ Fund data updated:", fund_json)
-          except Exception as e:
-              print("❌ Scrape Fund error:", e)
-
-          # 3. 抓取美股四大指數
+          # 2. 抓取美股四大指數
           try:
               print("Fetching US Stock Indices...")
               us_symbols = [
