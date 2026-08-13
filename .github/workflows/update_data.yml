@@ -24,58 +24,76 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Fetch Evening Data via Python Session
+      - name: Fetch Evening Data
         run: |
           mkdir -p data
           python3 -c "
-          import requests
+          import requests, datetime, json
 
-          # 建立 Session 以保持 Cookie
-          session = requests.Session()
+          headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+          today = datetime.date.today().strftime('%Y-%m-%d')
+          start_date = (datetime.date.today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
 
-          headers = {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-              'Accept': 'application/json, text/plain, */*',
-              'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-              'Connection': 'keep-alive',
-              'Sec-Fetch-Dest': 'empty',
-              'Sec-Fetch-Mode': 'cors',
-              'Sec-Fetch-Site': 'same-site'
-          }
-
-          session.headers.update(headers)
-
-          try:
-              # 第一步：先存取證交所主站建立 session/cookie
-              print('Establishing session with TWSE...')
-              session.get('https://www.twse.com.tw/zh/', timeout=15)
-
-              # 第二步：帶上完整的 Cookie 請求資券餘額
-              print('Fetching margin data...')
-              r1 = session.get('https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN', timeout=15)
-              print('Margin Status:', r1.status_code)
+          # 1. 優先嘗試證交所，若被擋則自動切換至 FinMind 免費源
+          def fetch_margin():
+              try:
+                  r = requests.get('https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN', headers=headers, timeout=10)
+                  if r.status_code == 200 and r.text.strip().startswith('['):
+                      print('✅ TWSE Margin fetch success')
+                      return r.text
+              except Exception as e:
+                  print('TWSE Margin failed:', e)
               
-              if r1.status_code == 200 and r1.text.strip().startswith('['):
-                  with open('data/margin.json', 'w', encoding='utf-8') as f:
-                      f.write(r1.text)
-                  print('✅ Margin data successfully updated!')
-              else:
-                  print('⚠️ Margin fetch got non-JSON output, preserving fallback/empty.')
+              # 備用方案：FinMind API (抓近 7 天資料並轉為標準格式)
+              print('🔄 Switching to FinMind for Margin Data...')
+              url = f'https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockMarginPurchaseShortSaleTotal&start_date={start_date}'
+              r = requests.get(url, headers=headers, timeout=10)
+              if r.status_code == 200:
+                  data = r.json().get('data', [])
+                  if data:
+                      latest = data[-1]
+                      formatted = [{
+                          '融資餘額(張)': str(latest.get('MarginPurchaseTodayBalance', 0)),
+                          '融券餘額(張)': str(latest.get('ShortSaleTodayBalance', 0))
+                      }]
+                      print('✅ FinMind Margin fetch success')
+                      return json.dumps(formatted, ensure_ascii=False)
+              return None
 
-              # 第三步：請求三大法人買賣超
-              print('Fetching fund data...')
-              r2 = session.get('https://openapi.twse.com.tw/v1/fund/BFI82U', timeout=15)
-              print('Fund Status:', r2.status_code)
+          def fetch_fund():
+              try:
+                  r = requests.get('https://openapi.twse.com.tw/v1/fund/BFI82U', headers=headers, timeout=10)
+                  if r.status_code == 200 and r.text.strip().startswith('['):
+                      print('✅ TWSE Fund fetch success')
+                      return r.text
+              except Exception as e:
+                  print('TWSE Fund failed:', e)
 
-              if r2.status_code == 200 and r2.text.strip().startswith('['):
-                  with open('data/fund.json', 'w', encoding='utf-8') as f:
-                      f.write(r2.text)
-                  print('✅ Fund data successfully updated!')
-              else:
-                  print('⚠️ Fund fetch got non-JSON output, preserving fallback/empty.')
+              # 備用方案：FinMind API
+              print('🔄 Switching to FinMind for Fund Data...')
+              url = f'https://api.finmindtrade.com/api/v4/data?dataset=TaiwanMarketInstitutionalInvestorsBuySell&start_date={start_date}'
+              r = requests.get(url, headers=headers, timeout=10)
+              if r.status_code == 200:
+                  data = r.json().get('data', [])
+                  if data:
+                      latest_date = data[-1].get('date')
+                      latest_items = [d for d in data if d.get('date') == latest_date]
+                      total_net = sum((item.get('buy', 0) - item.get('sell', 0)) for item in latest_items)
+                      formatted = [{'買賣差額': str(total_net)}]
+                      print('✅ FinMind Fund fetch success')
+                      return json.dumps(formatted, ensure_ascii=False)
+              return None
 
-          except Exception as e:
-              print('❌ Session Request Error:', e)
+          # 執行抓取並寫入檔案
+          margin_json = fetch_margin()
+          if margin_json:
+              with open('data/margin.json', 'w', encoding='utf-8') as f:
+                  f.write(margin_json)
+
+          fund_json = fetch_fund()
+          if fund_json:
+              with open('data/fund.json', 'w', encoding='utf-8') as f:
+                  f.write(fund_json)
           "
 
       - name: Commit & Push Data
