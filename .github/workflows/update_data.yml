@@ -37,25 +37,39 @@ jobs:
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
           }
 
-          # 1. 爬取 Yahoo 奇摩股市 - 資券餘額
+          # 1. 爬取 Yahoo 奇摩股市 - 資券餘額 (精確解析表格)
           try:
               print("Scraping Yahoo Margin Balance Page...")
               url_margin = "https://tw.stock.yahoo.com/margin-balance"
               r = requests.get(url_margin, headers=headers, timeout=15)
               soup = BeautifulSoup(r.text, 'html.parser')
-              text_content = soup.get_text()
 
               margin_buy = "統計中"
               margin_sell = "統計中"
 
-              numbers = re.findall(r'[\d,]{4,10}', text_content)
-              if numbers:
-                  margin_buy = numbers[0]
-                  if len(numbers) > 1:
-                      margin_sell = numbers[1]
+              # 尋找表格列 (li 或 tr)
+              rows = soup.find_all(['li', 'tr'])
+              for row in rows:
+                  text = row.get_text()
+                  # 尋找包含「融資」或「增減」的表格列
+                  if '融資' in text and ('增' in text or '減' in text or '億' in text):
+                      # 抓取該列裡所有的數字 (含正負號與小數點)
+                      vals = re.findall(r'[\+\-]?[\d,]+\.?\d*', text)
+                      if vals:
+                          margin_buy = vals[0]
+                  if '融券' in text and ('張' in text or '增' in text or '減' in text):
+                      vals = re.findall(r'[\+\-]?[\d,]+\.?\d*', text)
+                      if vals:
+                          margin_sell = vals[0]
+
+              # 如果上面表格找不到，備用全文正則精確定位
+              if margin_buy == "統計中":
+                  buy_match = re.search(r'融資[^\d\-+]*([\-+]?[\d,]+(?:\.\d+)?)\s*(?:億|張)?', soup.get_text())
+                  if buy_match:
+                      margin_buy = buy_match.group(1)
 
               margin_json = [{
-                  '融資餘額(張)': margin_buy,
+                  '融資餘額(張)': margin_buy,  # 可顯示例如 "+39.32 億" 或張數
                   '融券餘額(張)': margin_sell
               }]
 
