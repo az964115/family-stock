@@ -2901,13 +2901,31 @@ async function fetchEveningData() {
   document.getElementById("marginSell").innerText = "載入中...";
   document.getElementById("institutionalNet").innerText = "載入中...";
 
-  // 1. 讀取資券餘額
+    // 1. 讀取資券餘額 (修正版：自動判斷單位避免重複顯示「張」)
   try {
     const res = await fetch('./data/margin.json?t=' + Date.now());
     const data = await res.json();
+    
     if (data && data.length > 0) {
-      document.getElementById("marginBuy").innerText = data[0]["融資餘額(張)"] ? `${data[0]["融資餘額(張)"]} 張` : "統計中";
-      document.getElementById("marginSell").innerText = data[0]["融券餘額(張)"] ? `${data[0]["融券餘額(張)"]} 張` : "統計中";
+      const buyVal = data[0]["融資餘額(張)"] ? String(data[0]["融資餘額(張)"]) : "";
+      const sellVal = data[0]["融券餘額(張)"] ? String(data[0]["融券餘額(張)"]) : "";
+
+      // 融資顯示處理
+      if (buyVal && buyVal !== "統計中") {
+        // 若已帶有單位 (如「億」、「張」、「萬」) 則直接顯示，否則加上單位
+        const hasUnit = /[億張萬]/.test(buyVal);
+        document.getElementById("marginBuy").innerText = hasUnit ? buyVal : `${buyVal} 億`;
+      } else {
+        document.getElementById("marginBuy").innerText = "統計中";
+      }
+
+      // 融券顯示處理
+      if (sellVal && sellVal !== "統計中") {
+        const hasUnit = /[億張萬]/.test(sellVal);
+        document.getElementById("marginSell").innerText = hasUnit ? sellVal : `${sellVal} 張`;
+      } else {
+        document.getElementById("marginSell").innerText = "統計中";
+      }
     }
   } catch (e) {
     document.getElementById("marginBuy").innerText = "暫無數據";
