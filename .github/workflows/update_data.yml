@@ -4,10 +4,10 @@ on:
   schedule:
     # 台灣時間 18:30 與 21:30 (UTC 10:30, 13:30)
     - cron: '30 10,13 * * *'
-  workflow_dispatch: # 支援手動觸發
+  workflow_dispatch: # 支援手動觸發按鈕
 
 permissions:
-  contents: write # 開啟 Git Push 權限
+  contents: write
 
 jobs:
   update-data:
@@ -24,42 +24,58 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Fetch Evening Data via Python
+      - name: Fetch Evening Data via Python Session
         run: |
           mkdir -p data
           python3 -c "
-          import requests, json
+          import requests
+
+          # 建立 Session 以保持 Cookie
+          session = requests.Session()
 
           headers = {
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
               'Accept': 'application/json, text/plain, */*',
               'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-              'Referer': 'https://www.twse.com.tw/'
+              'Connection': 'keep-alive',
+              'Sec-Fetch-Dest': 'empty',
+              'Sec-Fetch-Mode': 'cors',
+              'Sec-Fetch-Site': 'same-site'
           }
 
-          # 1. 抓取資券餘額
+          session.headers.update(headers)
+
           try:
-              r1 = requests.get('https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN', headers=headers, timeout=15)
-              if r1.status_code == 200 and r1.text.startswith('['):
+              # 第一步：先存取證交所主站建立 session/cookie
+              print('Establishing session with TWSE...')
+              session.get('https://www.twse.com.tw/zh/', timeout=15)
+
+              # 第二步：帶上完整的 Cookie 請求資券餘額
+              print('Fetching margin data...')
+              r1 = session.get('https://openapi.twse.com.tw/v1/exchangeReport/MI_MARGIN', timeout=15)
+              print('Margin Status:', r1.status_code)
+              
+              if r1.status_code == 200 and r1.text.strip().startswith('['):
                   with open('data/margin.json', 'w', encoding='utf-8') as f:
                       f.write(r1.text)
-                  print('Margin data successfully updated.')
+                  print('✅ Margin data successfully updated!')
               else:
-                  print(f'Margin fetch failed, status: {r1.status_code}')
-          except Exception as e:
-              print('Margin error:', e)
+                  print('⚠️ Margin fetch got non-JSON output, preserving fallback/empty.')
 
-          # 2. 抓取三大法人
-          try:
-              r2 = requests.get('https://openapi.twse.com.tw/v1/fund/BFI82U', headers=headers, timeout=15)
-              if r2.status_code == 200 and r2.text.startswith('['):
+              # 第三步：請求三大法人買賣超
+              print('Fetching fund data...')
+              r2 = session.get('https://openapi.twse.com.tw/v1/fund/BFI82U', timeout=15)
+              print('Fund Status:', r2.status_code)
+
+              if r2.status_code == 200 and r2.text.strip().startswith('['):
                   with open('data/fund.json', 'w', encoding='utf-8') as f:
                       f.write(r2.text)
-                  print('Fund data successfully updated.')
+                  print('✅ Fund data successfully updated!')
               else:
-                  print(f'Fund fetch failed, status: {r2.status_code}')
+                  print('⚠️ Fund fetch got non-JSON output, preserving fallback/empty.')
+
           except Exception as e:
-              print('Fund error:', e)
+              print('❌ Session Request Error:', e)
           "
 
       - name: Commit & Push Data
