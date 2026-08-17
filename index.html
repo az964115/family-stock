@@ -689,6 +689,7 @@
               <select id="fundingType" style="padding: 12px 16px; margin: 8px 0; border-radius: 8px; border: 1px solid #CBD5E0; width: 100%; font-size: 1em;">
                 <option value="buy">➡️ 買入資金</option>
                 <option value="sell">⬅️ 賣出/提領 (獲利了結)</option>
+                <option value="dividend">💵 股票配息 (純紀錄，不計入本金)</option>
               </select>
               
               <label style="font-size: 0.85em;">總金額 (元)：</label>
@@ -885,7 +886,7 @@
         <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: stretch; margin-bottom: 15px;">
           <div style="flex: 1; min-width: 250px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
             <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">今日收益</small><div id="profitDiffDisplay" style="font-size: 1.15em; font-weight: 700;">--</div></div>
-            <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">不含息收益</small><div id="autoTotalNetWorth" style="font-size: 1.15em; font-weight: 700; color: #2B6CB0;">--</div></div>
+            <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">不含息/含息收益</small><div id="autoTotalNetWorth" style="font-size: 1.15em; font-weight: 700; color: #2B6CB0;">--</div></div>
             <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">本月幅度</small><div id="monthPerformance" style="font-size: 1.15em; font-weight: 700;">--</div></div>
             <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">歷史最大回撤</small><div id="maxDrawdownDisplay" style="font-size: 1.15em; font-weight: 700; color: #35C530;">--</div></div>
           </div>
@@ -1389,6 +1390,11 @@
       if (type === 'buy') {
         if (isNaN(amt) || amt <= 0) return alert('買入時請輸入有效總金額');
         if (isNaN(shares) || shares <= 0) return alert('買入時請輸入有效買到股數');
+      } else if (type === 'dividend') {
+        // 新增「配息」類型：不記錄/不增加本金 (amt 強制填 0)，僅記錄股息發放與備註
+        if (isNaN(amt) || amt <= 0) return alert('請輸入本次配息獲得的金額');
+        // 配息不計入投入本金，僅作為收益紀錄保存
+        amt = 0; 
       } else if (type === 'sell') {
         if (isNaN(shares) || shares <= 0) return alert('賣出時請輸入有效賣出股數');
         
@@ -1396,38 +1402,46 @@
           const snap = await db.ref(`family/fundingHistory/${targetUser}`).get();
           let ownedAssetShares = 0;
           if (snap.exists()) {
-            snap.forEach(child => {
-              const item = child.val();
-              if ((item.asset || '').toUpperCase() === assetName) {
-                const isBuy = item.type ? (item.type === 'buy' || item.type === undefined) : (item.amount > 0);
-                if (isBuy) ownedAssetShares += parseFloat(item.shares || 0);
-                else ownedAssetShares -= parseFloat(item.shares || 0);
+            const records = snap.val();
+            Object.values(records).forEach(rec => {
+              if (rec.asset === assetName) {
+                if (rec.type === 'buy') ownedAssetShares += (parseFloat(rec.shares) || 0);
+                else if (rec.type === 'sell') ownedAssetShares -= (parseFloat(rec.shares) || 0);
               }
             });
           }
           if (shares > ownedAssetShares) {
-            return alert(`錯誤：該成員持有的 ${assetName} 僅剩 ${ownedAssetShares.toLocaleString()} 股，不足以賣出 ${shares.toLocaleString()} 股！`);
+            return alert(`賣出股數 (${shares}) 超過目前持有的總股數 (${ownedAssetShares})！`);
           }
-        } catch(e) {
-          return alert('庫存驗證失敗');
+        } catch (e) {
+          return alert('驗證庫存股數失敗，請確認網路連線。');
         }
-        amt = 0;
       }
+
+      const dividendReceivedAmt = parseFloat(document.getElementById('fundingAmount').value) || 0;
       
+      const newRecord = {
+        asset: assetName,
+        date: dateStr,
+        type: type, // 'buy' | 'sell' | 'dividend'
+        amount: amt, // 配息時不計入本金 (0)
+        shares: shares,
+        dividendAmount: type === 'dividend' ? dividendReceivedAmt : 0, // 額外保存獲取的配息金額紀錄
+        note: note,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        createdBy: currentUser
+      };
+
       try {
-        await db.ref(`family/fundingHistory/${targetUser}`).push({
-          date: dateStr,
-          asset: assetName,
-          amount: amt,
-          shares: shares,
-          type: type,
-          note: note || (type === 'buy' ? `買入 ${assetName}` : `賣出 ${assetName} 獲利了結`),
-          timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-        alert(`成功！已為成員 ${targetUser} 紀錄一筆 ${assetName} 的交易。`);
+        await db.ref(`family/fundingHistory/${targetUser}`).push(newRecord);
+        alert('資金與配息歷程已成功寫入雲端！');
+        document.getElementById('fundingAsset').value = '';
+        document.getElementById('fundingAmount').value = '';
+        document.getElementById('fundingShares').value = '0';
+        document.getElementById('fundingNote').value = '';
         loadFundingRecords();
       } catch (e) {
-        alert('寫入失敗');
+        alert('寫入失敗：' + e.message);
       }
     }
 
