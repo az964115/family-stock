@@ -4,6 +4,8 @@ on:
   schedule:
     # 台灣時間 22:00, 23:00, 05:00 (對應 UTC 14:00, 15:00, 21:00)
     - cron: '0 14,15,21 * * *'
+    - cron: '20 14 * * *'
+    - cron: '40 13 * * *'
   workflow_dispatch: # 支援在 GitHub 網頁上手動點擊執行
 
 permissions:
