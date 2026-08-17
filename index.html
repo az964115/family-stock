@@ -1163,6 +1163,10 @@
           amtInput.value = '0';
           amtInput.disabled = true;
           amtInput.placeholder = "獲利了結無需填寫金額";
+        } else if (this.value === 'dividend') {
+          // 💡 修正處：配息時必須讓使用者輸入「配息總金額」！
+          amtInput.disabled = false;
+          amtInput.placeholder = "請輸入配息總金額 (元)";
         } else {
           amtInput.value = '';
           amtInput.disabled = false;
@@ -1374,76 +1378,99 @@
     function closeFundingHistoryModal() { closeModal('fundingHistoryModal'); }
 
     async function saveFundingRecord() {
-      const targetUser = document.getElementById('fundingTargetUser').value.trim();
-      const assetName = document.getElementById('fundingAsset').value.trim().toUpperCase();
-      const dateStr = document.getElementById('fundingDate').value;
-      const type = document.getElementById('fundingType').value;
-      const note = document.getElementById('fundingNote').value.trim();
+    try {
+      // 1. 取得 DOM 元件（加上 null 檢查防護）
+      const targetUserEl = document.getElementById('fundingTargetUser');
+      const assetEl = document.getElementById('fundingAsset');
+      const dateEl = document.getElementById('fundingDate');
+      const typeEl = document.getElementById('fundingType');
+      const noteEl = document.getElementById('fundingNote');
+      const amountEl = document.getElementById('fundingAmount');
+      const sharesEl = document.getElementById('fundingShares');
+
+      if (!targetUserEl || !assetEl || !dateEl || !typeEl || !noteEl || !amountEl || !sharesEl) {
+        alert('前端 DOM 元件缺失，請檢查 HTML 欄位 ID 是否正確！');
+        return;
+      }
+
+      const targetUser = targetUserEl.value.trim();
+      const assetName = assetEl.value.trim().toUpperCase();
+      const dateStr = dateEl.value;
+      const type = typeEl.value;
+      const note = noteEl.value.trim();
       
-      let amt = parseFloat(document.getElementById('fundingAmount').value) || 0;
-      const shares = parseFloat(document.getElementById('fundingShares').value) || 0;
+      let amt = parseFloat(amountEl.value) || 0;
+      const shares = parseFloat(sharesEl.value) || 0;
       
+      // 2. 基本輸入驗證
       if (!targetUser) return alert('請輸入對象成員帳號');
       if (!assetName) return alert('請輸入投資標的（例如: 0050）');
       if (!dateStr) return alert('請選擇異動日期');
+
+      // 3. 權限檢查：僅限 Jason 寫入
+      const currentUser = localStorage.getItem('currentUser') || '';
+      if (currentUser.toLowerCase() !== 'jason') {
+        return alert('權限不足！只有 Jason 可以新增資金異動紀錄。');
+      }
       
+      // 4. 各類型業務邏輯驗證
       if (type === 'buy') {
         if (isNaN(amt) || amt <= 0) return alert('買入時請輸入有效總金額');
         if (isNaN(shares) || shares <= 0) return alert('買入時請輸入有效買到股數');
       } else if (type === 'dividend') {
-        // 新增「配息」類型：不記錄/不增加本金 (amt 強制填 0)，僅記錄股息發放與備註
         if (isNaN(amt) || amt <= 0) return alert('請輸入本次配息獲得的金額');
-        // 配息不計入投入本金，僅作為收益紀錄保存
-        amt = 0; 
+        amt = 0; // 配息不計入投入本金
       } else if (type === 'sell') {
         if (isNaN(shares) || shares <= 0) return alert('賣出時請輸入有效賣出股數');
         
-        try {
-          const snap = await db.ref(`family/fundingHistory/${targetUser}`).get();
-          let ownedAssetShares = 0;
-          if (snap.exists()) {
-            const records = snap.val();
-            Object.values(records).forEach(rec => {
-              if (rec.asset === assetName) {
-                if (rec.type === 'buy') ownedAssetShares += (parseFloat(rec.shares) || 0);
-                else if (rec.type === 'sell') ownedAssetShares -= (parseFloat(rec.shares) || 0);
-              }
-            });
-          }
-          if (shares > ownedAssetShares) {
-            return alert(`賣出股數 (${shares}) 超過目前持有的總股數 (${ownedAssetShares})！`);
-          }
-        } catch (e) {
-          return alert('驗證庫存股數失敗，請確認網路連線。');
+        const snap = await db.ref(`family/fundingHistory/${targetUser}`).get();
+        let ownedAssetShares = 0;
+        if (snap.exists()) {
+          const records = snap.val();
+          Object.values(records).forEach(rec => {
+            if (rec.asset === assetName) {
+              if (rec.type === 'buy') ownedAssetShares += (parseFloat(rec.shares) || 0);
+              else if (rec.type === 'sell') ownedAssetShares -= (parseFloat(rec.shares) || 0);
+            }
+          });
+        }
+        if (shares > ownedAssetShares) {
+          return alert(`賣出股數 (${shares}) 超過目前持有的總股數 (${ownedAssetShares})！`);
         }
       }
 
-      const dividendReceivedAmt = parseFloat(document.getElementById('fundingAmount').value) || 0;
+      const dividendReceivedAmt = parseFloat(amountEl.value) || 0;
       
       const newRecord = {
         asset: assetName,
         date: dateStr,
-        type: type, // 'buy' | 'sell' | 'dividend'
-        amount: amt, // 配息時不計入本金 (0)
+        type: type,
+        amount: amt,
         shares: shares,
-        dividendAmount: type === 'dividend' ? dividendReceivedAmt : 0, // 額外保存獲取的配息金額紀錄
+        dividendAmount: type === 'dividend' ? dividendReceivedAmt : 0,
         note: note,
         createdAt: firebase.database.ServerValue.TIMESTAMP,
         createdBy: currentUser
       };
 
-      try {
-        await db.ref(`family/fundingHistory/${targetUser}`).push(newRecord);
-        alert('資金與配息歷程已成功寫入雲端！');
-        document.getElementById('fundingAsset').value = '';
-        document.getElementById('fundingAmount').value = '';
-        document.getElementById('fundingShares').value = '0';
-        document.getElementById('fundingNote').value = '';
+      // 5. 寫入 Firebase 資料庫
+      await db.ref(`family/fundingHistory/${targetUser}`).push(newRecord);
+      alert('資金與配息歷程已成功寫入雲端！');
+      
+      // 清空欄位
+      assetEl.value = '';
+      amountEl.value = '';
+      sharesEl.value = '0';
+      noteEl.value = '';
+      
+      if (typeof loadFundingRecords === 'function') {
         loadFundingRecords();
-      } catch (e) {
-        alert('寫入失敗：' + e.message);
       }
+    } catch (e) {
+      console.error('saveFundingRecord Error:', e);
+      alert('執行發生錯誤：' + e.message);
     }
+  }
 
     async function loadFundingRecords() {
       const currentUser = localStorage.getItem('currentUser') || '';
@@ -1499,24 +1526,24 @@
             aliasMap[rawAssetName] = "其他常規項目";
           }
           
-          const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
           const itemShares = parseFloat(item.shares || 0);
           const itemAmount = Math.abs(parseFloat(item.amount || 0));
           
           if (!assetMap[rawAssetName]) {
-            assetMap[rawAssetName] = { shares: 0, totalCost: 0, avgCost: 0 };
+            assetMap[rawAssetName] = { shares: 0, totalCost: 0, avgCost: 0, totalDividend: 0 };
           }
           
           const asset = assetMap[rawAssetName];
           
-          if (isBuy) {
+          // 判斷交易類型：'buy' | 'sell' | 'dividend'
+          if (item.type === 'buy') {
             asset.shares += itemShares;
             asset.totalCost += itemAmount;
             dynamicTotalCost += itemAmount;
             if (asset.shares > 0) {
               asset.avgCost = asset.totalCost / asset.shares;
             }
-          } else {
+          } else if (item.type === 'sell') {
             asset.shares -= itemShares;
             const deduction = itemShares * asset.avgCost;
             asset.totalCost -= deduction;
@@ -1526,9 +1553,24 @@
               asset.totalCost = 0;
               asset.avgCost = 0;
             }
+          } else if (item.type === 'dividend') {
+            // 配息處理：不變動持股數 (shares) 與投入本金 (totalCost)
+            // 可另外累加記錄總配息金額
+            const divAmt = parseFloat(item.dividendAmount || item.amount || 0);
+            asset.totalDividend = (asset.totalDividend || 0) + divAmt;
+          } else {
+            // 兼容舊資料 (若舊資料沒有 type 欄位)
+            if (item.amount > 0) {
+              asset.shares += itemShares;
+              asset.totalCost += itemAmount;
+              dynamicTotalCost += itemAmount;
+              if (asset.shares > 0) {
+                asset.avgCost = asset.totalCost / asset.shares;
+              }
+            }
           }
         });
-        
+
         window.currentGlobalTotalCost = Math.max(0, Math.round(dynamicTotalCost));
 
         const isJason = (currentUser.toLowerCase() === 'jason');
@@ -3083,6 +3125,57 @@ async function askGeminiAIAnalysis() {
     resultBox.textContent = `❌ 連線失敗：${error.message}`;
     resultBox.style.display = "block";
   }
+}
+// 在讀取與顯示歷史紀錄時，針對配息項目直接顯示金額
+function renderFundingHistoryLogs(logs) {
+  const container = document.getElementById('fundingHistoryLogs');
+  if (!container) return;
+
+  if (!logs || Object.keys(logs).length === 0) {
+    container.innerHTML = "目前尚無資金異動紀錄。";
+    return;
+  }
+
+  let html = '';
+  let totalDividendAmount = 0; // 累計配息總金額
+
+  Object.values(logs).forEach(log => {
+    let typeText = '';
+    let typeClass = '';
+    
+    if (log.type === 'buy') {
+      typeText = '➡️ 買入';
+    } else if (log.type === 'sell') {
+      typeText = '⬅️ 賣出/提領';
+    } else if (log.type === 'dividend') {
+      typeText = '💵 股票配息';
+      totalDividendAmount += Number(log.amount || 0); // 累計配息金額
+    }
+
+    html += `
+      <div class="log-item" style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <b>[${log.date || '無日期'}] ${log.asset || ''}</b> - ${typeText}
+          <br><small style="color: #718096;">${log.note ? '備註: ' + log.note : ''}</small>
+        </div>
+        <div style="text-align:right;">
+          <b style="color: ${log.type === 'dividend' ? '#2F855A' : '#2B6CB0'};">
+            ${log.type === 'dividend' ? '+$' + Number(log.amount).toLocaleString() : '$' + Number(log.amount).toLocaleString()}
+          </b>
+          <br><small>${log.shares ? log.shares + ' 股' : ''}</small>
+        </div>
+      </div>
+    `;
+  });
+
+  // 在最上方顯示「總配息金額」摘要
+  const summaryHeader = `
+    <div style="background: #E6FFFA; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #38B2AC; font-weight: bold; color: #234E52;">
+      💰 累計領取總配息金額：$${totalDividendAmount.toLocaleString()} 元
+    </div>
+  `;
+
+  container.innerHTML = summaryHeader + html;
 }
   </script>
 </body>
