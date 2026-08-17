@@ -1377,101 +1377,99 @@
 
     function closeFundingHistoryModal() { closeModal('fundingHistoryModal'); }
 
-    async function saveFundingRecord() {
-    try {
-      // 1. 取得 DOM 元件（加上 null 檢查防護）
-      const targetUserEl = document.getElementById('fundingTargetUser');
-      const assetEl = document.getElementById('fundingAsset');
-      const dateEl = document.getElementById('fundingDate');
-      const typeEl = document.getElementById('fundingType');
-      const noteEl = document.getElementById('fundingNote');
-      const amountEl = document.getElementById('fundingAmount');
-      const sharesEl = document.getElementById('fundingShares');
+async function saveFundingRecord() {
+  try {
+    // 1. 取得 DOM 元件（加上 null 檢查防護）
+    const targetUserEl = document.getElementById('fundingTargetUser');
+    const assetEl = document.getElementById('fundingAsset');
+    const dateEl = document.getElementById('fundingDate');
+    const typeEl = document.getElementById('fundingType');
+    const noteEl = document.getElementById('fundingNote');
+    const amountEl = document.getElementById('fundingAmount');
+    const sharesEl = document.getElementById('fundingShares');
 
-      if (!targetUserEl || !assetEl || !dateEl || !typeEl || !noteEl || !amountEl || !sharesEl) {
-        alert('前端 DOM 元件缺失，請檢查 HTML 欄位 ID 是否正確！');
-        return;
-      }
-
-      const targetUser = targetUserEl.value.trim();
-      const assetName = assetEl.value.trim().toUpperCase();
-      const dateStr = dateEl.value;
-      const type = typeEl.value;
-      const note = noteEl.value.trim();
-      
-      let amt = parseFloat(amountEl.value) || 0;
-      const shares = parseFloat(sharesEl.value) || 0;
-      
-      // 2. 基本輸入驗證
-      if (!targetUser) return alert('請輸入對象成員帳號');
-      if (!assetName) return alert('請輸入投資標的（例如: 0050）');
-      if (!dateStr) return alert('請選擇異動日期');
-
-      // 3. 權限檢查：僅限 Jason 寫入
-      const currentUser = localStorage.getItem('currentUser') || '';
-      if (currentUser.toLowerCase() !== 'jason') {
-        return alert('權限不足！只有 Jason 可以新增資金異動紀錄。');
-      }
-      
-      // 4. 各類型業務邏輯驗證
-      if (type === 'buy') {
-        if (isNaN(amt) || amt <= 0) return alert('買入時請輸入有效總金額');
-        if (isNaN(shares) || shares <= 0) return alert('買入時請輸入有效買到股數');
-      } else if (type === 'dividend') {
-        if (isNaN(amt) || amt <= 0) return alert('請輸入本次配息獲得的金額');
-        amt = 0; // 配息不計入投入本金
-      } else if (type === 'sell') {
-        if (isNaN(shares) || shares <= 0) return alert('賣出時請輸入有效賣出股數');
-        
-        const snap = await db.ref(`family/fundingHistory/${targetUser}`).get();
-        let ownedAssetShares = 0;
-        if (snap.exists()) {
-          const records = snap.val();
-          Object.values(records).forEach(rec => {
-            if (rec.asset === assetName) {
-              if (rec.type === 'buy') ownedAssetShares += (parseFloat(rec.shares) || 0);
-              else if (rec.type === 'sell') ownedAssetShares -= (parseFloat(rec.shares) || 0);
-            }
-          });
-        }
-        if (shares > ownedAssetShares) {
-          return alert(`賣出股數 (${shares}) 超過目前持有的總股數 (${ownedAssetShares})！`);
-        }
-      }
-
-      const dividendReceivedAmt = parseFloat(amountEl.value) || 0;
-      
-      const newRecord = {
-        asset: assetName,
-        date: dateStr,
-        type: type,
-        amount: amt,
-        shares: shares,
-        dividendAmount: type === 'dividend' ? dividendReceivedAmt : 0,
-        note: note,
-        createdAt: firebase.database.ServerValue.TIMESTAMP,
-        createdBy: currentUser
-      };
-
-      // 5. 寫入 Firebase 資料庫
-      await db.ref(`family/fundingHistory/${targetUser}`).push(newRecord);
-      alert('資金與配息歷程已成功寫入雲端！');
-      
-      // 清空欄位
-      assetEl.value = '';
-      amountEl.value = '';
-      sharesEl.value = '0';
-      noteEl.value = '';
-      
-      if (typeof loadFundingRecords === 'function') {
-        loadFundingRecords();
-      }
-    } catch (e) {
-      console.error('saveFundingRecord Error:', e);
-      alert('執行發生錯誤：' + e.message);
+    if (!targetUserEl || !assetEl || !dateEl || !typeEl || !noteEl || !amountEl || !sharesEl) {
+      alert('前端 DOM 元件缺失，請檢查 HTML 欄位 ID 是否正確！');
+      return;
     }
-  }
 
+    const targetUser = targetUserEl.value.trim();
+    const assetName = assetEl.value.trim().toUpperCase();
+    const dateStr = dateEl.value;
+    const type = typeEl.value;
+    const note = noteEl.value.trim();
+    
+    const inputAmount = parseFloat(amountEl.value) || 0;
+    const shares = parseFloat(sharesEl.value) || 0;
+    
+    // 2. 基本輸入驗證
+    if (!targetUser) return alert('請輸入對象成員帳號');
+    if (!assetName) return alert('請輸入投資標的（例如: 0050）');
+    if (!dateStr) return alert('請選擇異動日期');
+
+    // 3. 權限檢查：僅限 Jason 寫入
+    const currentUser = localStorage.getItem('currentUser') || '';
+    if (currentUser.toLowerCase() !== 'jason') {
+      return alert('權限不足！只有 Jason 可以新增資金異動紀錄。');
+    }
+    
+    // 4. 各類型業務邏輯驗證
+if (type === 'buy') {
+  if (isNaN(inputAmount) || inputAmount <= 0) return alert('買入時請輸入有效總金額');
+  if (isNaN(shares) || shares <= 0) return alert('買入時請輸入有效買到股數');
+} else if (type === 'dividend') {
+  if (isNaN(inputAmount) || inputAmount <= 0) return alert('請輸入本次配息獲得的金額');
+  // 💡 這裡原本有 amt = 0; 把它刪掉即可！
+} else if (type === 'sell') {
+  if (isNaN(shares) || shares <= 0) return alert('賣出時請輸入有效賣出股數');
+  
+  const snap = await db.ref(`family/fundingHistory/${targetUser}`).get();
+  let ownedAssetShares = 0;
+  if (snap.exists()) {
+    const records = snap.val();
+    Object.values(records).forEach(rec => {
+      if (rec.asset === assetName) {
+        if (rec.type === 'buy') ownedAssetShares += (parseFloat(rec.shares) || 0);
+        else if (rec.type === 'sell') ownedAssetShares -= (parseFloat(rec.shares) || 0);
+      }
+    });
+  }
+  if (shares > ownedAssetShares) {
+    return alert(`賣出股數 (${shares}) 超過目前持有的總股數 (${ownedAssetShares})！`);
+  }
+}
+    
+    // 5. 組裝紀錄物件
+    const newRecord = {
+      asset: assetName,
+      date: dateStr,
+      type: type,
+      amount: inputAmount, // 💡 配息時此處即為配息金額（若計算總投入本金時，再依 type !== 'dividend' 排除即可）
+      shares: shares,
+      dividendAmount: type === 'dividend' ? inputAmount : 0, // 同時保留此欄位以兼容舊邏輯
+      note: note,
+      createdAt: firebase.database.ServerValue.TIMESTAMP,
+      createdBy: currentUser
+    };
+
+    // 6. 寫入 Firebase 資料庫
+    await db.ref(`family/fundingHistory/${targetUser}`).push(newRecord);
+    alert('資金與配息歷程已成功寫入雲端！');
+    
+    // 清空欄位
+    assetEl.value = '';
+    amountEl.value = '';
+    sharesEl.value = '0';
+    noteEl.value = '';
+    
+    if (typeof loadFundingRecords === 'function') {
+      loadFundingRecords();
+    }
+  } catch (e) {
+    console.error('saveFundingRecord Error:', e);
+    alert('執行發生錯誤：' + e.message);
+  }
+}
     async function loadFundingRecords() {
       const currentUser = localStorage.getItem('currentUser') || '';
       const logsContainer = document.getElementById('fundingHistoryLogs');
