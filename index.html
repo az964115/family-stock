@@ -1611,27 +1611,38 @@ if (type === 'buy') {
         let html = "";
         
         records.forEach(item => {
-          const isBuy = item.type ? (item.type === 'buy') : (item.amount > 0);
-          const amtStyle = isBuy ? 'profit-positive' : 'profit-negative';
-          const prefix = isBuy ? '➡️ 買入' : '⬅️ 賣出';
           const rawAssetName = item.asset ? item.asset.toUpperCase() : "預設項目";
           const aliasName = aliasMap[rawAssetName];
           
-          let displayNote = item.note;
-          if (!isJason) {
+          let displayNote = item.note || '';
+          if (!isJason && displayNote) {
             displayNote = displayNote.replace(rawAssetName, aliasName);
           }
           
-          let detailText = "";
-          if (isBuy) {
-            const sharesText = hasAccess ? `${parseFloat(item.shares || 0).toLocaleString()} 股` : `**** 股`;
-            detailText = `<br><small style="color:#4A5568;">💰 投入金額: $${Math.abs(item.amount).toLocaleString()} 元 | 數量: ${sharesText}</small>`;
-          } else {
+          const logTitle = isJason ? `[${rawAssetName}]` : `[${aliasName}]`;
+          
+          let prefix = '';
+          let amtStyle = '';
+          let detailText = '';
+
+          // 💡 修正處：完整區分 buy / sell / dividend 三種類型
+          if (item.type === 'dividend') {
+            prefix = '💵 股票配息';
+            amtStyle = 'profit-positive';
+            const divAmount = parseFloat(item.dividendAmount || item.amount || 0);
+            detailText = `<br><small style="color:#2F855A; font-weight:600;">💰 配息金額: +$${divAmount.toLocaleString()} 元</small>`;
+          } else if (item.type === 'sell') {
+            prefix = '⬅️ 賣出';
+            amtStyle = 'profit-negative';
             const sharesText = hasAccess ? `${parseFloat(item.shares || 0).toLocaleString()} 股` : `**** 股`;
             detailText = `<br><small style="color:#4A5568;">📉 減少數量: ${sharesText} (獲利了結)</small>`;
+          } else {
+            // 預設 buy 或舊相容資料 (item.amount > 0)
+            prefix = '➡️ 買入';
+            amtStyle = 'profit-positive';
+            const sharesText = hasAccess ? `${parseFloat(item.shares || 0).toLocaleString()} 股` : `**** 股`;
+            detailText = `<br><small style="color:#4A5568;">💰 投入金額: $${Math.abs(item.amount).toLocaleString()} 元 | 數量: ${sharesText}</small>`;
           }
-          
-          const logTitle = isJason ? `[${rawAssetName}]` : `[${aliasName}]`;
           
           html += `<div class="log-item">
             <small style="color:var(--text-muted); font-weight:600;">${item.date} ${logTitle}</small>
@@ -1674,7 +1685,6 @@ if (type === 'buy') {
         return 0;
       }
     }
-
     async function openRankModal() {
       openModal('rankModal');
       const listEl = document.getElementById('rankList');
