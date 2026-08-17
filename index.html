@@ -1154,39 +1154,51 @@
     function openFundingHistoryModal() {
       const currentUser = localStorage.getItem('currentUser') || '';
       const formBlock = document.getElementById('jasonFundingForm');
-      
+      const typeSelect = document.getElementById('fundingType');
+      const amtInput = document.getElementById('fundingAmount');
+
+      // 1. 設定預設日期
       document.getElementById('fundingDate').value = new Date().toISOString().split('T')[0];
-      
-      document.getElementById('fundingType').onchange = function() {
-        const amtInput = document.getElementById('fundingAmount');
-        if (this.value === 'sell') {
+
+      // 2. 定義統一更新輸入框狀態的函式
+      function updateAmountInputState() {
+        if (typeSelect.value === 'sell') {
           amtInput.value = '0';
           amtInput.disabled = true;
           amtInput.placeholder = "獲利了結無需填寫金額";
-        } else if (this.value === 'dividend') {
-          // 💡 修正處：配息時必須讓使用者輸入「配息總金額」！
+        } else if (typeSelect.value === 'dividend') {
           amtInput.disabled = false;
           amtInput.placeholder = "請輸入配息總金額 (元)";
         } else {
-          amtInput.value = '';
           amtInput.disabled = false;
           amtInput.placeholder = "請輸入總金額";
         }
-      };
-      
+      }
+
+      // 3. 綁定切換事件
+      typeSelect.onchange = updateAmountInputState;
+
+      // 4. 權限判斷與表單重置
       db.ref(`settings/admins/${currentUser.toLowerCase()}`).once('value').then(snap => {
         if (snap.exists() && snap.val() === true) {
           formBlock.style.display = 'block';
+          
+          // 重置欄位值
           document.getElementById('fundingTargetUser').value = '';
           document.getElementById('fundingAsset').value = '';
-          document.getElementById('fundingAmount').value = '';
+          amtInput.value = '';
           document.getElementById('fundingShares').value = '0';
           document.getElementById('fundingNote').value = '';
+          
+          // 💡 關鍵修正：重置下拉選單並「立刻執行一次」狀態更新！
+          typeSelect.value = 'buy'; // 強制預設回買入 (或你希望的預設值)
+          updateAmountInputState(); // 確保金額欄位恢復為可輸入狀態
+          
         } else {
           formBlock.style.display = 'none';
         }
       });
-      
+
       openModal('fundingHistoryModal');
       loadFundingRecords();
     }
