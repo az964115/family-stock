@@ -139,19 +139,21 @@ jobs:
               print("❌ Playwright WTX error:", e)
 
           # -------------------------------------------------------------
-          # 3. 抓取美股與全球主要指數、VIX 與原油 (yfinance)
+          # 3. 抓取全球市場指數 (yfinance)
+          # 指定順序：夜盤 -> 費城半導體 -> 布蘭特 -> VIX -> 道瓊 -> 納斯達克 -> 標普500 -> 台灣加權 -> KOSPI
           # -------------------------------------------------------------
           symbols = [
+              ("usSOX", "^SOX"),          # 費城半導體指數
+              ("brentOil", "BZ=F"),       # 布蘭特原油
+              ("vix", "^VIX"),            # 恐慌指數 VIX
               ("usDJI", "^DJI"),          # 道瓊工業指數
               ("usIXIC", "^IXIC"),        # 納斯達克綜合指數
               ("usGSPC", "^GSPC"),        # 標普500指數
-              ("usSOX", "^SOX"),          # 費城半導體指數
               ("twTAIEX", "^TWII"),       # 台灣加權指數
-              ("krKOSPI", "^KS11"),       # 韓國KOSPI
-              ("vix", "^VIX"),            # 恐慌指數 VIX
-              ("brentOil", "BZ=F")        # 布倫特原油
+              ("krKOSPI", "^KS11")        # 韓國KOSPI
           ]
 
+          # 第一個固定放在夜盤 (wtx_night)
           us_data = {
               "wtx_night": wtx_data
           }
@@ -187,5 +189,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/
-          git commit -m "Auto update evening stock, global indices, oil & VIX data" || exit 0
+          git commit -m "Auto update evening stock & global market data" || exit 0
           git push
