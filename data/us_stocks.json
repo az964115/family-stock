@@ -5,7 +5,7 @@
     "changeRate": "-0.12%"
   },
   "fed_rate": {
-    "date": "2026-09-16",
+    "date": "--",
     "hike_prob": "0.00%",
     "cut_prob": "0.00%"
   },
@@ -35,8 +35,8 @@
     "changeRate": "+6.60%"
   },
   "brentOil": {
-    "price": "91.63",
-    "change": "+0.25",
-    "changeRate": "+0.27%"
+    "price": "91.59",
+    "change": "+0.52",
+    "changeRate": "+0.57%"
   }
 }
