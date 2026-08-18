@@ -139,75 +139,24 @@ jobs:
               print("❌ Playwright WTX error:", e)
 
           # -------------------------------------------------------------
-          # 3. 抓取 Fed 升降息機率 (Playwright 爬取財經 M 平方)
+          # 3. 抓取美股與全球主要指數、VIX 與原油 (yfinance)
           # -------------------------------------------------------------
-          fed_data = {
-              "date": "--",
-              "hike_prob": "0.00%",
-              "cut_prob": "0.00%"
-          }
-
-          try:
-              with sync_playwright() as p:
-                  browser = p.chromium.launch(headless=True)
-                  # 模擬真實 Desktop 瀏覽器，減少被擋機率
-                  context = browser.new_context(
-                      user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-                      viewport={'width': 1366, 'height': 768}
-                  )
-                  page = context.new_page()
-
-                  # 前往財經 M 平方 - Fed 升降息機率頁面
-                  url_mm = "https://www.macromicro.me/collections/4/us-monetary-policy/26/fed-rate-monitor"
-                  page.goto(url_mm, wait_until="networkidle", timeout=30000)
-
-                  # 等待數據元件加載 (或網頁主要數字出現)
-                  page.wait_for_timeout(3000)
-
-                  # 取得整個頁面的渲染文字進行正規表達式比對
-                  content = page.content()
-                  soup = BeautifulSoup(content, 'html.parser')
-                  page_text = soup.get_text()
-
-                  # 解析日期 (例如：2026/09/16 或 2026-09-16)
-                  date_match = re.search(r'\d{4}[-/]\d{2}[-/]\d{2}', page_text)
-                  if date_match:
-                      fed_data["date"] = date_match.group(0).replace('/', '-')
-
-                  # 尋找降息與升息的百分比數字
-                  # 抓取包含 % 的數字，優先尋找降息/升息關鍵字附近的百分比
-                  cut_match = re.search(r'(?:降息|cut)[^\d]*(\d+(?:\.\d+)?%)', page_text, re.IGNORECASE)
-                  hike_match = re.search(r'(?:升息|hike)[^\d]*(\d+(?:\.\d+)?%)', page_text, re.IGNORECASE)
-
-                  if cut_match:
-                      fed_data["cut_prob"] = cut_match.group(1)
-                  if hike_match:
-                      fed_data["hike_prob"] = hike_match.group(1)
-
-                  browser.close()
-                  print("✅ Playwright Fed Rate fetched successfully:", fed_data)
-
-          except Exception as e:
-              print("❌ Playwright Fed Rate error:", e)
-              
-          # -------------------------------------------------------------
-          # 4. 抓取美股四大指數、VIX 與布倫特原油 (yfinance)
-          # -------------------------------------------------------------
-          us_symbols = [
-              ("usDJI", "^DJI"),
-              ("usIXIC", "^IXIC"),
-              ("usGSPC", "^GSPC"),
-              ("usSOX", "^SOX"),
-              ("vix", "^VIX"),
-              ("brentOil", "BZ=F")
+          symbols = [
+              ("usDJI", "^DJI"),          # 道瓊工業指數
+              ("usIXIC", "^IXIC"),        # 納斯達克綜合指數
+              ("usGSPC", "^GSPC"),        # 標普500指數
+              ("usSOX", "^SOX"),          # 費城半導體指數
+              ("twTAIEX", "^TWII"),       # 台灣加權指數
+              ("krKOSPI", "^KS11"),       # 韓國KOSPI
+              ("vix", "^VIX"),            # 恐慌指數 VIX
+              ("brentOil", "BZ=F")        # 布倫特原油
           ]
 
           us_data = {
-              "wtx_night": wtx_data,
-              "fed_rate": fed_data
+              "wtx_night": wtx_data
           }
 
-          for key, symbol in us_symbols:
+          for key, symbol in symbols:
               try:
                   ticker = yf.Ticker(symbol)
                   info = ticker.fast_info
@@ -238,5 +187,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/
-          git commit -m "Auto update evening stock, WTX night, Fed rate, Oil & VIX data via CME/Playwright" || exit 0
+          git commit -m "Auto update evening stock, global indices, oil & VIX data" || exit 0
           git push
