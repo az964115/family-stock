@@ -38,12 +38,19 @@ jobs:
 
           headers = {
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-              'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7'
+              'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+              'Referer': 'https://www.cmoney.tw/'
           }
 
           # -------------------------------------------------------------
           # 1. 爬取 Yahoo 奇摩股市 - 資券餘額與日期
           # -------------------------------------------------------------
+          margin_json = [{
+              '日期': '--',
+              '融資餘額(張)': '統計中',
+              '融券餘額(張)': '統計中'
+          }]
+
           try:
               print("Scraping Yahoo Margin Balance Page...")
               url_margin = "https://tw.stock.yahoo.com/margin-balance"
@@ -55,7 +62,6 @@ jobs:
               margin_sell = "統計中"
 
               rows = soup.find_all('div', class_=re.compile(r'table-row'))
-              
               target_row = None
               for row in rows:
                   date_match = re.search(r'\d{4}/\d{2}/\d{2}', row.get_text())
@@ -66,7 +72,6 @@ jobs:
 
               if target_row:
                   mend_blocks = target_row.find_all('div', class_=re.compile(r'Mend\(12px\)'))
-                  
                   if len(mend_blocks) > 0:
                       buy_span = mend_blocks[0].find('span')
                       if buy_span:
@@ -88,16 +93,19 @@ jobs:
                   '融資餘額(張)': margin_buy,
                   '融券餘額(張)': margin_sell
               }]
-
-              with open('data/margin.json', 'w', encoding='utf-8') as f:
-                  json.dump(margin_json, f, ensure_ascii=False, indent=2)
-              print("✅ Margin data updated successfully:", margin_json)
-
           except Exception as e:
               print("❌ Scrape Margin error:", e)
 
+          # 獨立存檔 margin.json，避免後續程式中斷影響此檔
+          try:
+              with open('data/margin.json', 'w', encoding='utf-8') as f:
+                  json.dump(margin_json, f, ensure_ascii=False, indent=2)
+              print("✅ Margin data saved:", margin_json)
+          except Exception as e:
+              print("❌ Write margin.json failed:", e)
+
           # -------------------------------------------------------------
-          # 2. 直接 HTML 爬取 CMoney 台指期頁面 (https://www.cmoney.tw/forum/futures/TXF1?s=p)
+          # 2. 爬取 CMoney 台指期頁面 (TXF1)
           # -------------------------------------------------------------
           wtx_data = {
               "price": "--",
@@ -114,61 +122,40 @@ jobs:
               print("Scraping CMoney WTX Night Market Page...")
               cmoney_url = "https://www.cmoney.tw/forum/futures/TXF1?s=p"
               res = requests.get(cmoney_url, headers=headers, timeout=10)
-              soup = BeautifulSoup(res.text, 'html.parser')
+              html_text = res.text
 
-              # 抓取價格 <span class="stockData__price">
-              price_el = soup.find(class_=re.compile(r'stockData__price'))
-              # 抓取漲跌點數 <div class="stockData__quotePrice">
-              quote_price_el = soup.find(class_=re.compile(r'stockData__quotePrice'))
-              # 抓取漲跌幅 <div class="stockData__quote">
-              quote_rate_el = soup.find(class_=re.compile(r'stockData__quote'))
+              # 方案 A: 全域搜尋 HTML 中的價格數字與漲跌
+              p_match = re.search(r'stockData__price[^>]*>\s*([\d,.]+)', html_text)
+              c_match = re.search(r'stockData__quotePrice[^>]*>\s*([\d,.-]+)', html_text)
+              r_match = re.search(r'stockData__quote[^>]*>\s*\(([^)]+)\)', html_text)
 
-              price_val = price_el.text.strip() if price_el else "--"
-              change_val = quote_price_el.text.strip() if quote_price_el else "0.00"
-              rate_val = quote_rate_el.text.strip() if quote_rate_el else "0.00%"
+              if p_match:
+                  price_str = p_match.group(1).strip()
+                  chg_str = c_match.group(1).strip() if c_match else "0.00"
+                  rate_str = r_match.group(1).strip() if r_match else "0.00%"
 
-              # 判斷跌（text-functional-fall）或漲（text-functional-rise），補上 +/- 號
-              if quote_price_el and "text-functional-fall" in str(quote_price_el):
-                  if not change_val.startswith('-'):
-                      change_val = f"-{change_val}"
-              elif quote_price_el and "text-functional-rise" in str(quote_price_el):
-                  if not change_val.startswith('+'):
-                      change_val = f"+{change_val}"
+                  # 補正顏色正負號
+                  if "text-functional-fall" in html_text and not chg_str.startswith('-'):
+                      chg_str = f"-{chg_str}"
+                  elif "text-functional-rise" in html_text and not chg_str.startswith('+'):
+                      chg_str = f"+{chg_str}"
 
-              if price_val != "--":
-                  wtx_data = {
-                      "price": f"{float(price_val):,.0f}" if price_val.replace('.', '').isdigit() else price_val,
-                      "change": change_val,
-                      "changeRate": rate_val,
-                      "open": "--",
-                      "prevClose": "--",
-                      "high": "--",
-                      "low": "--",
-                      "volume": "--"
-                  }
-                  print("✅ WTX fetched directly from CMoney HTML:", wtx_data)
+                  wtx_data["price"] = price_str
+                  wtx_data["change"] = chg_str
+                  wtx_data["changeRate"] = rate_str
+                  print("✅ WTX fetched via CMoney Regex:", wtx_data)
               else:
-                  print("⚠️ CMoney HTML elements not found, trying regex...")
+                  # 方案 B: 備援搜尋 JSON 格式欄位
+                  close_m = re.search(r'"Close":\s*([0-9.]+)', html_text)
+                  change_m = re.search(r'"Change":\s*([-0-9.]+)', html_text)
+                  rate_m = re.search(r'"ChangePercent":\s*([-0-9.]+)', html_text)
+                  if close_m:
+                      wtx_data["price"] = f"{float(close_m.group(1)):,.0f}"
+                      wtx_data["change"] = f"{float(change_m.group(1)):+.2f}" if change_m else "0.00"
+                      wtx_data["changeRate"] = f"{float(rate_m.group(1)):+.2f}%" if rate_m else "0.00%"
+                      print("✅ WTX fetched via CMoney JSON Regex:", wtx_data)
           except Exception as e:
               print("❌ CMoney Scrape Error:", e)
-
-          # 正則備援 (以防 CMoney 類名變化)
-          if wtx_data["price"] == "--":
-              try:
-                  price_m = re.search(r'class="stockData__price"[^>]*>\s*([0-9,.]+)\s*<', res.text)
-                  quote_m = re.search(r'class="stockData__quotePrice[^"]*"[^>]*>\s*([0-9,.]+)\s*<', res.text)
-                  rate_m = re.search(r'class="stockData__quote[^"]*"[^>]*>\s*\(([^)]+)\)\s*<', res.text)
-
-                  if price_m:
-                      p = price_m.group(1).strip()
-                      c = quote_m.group(1).strip() if quote_m else "0.00"
-                      r = rate_m.group(1).strip() if rate_m else "0.00%"
-                      wtx_data["price"] = p
-                      wtx_data["change"] = c
-                      wtx_data["changeRate"] = r
-                      print("✅ WTX fetched via CMoney HTML Regex:", wtx_data)
-              except Exception as re_err:
-                  print("❌ Regex fallback failed:", re_err)
 
           # -------------------------------------------------------------
           # 3. 抓取美股四大指數 + VIX 恐慌指數 (yfinance)
@@ -190,10 +177,9 @@ jobs:
               try:
                   ticker = yf.Ticker(symbol)
                   info = ticker.fast_info
-                  
                   price = info.last_price
                   prev_close = info.previous_close
-                  
+
                   if price and prev_close:
                       change_val = price - prev_close
                       change_pct = (change_val / prev_close) * 100
@@ -209,13 +195,13 @@ jobs:
                   print(f"Error fetching {symbol} via yfinance:", err)
                   us_data[key] = {"price": "--", "change": "0.00", "changeRate": "0.00%"}
 
-          # 強制存檔
+          # 獨立存檔 us_stocks.json
           try:
               with open('data/us_stocks.json', 'w', encoding='utf-8') as f:
                   json.dump(us_data, f, ensure_ascii=False, indent=2)
               print("✅ us_stocks.json successfully written!")
           except Exception as e:
-              print("❌ Save JSON error:", e)
+              print("❌ Write us_stocks.json failed:", e)
 
           EOF
           python3 scrape.py
