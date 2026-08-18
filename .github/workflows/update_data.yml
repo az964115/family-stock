@@ -139,7 +139,7 @@ jobs:
               print("❌ Playwright WTX error:", e)
 
           # -------------------------------------------------------------
-          # 3. Playwright 攔截 MacroMicro 後端 API 數據 (穩定無頭抓取)
+          # 3. Playwright 終極通關版：建立合法 Session 提取 MacroMicro 數據
           # -------------------------------------------------------------
           fed_data = {
               "date": "--",
@@ -148,59 +148,105 @@ jobs:
           }
           try:
               with sync_playwright() as p:
+                  # 使用真實瀏覽器指紋與參數啟動
                   browser = p.chromium.launch(
                       headless=True,
-                      args=['--no-sandbox', '--disable-setuid-sandbox']
+                      args=[
+                          '--no-sandbox',
+                          '--disable-setuid-sandbox',
+                          '--disable-blink-features=AutomationControlled'
+                      ]
                   )
                   context = browser.new_context(
                       user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-                      viewport={'width': 1280, 'height': 800}
+                      viewport={'width': 1366, 'height': 768},
+                      locale="zh-TW"
                   )
+                  
+                  # 隱藏 Playwright 自動化特徵
                   page = context.new_page()
+                  page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
-                  # 建立資料監聽容器
-                  api_results = {}
+                  print("1️⃣ 先開首頁建立合法 Session 與 Cookie...")
+                  page.goto("https://www.macromicro.me/", wait_until="domcontentloaded", timeout=30000)
+                  page.wait_for_timeout(2000)
 
-                  # 攔截包含 /api/series/ 的網絡請求回應
-                  def handle_response(response):
-                      try:
-                          if "/api/series/" in response.url and response.status == 200:
-                              json_data = response.json()
-                              series = json_data.get('data', {}).get('series', {})
-                              for s_id, s_data in series.items():
-                                  stats = s_data.get('stats', [])
-                                  if stats:
-                                      api_results[s_id] = stats[-1] # 取得最新一筆數據 [date, val]
-                      except Exception:
-                          pass
-
-                  page.on("response", handle_response)
-
-                  # A. 訪問升息機率頁面觸發 API 請求
-                  print("正在進入 Fed 升息機率頁面並攔截數據...")
+                  # A. 抓取升息機率 (Series 484)
+                  print("2️⃣ 開啟升息機率頁面...")
                   page.goto("https://www.macromicro.me/series/484/probability-fed-rate", wait_until="domcontentloaded", timeout=30000)
-                  page.wait_for_timeout(3000) # 給予 3 秒等待 AJAX 請求 completed
+                  page.wait_for_timeout(3000) # 等待數據掛載
 
-                  # B. 訪問降息機率頁面觸發 API 請求
-                  print("正在進入 Fed 降息機率頁面並攔截數據...")
+                  # 嘗試多重提取方式：API fetch -> DOM 提取 -> JS 變數提取
+                  hike_res = page.evaluate("""async () => {
+                      try {
+                          // 優先從 API Fetch 拿取
+                          const res = await fetch('/api/series/484');
+                          if (res.ok) {
+                              const json = await res.json();
+                              const stats = json?.data?.series?.['484']?.stats;
+                              if (stats && stats.length > 0) {
+                                  const last = stats[stats.length - 1];
+                                  return { date: last[0], val: last[1] };
+                              }
+                          }
+                      } catch (e) {}
+
+                      // 次之從 DOM 讀取
+                      const valEl = document.querySelector('.stat-val .val');
+                      const dateEl = document.querySelector('.stat-date, .date-label');
+                      if (valEl) {
+                          return {
+                              date: dateEl ? dateEl.innerText.trim() : '--',
+                              val: valEl.innerText.trim().replace(/,/g, '')
+                          };
+                      }
+                      return null;
+                  }""")
+
+                  if hike_res and hike_res.get('val'):
+                      fed_data["hike_prob"] = f"{float(hike_res['val']):.2f}%"
+                      if hike_res.get('date') and hike_res['date'] != '--':
+                          fed_data["date"] = hike_res['date']
+
+                  # B. 抓取降息機率 (Series 1645)
+                  print("3️⃣ 開啟降息機率頁面...")
                   page.goto("https://www.macromicro.me/series/1645/probability-fed-rate-decrease", wait_until="domcontentloaded", timeout=30000)
                   page.wait_for_timeout(3000)
 
+                  cut_res = page.evaluate("""async () => {
+                      try {
+                          const res = await fetch('/api/series/1645');
+                          if (res.ok) {
+                              const json = await res.json();
+                              const stats = json?.data?.series?.['1645']?.stats;
+                              if (stats && stats.length > 0) {
+                                  const last = stats[stats.length - 1];
+                                  return { date: last[0], val: last[1] };
+                              }
+                          }
+                      } catch (e) {}
+
+                      const valEl = document.querySelector('.stat-val .val');
+                      const dateEl = document.querySelector('.stat-date, .date-label');
+                      if (valEl) {
+                          return {
+                              date: dateEl ? dateEl.innerText.trim() : '--',
+                              val: valEl.innerText.trim().replace(/,/g, '')
+                          };
+                      }
+                      return null;
+                  }""")
+
+                  if cut_res and cut_res.get('val'):
+                      fed_data["cut_prob"] = f"{float(cut_res['val']):.2f}%"
+                      if fed_data["date"] == "--" and cut_res.get('date') and cut_res['date'] != '--':
+                          fed_data["date"] = cut_res['date']
+
                   browser.close()
+                  print("✅ 最終 Fed 升降息數據提取結果：", fed_data)
 
-                  # 解析攔截到的 484 (升息) 與 1645 (降息) 數據
-                  if "484" in api_results:
-                      fed_data["date"] = api_results["484"][0]
-                      fed_data["hike_prob"] = f"{float(api_results['484'][1]):.2f}%"
-
-                  if "1645" in api_results:
-                      if fed_data["date"] == "--":
-                          fed_data["date"] = api_results["1645"][0]
-                      fed_data["cut_prob"] = f"{float(api_results['1645'][1]):.2f}%"
-
-                  print("✅ Fed rate probabilities intercepted successfully:", fed_data)
           except Exception as e:
-              print("❌ Playwright Intercept Fed rate error:", e)
+              print("❌ Playwright通關失敗：", e)
 
           # -------------------------------------------------------------
           # 4. 抓取美股四大指數、VIX 與布倫特原油 (yfinance)
