@@ -36,8 +36,7 @@ jobs:
           from bs4 import BeautifulSoup
 
           headers = {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-              'Referer': 'https://www.cmoney.tw/'
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
           }
 
           # -------------------------------------------------------------
@@ -80,7 +79,7 @@ jobs:
                       sell_span = mend_blocks[1].find('span')
                       if sell_span:
                           val = sell_span.get_text(strip=True)
-                          if 'c-trend-up' in str(sell_span) and not val.startswith('+'):
+                          if 'c-trend-up' in str(buy_span) and not val.startswith('+'):
                               val = '+' + val
                           margin_sell = f"{val} 張"
 
@@ -98,7 +97,7 @@ jobs:
               print("❌ Scrape Margin error:", e)
 
           # -------------------------------------------------------------
-          # 2. 抓取台指期夜盤數據 (優先呼叫 CMoney/Yahoo API)
+          # 2. 抓取台指期夜盤數據 (台灣期貨交易所 TAIFEX 官方即時 API)
           # -------------------------------------------------------------
           wtx_data = {
               "price": "--",
@@ -111,77 +110,65 @@ jobs:
               "volume": "--"
           }
 
-          # 方法 A: 嘗試使用 Yahoo 奇摩股市台指期近一 API (WTX&)
           try:
-              print("Fetching WTX Night Market from Yahoo API...")
-              yahoo_fut_url = "https://query1.finance.yahoo.com/v8/finance/chart/WTX%26?interval=1d&range=1d"
-              res = requests.get(yahoo_fut_url, headers=headers, timeout=10)
+              print("Fetching WTX Night Market from TAIFEX Official API...")
+              taifex_url = "https://mis.taifex.com.tw/futures/api/getMarketQuoteList"
+              payload = {"marketType": "1", "symbolType": "F"} # 夜盤期貨
+              
+              res = requests.post(taifex_url, json=payload, headers=headers, timeout=10)
               if res.status_code == 200:
-                  meta = res.json()['chart']['result'][0]['meta']
-                  price = meta.get('regularMarketPrice', 0)
-                  prev_close = meta.get('chartPreviousClose', meta.get('previousClose', price))
-                  diff = price - prev_close
-                  diff_pct = (diff / prev_close * 100) if prev_close else 0
+                  items = res.json().get("rtData", {}).get("items", [])
+                  # 找到台指期近一月 (TX)
+                  tx_item = next((x for x in items if x.get("SymbolID", "").startswith("TX")), None)
+                  
+                  if tx_item:
+                      price = float(tx_item.get("CLastPrice", 0) or 0)
+                      change = float(tx_item.get("CDiff", 0) or 0)
+                      prev_close = float(tx_item.get("CRefPrice", 0) or 1)
+                      rate = (change / prev_close) * 100 if prev_close else 0
 
-                  wtx_data = {
-                      "price": f"{price:,.0f}",
-                      "change": f"{diff:+.2f}",
-                      "changeRate": f"{diff_pct:+.2f}%",
-                      "open": f"{meta.get('regularMarketDayHigh', '--')}",
-                      "prevClose": f"{prev_close:,.0f}",
-                      "high": f"{meta.get('dayHigh', '--')}",
-                      "low": f"{meta.get('dayLow', '--')}",
-                      "volume": f"{meta.get('regularMarketVolume', '--')}"
-                  }
-                  print("✅ WTX fetched via Yahoo API:", wtx_data)
-          except Exception as e:
-              print("⚠️ Yahoo WTX API failed, switching to CMoney API...", e)
-
-          # 方法 B: 若 Yahoo 抓不到，備援使用 CMoney API
-          if wtx_data["price"] == "--":
-              try:
-                  cmoney_url = "https://www.cmoney.tw/forum/api/v1/stock/quote?symbol=TXF1"
-                  res = requests.get(cmoney_url, headers=headers, timeout=10)
-                  if res.status_code == 200:
-                      d = res.json()
-                      price = d.get('Close', 0)
-                      change = d.get('Change', 0)
-                      change_rate = d.get('ChangePercent', 0)
-                      
                       wtx_data = {
-                          "price": f"{price:,.0f}",
+                          "price": f"{price:,.0f}" if price else "--",
                           "change": f"{change:+.2f}",
-                          "changeRate": f"{change_rate:+.2f}%",
-                          "open": f"{d.get('Open', '--')}",
-                          "prevClose": f"{d.get('PreClose', '--')}",
-                          "high": f"{d.get('High', '--')}",
-                          "low": f"{d.get('Low', '--')}",
-                          "volume": f"{d.get('TotalVolume', '--')}"
+                          "changeRate": f"{rate:+.2f}%",
+                          "open": str(tx_item.get("COpenPrice", "--")),
+                          "prevClose": f"{prev_close:,.0f}",
+                          "high": str(tx_item.get("CHighPrice", "--")),
+                          "low": str(tx_item.get("CLowPrice", "--")),
+                          "volume": str(tx_item.get("CTotalVolume", "--"))
                       }
-                      print("✅ WTX fetched via CMoney API:", wtx_data)
-              except Exception as e:
-                  print("❌ CMoney API also failed:", e)
+                      print("✅ WTX fetched via TAIFEX API:", wtx_data)
+          except Exception as e:
+              print("⚠️ TAIFEX API Error:", e)
 
           # -------------------------------------------------------------
-          # 3. 抓取美股四大指數 + VIX 恐慌指數 (Yahoo Finance API)
+          # 3. 抓取美股四大指數 + VIX 恐慌指數 (加上 Headers 防 403 封鎖)
           # -------------------------------------------------------------
-          try:
-              print("Fetching US Stock Indices & VIX...")
-              us_symbols = [
-                  ("usDJI", "^DJI"),      # 道瓊工業
-                  ("usIXIC", "^IXIC"),    # 納斯達克
-                  ("usGSPC", "^GSPC"),    # 標普 500
-                  ("usSOX", "^SOX"),      # 費城半導體
-                  ("vix", "^VIX")          # VIX 恐慌指數
-              ]
-              us_data = {
-                  "wtx_night": wtx_data
-              }
+          us_symbols = [
+              ("usDJI", "%5EDJI"),      # 道瓊工業
+              ("usIXIC", "%5EIXIC"),    # 納斯達克
+              ("usGSPC", "%5EGSPC"),    # 標普 500
+              ("usSOX", "%5ESOX"),      # 費城半導體
+              ("vix", "%5EVIX")          # VIX 恐慌指數
+          ]
 
-              for key, symbol in us_symbols:
-                  try:
-                      api_url = f"https://query2.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=1d"
-                      res = requests.get(api_url, headers=headers, timeout=10)
+          us_data = {
+              "wtx_night": wtx_data
+          }
+
+          # 模擬完整 Browser 請求
+          y_headers = {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+              'Accept-Language': 'en-US,en;q=0.5'
+          }
+
+          for key, symbol in us_symbols:
+              try:
+                  api_url = f"https://query2.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=1d"
+                  res = requests.get(api_url, headers=y_headers, timeout=10)
+                  
+                  if res.status_code == 200:
                       data = res.json()
                       meta = data['chart']['result'][0]['meta']
                       price = meta.get('regularMarketPrice', 0)
@@ -194,15 +181,20 @@ jobs:
                           "change": f"{change_val:+.2f}",
                           "changeRate": f"{change_pct:+.2f}%"
                       }
-                  except Exception as err:
-                      print(f"Error fetching {symbol}:", err)
+                  else:
+                      print(f"⚠️ Yahoo returned status {res.status_code} for {symbol}")
                       us_data[key] = {"price": "--", "change": "0.00", "changeRate": "0.00%"}
+              except Exception as err:
+                  print(f"Error fetching {symbol}:", err)
+                  us_data[key] = {"price": "--", "change": "0.00", "changeRate": "0.00%"}
 
+          # 確保無論如何都會寫入 JSON，避免檔案遺失
+          try:
               with open('data/us_stocks.json', 'w', encoding='utf-8') as f:
                   json.dump(us_data, f, ensure_ascii=False, indent=2)
-              print("✅ US Stocks & VIX data updated:", us_data)
+              print("✅ us_stocks.json saved successfully!")
           except Exception as e:
-              print("❌ Scrape US/VIX error:", e)
+              print("❌ Save JSON error:", e)
 
           EOF
           python3 scrape.py
@@ -212,5 +204,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/
-          git commit -m "Auto update evening stock, WTX night, VIX data via API" || exit 0
+          git commit -m "Auto update evening stock, WTX night, VIX data via TAIFEX API" || exit 0
           git push
