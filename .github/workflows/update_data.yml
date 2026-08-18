@@ -2,14 +2,13 @@ name: Update Evening Stock Data
 
 on:
   schedule:
-    # 台灣時間 22:00, 23:00, 05:00 (對應 UTC 14:00, 15:00, 21:00)
     - cron: '0 14,15,21 * * *'
     - cron: '20 14 * * *'
     - cron: '40 13 * * *'
-  workflow_dispatch: # 支援在 GitHub 網頁上手動點擊執行
+  workflow_dispatch:
 
 permissions:
-  contents: write # 開啟寫入/Push 權限
+  contents: write
 
 jobs:
   update-data:
@@ -40,8 +39,8 @@ jobs:
           from playwright.sync_api import sync_playwright
 
           headers = {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-              'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7'
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Referer': 'https://www.cmoney.tw/'
           }
 
           # -------------------------------------------------------------
@@ -92,68 +91,82 @@ jobs:
               json.dump(margin_json, f, ensure_ascii=False, indent=2)
 
           # -------------------------------------------------------------
-          # 2. Playwright 抓取 CMoney 台指期夜盤 (TXF1)
+          # 2. 精準移植 stock-3in1.py 的台指期夜盤 (TXF1) 抓取邏輯
           # -------------------------------------------------------------
-          wtx_data = {
-              "price": "--",
-              "change": "0.00",
-              "changeRate": "0.00%"
-          }
+          def get_signed_pct(element_locator):
+              try:
+                  raw_text = element_locator.inner_text().strip()
+                  text = raw_text.replace("\n", "").replace("\r", "").replace(",", "").replace("%", "").replace("(", "").replace(")", "").strip()
+                  
+                  class_self = element_locator.get_attribute("class") or ""
+                  class_parent = element_locator.evaluate("el => el.parentElement.className") or ""
+                  inner_html = element_locator.inner_html() or ""
+                  all_context = (class_self + class_parent + inner_html).lower()
+                  
+                  if "down" in all_context or "minus" in all_context or "caret-down" in all_context or "fall" in all_context:
+                      return f"-{text}"
+                  elif "up" in all_context or "add" in all_context or "caret-up" in all_context or "rise" in all_context:
+                      return f"+{text}"
+                  else:
+                      return text
+              except:
+                  return "0.00"
+
+          def get_pure_num(element_locator):
+              try:
+                  raw_text = element_locator.inner_text().strip()
+                  return raw_text.replace("\n", "").replace("\r", "").replace(",", "").replace("(", "").replace(")", "").strip()
+              except:
+                  return "0.00"
+
+          wtx_data = {"price": "--", "change": "0.00", "changeRate": "0.00%"}
 
           try:
               with sync_playwright() as p:
                   browser = p.chromium.launch(headless=True)
                   context = browser.new_context(
-                      user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                      user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                       viewport={'width': 1280, 'height': 800}
                   )
                   page = context.new_page()
-                  page.route("**/*.{png,jpg,jpeg,svg,webp,gif,woff,woff2}", lambda route: route.abort())
-
-                  page.goto("https://www.cmoney.tw/forum/futures/TXF1?s=p", wait_until="domcontentloaded", timeout=25000)
+                  page.goto("https://www.cmoney.tw/forum/futures/TXF1?s=p", wait_until="networkidle", timeout=30000)
                   page.wait_for_selector(".stockData__price", timeout=15000)
 
-                  price = page.locator(".stockData__price").inner_text().strip()
-                  quote_price = page.locator(".stockData__quotePrice").inner_text().strip()
-                  quote_rate = page.locator(".stockData__quote").inner_text().strip()
+                  price_str = page.locator(".stockData__price").inner_text().strip()
+                  pct_str = get_signed_pct(page.locator(".stockData__quote"))
+                  chg_str = get_pure_num(page.locator(".stockData__quotePrice"))
 
-                  quote_rate = re.sub(r'[()（）\s]', '', quote_rate)
-                  quote_price = re.sub(r'[()（）\s]', '', quote_price)
+                  if pct_str.startswith("-") and not chg_str.startswith("-"):
+                      chg_str = f"-{chg_str}"
+                  elif pct_str.startswith("+") and not chg_str.startswith("+"):
+                      chg_str = f"+{chg_str}"
 
-                  class_parent = page.locator(".stockData__info").inner_html().lower()
-                  if "fall" in class_parent or "down" in class_parent or "text-functional-fall" in class_parent:
-                      if not quote_price.startswith('-'): quote_price = f"-{quote_price}"
-                      if not quote_rate.startswith('-'): quote_rate = f"-{quote_rate}"
-                  elif "rise" in class_parent or "up" in class_parent or "text-functional-rise" in class_parent:
-                      if not quote_price.startswith('+'): quote_price = f"+{quote_price}"
-                      if not quote_rate.startswith('+'): quote_rate = f"+{quote_rate}"
+                  pct_formatted = f"{pct_str}%" if not pct_str.endswith("%") else pct_str
 
                   wtx_data = {
-                      "price": f"{float(price.replace(',', '')):,.0f}" if price.replace(',', '').replace('.', '').isdigit() else price,
-                      "change": quote_price,
-                      "changeRate": quote_rate
+                      "price": price_str,
+                      "change": chg_str,
+                      "changeRate": pct_formatted
                   }
                   browser.close()
-                  print("✅ WTX Night fetched successfully:", wtx_data)
+                  print("✅ 台指期夜盤 (TXF1) 抓取成功:", wtx_data)
           except Exception as e:
               print("❌ Playwright WTX error:", e)
 
           # -------------------------------------------------------------
           # 3. 抓取全球市場指數 (yfinance)
-          # 指定順序：夜盤 -> 費城半導體 -> 布蘭特 -> VIX -> 道瓊 -> 納斯達克 -> 標普500 -> 台灣加權 -> KOSPI
           # -------------------------------------------------------------
           symbols = [
-              ("usSOX", "^SOX"),          # 費城半導體指數
+              ("usSOX", "^SOX"),          # 費城半導體
               ("brentOil", "BZ=F"),       # 布蘭特原油
-              ("vix", "^VIX"),            # 恐慌指數 VIX
-              ("usDJI", "^DJI"),          # 道瓊工業指數
-              ("usIXIC", "^IXIC"),        # 納斯達克綜合指數
-              ("usGSPC", "^GSPC"),        # 標普500指數
-              ("twTAIEX", "^TWII"),       # 台灣加權指數
-              ("krKOSPI", "^KS11")        # 韓國KOSPI
+              ("vix", "^VIX"),            # VIX 恐慌指數
+              ("usDJI", "^DJI"),          # 道瓊
+              ("usIXIC", "^IXIC"),        # 那斯達克
+              ("usGSPC", "^GSPC"),        # 標普 500
+              ("twTAIEX", "^TWII"),       # 台灣加權
+              ("krKOSPI", "^KS11")        # 韓國 KOSPI
           ]
 
-          # 第一個固定放在夜盤 (wtx_night)
           us_data = {
               "wtx_night": wtx_data
           }
