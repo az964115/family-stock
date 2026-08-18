@@ -595,84 +595,65 @@
     </div>
 
             <div id="eveningExpressModal" class="modal">
-              <div class="modal-content" style="max-width: 620px; border-radius: 20px; padding: 24px; background: var(--card-bg);">
-                <div class="modal-header" style="border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                  <h3 style="margin:0; background: linear-gradient(135deg, #6366F1 0%, #A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.35em; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                    🌙 晚間財經快報
-                  </h3>
-                  <span id="expressUpdateTime" style="font-size: 0.75em; color: var(--text-muted); background: rgba(0,0,0,0.05); padding: 4px 10px; border-radius: 12px;">--:-- 更新</span>
+              <div class="modal-content" style="max-width: 680px;">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                  <h3 style="margin:0; color:#3B1E37; display: flex; align-items: center; gap: 8px;">🌙 晚間財經快報</h3>
+                  <span id="expressUpdateTime" style="font-size: 12px; color: #718096;"></span>
                 </div>
-
+                
                 <div class="modal-body-scroll" style="display: flex; flex-direction: column; gap: 16px;">
-                  
-                  <div id="expressLoading" style="display:none; text-align: center; padding: 20px; color: #6366F1; font-weight: bold;">
-                    ⏳ 正在同步最新全球夜盤與財經焦點...
+                  <button onclick="fetchEveningExpressData()" style="background: linear-gradient(135deg, #3B1E37 0%, #2BCEE3 100%); color: white; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; width: 100%;">
+                    🔄 立即更新數據
+                  </button>
+
+                  <div style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
+                    <div style="font-weight: 700; color: var(--primary); font-size: 0.9em; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                      <span>🌐 全球市場</span>
+                    </div>
+                    <div id="usStocksGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
+                      </div>
                   </div>
 
                   <div style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
-                    <div style="font-weight: 700; color: var(--primary); font-size: 0.9em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-                      📊 籌碼動向 (資券餘額)
+                    <div style="font-weight: 700; color: var(--primary); font-size: 0.9em; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                      <span>📊 籌碼動向 (資券餘額)</span>
+                      <span id="marginDateText" style="font-size: 0.75em; font-weight: normal; color: var(--text-muted);">更新日期: --</span>
                     </div>
-                    <div id="marginBox" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; font-size: 0.88em;">
-                      <div style="background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 8px;">
-                        <div style="color: var(--text-muted); font-size: 0.8em;">日期</div>
-                        <div id="marginDate" style="font-weight: bold;">--</div>
-                      </div>
-                      <div style="background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 8px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center;">
+                      <div style="background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px;">
                         <div style="color: var(--text-muted); font-size: 0.8em;">融資餘額</div>
                         <div id="marginBuy" style="font-weight: bold;">--</div>
                       </div>
-                      <div style="background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 8px;">
+                      <div style="background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px;">
                         <div style="color: var(--text-muted); font-size: 0.8em;">融券餘額</div>
                         <div id="marginSell" style="font-weight: bold;">--</div>
                       </div>
                     </div>
                   </div>
-
-                  <div style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
-                    <div style="font-weight: 700; color: var(--primary); font-size: 0.9em; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                      <span>🌐 環球市場 & 台指期夜盤</span>
-                      <span style="font-size: 0.75em; font-weight: normal; color: var(--text-muted);"></span>
-                    </div>
-
-                    <div id="usStocksGrid" style="display: grid; grid-template-columns: repeat( auto-fit, minmax(160px, 1fr) ); gap: 10px;">
-                      <div style="text-align:center; color:gray; font-size:0.85em; grid-column: 1/-1;">資料載入中...</div>
-                    </div>
-                  </div>
-
-                  <div style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
-                    <div style="font-weight: 700; color: var(--primary); font-size: 0.9em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-                      📰 國際財經即時焦點
-                    </div>
-                    <ul id="newsListBox" style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px;">
-                      <li style="font-size: 0.85em; color: var(--text-muted); text-align: center; padding: 10px;">新聞載入中...</li>
-                    </ul>
-                  </div>
-
                 </div>
-
-                <div class="modal-footer" style="margin-top: 15px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.08);">
-                  <button onclick="closeModal('eveningExpressModal')" style="width:100%; background: #4A5568; color: white; border-radius: 10px; padding: 10px; font-weight: bold; border: none; cursor: pointer;">關閉視窗</button>
+                
+                <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
+                  <button onclick="closeModal('eveningExpressModal')" style="width:100%; background-color:#718096; color: white;">關閉</button>
                 </div>
               </div>
             </div>
 
-    <div id="targetModal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header"><h3 style="margin:0; color:#3182CE;">🎯 設定長期投資目標</h3></div>
-        <div class="modal-body-scroll">
-          <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
-            * 設定你預期的資態總額目標（現值基準），系統將自動為你計算目前的達成進度。
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 4px;">
-            <label>我的投資目標金額 (元)：</label>
-            <input type="number" id="targetAmountInput" placeholder="例如: 1000000">
-            <button onclick="saveTargetAmount()" style="width:100%; margin-top:12px; background-color:#3182CE; color: white;">儲存目標</button>
-          </div>
-        </div>
-        <div class="modal-footer"><button onclick="closeTargetModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
-      </div>
-    </div>
+                <div id="targetModal" class="modal">
+                  <div class="modal-content">
+                    <div class="modal-header"><h3 style="margin:0; color:#3182CE;">🎯 設定長期投資目標</h3></div>
+                    <div class="modal-body-scroll">
+                      <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
+                        * 設定你預期的資態總額目標（現值基準），系統將自動為你計算目前的達成進度。
+                      </div>
+                      <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label>我的投資目標金額 (元)：</label>
+                        <input type="number" id="targetAmountInput" placeholder="例如: 1000000">
+                        <button onclick="saveTargetAmount()" style="width:100%; margin-top:12px; background-color:#3182CE; color: white;">儲存目標</button>
+                      </div>
+                    </div>
+                    <div class="modal-footer"><button onclick="closeTargetModal()" style="width:100%; background-color:#718096; color: white;">關閉視窗</button></div>
+                  </div>
+                </div>
 
     <div id="fundingHistoryModal" class="modal">
       <div class="modal-content">
@@ -3031,39 +3012,44 @@ async function fetchEveningData() {
   }
 }
 
-// 3. 渲染美股四大指數、VIX 與台指期夜盤卡片
+// 渲染全球市場卡片
 function renderUsStocksData(data) {
   const grid = document.getElementById("usStocksGrid");
   if (!grid || !data) return;
 
+  // 對齊你要求的全新順序
   const symbolNames = {
     "wtx_night": "台指期夜盤",
+    "usSOX": "費城半導體",
+    "brentOil": "布蘭特原油",
+    "vix": "恐慌指數 VIX",
     "usDJI": "道瓊工業",
     "usIXIC": "那斯達克",
     "usGSPC": "標普 500",
-    "usSOX": "費城半導體",
-    "vix": "恐慌指數 VIX"
+    "twTAIEX": "台灣加權",
+    "krKOSPI": "韓國 KOSPI"
   };
 
   let html = "";
   Object.keys(symbolNames).forEach(key => {
     const item = data[key] || { price: "--", change: "0.00", changeRate: "0.00%" };
     const name = symbolNames[key];
-    
-    // 判斷正負色彩
-    let isUp = item.change && (item.change.startsWith("+") || parseFloat(item.change) > 0);
-    let isDown = item.change && (item.change.startsWith("-") || parseFloat(item.change) < 0);
-    
-    let colorClass = isUp ? "#E53E3E" : (isDown ? "#38A169" : "var(--text-main)");
-    let bgLight = isUp ? "rgba(229, 62, 62, 0.06)" : (isDown ? "rgba(56, 161, 105, 0.06)" : "rgba(0,0,0,0.02)");
+
+    // 判斷漲跌顏色
+    let changeColor = "var(--text-main)";
+    const rateStr = item.changeRate || "";
+    if (rateStr.startsWith("+")) {
+      changeColor = "var(--danger)"; // 漲（紅）
+    } else if (rateStr.startsWith("-")) {
+      changeColor = "var(--success)"; // 跌（綠）
+    }
 
     html += `
-      <div style="background: ${bgLight}; border: 1px solid rgba(0,0,0,0.04); padding: 10px 12px; border-radius: 10px; display: flex; flex-direction: column; justify-content: space-between;">
-        <div style="font-size: 0.78em; color: var(--text-muted); font-weight: 600;">${name}</div>
-        <div style="font-size: 1.1em; font-weight: 800; color: var(--text-main); margin: 3px 0;">${item.price}</div>
-        <div style="font-size: 0.8em; font-weight: 700; color: ${colorClass}; display: flex; justify-content: space-between;">
-          <span>${item.change || ''}</span>
-          <span>${item.changeRate || ''}</span>
+      <div style="background: rgba(255, 255, 255, 0.8); border-radius: 10px; padding: 10px; border: 1px solid rgba(0,0,0,0.05); text-align: center;">
+        <div style="font-size: 0.82em; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">${name}</div>
+        <div style="font-size: 1.05em; font-weight: 700; color: var(--text-main);">${item.price}</div>
+        <div style="font-size: 0.8em; font-weight: 600; color: ${changeColor}; margin-top: 2px;">
+          ${item.change} (${item.changeRate})
         </div>
       </div>
     `;
