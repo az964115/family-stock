@@ -36,7 +36,8 @@ jobs:
           from bs4 import BeautifulSoup
 
           headers = {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Referer': 'https://www.cmoney.tw/'
           }
 
           # -------------------------------------------------------------
@@ -97,7 +98,7 @@ jobs:
               print("❌ Scrape Margin error:", e)
 
           # -------------------------------------------------------------
-          # 2. 爬取 WantGoo 玩股網 - 台指期夜盤 (WTX)
+          # 2. 抓取台指期夜盤數據 (優先呼叫 CMoney/Yahoo API)
           # -------------------------------------------------------------
           wtx_data = {
               "price": "--",
@@ -109,37 +110,57 @@ jobs:
               "low": "--",
               "volume": "--"
           }
+
+          # 方法 A: 嘗試使用 Yahoo 奇摩股市台指期近一 API (WTX&)
           try:
-              print("Scraping WantGoo WTX Night Market...")
-              wt_url = "https://www.wantgoo.com/futures/wtxp&"
-              res = requests.get(wt_url, headers=headers, timeout=10)
-              soup = BeautifulSoup(res.text, 'html.parser')
-
-              info_box = soup.find('div', class_='quotes-info')
-              if info_box:
-                  deal_el = info_box.find('div', class_='deal')
-                  chg_el = info_box.find('span', class_='chg')
-                  rate_el = info_box.find('span', class_='chg-rate')
-
-                  open_el = soup.find('span', {'c-model': 'open'})
-                  prev_el = soup.find('span', {'c-model': 'previousClose'})
-                  high_el = soup.find('span', {'c-model': 'high'})
-                  low_el = soup.find('span', {'c-model': 'low'})
-                  vol_el = soup.find('span', {'c-model': 'volume'})
+              print("Fetching WTX Night Market from Yahoo API...")
+              yahoo_fut_url = "https://query1.finance.yahoo.com/v8/finance/chart/WTX%26?interval=1d&range=1d"
+              res = requests.get(yahoo_fut_url, headers=headers, timeout=10)
+              if res.status_code == 200:
+                  meta = res.json()['chart']['result'][0]['meta']
+                  price = meta.get('regularMarketPrice', 0)
+                  prev_close = meta.get('chartPreviousClose', meta.get('previousClose', price))
+                  diff = price - prev_close
+                  diff_pct = (diff / prev_close * 100) if prev_close else 0
 
                   wtx_data = {
-                      "price": deal_el.text.strip() if deal_el else "--",
-                      "change": chg_el.text.strip() if chg_el else "0.00",
-                      "changeRate": rate_el.text.strip() if rate_el else "0.00%",
-                      "open": open_el.text.strip() if open_el else "--",
-                      "prevClose": prev_el.text.strip() if prev_el else "--",
-                      "high": high_el.text.strip() if high_el else "--",
-                      "low": low_el.text.strip() if low_el else "--",
-                      "volume": vol_el.text.strip() if vol_el else "--"
+                      "price": f"{price:,.0f}",
+                      "change": f"{diff:+.2f}",
+                      "changeRate": f"{diff_pct:+.2f}%",
+                      "open": f"{meta.get('regularMarketDayHigh', '--')}",
+                      "prevClose": f"{prev_close:,.0f}",
+                      "high": f"{meta.get('dayHigh', '--')}",
+                      "low": f"{meta.get('dayLow', '--')}",
+                      "volume": f"{meta.get('regularMarketVolume', '--')}"
                   }
-              print("✅ WTX Night Market updated:", wtx_data)
+                  print("✅ WTX fetched via Yahoo API:", wtx_data)
           except Exception as e:
-              print("❌ Scrape WTX error:", e)
+              print("⚠️ Yahoo WTX API failed, switching to CMoney API...", e)
+
+          # 方法 B: 若 Yahoo 抓不到，備援使用 CMoney API
+          if wtx_data["price"] == "--":
+              try:
+                  cmoney_url = "https://www.cmoney.tw/forum/api/v1/stock/quote?symbol=TXF1"
+                  res = requests.get(cmoney_url, headers=headers, timeout=10)
+                  if res.status_code == 200:
+                      d = res.json()
+                      price = d.get('Close', 0)
+                      change = d.get('Change', 0)
+                      change_rate = d.get('ChangePercent', 0)
+                      
+                      wtx_data = {
+                          "price": f"{price:,.0f}",
+                          "change": f"{change:+.2f}",
+                          "changeRate": f"{change_rate:+.2f}%",
+                          "open": f"{d.get('Open', '--')}",
+                          "prevClose": f"{d.get('PreClose', '--')}",
+                          "high": f"{d.get('High', '--')}",
+                          "low": f"{d.get('Low', '--')}",
+                          "volume": f"{d.get('TotalVolume', '--')}"
+                      }
+                      print("✅ WTX fetched via CMoney API:", wtx_data)
+              except Exception as e:
+                  print("❌ CMoney API also failed:", e)
 
           # -------------------------------------------------------------
           # 3. 抓取美股四大指數 + VIX 恐慌指數 (Yahoo Finance API)
@@ -191,5 +212,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/
-          git commit -m "Auto update evening stock, WTX night, VIX data via scraping" || exit 0
+          git commit -m "Auto update evening stock, WTX night, VIX data via API" || exit 0
           git push
