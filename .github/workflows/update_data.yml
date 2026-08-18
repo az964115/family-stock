@@ -38,8 +38,7 @@ jobs:
 
           headers = {
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-              'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-              'Referer': 'https://tw.stock.yahoo.com/'
+              'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7'
           }
 
           # -------------------------------------------------------------
@@ -98,7 +97,7 @@ jobs:
               print("❌ Scrape Margin error:", e)
 
           # -------------------------------------------------------------
-          # 2. 抓取台指期夜盤 (WTX& / TXF)
+          # 2. 直接 HTML 爬取 CMoney 台指期頁面 (https://www.cmoney.tw/forum/futures/TXF1?s=p)
           # -------------------------------------------------------------
           wtx_data = {
               "price": "--",
@@ -111,58 +110,68 @@ jobs:
               "volume": "--"
           }
 
-          # 優先方法：從 Yahoo 奇摩股市頁面提取隱藏 JSON (100% 穩定)
           try:
-              print("Fetching WTX Night Market from Yahoo TW...")
-              html_res = requests.get("https://tw.stock.yahoo.com/quote/WTX%26", headers=headers, timeout=10)
-              match = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', html_res.text)
-              
-              if match:
-                  next_data = json.loads(match.group(1))
-                  quote = next_data.get('props', {}).get('pageProps', {}).get('initialData', {}).get('quote', {})
-                  
-                  if quote:
-                      price = quote.get('closePrice') or quote.get('price') or "--"
-                      change = quote.get('change') or 0
-                      change_rate = quote.get('changePercent') or 0
-                      
-                      wtx_data = {
-                          "price": f"{price:,.0f}" if isinstance(price, (int, float)) else str(price),
-                          "change": f"{change:+.2f}" if isinstance(change, (int, float)) else str(change),
-                          "changeRate": f"{change_rate:+.2f}%" if isinstance(change_rate, (int, float)) else str(change_rate),
-                          "open": str(quote.get('openPrice', '--')),
-                          "prevClose": str(quote.get('previousClose', '--')),
-                          "high": str(quote.get('highPrice', '--')),
-                          "low": str(quote.get('lowPrice', '--')),
-                          "volume": str(quote.get('volume', '--'))
-                      }
-                      print("✅ WTX fetched via Yahoo TW JSON:", wtx_data)
-          except Exception as e:
-              print("⚠️ Method 1 WTX Error:", e)
+              print("Scraping CMoney WTX Night Market Page...")
+              cmoney_url = "https://www.cmoney.tw/forum/futures/TXF1?s=p"
+              res = requests.get(cmoney_url, headers=headers, timeout=10)
+              soup = BeautifulSoup(res.text, 'html.parser')
 
-          # 備援方法：若上方未抓到，嘗試從 CMoney 網頁預載數據解析
+              # 抓取價格 <span class="stockData__price">
+              price_el = soup.find(class_=re.compile(r'stockData__price'))
+              # 抓取漲跌點數 <div class="stockData__quotePrice">
+              quote_price_el = soup.find(class_=re.compile(r'stockData__quotePrice'))
+              # 抓取漲跌幅 <div class="stockData__quote">
+              quote_rate_el = soup.find(class_=re.compile(r'stockData__quote'))
+
+              price_val = price_el.text.strip() if price_el else "--"
+              change_val = quote_price_el.text.strip() if quote_price_el else "0.00"
+              rate_val = quote_rate_el.text.strip() if quote_rate_el else "0.00%"
+
+              # 判斷跌（text-functional-fall）或漲（text-functional-rise），補上 +/- 號
+              if quote_price_el and "text-functional-fall" in str(quote_price_el):
+                  if not change_val.startswith('-'):
+                      change_val = f"-{change_val}"
+              elif quote_price_el and "text-functional-rise" in str(quote_price_el):
+                  if not change_val.startswith('+'):
+                      change_val = f"+{change_val}"
+
+              if price_val != "--":
+                  wtx_data = {
+                      "price": f"{float(price_val):,.0f}" if price_val.replace('.', '').isdigit() else price_val,
+                      "change": change_val,
+                      "changeRate": rate_val,
+                      "open": "--",
+                      "prevClose": "--",
+                      "high": "--",
+                      "low": "--",
+                      "volume": "--"
+                  }
+                  print("✅ WTX fetched directly from CMoney HTML:", wtx_data)
+              else:
+                  print("⚠️ CMoney HTML elements not found, trying regex...")
+          except Exception as e:
+              print("❌ CMoney Scrape Error:", e)
+
+          # 正則備援 (以防 CMoney 類名變化)
           if wtx_data["price"] == "--":
               try:
-                  print("Trying CMoney fallback for WTX...")
-                  cmoney_res = requests.get("https://www.cmoney.tw/forum/futures/TXF1?s=p", headers=headers, timeout=10)
-                  price_m = re.search(r'"Close":\s*([0-9.]+)', cmoney_res.text)
-                  change_m = re.search(r'"Change":\s*([-0-9.]+)', cmoney_res.text)
-                  rate_m = re.search(r'"ChangePercent":\s*([-0-9.]+)', cmoney_res.text)
-                  
+                  price_m = re.search(r'class="stockData__price"[^>]*>\s*([0-9,.]+)\s*<', res.text)
+                  quote_m = re.search(r'class="stockData__quotePrice[^"]*"[^>]*>\s*([0-9,.]+)\s*<', res.text)
+                  rate_m = re.search(r'class="stockData__quote[^"]*"[^>]*>\s*\(([^)]+)\)\s*<', res.text)
+
                   if price_m:
-                      price_val = float(price_m.group(1))
-                      chg_val = float(change_m.group(1)) if change_m else 0.0
-                      rate_val = float(rate_m.group(1)) if rate_m else 0.0
-                      
-                      wtx_data["price"] = f"{price_val:,.0f}"
-                      wtx_data["change"] = f"{chg_val:+.2f}"
-                      wtx_data["changeRate"] = f"{rate_val:+.2f}%"
-                      print("✅ WTX fetched via CMoney regex:", wtx_data)
-              except Exception as e:
-                  print("⚠️ Method 2 CMoney Error:", e)
+                      p = price_m.group(1).strip()
+                      c = quote_m.group(1).strip() if quote_m else "0.00"
+                      r = rate_m.group(1).strip() if rate_m else "0.00%"
+                      wtx_data["price"] = p
+                      wtx_data["change"] = c
+                      wtx_data["changeRate"] = r
+                      print("✅ WTX fetched via CMoney HTML Regex:", wtx_data)
+              except Exception as re_err:
+                  print("❌ Regex fallback failed:", re_err)
 
           # -------------------------------------------------------------
-          # 3. 抓取美股四大指數 + VIX 恐慌指數 (使用 yfinance)
+          # 3. 抓取美股四大指數 + VIX 恐慌指數 (yfinance)
           # -------------------------------------------------------------
           us_symbols = [
               ("usDJI", "^DJI"),      # 道瓊工業
@@ -200,12 +209,11 @@ jobs:
                   print(f"Error fetching {symbol} via yfinance:", err)
                   us_data[key] = {"price": "--", "change": "0.00", "changeRate": "0.00%"}
 
-          # 強制存檔與檢查
+          # 強制存檔
           try:
               with open('data/us_stocks.json', 'w', encoding='utf-8') as f:
                   json.dump(us_data, f, ensure_ascii=False, indent=2)
-              print("✅ us_stocks.json successfully updated! Content:")
-              print(json.dumps(us_data, ensure_ascii=False, indent=2))
+              print("✅ us_stocks.json successfully written!")
           except Exception as e:
               print("❌ Save JSON error:", e)
 
