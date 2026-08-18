@@ -39,7 +39,9 @@ jobs:
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
           }
 
+          # -------------------------------------------------------------
           # 1. 爬取 Yahoo 奇摩股市 - 資券餘額與日期
+          # -------------------------------------------------------------
           try:
               print("Scraping Yahoo Margin Balance Page...")
               url_margin = "https://tw.stock.yahoo.com/margin-balance"
@@ -50,7 +52,6 @@ jobs:
               margin_buy = "統計中"
               margin_sell = "統計中"
 
-              # 尋找第一筆表格列
               rows = soup.find_all('div', class_=re.compile(r'table-row'))
               
               target_row = None
@@ -58,13 +59,13 @@ jobs:
                   date_match = re.search(r'\d{4}/\d{2}/\d{2}', row.get_text())
                   if date_match:
                       target_row = row
-                      margin_date = date_match.group(0) # 抓取 2026/08/12
+                      margin_date = date_match.group(0)
                       break
 
               if target_row:
                   mend_blocks = target_row.find_all('div', class_=re.compile(r'Mend\(12px\)'))
                   
-                  # 解析融資 (第一區塊)
+                  # 解析融資
                   if len(mend_blocks) > 0:
                       buy_span = mend_blocks[0].find('span')
                       if buy_span:
@@ -73,7 +74,7 @@ jobs:
                               val = '+' + val
                           margin_buy = f"{val} 億"
 
-                  # 解析融券 (第二區塊)
+                  # 解析融券
                   if len(mend_blocks) > 1:
                       sell_span = mend_blocks[1].find('span')
                       if sell_span:
@@ -95,16 +96,66 @@ jobs:
           except Exception as e:
               print("❌ Scrape Margin error:", e)
 
-          # 2. 抓取美股四大指數
+          # -------------------------------------------------------------
+          # 2. 爬取 WantGoo 玩股網 - 台指期夜盤 (WTX)
+          # -------------------------------------------------------------
+          wtx_data = {
+              "price": "--",
+              "change": "0.00",
+              "changeRate": "0.00%",
+              "open": "--",
+              "prevClose": "--",
+              "high": "--",
+              "low": "--",
+              "volume": "--"
+          }
           try:
-              print("Fetching US Stock Indices...")
+              print("Scraping WantGoo WTX Night Market...")
+              wt_url = "https://www.wantgoo.com/futures/wtxp&"
+              res = requests.get(wt_url, headers=headers, timeout=10)
+              soup = BeautifulSoup(res.text, 'html.parser')
+
+              info_box = soup.find('div', class_='quotes-info')
+              if info_box:
+                  deal_el = info_box.find('div', class_='deal')
+                  chg_el = info_box.find('span', class_='chg')
+                  rate_el = info_box.find('span', class_='chg-rate')
+
+                  open_el = soup.find('span', {'c-model': 'open'})
+                  prev_el = soup.find('span', {'c-model': 'previousClose'})
+                  high_el = soup.find('span', {'c-model': 'high'})
+                  low_el = soup.find('span', {'c-model': 'low'})
+                  vol_el = soup.find('span', {'c-model': 'volume'})
+
+                  wtx_data = {
+                      "price": deal_el.text.strip() if deal_el else "--",
+                      "change": chg_el.text.strip() if chg_el else "0.00",
+                      "changeRate": rate_el.text.strip() if rate_el else "0.00%",
+                      "open": open_el.text.strip() if open_el else "--",
+                      "prevClose": prev_el.text.strip() if prev_el else "--",
+                      "high": high_el.text.strip() if high_el else "--",
+                      "low": low_el.text.strip() if low_el else "--",
+                      "volume": vol_el.text.strip() if vol_el else "--"
+                  }
+              print("✅ WTX Night Market updated:", wtx_data)
+          except Exception as e:
+              print("❌ Scrape WTX error:", e)
+
+          # -------------------------------------------------------------
+          # 3. 抓取美股四大指數 + VIX 恐慌指數 (Yahoo Finance API)
+          # -------------------------------------------------------------
+          try:
+              print("Fetching US Stock Indices & VIX...")
               us_symbols = [
-                  ("usDJI", "^DJI"),
-                  ("usIXIC", "^IXIC"),
-                  ("usGSPC", "^GSPC"),
-                  ("usSOX", "^SOX")
+                  ("usDJI", "^DJI"),      # 道瓊工業
+                  ("usIXIC", "^IXIC"),    # 納斯達克
+                  ("usGSPC", "^GSPC"),    # 標普 500
+                  ("usSOX", "^SOX"),      # 費城半導體
+                  ("vix", "^VIX")          # VIX 恐慌指數
               ]
-              us_data = {}
+              us_data = {
+                  "wtx_night": wtx_data
+              }
 
               for key, symbol in us_symbols:
                   try:
@@ -114,21 +165,23 @@ jobs:
                       meta = data['chart']['result'][0]['meta']
                       price = meta.get('regularMarketPrice', 0)
                       prev_close = meta.get('chartPreviousClose', meta.get('previousClose', price))
-                      change_pct = ((price - prev_close) / prev_close * 100) if prev_close else 0
+                      change_val = price - prev_close
+                      change_pct = ((change_val) / prev_close * 100) if prev_close else 0
 
                       us_data[key] = {
                           "price": f"{price:,.2f}",
-                          "change": f"{change_pct:+.2f}%"
+                          "change": f"{change_val:+.2f}",
+                          "changeRate": f"{change_pct:+.2f}%"
                       }
                   except Exception as err:
                       print(f"Error fetching {symbol}:", err)
-                      us_data[key] = {"price": "--", "change": "0.00%"}
+                      us_data[key] = {"price": "--", "change": "0.00", "changeRate": "0.00%"}
 
               with open('data/us_stocks.json', 'w', encoding='utf-8') as f:
                   json.dump(us_data, f, ensure_ascii=False, indent=2)
-              print("✅ US Stocks data updated:", us_data)
+              print("✅ US Stocks & VIX data updated:", us_data)
           except Exception as e:
-              print("❌ Scrape US error:", e)
+              print("❌ Scrape US/VIX error:", e)
 
           EOF
           python3 scrape.py
@@ -138,5 +191,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/
-          git commit -m "Auto update evening stock data via Yahoo scraping" || exit 0
+          git commit -m "Auto update evening stock, WTX night, VIX data via scraping" || exit 0
           git push
