@@ -108,18 +108,15 @@ jobs:
                       viewport={'width': 1280, 'height': 800}
                   )
                   page = context.new_page()
-
-                  # 阻擋圖片與字型資源以大幅提高載入速度
                   page.route("**/*.{png,jpg,jpeg,svg,webp,gif,woff,woff2}", lambda route: route.abort())
 
-                  page.goto("https://www.cmoney.tw/forum/futures/TXF1?s=p", wait_until="domcontentloaded", timeout=20000)
+                  page.goto("https://www.cmoney.tw/forum/futures/TXF1?s=p", wait_until="domcontentloaded", timeout=25000)
                   page.wait_for_selector(".stockData__price", timeout=15000)
 
                   price = page.locator(".stockData__price").inner_text().strip()
                   quote_price = page.locator(".stockData__quotePrice").inner_text().strip()
                   quote_rate = page.locator(".stockData__quote").inner_text().strip()
 
-                  # 清除多餘的括號，只留下數字與正負號
                   quote_rate = re.sub(r'[()（）\s]', '', quote_rate)
                   quote_price = re.sub(r'[()（）\s]', '', quote_price)
 
@@ -142,17 +139,75 @@ jobs:
               print("❌ Playwright WTX error:", e)
 
           # -------------------------------------------------------------
-          # 3. 抓取美股四大指數與 VIX (yfinance)
+          # 3. Playwright 抓取 MacroMicro Fed 升降息機率 (Series Page)
+          # -------------------------------------------------------------
+          fed_data = {
+              "date": "--",
+              "hike_prob": "0.00%",
+              "cut_prob": "0.00%"
+          }
+          try:
+              with sync_playwright() as p:
+                  browser = p.chromium.launch(headless=True)
+                  context = browser.new_context(
+                      user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                      viewport={'width': 1280, 'height': 800}
+                  )
+                  page = context.new_page()
+                  page.route("**/*.{png,jpg,jpeg,svg,webp,gif,woff,woff2}", lambda route: route.abort())
+
+                  # A. 升息機率 (series/484)
+                  url_hike = "https://www.macromicro.me/series/484/probability-fed-rate"
+                  page.goto(url_hike, wait_until="domcontentloaded", timeout=25000)
+                  page.wait_for_selector(".stat-val .val", timeout=15000)
+
+                  hike_val_text = page.locator(".stat-val .val").first.inner_text().strip()
+                  if hike_val_text:
+                      hike_num = float(hike_val_text.replace(',', ''))
+                      fed_data["hike_prob"] = f"{hike_num:.2f}%"
+
+                  if page.locator(".stat-date").count() > 0:
+                      fed_data["date"] = page.locator(".stat-date").first.inner_text().strip()
+                  elif page.locator(".date-label").count() > 0:
+                      fed_data["date"] = page.locator(".date-label").first.inner_text().strip()
+
+                  # B. 降息機率 (series/1645)
+                  url_cut = "https://www.macromicro.me/series/1645/probability-fed-rate-decrease"
+                  page.goto(url_cut, wait_until="domcontentloaded", timeout=25000)
+                  page.wait_for_selector(".stat-val .val", timeout=15000)
+
+                  cut_val_text = page.locator(".stat-val .val").first.inner_text().strip()
+                  if cut_val_text:
+                      cut_num = float(cut_val_text.replace(',', ''))
+                      fed_data["cut_prob"] = f"{cut_num:.2f}%"
+
+                  if fed_data["date"] == "--":
+                      if page.locator(".stat-date").count() > 0:
+                          fed_data["date"] = page.locator(".stat-date").first.inner_text().strip()
+                      elif page.locator(".date-label").count() > 0:
+                          fed_data["date"] = page.locator(".date-label").first.inner_text().strip()
+
+                  browser.close()
+                  print("✅ Fed rate probabilities fetched successfully:", fed_data)
+          except Exception as e:
+              print("❌ Playwright Fed rate error:", e)
+
+          # -------------------------------------------------------------
+          # 4. 抓取美股四大指數、VIX 與布倫特原油 (yfinance)
           # -------------------------------------------------------------
           us_symbols = [
               ("usDJI", "^DJI"),
               ("usIXIC", "^IXIC"),
               ("usGSPC", "^GSPC"),
               ("usSOX", "^SOX"),
-              ("vix", "^VIX")
+              ("vix", "^VIX"),
+              ("brentOil", "BZ=F")
           ]
 
-          us_data = {"wtx_night": wtx_data}
+          us_data = {
+              "wtx_night": wtx_data,
+              "fed_rate": fed_data
+          }
 
           for key, symbol in us_symbols:
               try:
@@ -185,5 +240,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/
-          git commit -m "Auto update evening stock, WTX night, VIX data via Playwright" || exit 0
+          git commit -m "Auto update evening stock, WTX night, Fed rate, Oil & VIX data via Playwright" || exit 0
           git push
