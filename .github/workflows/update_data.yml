@@ -139,7 +139,7 @@ jobs:
               print("❌ Playwright WTX error:", e)
 
           # -------------------------------------------------------------
-          # 3. Playwright 抓取 MacroMicro Fed 升降息機率 (抗 Cloudflare 封鎖版)
+          # 3. 抓取 MacroMicro Fed 升降息機率 (Direct API / JSON Stream)
           # -------------------------------------------------------------
           fed_data = {
               "date": "--",
@@ -147,86 +147,63 @@ jobs:
               "cut_prob": "0.00%"
           }
           try:
-              with sync_playwright() as p:
-                  # 加入反爬蟲標誌 (stealth flags) 繞過 Cloudflare 檢測
-                  browser = p.chromium.launch(
-                      headless=True,
-                      args=[
-                          '--disable-blink-features=AutomationControlled',
-                          '--no-sandbox',
-                          '--disable-setuid-sandbox',
-                          '--disable-web-security'
-                      ]
-                  )
-                  context = browser.new_context(
-                      user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-                      viewport={'width': 1366, 'height': 768},
-                      extra_http_headers={
-                          'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-                          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                          'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
-                          'Sec-Ch-Ua-Mobile': '?0',
-                          'Sec-Ch-Ua-Platform': '"Windows"',
-                          'Sec-Fetch-Dest': 'document',
-                          'Sec-Fetch-Mode': 'navigate',
-                          'Sec-Fetch-Site': 'none',
-                          'Sec-Fetch-User': '?1',
-                          'Upgrade-Insecure-Requests': '1'
-                      }
-                  )
-                  
-                  # 防止 webdriver 特徵被檢測
-                  page = context.new_page()
-                  page.add_init_script("""
-                      Object.defineProperty(navigator, 'webdriver', {
-                          get: () => undefined
-                      });
-                  """)
-                  
-                  page.route("**/*.{png,jpg,jpeg,svg,webp,gif,woff,woff2}", lambda route: route.abort())
+              api_headers = {
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                  'Accept': 'application/json, text/plain, */*',
+                  'Referer': 'https://www.macromicro.me/',
+                  'Origin': 'https://www.macromicro.me'
+              }
 
-                  # A. 升息機率 (series/484)
-                  url_hike = "https://www.macromicro.me/series/484/probability-fed-rate"
-                  print("正在爬取 Fed 升息機率...")
-                  page.goto(url_hike, wait_until="networkidle", timeout=30000)
-                  
-                  # 等待元素出現，若超時則改抓頁面內嵌 JS/DOM
-                  try:
-                      page.wait_for_selector(".stat-val .val", timeout=10000)
-                      hike_val_text = page.locator(".stat-val .val").first.inner_text().strip()
-                      if hike_val_text:
-                          fed_data["hike_prob"] = f"{float(hike_val_text.replace(',', '')):.2f}%"
-                      
-                      if page.locator(".stat-date").count() > 0:
-                          fed_data["date"] = page.locator(".stat-date").first.inner_text().strip()
-                      elif page.locator(".date-label").count() > 0:
-                          fed_data["date"] = page.locator(".date-label").first.inner_text().strip()
-                  except Exception as e_hike:
-                      print("⚠️ 升息機率 DOM 搜尋超時，嘗試解析原始碼...", e_hike)
+              # A. 抓取升息機率 (Series 484)
+              res_hike = requests.get("https://www.macromicro.me/api/series/484", headers=api_headers, timeout=15)
+              if res_hike.status_code == 200:
+                  data = res_hike.json()
+                  series_data = data.get('data', {}).get('series', {}).get('484', {})
+                  stats = series_data.get('stats', [])
+                  if stats:
+                      latest = stats[-1]
+                      fed_data["date"] = latest[0]
+                      fed_data["hike_prob"] = f"{float(latest[1]):.2f}%"
 
-                  # B. 降息機率 (series/1645)
-                  url_cut = "https://www.macromicro.me/series/1645/probability-fed-rate-decrease"
-                  print("正在爬取 Fed 降息機率...")
-                  page.goto(url_cut, wait_until="networkidle", timeout=30000)
-                  
-                  try:
-                      page.wait_for_selector(".stat-val .val", timeout=10000)
-                      cut_val_text = page.locator(".stat-val .val").first.inner_text().strip()
-                      if cut_val_text:
-                          fed_data["cut_prob"] = f"{float(cut_val_text.replace(',', '')):.2f}%"
-
+              # B. 抓取降息機率 (Series 1645)
+              res_cut = requests.get("https://www.macromicro.me/api/series/1645", headers=api_headers, timeout=15)
+              if res_cut.status_code == 200:
+                  data = res_cut.json()
+                  series_data = data.get('data', {}).get('series', {}).get('1645', {})
+                  stats = series_data.get('stats', [])
+                  if stats:
+                      latest = stats[-1]
                       if fed_data["date"] == "--":
-                          if page.locator(".stat-date").count() > 0:
-                              fed_data["date"] = page.locator(".stat-date").first.inner_text().strip()
-                          elif page.locator(".date-label").count() > 0:
-                              fed_data["date"] = page.locator(".date-label").first.inner_text().strip()
-                  except Exception as e_cut:
-                      print("⚠️ 降息機率 DOM 搜尋超時，嘗試解析原始碼...", e_cut)
+                          fed_data["date"] = latest[0]
+                      fed_data["cut_prob"] = f"{float(latest[1]):.2f}%"
 
-                  browser.close()
-                  print("✅ Fed rate probabilities fetched:", fed_data)
+              print("✅ Fed rate probabilities API fetched:", fed_data)
           except Exception as e:
-              print("❌ Playwright Fed rate error:", e)
+              print("⚠️ API 方式失敗，嘗試 Playwright HTML fallback...", e)
+              # 如果 API 失敗，備用 Playwright HTML 正則解析
+              try:
+                  with sync_playwright() as p:
+                      browser = p.chromium.launch(headless=True)
+                      page = browser.new_page()
+                      
+                      page.goto("https://www.macromicro.me/series/484/probability-fed-rate", wait_until="domcontentloaded", timeout=20000)
+                      content = page.content()
+                      match_hike = re.search(r'class="val"[^>]*>([\d\.]+)</span', content)
+                      match_date = re.search(r'(\d{4}-\d{2}-\d{2})', content)
+                      if match_hike:
+                          fed_data["hike_prob"] = f"{float(match_hike.group(1)):.2f}%"
+                      if match_date:
+                          fed_data["date"] = match_date.group(1)
+
+                      page.goto("https://www.macromicro.me/series/1645/probability-fed-rate-decrease", wait_until="domcontentloaded", timeout=20000)
+                      content_cut = page.content()
+                      match_cut = re.search(r'class="val"[^>]*>([\d\.]+)</span', content_cut)
+                      if match_cut:
+                          fed_data["cut_prob"] = f"{float(match_cut.group(1)):.2f}%"
+
+                      browser.close()
+              except Exception as fallback_err:
+                  print("❌ Playwright fallback failed:", fallback_err)
 
           # -------------------------------------------------------------
           # 4. 抓取美股四大指數、VIX 與布倫特原油 (yfinance)
