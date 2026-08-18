@@ -594,7 +594,6 @@
       </div>
     </div>
 
-            <!-- 🌙 晚間財經快報 Modal -->
             <div id="eveningExpressModal" class="modal">
               <div class="modal-content" style="max-width: 680px;">
                 <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
@@ -603,22 +602,18 @@
                 </div>
                 
                 <div class="modal-body-scroll" style="display: flex; flex-direction: column; gap: 16px; max-height: 70vh; overflow-y: auto; padding-right: 4px;">
-                  <!-- 手動更新按鈕 -->
                   <button onclick="fetchEveningData()" style="background: linear-gradient(135deg, #3B1E37 0%, #2BCEE3 100%); color: white; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; width: 100%;">
                     🔄 立即更新數據
                   </button>
 
-                  <!-- 1. 全球市場 -->
                   <div style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
                     <div style="font-weight: 700; color: var(--primary); font-size: 0.9em; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                       <span>🌐 全球市場</span>
                     </div>
                     <div id="usStocksGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
-                      <!-- JS 動態繪製 9 大指標 -->
-                    </div>
+                      </div>
                   </div>
 
-                  <!-- 2. 籌碼動向 (資券餘額) -->
                   <div style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
                     <div style="font-weight: 700; color: var(--primary); font-size: 0.9em; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                       <span>📊 籌碼動向 (資券餘額)</span>
@@ -636,13 +631,12 @@
                     </div>
                   </div>
 
-                  <!-- 3. 新增：📰 RSS 國際快訊區塊 -->
                   <div style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
                     <div style="font-weight: 700; color: var(--primary); font-size: 0.9em; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                      <span>📰 國際重點頭條</span>
+                      <span>📰 國際即時頭條</span>
                     </div>
                     <div id="expressRssNewsList" style="display: flex; flex-direction: column; gap: 8px;">
-                      <div style="color: var(--text-muted); font-size: 0.85em; text-align: center; padding: 10px;">載入新聞中...</div>
+                      <div style="color: var(--text-muted); font-size: 0.85em; text-align: center; padding: 10px;">⚡ 實時抓取新聞中...</div>
                     </div>
                   </div>
                 </div>
@@ -2965,18 +2959,15 @@ function applyAiPreset(stockName) {
   }
 }
 
-// 打開晚間快報 Modal
 function openEveningExpressModal() {
   openModal('eveningExpressModal');
   fetchEveningData();
 }
 
-// 別名相容防錯
 function fetchEveningExpressData() {
   fetchEveningData();
 }
 
-// 獲取晚間數據 (籌碼動向 + 全球市場數據 + RSS 國際新聞)
 async function fetchEveningData() {
   const now = new Date();
   const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
@@ -2984,14 +2975,13 @@ async function fetchEveningData() {
   const timeElem = document.getElementById('expressUpdateTime');
   if (timeElem) timeElem.innerText = `最後更新：${timeStr}`;
 
-  // 1. 抓取資券餘額數據 (data/margin.json)
+  // 1. 抓取資券餘額 (data/margin.json)
   try {
     const resMargin = await fetch(`data/margin.json?t=${Date.now()}`);
     if (resMargin.ok) {
       const marginData = await resMargin.json();
       if (Array.isArray(marginData) && marginData.length > 0) {
         const latest = marginData[0];
-        
         const dateElem = document.getElementById('marginDateText');
         const buyElem = document.getElementById('marginBuy');
         const sellElem = document.getElementById('marginSell');
@@ -3016,22 +3006,87 @@ async function fetchEveningData() {
     console.warn("Global market fetch error:", err);
   }
 
-  // 3. 新增：抓取 RSS 國際快訊數據 (data/rss_news.json)
+  // 3. 🌐 前端直接連網即時抓取 RSS 新聞 (透過 rss2json 轉換)
+  fetchLiveRssNews();
+}
+
+// 即時抓取最新國際新聞
+async function fetchLiveRssNews() {
+  const container = document.getElementById("expressRssNewsList");
+  if (container) {
+    container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85em; text-align: center; padding: 10px;">⚡ 實時抓取最新新聞中...</div>`;
+  }
+
   try {
-    const resNews = await fetch(`data/rss_news.json?t=${Date.now()}`);
-    if (resNews.ok) {
-      const newsData = await resNews.json();
-      renderExpressRssNews(newsData);
+    // 免費將 Google News RSS 轉換成 JSON
+    const rssFeedUrl = encodeURIComponent("https://news.google.com/rss/search?q=%E5%9C%8B%E9%9A%9B%E8%B2%A1%E7%B6%93&hl=zh-TW&gl=TW&ceid=TW:zh-Hant");
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${rssFeedUrl}`;
+
+    const res = await fetch(apiUrl);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
+        renderExpressRssNews(data.items);
+      } else {
+        showExpressNewsFallback("暫無即時新聞");
+      }
     } else {
-      showExpressNewsFallback("暫無新聞資料");
+      showExpressNewsFallback("即時新聞獲取失敗");
     }
   } catch (err) {
-    console.warn("RSS News fetch error:", err);
-    showExpressNewsFallback("新聞載入失敗");
+    console.warn("Live RSS Fetch Error:", err);
+    showExpressNewsFallback("網路連線異常，無法讀取新聞");
   }
 }
 
-// 渲染全球市場 9 大指標
+// 渲染即時新聞列表
+function renderExpressRssNews(items) {
+  const container = document.getElementById("expressRssNewsList");
+  if (!container) return;
+
+  const topNews = items.slice(0, 6);
+  let html = "";
+
+  topNews.forEach(item => {
+    let title = item.title || "無標題";
+    const link = item.link || "#";
+    let source = "國際財經";
+    
+    // 解析來源與標題
+    if (title.includes(" - ")) {
+      const parts = title.rsplit ? title.rsplit(" - ", 1) : title.split(" - ");
+      if (parts.length > 1) {
+        source = parts[parts.length - 1];
+        title = parts.slice(0, -1).join(" - ");
+      }
+    }
+
+    const pubDate = item.pubDate ? item.pubDate.substring(0, 16) : "";
+
+    html += `
+      <div style="background: rgba(255, 255, 255, 0.7); border-radius: 8px; padding: 10px 12px; font-size: 0.88em; border-left: 3px solid var(--primary, #3B1E37);">
+        <a href="${link}" target="_blank" style="text-decoration: none; color: var(--text-main, #2D3748); font-weight: 600; display: block; line-height: 1.4;">
+          ${title}
+        </a>
+        <div style="display: flex; justify-content: space-between; font-size: 0.78em; color: var(--text-muted, #718096); margin-top: 6px;">
+          <span>📌 ${source}</span>
+          <span>${pubDate}</span>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function showExpressNewsFallback(msg) {
+  const container = document.getElementById("expressRssNewsList");
+  if (container) {
+    container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85em; text-align: center; padding: 10px;">${msg}</div>`;
+  }
+}
+
+// 渲染 9 大全球指數
 function renderUsStocksData(data) {
   const grid = document.getElementById("usStocksGrid");
   if (!grid || !data) return;
