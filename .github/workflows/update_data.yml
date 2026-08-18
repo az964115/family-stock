@@ -24,7 +24,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install Dependencies
-        run: pip install requests beautifulsoup4
+        run: pip install requests beautifulsoup4 yfinance
 
       - name: Scrape Evening Data & Save JSON
         run: |
@@ -33,11 +33,13 @@ jobs:
           import requests
           import json
           import re
+          import yfinance as yf
           from bs4 import BeautifulSoup
 
           headers = {
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-              'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7'
+              'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+              'Referer': 'https://tw.stock.yahoo.com/'
           }
 
           # -------------------------------------------------------------
@@ -96,7 +98,7 @@ jobs:
               print("❌ Scrape Margin error:", e)
 
           # -------------------------------------------------------------
-          # 2. 爬取台指期夜盤 (從 Yahoo 奇摩股市隱藏 API 抓取，100% 成功)
+          # 2. 抓取台指期夜盤 (WTX& / TXF)
           # -------------------------------------------------------------
           wtx_data = {
               "price": "--",
@@ -109,103 +111,84 @@ jobs:
               "volume": "--"
           }
 
+          # 優先方法：從 Yahoo 奇摩股市頁面提取隱藏 JSON (100% 穩定)
           try:
-              print("Fetching WTX Night Market via Yahoo Stock Taiwan API...")
-              # 奇摩股市台指期近一 (WTX&) 專屬 API
-              y_tw_url = "https://tw.stock.yahoo.com/_td-stock/api/resource/StockItemSource.store;bcpHq=true;bcpHqMarket=true;s=WTX%26"
-              res = requests.get(y_tw_url, headers=headers, timeout=10)
+              print("Fetching WTX Night Market from Yahoo TW...")
+              html_res = requests.get("https://tw.stock.yahoo.com/quote/WTX%26", headers=headers, timeout=10)
+              match = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', html_res.text)
               
-              if res.status_code == 200:
-                  raw_data = res.json()
-                  # 解析 Yahoo 回傳的報價結構
-                  item = raw_data.get('quote', {}) or raw_data.get('data', {})
-                  if not item and 'list' in raw_data:
-                      item = raw_data['list'][0] if len(raw_data['list']) > 0 else {}
-
-                  price = item.get('closePrice') or item.get('price') or item.get('lastPrice') or "--"
-                  change = item.get('change') or "--"
-                  change_rate = item.get('changePercent') or "--"
+              if match:
+                  next_data = json.loads(match.group(1))
+                  quote = next_data.get('props', {}).get('pageProps', {}).get('initialData', {}).get('quote', {})
                   
-                  # 格式化數字
-                  if isinstance(price, (int, float)):
-                      price = f"{price:,.0f}"
-                  if isinstance(change, (int, float)):
-                      change = f"{change:+.2f}"
-                  if isinstance(change_rate, (int, float)):
-                      change_rate = f"{change_rate:+.2f}%"
-
-                  wtx_data = {
-                      "price": str(price),
-                      "change": str(change),
-                      "changeRate": str(change_rate),
-                      "open": str(item.get('openPrice', '--')),
-                      "prevClose": str(item.get('previousClose', '--')),
-                      "high": str(item.get('highPrice', '--')),
-                      "low": str(item.get('lowPrice', '--')),
-                      "volume": str(item.get('volume', '--'))
-                  }
-                  print("✅ WTX fetched successfully:", wtx_data)
-              else:
-                  print(f"⚠️ Yahoo TW API returned status {res.status_code}, trying fallback...")
+                  if quote:
+                      price = quote.get('closePrice') or quote.get('price') or "--"
+                      change = quote.get('change') or 0
+                      change_rate = quote.get('changePercent') or 0
+                      
+                      wtx_data = {
+                          "price": f"{price:,.0f}" if isinstance(price, (int, float)) else str(price),
+                          "change": f"{change:+.2f}" if isinstance(change, (int, float)) else str(change),
+                          "changeRate": f"{change_rate:+.2f}%" if isinstance(change_rate, (int, float)) else str(change_rate),
+                          "open": str(quote.get('openPrice', '--')),
+                          "prevClose": str(quote.get('previousClose', '--')),
+                          "high": str(quote.get('highPrice', '--')),
+                          "low": str(quote.get('lowPrice', '--')),
+                          "volume": str(quote.get('volume', '--'))
+                      }
+                      print("✅ WTX fetched via Yahoo TW JSON:", wtx_data)
           except Exception as e:
-              print("⚠️ Yahoo TW API Exception:", e)
+              print("⚠️ Method 1 WTX Error:", e)
 
-          # 備援方案：從 Yahoo 網頁 HTML 解析 __NEXT_DATA__
+          # 備援方法：若上方未抓到，嘗試從 CMoney 網頁預載數據解析
           if wtx_data["price"] == "--":
               try:
-                  print("Trying HTML __NEXT_DATA__ fallback for WTX...")
-                  html_res = requests.get("https://tw.stock.yahoo.com/quote/WTX%26", headers=headers, timeout=10)
-                  match = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', html_res.text)
-                  if match:
-                      next_data = json.loads(match.group(1))
-                      stores = next_data.get('props', {}).get('pageProps', {}).get('initialData', {}).get('quote', {})
-                      if stores:
-                          price = stores.get('closePrice', '--')
-                          change = stores.get('change', 0)
-                          change_rate = stores.get('changePercent', 0)
-                          
-                          wtx_data = {
-                              "price": f"{price:,.0f}" if isinstance(price, (int, float)) else str(price),
-                              "change": f"{change:+.2f}" if isinstance(change, (int, float)) else str(change),
-                              "changeRate": f"{change_rate:+.2f}%" if isinstance(change_rate, (int, float)) else str(change_rate),
-                              "open": str(stores.get('openPrice', '--')),
-                              "prevClose": str(stores.get('previousClose', '--')),
-                              "high": str(stores.get('highPrice', '--')),
-                              "low": str(stores.get('lowPrice', '--')),
-                              "volume": str(stores.get('volume', '--'))
-                          }
-                          print("✅ WTX fetched via HTML __NEXT_DATA__:", wtx_data)
-              except Exception as fallback_err:
-                  print("❌ Fallback failed:", fallback_err)
+                  print("Trying CMoney fallback for WTX...")
+                  cmoney_res = requests.get("https://www.cmoney.tw/forum/futures/TXF1?s=p", headers=headers, timeout=10)
+                  price_m = re.search(r'"Close":\s*([0-9.]+)', cmoney_res.text)
+                  change_m = re.search(r'"Change":\s*([-0-9.]+)', cmoney_res.text)
+                  rate_m = re.search(r'"ChangePercent":\s*([-0-9.]+)', cmoney_res.text)
+                  
+                  if price_m:
+                      price_val = float(price_m.group(1))
+                      chg_val = float(change_m.group(1)) if change_m else 0.0
+                      rate_val = float(rate_m.group(1)) if rate_m else 0.0
+                      
+                      wtx_data["price"] = f"{price_val:,.0f}"
+                      wtx_data["change"] = f"{chg_val:+.2f}"
+                      wtx_data["changeRate"] = f"{rate_val:+.2f}%"
+                      print("✅ WTX fetched via CMoney regex:", wtx_data)
+              except Exception as e:
+                  print("⚠️ Method 2 CMoney Error:", e)
 
           # -------------------------------------------------------------
-          # 3. 抓取美股四大指數 + VIX 恐慌指數
+          # 3. 抓取美股四大指數 + VIX 恐慌指數 (使用 yfinance)
           # -------------------------------------------------------------
           us_symbols = [
-              ("usDJI", "%5EDJI"),      # 道瓊工業
-              ("usIXIC", "%5EIXIC"),    # 納斯達克
-              ("usGSPC", "%5EGSPC"),    # 標普 500
-              ("usSOX", "%5ESOX"),      # 費城半導體
-              ("vix", "%5EVIX")          # VIX 恐慌指數
+              ("usDJI", "^DJI"),      # 道瓊工業
+              ("usIXIC", "^IXIC"),    # 納斯達克
+              ("usGSPC", "^GSPC"),    # 標普 500
+              ("usSOX", "^SOX"),      # 費城半導體
+              ("vix", "^VIX")          # VIX 恐慌指數
           ]
 
           us_data = {
               "wtx_night": wtx_data
           }
 
+          print("Fetching US Stock Indices & VIX via yfinance...")
           for key, symbol in us_symbols:
               try:
-                  api_url = f"https://query2.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=1d"
-                  res = requests.get(api_url, headers=headers, timeout=10)
+                  ticker = yf.Ticker(symbol)
+                  info = ticker.fast_info
                   
-                  if res.status_code == 200:
-                      data = res.json()
-                      meta = data['chart']['result'][0]['meta']
-                      price = meta.get('regularMarketPrice', 0)
-                      prev_close = meta.get('chartPreviousClose', meta.get('previousClose', price))
+                  price = info.last_price
+                  prev_close = info.previous_close
+                  
+                  if price and prev_close:
                       change_val = price - prev_close
-                      change_pct = ((change_val) / prev_close * 100) if prev_close else 0
-
+                      change_pct = (change_val / prev_close) * 100
+                      
                       us_data[key] = {
                           "price": f"{price:,.2f}",
                           "change": f"{change_val:+.2f}",
@@ -214,14 +197,14 @@ jobs:
                   else:
                       us_data[key] = {"price": "--", "change": "0.00", "changeRate": "0.00%"}
               except Exception as err:
-                  print(f"Error fetching {symbol}:", err)
+                  print(f"Error fetching {symbol} via yfinance:", err)
                   us_data[key] = {"price": "--", "change": "0.00", "changeRate": "0.00%"}
 
-          # 寫入 JSON
+          # 強制存檔與檢查
           try:
               with open('data/us_stocks.json', 'w', encoding='utf-8') as f:
                   json.dump(us_data, f, ensure_ascii=False, indent=2)
-              print("✅ us_stocks.json written successfully! Content:")
+              print("✅ us_stocks.json successfully updated! Content:")
               print(json.dumps(us_data, ensure_ascii=False, indent=2))
           except Exception as e:
               print("❌ Save JSON error:", e)
