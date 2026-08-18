@@ -1,13 +1,8 @@
 {
   "wtx_night": {
-    "price": "--",
-    "change": "0.00",
-    "changeRate": "0.00%",
-    "open": "--",
-    "prevClose": "--",
-    "high": "--",
-    "low": "--",
-    "volume": "--"
+    "price": "45,811",
+    "change": "-56",
+    "changeRate": "-0.12%"
   },
   "usDJI": {
     "price": "53,459.78",
