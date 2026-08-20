@@ -539,7 +539,7 @@
         <div class="modal-header"><h3 style="margin:0; color:#2F855A;">💸 提領結算試算</h3></div>
         <div class="modal-body-scroll">
           <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
-            * 本帳戶為合併代操，提領時統一收取 10% 服務規費（完稅實領）。
+            * 本帳戶為合併代操，提領時統一收取 8% 服務規費（完稅實領）。
           </div>
           <div style="background: #F7FAFC; padding: 15px; border-radius: 12px; font-size: 0.92em; border: 1px solid #E2E8F0;">
             <p style="margin: 4px 0;">當前現值：<b id="modalCurrentValue">$0</b></p>
@@ -2158,11 +2158,11 @@ if (type === 'buy') {
       const user = localStorage.getItem('currentUser');
       const amt = parseFloat(document.getElementById('withdrawAmount').value);
       if(!amt || amt <= 0 || amt > currentGlobalTotalValue) return alert("金額無效或超出帳戶現值");
-      const fee = Math.round(amt * 0.1);
+      const fee = Math.round(amt * 0.08);
       const finalAmt = Math.round(amt - fee);
       document.getElementById('calcDetails').innerHTML = `
         📍 申請提領總額: $${amt.toLocaleString()}<br>
-        📍 服務規費 (10%): <span class="profit-positive">$${fee.toLocaleString()}</span><br>
+        📍 服務規費 (8%): <span class="profit-positive">$${fee.toLocaleString()}</span><br>
         <div style="font-size:1.1em; color:#2F855A; font-weight:bold; margin-top:8px; border-top:1px solid #E2E8F0; padding-top:8px;">💰 實際撥款預計: $${finalAmt.toLocaleString()}</div>`;
       document.getElementById('calcResult').style.display = 'block';
       await db.ref(`userLogs/${user}/withdrawHistory`).push({ time: new Date().toLocaleString(), applyAmt: amt, fee: fee, finalAmt: finalAmt });
