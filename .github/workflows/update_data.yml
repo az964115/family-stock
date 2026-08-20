@@ -166,6 +166,7 @@ jobs:
               ("usGSPC", "^GSPC"),        # 標普 500
               ("twTAIEX", "^TWII"),       # 台灣加權
               ("krKOSPI", "^KS11")        # 韓國 KOSPI
+              ("BTC", "BTC-USD")        # BTC-USD
           ]
 
           us_data = {
