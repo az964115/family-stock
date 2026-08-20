@@ -3086,7 +3086,6 @@ function showExpressNewsFallback(msg) {
   }
 }
 
-// 渲染 9 大全球指數
 function renderUsStocksData(data) {
   const grid = document.getElementById("usStocksGrid");
   if (!grid || !data) return;
@@ -3104,6 +3103,84 @@ function renderUsStocksData(data) {
   };
 
   let html = "";
+
+  // ==========================================
+  // 1. 新增：自動計算市場樂觀 / 悲觀情緒邏輯
+  // ==========================================
+  // 輔助函式：將 " +1.25% " 或 " -0.8% " 轉為純浮點數數字 1.25 或 -0.8
+  const parseRate = (key) => {
+    if (!data[key] || !data[key].changeRate) return 0;
+    const rateStr = data[key].changeRate.replace("%", "").replace("+", "").trim();
+    return parseFloat(rateStr) || 0;
+  };
+
+  const wtxRate = parseRate("wtx_night");
+  const soxRate = parseRate("usSOX");
+  const vixRate = parseRate("vix");
+  const oilRate = parseRate("brentOil");
+  const kospiRate = parseRate("krKOSPI");
+
+  let score = 0;
+  let reasons = [];
+
+  // 權重計分機制
+  if (wtxRate > 0.3) { score += 2; reasons.push("台指期強勢"); }
+  else if (wtxRate < -0.3) { score -= 2; reasons.push("台指期走弱"); }
+
+  if (soxRate > 0.5) { score += 2; reasons.push("費半走強"); }
+  else if (soxRate < -0.5) { score -= 2; reasons.push("費半承壓"); }
+
+  if (vixRate < -2.0) { score += 1.5; reasons.push("恐慌指數VIX下降"); }
+  else if (vixRate > 2.0) { score -= 2; reasons.push("恐慌指數VIX上升"); }
+
+  if (oilRate > 2.0) { score -= 1; reasons.push("原油大漲增添通膨疑慮"); }
+
+  if (kospiRate > 0.3) { score += 1; }
+  else if (kospiRate < -0.3) { score -= 1; }
+
+  // 根據得分決定情緒樣式與文案
+  let tagText = "🟡 中性震盪";
+  let tagBg = "#FEFCBF";
+  let tagColor = "#744210";
+  let borderColor = "#D69E2E";
+  let titleText = "⚖️ 指標分歧，多空拉鋸震盪中";
+  let descText = reasons.length > 0 ? `留意：${reasons.join('、')}。市場缺乏單一強勢主線。` : "國際市場指標整體平穩，建議靜待方向確立。";
+
+  if (score >= 2.5) {
+    tagText = "🟢 偏多樂觀";
+    tagBg = "#C6F6D5";
+    tagColor = "#22543D";
+    borderColor = "#38A169";
+    titleText = "🚀 多頭氣氛濃厚，市場動能充沛";
+    descText = `主要利多：${reasons.join('、')}。利於科技股與台股續強。`;
+  } else if (score <= -2.5) {
+    tagText = "🔴 偏空悲觀";
+    tagBg = "#FED7D7";
+    tagColor = "#742A2A";
+    borderColor = "#E53E3E";
+    titleText = "⚠️ 觀望/回檔風險，避險情緒升溫";
+    descText = `主要壓力：${reasons.join('、')}。短期建議保守，注意支撐點位。`;
+  }
+
+  // 將「情緒卡片」加在 html 的最前面（跨滿整行 grid-column: 1 / -1）
+  html += `
+    <div style="grid-column: 1 / -1; background: rgba(255, 255, 255, 0.9); border-radius: 10px; padding: 12px; border-left: 5px solid ${borderColor}; box-shadow: 0 2px 6px rgba(0,0,0,0.04); margin-bottom: 4px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.85em; color: var(--text-muted); font-weight: 600;">📊 市場情緒風向球</span>
+        <span style="background-color: ${tagBg}; color: ${tagColor}; font-weight: bold; padding: 2px 8px; border-radius: 4px; font-size: 0.75em;">${tagText}</span>
+      </div>
+      <div style="font-size: 1.05em; font-weight: 700; color: var(--text-main); margin: 6px 0 2px 0;">
+        ${titleText}
+      </div>
+      <div style="font-size: 0.8em; color: var(--text-muted); line-height: 1.4;">
+        ${descText}
+      </div>
+    </div>
+  `;
+
+  // ==========================================
+  // 2. 原本的股票卡片渲染
+  // ==========================================
   Object.keys(symbolNames).forEach(key => {
     const item = data[key] || { price: "--", change: "0.00", changeRate: "0.00%" };
     const name = symbolNames[key];
