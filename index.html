@@ -3099,7 +3099,8 @@ function renderUsStocksData(data) {
     "usIXIC": "那斯達克",
     "usGSPC": "標普 500",
     "twTAIEX": "台灣加權",
-    "krKOSPI": "韓國 KOSPI"
+    "krKOSPI": "韓國 KOSPI",
+    "BTC": "BTC-USD"
   };
 
   let html = "";
@@ -3119,6 +3120,7 @@ function renderUsStocksData(data) {
   const vixRate = parseRate("vix");
   const oilRate = parseRate("brentOil");
   const kospiRate = parseRate("krKOSPI");
+  const BTC = parseRate("BTC");
 
   let score = 0;
   let reasons = [];
