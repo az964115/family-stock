@@ -20,8 +20,8 @@
     "changeRate": "-5.50%"
   },
   "usDJI": {
-    "price": "53,277.00",
-    "change": "+517.79",
+    "price": "53,277.01",
+    "change": "+517.80",
     "changeRate": "+0.98%"
   },
   "usIXIC": {
@@ -45,8 +45,8 @@
     "changeRate": "+0.88%"
   },
   "BTC": {
-    "price": "78,420.39",
-    "change": "+946.82",
-    "changeRate": "+1.22%"
+    "price": "78,711.09",
+    "change": "+385.55",
+    "changeRate": "+0.49%"
   }
 }
