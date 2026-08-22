@@ -6,7 +6,7 @@
   },
   "usSOX": {
     "price": "11,740.37",
-    "change": "-59.64",
+    "change": "-59.65",
     "changeRate": "-0.51%"
   },
   "brentOil": {
@@ -45,8 +45,8 @@
     "changeRate": "+0.88%"
   },
   "BTC": {
-    "price": "78,711.09",
-    "change": "+385.55",
-    "changeRate": "+0.49%"
+    "price": "78,273.20",
+    "change": "-52.34",
+    "changeRate": "-0.07%"
   }
 }
