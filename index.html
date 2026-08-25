@@ -512,6 +512,7 @@
                   <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">即時股價</th>
                   <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">最新</th>
                   <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">近期動能走勢</th>
+                  <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">均線狀態</th>
                 </tr>
               </thead>
               <tbody id="rsv-table-body">
@@ -2541,7 +2542,8 @@ if (type === 'buy') {
       
       loadingDiv.style.display = "block";
       if (recoPanel) recoPanel.style.display = "none";
-      tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #4cbdaa;">🔄 正在向雲端請求即時計算數據...</td></tr>`;
+      // 💡 colspan 改為 5
+      tbody.innerHTML = `<tr><td colspan="5" style="padding: 15px; text-align: center; color: #4cbdaa;">🔄 正在向雲端請求即時計算數據...</td></tr>`;
       
       fetch(`${GAS_WEB_APP_URL}?action=getLiveRsv`)
         .then(res => res.text())
@@ -2556,7 +2558,8 @@ if (type === 'buy') {
 
           if(response.status === "success") {
             if(!response.data || response.data.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #718096;">目前清單中無有效個股數據。</td></tr>`;
+              // 💡 colspan 改為 5
+              tbody.innerHTML = `<tr><td colspan="5" style="padding: 15px; text-align: center; color: #718096;">目前清單中無有效個股數據。</td></tr>`;
               return;
             }
             
@@ -2606,12 +2609,17 @@ if (type === 'buy') {
                 return `<span style="color:${color}; font-weight:bold; margin-right:3px;">${arrow}</span>`;
               }).join('');
               
+              // 💡 讀取後端傳回的 maStatus 均線狀態（若無資料預設顯示 --）
+              const maStatusText = stock.maStatus || stock.maTrend || '--';
+
               html += `
                 <tr style="border-bottom: 1px solid #e2e8f0;">
                   <td style="padding: 10px; font-weight:bold;">${stockLabel}</td>
                   <td style="padding: 10px; font-weight:bold; color:#2d3748;">$${stock.price}</td>
                   <td style="padding: 10px; color:${rsvColor}; font-weight:bold;">${statusText}</td>
                   <td style="padding: 10px;">${historyTrend}</td>
+                  <!-- 💡 新增第 5 欄：均線狀態 -->
+                  <td style="padding: 10px; font-weight:600; color:#2d3748;">${maStatusText}</td>
                 </tr>
               `;
             });
@@ -2626,14 +2634,16 @@ if (type === 'buy') {
             tbody.innerHTML = html;
 
           } else {
-            tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">讀取失敗：${response.message}</td></tr>`;
+            // 💡 colspan 改為 5
+            tbody.innerHTML = `<tr><td colspan="5" style="padding: 15px; text-align: center; color: #9b2c2c;">讀取失敗：${response.message}</td></tr>`;
           }
         })
         .catch(err => {
           loadingDiv.style.display = "none";
-          tbody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #9b2c2c;">${err.message}</td></tr>`;
+          // 💡 colspan 改為 5
+          tbody.innerHTML = `<tr><td colspan="5" style="padding: 15px; text-align: center; color: #9b2c2c;">${err.message}</td></tr>`;
         });
-    }
+}
 
     function loadStockListFromGas(retryCount = 0) {
       const textarea = document.getElementById("stock-list-textarea");
@@ -3429,6 +3439,49 @@ function processRsvAndMacdData(stockList) {
       ? oversoldStocks.join("、 ") 
       : "無";
   }
+}
+// 假設每列股票資料 item 包含：currentPrice (現價), ema12, ema26
+function renderRsvTableRow(item) {
+  const price = item.currentPrice;
+  const ema12 = item.ema12;
+  const ema26 = item.ema26;
+
+  let warningBadge = "";
+
+  // 1. 跌破警告：現價 < EMA12 或 現價 < EMA26
+  if (price < ema26) {
+    warningBadge = `<span style="background: #FED7D7; color: #9B2C2C; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #E53E3E;">🚨 跌破EMA26</span>`;
+  } else if (price < ema12) {
+    warningBadge = `<span style="background: #FEEBC8; color: #9C4221; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #DD6B20;">⚠️ 跌破EMA12</span>`;
+  } 
+  // 2. 接近/貼近警告：價格離 EMA12 或 EMA26 差距在 1% 以內
+  else if (Math.abs(price - ema12) / price <= 0.01) {
+    warningBadge = `<span style="background: #FEFCBF; color: #744210; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #D69E2E;">👀 逼近EMA12</span>`;
+  } else if (Math.abs(price - ema26) / price <= 0.01) {
+    warningBadge = `<span style="background: #FEFCBF; color: #744210; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #D69E2E;">👀 逼近EMA26</span>`;
+  } else {
+    warningBadge = `<span style="background: #C6F6D5; color: #22543D; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px;">✨ 站穩均線上</span>`;
+  }
+
+  // 表格 HTML 渲染
+  return `
+    <tr>
+      <td style="padding: 8px;">${item.id} ${item.name}</td>
+      <td style="padding: 8px;">$${price}</td>
+      <td style="padding: 8px;">${item.latest}</td>
+      <td style="padding: 8px;">${item.trend}</td>
+      <!-- 🆕 新增的 EMA12/26 及直覺化顯示欄位 -->
+      <td style="padding: 8px; white-space: nowrap;">
+        <div style="font-size: 12px; font-family: monospace;">
+          <span>EMA12: <b>${ema12}</b></span> | 
+          <span>EMA26: <b>${ema26}</b></span>
+        </div>
+        <div style="margin-top: 2px;">
+          ${warningBadge}
+        </div>
+      </td>
+    </tr>
+  `;
 }
 function renderFundingHistoryLogs(logs) {
   const container = document.getElementById('fundingHistoryLogs');
