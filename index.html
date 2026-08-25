@@ -452,6 +452,14 @@
               </div>
             </div>
 
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+              <div style="flex: 1; min-width: 180px; background: #eef2ff; border-top: 4px solid #6366f1; padding: 10px; border-radius: 6px;">
+                <div style="font-weight: bold; color: #4338ca; font-size: 13px;">💎 超賣區間 (KD < 3)</div>
+                <div style="font-size: 11px; color: #3730a3; margin-top: 2px;">極度超賣 / 潛在低檔反轉機會</div>
+                <div id="reco-oversold" style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #2d3748;">無</div>
+              </div>
+            </div>
+
             <!-- 🎯 持有所屬股票智慧分析與動態停利 (雲端同步版) -->
 <div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e0; margin-top: 15px;">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -539,7 +547,7 @@
         <div class="modal-header"><h3 style="margin:0; color:#2F855A;">💸 提領結算試算</h3></div>
         <div class="modal-body-scroll">
           <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;">
-            * 本帳戶為合併代操，提領時統一收取 8% 服務規費（完稅實領）。
+            * 本帳戶為合併代操，提領時統一收取 10% 服務規費（完稅實領）。
           </div>
           <div style="background: #F7FAFC; padding: 15px; border-radius: 12px; font-size: 0.92em; border: 1px solid #E2E8F0;">
             <p style="margin: 4px 0;">當前現值：<b id="modalCurrentValue">$0</b></p>
@@ -882,7 +890,7 @@
         <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: stretch; margin-bottom: 15px;">
           <div style="flex: 1; min-width: 250px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
             <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">今日收益</small><div id="profitDiffDisplay" style="font-size: 1.15em; font-weight: 700;">--</div></div>
-            <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">總收益</small><div id="autoTotalNetWorth" style="font-size: 1.15em; font-weight: 700; color: #2B6CB0;">--</div></div>
+            <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">不含息收益</small><div id="autoTotalNetWorth" style="font-size: 1.15em; font-weight: 700; color: #2B6CB0;">--</div></div>
             <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">本月幅度</small><div id="monthPerformance" style="font-size: 1.15em; font-weight: 700;">--</div></div>
             <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">歷史最大回撤</small><div id="maxDrawdownDisplay" style="font-size: 1.15em; font-weight: 700; color: #35C530;">--</div></div>
           </div>
@@ -2158,11 +2166,11 @@ if (type === 'buy') {
       const user = localStorage.getItem('currentUser');
       const amt = parseFloat(document.getElementById('withdrawAmount').value);
       if(!amt || amt <= 0 || amt > currentGlobalTotalValue) return alert("金額無效或超出帳戶現值");
-      const fee = Math.round(amt * 0.08);
+      const fee = Math.round(amt * 0.1);
       const finalAmt = Math.round(amt - fee);
       document.getElementById('calcDetails').innerHTML = `
         📍 申請提領總額: $${amt.toLocaleString()}<br>
-        📍 服務規費 (8%): <span class="profit-positive">$${fee.toLocaleString()}</span><br>
+        📍 服務規費 (10%): <span class="profit-positive">$${fee.toLocaleString()}</span><br>
         <div style="font-size:1.1em; color:#2F855A; font-weight:bold; margin-top:8px; border-top:1px solid #E2E8F0; padding-top:8px;">💰 實際撥款預計: $${finalAmt.toLocaleString()}</div>`;
       document.getElementById('calcResult').style.display = 'block';
       await db.ref(`userLogs/${user}/withdrawHistory`).push({ time: new Date().toLocaleString(), applyAmt: amt, fee: fee, finalAmt: finalAmt });
@@ -3330,7 +3338,98 @@ async function askGeminiAIAnalysis() {
     resultBox.style.display = "block";
   }
 }
-// 在讀取與顯示歷史紀錄時，針對配息項目直接顯示金額
+// 計算 EMA (Exponential Moving Average)
+function calculateEMA(prices, period) {
+  const k = 2 / (period + 1);
+  let emaArray = [prices[0]];
+  for (let i = 1; i < prices.length; i++) {
+    const ema = prices[i] * k + emaArray[i - 1] * (1 - k);
+    emaArray.push(ema);
+  }
+  return emaArray;
+}
+
+// 計算 MACD (12, 26, 9) 與 EMA12/EMA26 跌破狀態
+function calculateMACDAndEMASignals(prices) {
+  if (!prices || prices.length < 26) {
+    return { error: "K線資料不足 26 期，無法計算 MACD" };
+  }
+
+  const ema12Arr = calculateEMA(prices, 12);
+  const ema26Arr = calculateEMA(prices, 26);
+
+  const currentPrice = prices[prices.length - 1];
+  const prevPrice = prices[prices.length - 2];
+
+  const currentEma12 = ema12Arr[ema12Arr.length - 1];
+  const currentEma26 = ema26Arr[ema26Arr.length - 1];
+
+  let difArr = [];
+  for (let i = 0; i < prices.length; i++) {
+    difArr.push(ema12Arr[i] - ema26Arr[i]);
+  }
+
+
+  const demArr = calculateEMA(difArr.slice(25), 9); 
+  const currentDif = difArr[difArr.length - 1];
+  const currentDem = demArr[demArr.length - 1];
+  const currentOsc = currentDif - currentDem;
+
+  let warnings = [];
+  if (currentPrice < currentEma12) {
+    warnings.push("跌破 EMA12");
+  }
+  if (currentPrice < currentEma26) {
+    warnings.push("跌破 EMA26");
+  }
+
+  const isCrossDownEma12 = (prevPrice >= ema12Arr[ema12Arr.length - 2]) && (currentPrice < currentEma12);
+  const isCrossDownEma26 = (prevPrice >= ema26Arr[ema26Arr.length - 2]) && (currentPrice < currentEma26);
+
+  return {
+    price: currentPrice,
+    ema12: currentEma12.toFixed(2),
+    ema26: currentEma26.toFixed(2),
+    dif: currentDif.toFixed(2),
+    dem: currentDem.toFixed(2),
+    osc: currentOsc.toFixed(2),
+    warnings: warnings,
+    isCrossDownEma12,
+    isCrossDownEma26
+  };
+}
+
+function processRsvAndMacdData(stockList) {
+  let oversoldStocks = []; 
+
+  stockList.forEach(stock => {
+    const k = stock.K;
+    const d = stock.D;
+    const price = stock.price;
+    const macdInfo = calculateMACDAndEMASignals(stock.historyPrices);
+
+    if (k < 3 && d < 3) {
+      oversoldStocks.push(`${stock.name}(${stock.id})`);
+    }
+
+    let alertBadgeHtml = "";
+    if (price < macdInfo.ema12 && price < macdInfo.ema26) {
+      alertBadgeHtml = `<span style="color:#e53e3e; font-size:11px; font-weight:bold; background:#fff5f5; padding:2px 6px; border-radius:4px; border:1px solid #feb2b2;">⚠️ 跌破 EMA12/26</span>`;
+    } else if (price < macdInfo.ema12) {
+      alertBadgeHtml = `<span style="color:#dd6b20; font-size:11px; font-weight:bold; background:#fffaf0; padding:2px 6px; border-radius:4px; border:1px solid #fbd38d;">⚠️ 跌破 EMA12</span>`;
+    } else if (price < macdInfo.ema26) {
+      alertBadgeHtml = `<span style="color:#dd6b20; font-size:11px; font-weight:bold; background:#fffaf0; padding:2px 6px; border-radius:4px; border:1px solid #fbd38d;">⚠️ 跌破 EMA26</span>`;
+    }
+
+  });
+
+  const oversoldEl = document.getElementById("reco-oversold");
+  if (oversoldEl) {
+    oversoldEl.innerHTML = oversoldStocks.length > 0 
+      ? oversoldStocks.join("、 ") 
+      : "無";
+  }
+}
 function renderFundingHistoryLogs(logs) {
   const container = document.getElementById('fundingHistoryLogs');
   if (!container) return;
@@ -3341,7 +3440,7 @@ function renderFundingHistoryLogs(logs) {
   }
 
   let html = '';
-  let totalDividendAmount = 0; // 累計配息總金額
+  let totalDividendAmount = 0; 
 
   Object.values(logs).forEach(log => {
     let typeText = '';
@@ -3372,7 +3471,6 @@ function renderFundingHistoryLogs(logs) {
     `;
   });
 
-  // 在最上方顯示「總配息金額」摘要
   const summaryHeader = `
     <div style="background: #E6FFFA; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #38B2AC; font-weight: bold; color: #234E52;">
       💰 累計領取總配息金額：$${totalDividendAmount.toLocaleString()} 元
