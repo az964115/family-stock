@@ -2,17 +2,15 @@ name: Auto Update Potential Stocks Data
 
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *' # 每天固定時間執行
+  workflow_dispatch: # 支援手動觸發
 
 jobs:
-  build-and-commit:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -20,17 +18,21 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Playwright & Browsers
+      - name: Install dependencies
         run: |
           npm install playwright
-          npx playwright install chromium --with-deps
 
-      - name: Run Fetch Script
-        run: node scripts/fetch-stocks.js
+      - name: Install Playwright Browsers
+        run: |
+          npx playwright install --with-deps chromium
 
-      - name: Commit and Push Updated Data
+      - name: Fetch stock data with Playwright
+        run: |
+          node fetch-stocks.js
+
+      - name: Commit and push changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add potential-stocks.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: auto-update potential stocks data [skip ci]" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update potential stocks data" && git push)
