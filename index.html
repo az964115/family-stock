@@ -4054,67 +4054,41 @@ function analyzeStockMomentum(stock) {
 
 function renderPotentialStocksUI(stocks, container) {
   if (!container) return;
-  if (!stocks || stocks.length === 0) {
-    container.innerHTML = `<div style="padding: 20px; text-align: center; color: #718096;">查無資料</div>`;
+  if (stocks.length === 0) {
+    container.innerHTML = `<div style="padding: 20px; text-align: center;">查無排行榜資料</div>`;
     return;
   }
 
   let html = `
     <div style="overflow-x: auto;">
-      <table class="table" style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
         <thead>
-          <tr style="background: #EDF2F7; color: #4A5568; border-bottom: 2px solid #CBD5E0;">
-            <th style="padding: 10px; min-width: 120px;">代號 / 名稱</th>
-            <th style="padding: 10px; min-width: 90px;">即時股價</th>
-            <th style="padding: 10px; min-width: 140px;">最新近期動能走勢</th>
-            <th style="padding: 10px; min-width: 110px;">均線狀態</th>
+          <tr style="background-color: #f4f6f9; border-bottom: 2px solid #e5e7eb;">
+            <th style="padding: 10px;">代號 / 名稱</th>
+            <th style="padding: 10px;">即時股價</th>
+            <th style="padding: 10px;">最新近期動能走勢</th>
+            <th style="padding: 10px;">均線狀態</th>
           </tr>
         </thead>
         <tbody>
   `;
 
-  stocks.forEach(stock => {
-    const changeColor = stock.change > 0 ? '#E53E3E' : stock.change < 0 ? '#38A169' : '#718096';
-    const changeSign = stock.change > 0 ? '+' : '';
-
+  stocks.forEach(s => {
     html += `
-      <tr style="border-bottom: 1px solid #E2E8F0;">
-        <td style="padding: 10px; font-weight: bold;">
-          ${stock.symbol || ''} <span style="color: #4A5568; font-weight: normal;">${stock.name || ''}</span>
-        </td>
-        <td style="padding: 10px; color: ${changeColor}; font-weight: bold;">
-          ${stock.price !== undefined ? stock.price : '--'}
-          <span style="font-size: 11px; margin-left: 4px;">
-            (${changeSign}${stock.changeRate !== undefined ? stock.changeRate : '0'}%)
-          </span>
-        </td>
+      <tr style="border-bottom: 1px solid #f0f0f0;">
+        <td style="padding: 10px; font-weight: bold;">${s.symbol} ${s.name}</td>
+        <td style="padding: 10px; color: #d97706; font-weight: bold;">${s.price > 0 ? '$' + s.price : '查無報價'}</td>
         <td style="padding: 10px;">
-          <span style="background: #EDF2F7; padding: 2px 6px; border-radius: 4px; font-size: 12px;">
-            ${stock.momentum || '觀察中'}
+          <span style="background: #ef444415; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
+            ${s.trend} (${s.momentumScore}分)
           </span>
         </td>
-        <td style="padding: 10px;">
-          <span style="color: ${stock.maStatus === '多頭' ? '#E53E3E' : stock.maStatus === '空頭' ? '#38A169' : '#4A5568'};">
-            ${stock.maStatus || '--'}
-          </span>
-        </td>
+        <td style="padding: 10px; color: #059669;">${s.maStatus}</td>
       </tr>
     `;
   });
 
-  html += `
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Modal 底部關閉按鈕區域 -->
-    <div style="margin-top: 15px; border-top: 1px solid #E2E8F0; padding-top: 12px;">
-      <button onclick="closePotentialStocksModal()" style="width: 100%; background-color: #718096; color: white; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-        關閉視窗
-      </button>
-    </div>
-  `;
-
+  html += `</tbody></table></div>`;
   container.innerHTML = html;
 }
 
