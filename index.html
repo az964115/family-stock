@@ -985,12 +985,18 @@
       <!-- 排行與動能整合表格 -->
       <div style="overflow-x: auto;">
         <table class="table" style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+          <thead>
+            <tr style="background: #edf2f7; color: #4a5568;">
+              <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">代號</th>
+              <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">名稱</th>
+              <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">即時狀態 / 數值</th>
+            </tr>
+          </thead>
           <tbody id="potential-stocks-list">
             <!-- 動態載入資料 -->
           </tbody>
         </table>
       </div>
-    </div>
 
     <!-- 3. Footer 區塊 -->
     <div class="modal-footer" style="margin-top: 15px; border-top: 1px solid #E2E8F0; padding-top: 12px;">
@@ -3842,7 +3848,7 @@ function renderDefaultUI(stocks, container) {
   
   let html = '';
   stocks.forEach((stock, index) => {
-    const momentumTag = stock.momentumTag || (stock.price > 0 ? '🔥 多頭強勢' : '➡️ 盤整觀望');
+    const momentumTag = stock.momentumTag || (parseFloat(stock.price) > 0 ? '🔥 多頭強勢' : '➡️ 盤整觀望');
     const maStatus = stock.maStatus || 'MA5/20/60 向上';
     
     html += `
