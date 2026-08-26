@@ -3681,7 +3681,7 @@ function renderRankTable(dataList) {
 function openPotentialStocksModal() {
   const modal = document.getElementById('potentialStocksModal');
   if (modal) {
-    modal.style.display = 'block'; // 或使用您控制台習慣的 Modal 展現方式 (例如展現 class show)
+    modal.style.display = 'block';
     loadPotentialStocksData(); // 觸發抓取 CMoney 排行榜與帶入動能分析
   }
 }
@@ -3693,9 +3693,11 @@ function closePotentialStocksModal() {
     modal.style.display = 'none';
   }
 }
-const DATA_JSON_URL = 'https://raw.githubusercontent.com/az964115/family-stock/main/potential-stocks.json';
 
 async function loadPotentialStocksData() {
+  // 💡 將 DATA_JSON_URL 宣告在函式內部，避免與全域變數產生 redeclare 衝突
+  const DATA_JSON_URL = 'https://raw.githubusercontent.com/az964115/family-stock/main/potential-stocks.json';
+
   const container = document.getElementById('potentialStocksContainer') || document.getElementById('potentialStocksList');
   if (container) {
     container.innerHTML = `<div style="text-align:center; padding: 20px; color: #666;">⏳ 正在載入潛力股票資料並分析動能...</div>`;
@@ -3712,7 +3714,7 @@ async function loadPotentialStocksData() {
     const parser = new DOMParser();
     const doc = parser.parseFromString(data.htmlContent, 'text/html');
 
-    // 💡 容錯率更高的 Selector 抓取方式：優先用 ID，找不到則用 class / querySelectorAll 備用
+    // 💡 容錯率高的 Selector：優先用 ID，找不到則拿頁面中的 section
     const volumeSection = doc.querySelector('section#ChangeUp') || doc.querySelectorAll('section')[0] || null;
     const investorSection = doc.querySelector('section#InstitutionalInvestorBuy') || doc.querySelectorAll('section')[1] || null;
     const fundamentalSection = doc.querySelector('section#RevenueGrowthMom') || doc.querySelectorAll('section')[2] || null;
@@ -3735,18 +3737,22 @@ async function loadPotentialStocksData() {
       throw new Error('解析 HTML 失敗，未能提取到任何股票資料，請檢查 DOM 結構。');
     }
 
-    // 帶入動能監控分析
-    const analyzedStocks = combinedList.map(stock => analyzeStockMomentum(stock));
+    // 帶入動能監控分析 (需確定專案中有此函式)
+    const analyzedStocks = typeof analyzeStockMomentum === 'function' 
+      ? combinedList.map(stock => analyzeStockMomentum(stock))
+      : combinedList;
 
-    // 渲染 UI
-    renderPotentialStocksUI(analyzedStocks, container);
+    // 渲染 UI (需確定專案中有此函式)
+    if (typeof renderPotentialStocksUI === 'function') {
+      renderPotentialStocksUI(analyzedStocks, container);
+    }
 
   } catch (error) {
     console.error('載入潛力股票失敗:', error);
     if (container) {
       container.innerHTML = `<div style="color: #dc2626; padding: 20px; text-align: center;">
         ❌ 載入失敗：${error.message}<br/>
-        <small style="color: #6b7280;">請確認 Playwright 是否已完整渲染 CMoney 畫面。</small>
+        <small style="color: #6b7280;">請確認 GitHub Actions 是否已順利推播 potential-stocks.json 檔案。</small>
       </div>`;
     }
   }
@@ -3760,20 +3766,28 @@ function parseCMoneySection(sectionElement, limit = 10) {
   const results = [];
   
   // 爬取表格或列表項目
-  const rows = sectionElement.querySelectorAll('table tbody tr, .rank-item, div[data-v-5b77f4bf]');
+  const rows = sectionElement.querySelectorAll('table tbody tr, .rank-item, tr, div[class*="rank"]');
   
-  rows.forEach((row, index) => {
+  rows.forEach((row) => {
     if (results.length >= limit) return;
     
-    // 提取代號、名稱與即時價格 (視 CMoney DOM 結構選取)
-    const symbolEl = row.querySelector('.stock-symbol, .code, a[href*="/kt/"]');
+    const symbolEl = row.querySelector('.stock-symbol, .code, a[href*="/stock/"], a[href*="/kt/"]');
     const nameEl = row.querySelector('.stock-name, .name');
     const priceEl = row.querySelector('.price, .close-price, td:nth-child(3)');
 
     if (symbolEl || nameEl) {
-      const symbol = symbolEl ? symbolEl.textContent.trim().replace(/[^\d]/g, '') : '';
-      const name = nameEl ? nameEl.textContent.trim() : (symbolEl ? symbolEl.textContent.trim() : '未知');
-      const price = priceEl ? parseFloat(priceEl.textContent.trim().replace(/,/g, '')) || 0 : 0;
+      // 提取 4~6 位數字代號
+      const rawSymbolText = symbolEl ? symbolEl.textContent.trim() : '';
+      const symbolMatch = rawSymbolText.match(/\d{4,6}/) || (nameEl ? nameEl.textContent.match(/\d{4,6}/) : null);
+      const symbol = symbolMatch ? symbolMatch[0] : '';
+
+      // 清理股票名稱
+      let name = nameEl ? nameEl.textContent.trim() : rawSymbolText;
+      name = name.replace(/\d{4,6}/g, '').replace(/[()（）]/g, '').trim() || '未知';
+
+      // 提取價格
+      const priceText = priceEl ? priceEl.textContent.trim().replace(/,/g, '') : '0';
+      const price = parseFloat(priceText) || 0;
 
       if (symbol) {
         results.push({ symbol, name, price });
@@ -3783,7 +3797,6 @@ function parseCMoneySection(sectionElement, limit = 10) {
 
   return results;
 }
-
 /**
  * 動能監控系統：帶入並計算動能走勢與均線狀態
  */
@@ -3907,79 +3920,60 @@ function switchPotentialTab(tabName, event) {
 }
 
 // ==========================================
-// 2. 潛力股票抓取與動能分析 (含 CORS 備用代理)
+// 2. 潛力股票資料載入 (改讀取 GitHub 自動更新檔)
 // ==========================================
-async function fetchWithFallbackProxy(targetUrl) {
-  // 多組 CORS 代理伺服器輪流嘗試
-  const proxies = [
-    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-    `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`
-  ];
-
-  for (const proxy of proxies) {
-    try {
-      const res = await fetch(proxy);
-      if (!res.ok) continue;
-
-      if (proxy.includes('allorigins')) {
-        const json = await res.json();
-        return json.contents;
-      } else {
-        return await res.text();
-      }
-    } catch (err) {
-      console.warn(`代理 ${proxy} 連線失敗，嘗試下一組...`, err);
-    }
-  }
-  throw new Error('所有 CORS 代理服務皆無法連線，請稍後再試');
-}
+const DATA_JSON_URL = 'https://raw.githubusercontent.com/az964115/family-stock/main/potential-stocks.json';
 
 async function loadPotentialStocksData() {
   const container = document.getElementById('potentialStocksContainer') || document.getElementById('potentialStocksList');
   if (container) {
-    container.innerHTML = `<div style="text-align:center; padding: 20px; color: #666;">⏳ 正在抓取 CMoney 排行榜資料並進行動能分析中...</div>`;
+    container.innerHTML = `<div style="text-align:center; padding: 20px; color: #666;">⏳ 正在載入潛力股票資料並分析動能...</div>`;
   }
 
-  const targetUrl = 'https://www.cmoney.tw/forum/stock/rank';
-
   try {
-    // 透過多重代理取得頁面 HTML
-    const htmlText = await fetchWithFallbackProxy(targetUrl);
+    // 1. 直接讀取 GitHub Raw JSON（加上 ?t= 避免瀏覽器快取舊資料）
+    const response = await fetch(`${DATA_JSON_URL}?t=${Date.now()}`);
+    if (!response.ok) throw new Error(`資料庫檔案讀取失敗 (HTTP ${response.status})`);
+    
+    const data = await response.json();
+    if (!data.htmlContent) throw new Error('JSON 檔案中找不到 HTML 內容');
+
+    // 2. 解析由 GitHub Actions 抓取到的完整渲染 HTML
     const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlText, 'text/html');
+    const doc = parser.parseFromString(data.htmlContent, 'text/html');
 
-    // 1. 上市櫃行情排行 (成交量區塊)
-    const volumeSection = doc.querySelector('section#ChangeUp');
-    const volumeList = parseCMoneySection(volumeSection, 10);
+    // 3. 提取區塊 (加上容錯保護)
+    const volumeSection = doc.querySelector('section#ChangeUp') || doc.querySelectorAll('section')[0] || null;
+    const investorSection = doc.querySelector('section#InstitutionalInvestorBuy') || doc.querySelectorAll('section')[1] || null;
+    const fundamentalSection = doc.querySelector('section#RevenueGrowthMom') || doc.querySelectorAll('section')[2] || null;
 
-    // 2. 上市櫃法人排行 (買超)
-    const investorSection = doc.querySelector('section#InstitutionalInvestorBuy');
-    const investorList = parseCMoneySection(investorSection, 10);
+    const volumeList = volumeSection ? parseCMoneySection(volumeSection, 10) : [];
+    const investorList = investorSection ? parseCMoneySection(investorSection, 10) : [];
+    const fundamentalList = fundamentalSection ? parseCMoneySection(fundamentalSection, 10) : [];
 
-    // 3. 上市櫃基本面排行
-    const fundamentalSection = doc.querySelector('section#RevenueGrowthMom');
-    const fundamentalList = parseCMoneySection(fundamentalSection, 10);
-
-    // 合併與去重
+    // 4. 合併資料並去重
     const combinedMap = new Map();
     [...volumeList, ...investorList, ...fundamentalList].forEach(stock => {
-      if (stock.symbol && !combinedMap.has(stock.symbol)) {
+      if (stock && stock.symbol && !combinedMap.has(stock.symbol)) {
         combinedMap.set(stock.symbol, stock);
       }
     });
 
-    // 動能分析
-    const analyzedStocks = Array.from(combinedMap.values()).map(stock => analyzeStockMomentum(stock));
+    const combinedList = Array.from(combinedMap.values());
+    if (combinedList.length === 0) {
+      throw new Error('未能解析出股票資料，請確認 Actions 抓取的 DOM 結構。');
+    }
 
-    // 渲染 UI
+    // 5. 動能分析與渲染
+    const analyzedStocks = combinedList.map(stock => analyzeStockMomentum(stock));
     renderPotentialStocksUI(analyzedStocks, container);
 
   } catch (error) {
-    console.error('抓取潛力股票失敗:', error);
+    console.error('載入潛力股票失敗:', error);
     if (container) {
       container.innerHTML = `<div style="color: #dc2626; padding: 20px; text-align: center;">
         ❌ 載入失敗：${error.message}<br/>
-        <small style="color: #6b7280;">提示：本地直接開啟 HTML (file://) 可能會觸發瀏覽器安全限制，建議透過 Local Server 或重新發送請求。</small>
+        <small style="color: #6b7280;">請確認 GitHub Actions 是否已順利推播 potential-stocks.json 檔案。</small>
       </div>`;
     }
   }
