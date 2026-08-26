@@ -460,48 +460,40 @@
               </div>
             </div>
 
-            <!-- 🎯 持有所屬股票智慧分析與動態停利 (雲端同步版) -->
-<div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e0; margin-top: 15px;">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-    <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">
-      🎯 持有股票分析&停利試算 (雲端同步)
-    </div>
-    
-    <div style="display: flex; gap: 4px; align-items: center;">
-      <!-- 雲端個股選擇下拉選單 -->
-      <select id="mySavedStocksSelect" onchange="loadSavedStockData()" style="padding: 3px 8px; font-size: 12px; border-radius: 4px; border: 1px solid #cbd5e0; max-width: 170px;">
-        <option value="">📂 載入雲端個股...</option>
-      </select>
-      <!-- 刪除雲端紀錄按鈕 -->
-      <button onclick="deleteCurrentSavedStock()" title="刪除選中的個股" style="background-color: #e53e3e; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; margin:0; font-weight:bold; cursor:pointer; border: none;">
-        🗑️
-      </button>
-    </div>
-  </div>
-  
-  <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
-    <input type="text" id="myStockSymbol" placeholder="股票代號/名稱" style="flex:1; min-width:100px; padding:6px 10px; margin:0; font-size:12px;">
-    <input type="number" id="myBasePrice" placeholder="最新起漲基準價 (如波段低點價位)" style="flex:1.2; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
-    <input type="number" id="myMaxPrice" placeholder="歷史最高點價位" style="flex:1.2; min-width:120px; padding:6px 10px; margin:0; font-size:12px;">
-  </div>
+            <!-- 📊 現有股票紀錄 (Firebase 雲端同步版) -->
+            <div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e0; margin-top: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="font-weight: bold; color: #2b6cb0; font-size: 13px;">
+                  📊 現有股票紀錄 (Firebase 雲端同步)
+                </div>
+                
+                <div style="display: flex; gap: 4px; align-items: center;">
+                  <!-- 雲端個股選擇下拉選單 -->
+                  <select id="mySavedStocksSelect" onchange="loadSavedStockData()" style="padding: 3px 8px; font-size: 12px; border-radius: 4px; border: 1px solid #cbd5e0; max-width: 170px;">
+                    <option value="">📂 載入雲端個股...</option>
+                  </select>
+                  <!-- 刪除雲端紀錄按鈕 -->
+                  <button onclick="deleteCurrentSavedStock()" title="刪除選中的個股" style="background-color: #e53e3e; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; margin:0; font-weight:bold; cursor:pointer; border: none;">
+                    🗑️
+                  </button>
+                </div>
+              </div>
+              
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
+                <input type="text" id="myStockSymbol" placeholder="股票代號/名稱 (例: 2330)" style="flex:1.2; min-width:110px; padding:6px 10px; margin:0; font-size:12px;">
+                <input type="number" id="myStockCost" placeholder="成本價 (元)" style="flex:1; min-width:90px; padding:6px 10px; margin:0; font-size:12px;">
+                <input type="number" id="myStockShares" placeholder="持有股數" style="flex:1; min-width:90px; padding:6px 10px; margin:0; font-size:12px;">
+                <input type="number" id="myStockProfit" placeholder="現有損益 (元)" style="flex:1; min-width:90px; padding:6px 10px; margin:0; font-size:12px;">
+              </div>
 
-  <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;">
-    <input type="number" id="myPrevBasePrice" placeholder="上一波起漲價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
-    <input type="number" id="myPrevMaxPrice" placeholder="上一波衝頂高價 (選填)" style="flex:1; min-width:140px; padding:6px 10px; margin:0; font-size:12px;">
-  </div>
-
-  <div style="display: flex; gap: 8px;">
-    <button onclick="analyzeMyStockProfit(true)" style="background-color: #3182ce; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 2; cursor:pointer; border: none;">
-      🧠 執行智慧動態分析
-    </button>
-    <button onclick="saveCurrentStockData()" style="background-color: #38a169; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 1; cursor:pointer; border: none;">
-      💾 儲存至雲端
-    </button>
-  </div>
-  
-  <div id="stockNotificationBanner" style="display:none; margin-top: 10px; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;"></div>
-  <div id="myStockAnalysisResult" style="display:none; margin-top: 10px; padding: 10px; background: #f7fafc; border-left: 4px solid #3182ce; border-radius: 4px; font-size: 12px; line-height: 1.6;"></div>
-</div>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="saveCurrentStockData()" style="background-color: #38a169; color: white; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin:0; font-weight:bold; flex: 1; cursor:pointer; border: none;">
+                  💾 儲存至 Firebase 雲端
+                </button>
+              </div>
+              
+              <div id="stockNotificationBanner" style="display:none; margin-top: 10px; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;"></div>
+            </div>
           
           <!-- 詳細表格區 -->
           <div style="overflow-x: auto; margin-top: 15px;">
@@ -3482,6 +3474,116 @@ function renderRsvTableRow(item) {
       </td>
     </tr>
   `;
+}
+// 1. 儲存股票資料至 Firebase 雲端
+async function saveCurrentStockData() {
+  const user = localStorage.getItem('currentUser');
+  if (!user) return alert("請先登入！");
+
+  const symbol = document.getElementById('myStockSymbol').value.trim();
+  const costPrice = parseFloat(document.getElementById('myStockCost').value) || 0;
+  const shares = parseInt(document.getElementById('myStockShares').value) || 0;
+  const profitLoss = parseFloat(document.getElementById('myStockProfit').value) || 0;
+
+  if (!symbol) return alert("請輸入股票代號或名稱！");
+
+  // 使用股票代號轉為 safe key (移除特殊符號)
+  const safeSymbolKey = symbol.replace(/[.#$/\[\]]/g, "_");
+
+  const stockData = {
+    symbol: symbol,
+    costPrice: costPrice,
+    shares: shares,
+    profitLoss: profitLoss,
+    updatedAt: new Date().toLocaleString()
+  };
+
+  try {
+    await db.ref(`users/${user.toLowerCase()}/myHoldings/${safeSymbolKey}`).set(stockData);
+    showStockBanner(`✅ 已成功儲存 ${symbol} 至 Firebase 雲端！`, "#c6f6d5", "#22543d");
+    loadSavedStockDropdown(); // 更新選單
+  } catch (error) {
+    alert("儲存失敗：" + error.message);
+  }
+}
+
+// 2. 讀取並更新雲端股票選單
+function loadSavedStockDropdown() {
+  const user = localStorage.getItem('currentUser');
+  if (!user) return;
+
+  const selectEl = document.getElementById('mySavedStocksSelect');
+  if (!selectEl) return;
+
+  db.ref(`users/${user.toLowerCase()}/myHoldings`).once('value', (snapshot) => {
+    selectEl.innerHTML = '<option value="">📂 載入雲端個股...</option>';
+    if (snapshot.exists()) {
+      snapshot.forEach((childSnap) => {
+        const item = childSnap.val();
+        const option = document.createElement('option');
+        option.value = childSnap.key;
+        option.textContent = `${item.symbol} (${item.shares}股 / 損益:${item.profitLoss})`;
+        selectEl.appendChild(option);
+      });
+    }
+  });
+}
+
+// 3. 切換選單時自動帶入資料
+function loadSavedStockData() {
+  const user = localStorage.getItem('currentUser');
+  const selectedKey = document.getElementById('mySavedStocksSelect').value;
+  if (!user || !selectedKey) return;
+
+  db.ref(`users/${user.toLowerCase()}/myHoldings/${selectedKey}`).once('value', (snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      document.getElementById('myStockSymbol').value = data.symbol || '';
+      document.getElementById('myStockCost').value = data.costPrice !== undefined ? data.costPrice : '';
+      document.getElementById('myStockShares').value = data.shares !== undefined ? data.shares : '';
+      document.getElementById('myStockProfit').value = data.profitLoss !== undefined ? data.profitLoss : '';
+      showStockBanner(`📂 已載入 ${data.symbol} 資料`, "#ebf8ff", "#2b6cb0");
+    }
+  });
+}
+
+// 4. 刪除選中的雲端紀錄
+async function deleteCurrentSavedStock() {
+  const user = localStorage.getItem('currentUser');
+  const selectedKey = document.getElementById('mySavedStocksSelect').value;
+  if (!user || !selectedKey) return alert("請先從下拉選單選取欲刪除的股票！");
+
+  if (!confirm("確定要刪除這筆持股紀錄嗎？")) return;
+
+  try {
+    await db.ref(`users/${user.toLowerCase()}/myHoldings/${selectedKey}`).remove();
+    showStockBanner("🗑️ 紀錄已成功刪除", "#fed7d7", "#9b2c2c");
+    
+    // 清空輸入欄位
+    document.getElementById('myStockSymbol').value = '';
+    document.getElementById('myStockCost').value = '';
+    document.getElementById('myStockShares').value = '';
+    document.getElementById('myStockProfit').value = '';
+    
+    loadSavedStockDropdown(); // 重整下拉選單
+  } catch (error) {
+    alert("刪除失敗：" + error.message);
+  }
+}
+
+// 5. 提示訊息橫幅輔助函式
+function showStockBanner(text, bgColor, textColor) {
+  const banner = document.getElementById('stockNotificationBanner');
+  banner.style.display = 'block';
+  banner.style.backgroundColor = bgColor;
+  banner.style.color = textColor;
+  banner.innerText = text;
+  setTimeout(() => { banner.style.display = 'none'; }, 3000);
+}
+
+// 開啟動能視窗時自動加載選單 (可放在開啟 Modal 的 function 內)
+function onRsvModalOpen() {
+  loadSavedStockDropdown();
 }
 function renderFundingHistoryLogs(logs) {
   const container = document.getElementById('fundingHistoryLogs');
