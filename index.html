@@ -3694,7 +3694,7 @@ function closePotentialStocksModal() {
   }
 }
 
-// 保留第一段 (並包含內部宣告變數與安全檢查機制)
+// 修改後的 loadPotentialStocksData 函式
 async function loadPotentialStocksData() {
   // 💡 將 DATA_JSON_URL 宣告在函式內部，避免與全域變數產生 redeclare 衝突
   const DATA_JSON_URL = 'https://raw.githubusercontent.com/az964115/family-stock/main/potential-stocks.json';
@@ -3710,42 +3710,59 @@ async function loadPotentialStocksData() {
     if (!response.ok) throw new Error(`資料庫檔案讀取失敗 (HTTP ${response.status})`);
     
     const data = await response.json();
-    if (!data.htmlContent) throw new Error('JSON 檔案中找不到 htmlContent 資料');
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(data.htmlContent, 'text/html');
+    // 💡 支援新版 Playwright 直接輸出的 stocks 陣列，同時向下相容原有的 htmlContent 格式
+    let rawStocks = [];
 
-    // 💡 容錯率高的 Selector：優先用 ID，找不到則拿頁面中的 section
-    const volumeSection = doc.querySelector('section#ChangeUp') || doc.querySelectorAll('section')[0] || null;
-    const investorSection = doc.querySelector('section#InstitutionalInvestorBuy') || doc.querySelectorAll('section')[1] || null;
-    const fundamentalSection = doc.querySelector('section#RevenueGrowthMom') || doc.querySelectorAll('section')[2] || null;
+    if (Array.isArray(data.stocks) && data.stocks.length > 0) {
+      // 情況 A：新版 JSON 結構 (純 JSON 陣列)
+      rawStocks = data.stocks;
+    } else if (data.htmlContent) {
+      // 情況 B：舊版 JSON 結構 (含 htmlContent 字串)
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(data.htmlContent, 'text/html');
 
-    // 安全解析（若 section 為 null 則回傳空陣列）
-    const volumeList = volumeSection ? parseCMoneySection(volumeSection, 10) : [];
-    const investorList = investorSection ? parseCMoneySection(investorSection, 10) : [];
-    const fundamentalList = fundamentalSection ? parseCMoneySection(fundamentalSection, 10) : [];
+      const volumeSection = doc.querySelector('section#ChangeUp') || doc.querySelectorAll('section')[0] || null;
+      const investorSection = doc.querySelector('section#InstitutionalInvestorBuy') || doc.querySelectorAll('section')[1] || null;
+      const fundamentalSection = doc.querySelector('section#RevenueGrowthMom') || doc.querySelectorAll('section')[2] || null;
 
-    // 合併資料並去重
+      const volumeList = volumeSection ? parseCMoneySection(volumeSection, 10) : [];
+      const investorList = investorSection ? parseCMoneySection(investorSection, 10) : [];
+      const fundamentalList = fundamentalSection ? parseCMoneySection(fundamentalSection, 10) : [];
+
+      rawStocks = [...volumeList, ...investorList, ...fundamentalList];
+    } else {
+      throw new Error('JSON 檔案格式無效（找不到 stocks 陣列或 htmlContent）');
+    }
+
+    // 合併資料並進行不重複 (De-duplicate) 處理
     const combinedMap = new Map();
-    [...volumeList, ...investorList, ...fundamentalList].forEach(stock => {
+    rawStocks.forEach(stock => {
       if (stock && stock.symbol && !combinedMap.has(stock.symbol)) {
-        combinedMap.set(stock.symbol, stock);
+        combinedMap.set(stock.symbol, {
+          symbol: stock.symbol,
+          name: stock.name || stock.symbol,
+          price: stock.price || 0
+        });
       }
     });
 
     const combinedList = Array.from(combinedMap.values());
     if (combinedList.length === 0) {
-      throw new Error('解析 HTML 失敗，未能提取到任何股票資料，請檢查 DOM 結構。');
+      throw new Error('解析失敗，未能提取到任何股票資料。');
     }
 
-    // 帶入動能監控分析 (需確定專案中有此函式)
+    // 帶入動能監控分析 (若專案中有此函式則調用)
     const analyzedStocks = typeof analyzeStockMomentum === 'function' 
       ? combinedList.map(stock => analyzeStockMomentum(stock))
       : combinedList;
 
-    // 渲染 UI (需確定專案中有此函式)
+    // 渲染 UI (若專案中有此函式則調用)
     if (typeof renderPotentialStocksUI === 'function') {
       renderPotentialStocksUI(analyzedStocks, container);
+    } else {
+      // 備用 UI 渲染：當未定義 renderPotentialStocksUI 時自動渲染簡單表格
+      renderDefaultUI(analyzedStocks, container);
     }
 
   } catch (error) {
@@ -3760,13 +3777,12 @@ async function loadPotentialStocksData() {
 }
 
 /**
- * 解析 CMoney 各 Section 中的前 N 名股票數據
+ * 解析 CMoney 各 Section 中的前 N 名股票數據 (舊版 HTML 解析備用)
  */
 function parseCMoneySection(sectionElement, limit = 10) {
   if (!sectionElement) return [];
   const results = [];
   
-  // 爬取表格或列表項目
   const rows = sectionElement.querySelectorAll('table tbody tr, .rank-item, tr, div[class*="rank"]');
   
   rows.forEach((row) => {
@@ -3777,16 +3793,13 @@ function parseCMoneySection(sectionElement, limit = 10) {
     const priceEl = row.querySelector('.price, .close-price, td:nth-child(3)');
 
     if (symbolEl || nameEl) {
-      // 提取 4~6 位數字代號
       const rawSymbolText = symbolEl ? symbolEl.textContent.trim() : '';
       const symbolMatch = rawSymbolText.match(/\d{4,6}/) || (nameEl ? nameEl.textContent.match(/\d{4,6}/) : null);
       const symbol = symbolMatch ? symbolMatch[0] : '';
 
-      // 清理股票名稱
       let name = nameEl ? nameEl.textContent.trim() : rawSymbolText;
       name = name.replace(/\d{4,6}/g, '').replace(/[()（）]/g, '').trim() || '未知';
 
-      // 提取價格
       const priceText = priceEl ? priceEl.textContent.trim().replace(/,/g, '') : '0';
       const price = parseFloat(priceText) || 0;
 
@@ -3798,6 +3811,38 @@ function parseCMoneySection(sectionElement, limit = 10) {
 
   return results;
 }
+
+/**
+ * 預設表格渲染機制（防止缺少 renderPotentialStocksUI 函式時畫面空白）
+ */
+function renderDefaultUI(stocks, container) {
+  if (!container) return;
+  let html = `
+    <table style="width:100%; border-collapse: collapse; text-align: left;">
+      <thead>
+        <tr style="border-bottom: 2px solid #e5e7eb;">
+          <th style="padding: 8px;">代號</th>
+          <th style="padding: 8px;">名稱</th>
+          <th style="padding: 8px;">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+  stocks.forEach(stock => {
+    html += `
+      <tr style="border-bottom: 1px solid #f3f4f6;">
+        <td style="padding: 8px; font-weight: bold;">${stock.symbol}</td>
+        <td style="padding: 8px;">${stock.name}</td>
+        <td style="padding: 8px;">
+          <a href="https://www.cmoney.tw/forum/stock/${stock.symbol}" target="_blank" style="color: #2563eb; text-decoration: none;">查看討論區</a>
+        </td>
+      </tr>
+    `;
+  });
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
+
 /**
  * 動能監控系統：帶入並計算動能走勢與均線狀態
  */
