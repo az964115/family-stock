@@ -3946,7 +3946,6 @@ function renderPotentialStocksUI(stocks, container) {
         <thead>
           <tr style="background-color: #f4f6f9; border-bottom: 2px solid #e5e7eb;">
             <th style="padding: 10px;">代號 / 名稱</th>
-            <th style="padding: 10px;">即時股價</th>
             <th style="padding: 10px;">最新近期動能走勢</th>
             <th style="padding: 10px;">均線狀態</th>
           </tr>
@@ -3959,9 +3958,6 @@ function renderPotentialStocksUI(stocks, container) {
       <tr style="border-bottom: 1px solid #f0f0f0;">
         <td style="padding: 10px; font-weight: bold;">
           ${s.symbol} ${s.name}
-        </td>
-        <td style="padding: 10px; color: #d97706; font-weight: bold;">
-          ${s.price > 0 ? '$' + s.price : '查無報價'}
         </td>
         <td style="padding: 10px;">
           <span style="background: #ef444415; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
