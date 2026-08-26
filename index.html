@@ -3707,31 +3707,36 @@ async function loadPotentialStocksData() {
     if (!response.ok) throw new Error(`資料庫檔案讀取失敗 (HTTP ${response.status})`);
     
     const data = await response.json();
+    if (!data.htmlContent) throw new Error('JSON 檔案中找不到 htmlContent 資料');
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(data.htmlContent, 'text/html');
 
-    // 1. 上市櫃行情排行 (成交量區塊)
-    const volumeSection = doc.querySelector('section#ChangeUp');
-    const volumeList = parseCMoneySection(volumeSection, 10);
+    // 💡 容錯率更高的 Selector 抓取方式：優先用 ID，找不到則用 class / querySelectorAll 備用
+    const volumeSection = doc.querySelector('section#ChangeUp') || doc.querySelectorAll('section')[0] || null;
+    const investorSection = doc.querySelector('section#InstitutionalInvestorBuy') || doc.querySelectorAll('section')[1] || null;
+    const fundamentalSection = doc.querySelector('section#RevenueGrowthMom') || doc.querySelectorAll('section')[2] || null;
 
-    // 2. 上市櫃法人排行 (買超區塊)
-    const investorSection = doc.querySelector('section#InstitutionalInvestorBuy');
-    const investorList = parseCMoneySection(investorSection, 10);
-
-    // 3. 上市櫃基本面排行
-    const fundamentalSection = doc.querySelector('section#RevenueGrowthMom');
-    const fundamentalList = parseCMoneySection(fundamentalSection, 10);
+    // 安全解析（若 section 為 null 則回傳空陣列）
+    const volumeList = volumeSection ? parseCMoneySection(volumeSection, 10) : [];
+    const investorList = investorSection ? parseCMoneySection(investorSection, 10) : [];
+    const fundamentalList = fundamentalSection ? parseCMoneySection(fundamentalSection, 10) : [];
 
     // 合併資料並去重
     const combinedMap = new Map();
     [...volumeList, ...investorList, ...fundamentalList].forEach(stock => {
-      if (stock.symbol && !combinedMap.has(stock.symbol)) {
+      if (stock && stock.symbol && !combinedMap.has(stock.symbol)) {
         combinedMap.set(stock.symbol, stock);
       }
     });
 
+    const combinedList = Array.from(combinedMap.values());
+    if (combinedList.length === 0) {
+      throw new Error('解析 HTML 失敗，未能提取到任何股票資料，請檢查 DOM 結構。');
+    }
+
     // 帶入動能監控分析
-    const analyzedStocks = Array.from(combinedMap.values()).map(stock => analyzeStockMomentum(stock));
+    const analyzedStocks = combinedList.map(stock => analyzeStockMomentum(stock));
 
     // 渲染 UI
     renderPotentialStocksUI(analyzedStocks, container);
@@ -3741,7 +3746,7 @@ async function loadPotentialStocksData() {
     if (container) {
       container.innerHTML = `<div style="color: #dc2626; padding: 20px; text-align: center;">
         ❌ 載入失敗：${error.message}<br/>
-        <small style="color: #6b7280;">請確認 GitHub Actions 是否已執行並順利推播 potential-stocks.json 檔案。</small>
+        <small style="color: #6b7280;">請確認 Playwright 是否已完整渲染 CMoney 畫面。</small>
       </div>`;
     }
   }
