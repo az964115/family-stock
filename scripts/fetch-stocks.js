@@ -18,58 +18,105 @@ const fs = require('fs');
 
     const page = await context.newPage();
 
-    console.log('🌐 正在前往 CMoney 熱門股市頁面...');
-    await page.goto('https://www.cmoney.tw/forum/popular/stock', {
+    console.log('🌐 正在前往 CMoney 排行榜頁面...');
+    await page.goto('https://www.cmoney.tw/forum/stock/rank', {
       waitUntil: 'domcontentloaded',
       timeout: 60000
     });
 
-    // 1. 等待列表的主要容器載入（若網站結構調整，請調整此處 selector）
+    // 1. 等待頁面與 DOM 元素渲染完成
     console.log('⏳ 等待 DOM 元素渲染...');
-    await page.waitForTimeout(5000); // 強制等待 5 秒讓 SPA 腳本執行完成
+    await page.waitForTimeout(5000); // 等待 SPA 腳本與資料載入
 
-    // 2. 擷取股票資料
+    // 2. 在瀏覽器環境中解析三個關鍵 Section 的前 10 名
     const stocks = await page.evaluate(() => {
       const items = [];
-      
-      // 搜尋頁面上包含股票代號與名稱的連結/區塊
-      // CMoney 論壇熱門標的通常會包含 /forum/stock/XXXX 的連結
-      const links = Array.from(document.querySelectorAll('a[href*="/forum/stock/"]'));
-      
       const seenSymbols = new Set();
 
-      links.forEach(link => {
-        const text = link.innerText.trim();
-        const href = link.getAttribute('href') || '';
-        const match = href.match(/\/forum\/stock\/(\d+)/);
+      // 定義通用解析輔助函式
+      function parseSection(sectionId, categoryName) {
+        const section = document.querySelector(`section#${sectionId}`);
+        if (!section) return;
 
-        if (match && text) {
-          const symbol = match[1];
-          if (!seenSymbols.has(symbol)) {
-            seenSymbols.add(symbol);
+        // 搜尋區塊內的表格列或列表項目 (支援常見表格 tr 或 flex 列表)
+        const rows = section.querySelectorAll('tbody tr, table tr, a[href*="/stock/"]');
+        let count = 0;
+
+        rows.forEach(row => {
+          if (count >= 10) return; // 嚴格限制只取前 10 名
+
+          // 抓取包含股票代號的連結與文字
+          const link = row.tagName === 'A' ? row : row.querySelector('a[href*="/stock/"], a[href*="/forum/stock/"]');
+          if (!link) return;
+
+          const href = link.getAttribute('href') || '';
+          const match = href.match(/\/stock\/(\d{4,6})/);
+
+          if (match) {
+            const symbol = match[1];
+            // 取得名稱文字（濾除數字代號）
+            const text = row.innerText || link.innerText || '';
+            const nameMatch = text.replace(symbol, '').split('\n')[0].trim();
             
-            // 整理名稱與代號
-            const cleanName = text.replace(symbol, '').replace(/\n/g, ' ').trim();
+            // 提取股價 (若有顯示)
+            const priceEl = row.querySelector('.price, td:nth-child(3), span[class*="price"]');
+            const price = priceEl ? parseFloat(priceEl.innerText.replace(/,/g, '')) || 0 : 0;
+
             items.push({
               symbol: symbol,
-              name: cleanName || symbol,
-              rawText: text
+              name: nameMatch || symbol,
+              category: categoryName,
+              price: price,
+              rank: count + 1
             });
+
+            count++;
           }
-        }
-      });
+        });
+      }
+
+      // 1. 上市櫃行情排行：成交量前十名
+      parseSection('ChangeUp', '成交量');
+
+      // 2. 上市櫃法人排行：買超前十名
+      parseSection('InstitutionalInvestorBuy', '法人買超');
+
+      // 3. 上市櫃基本面排行：營收月增/年增/EPS前十名
+      parseSection('RevenueGrowthMom', '基本面');
+
+      // 備用防呆：如果精準 ID 沒對應到，自動退回搜尋頁面上所有股票連結
+      if (items.length === 0) {
+        const allLinks = Array.from(document.querySelectorAll('a[href*="/stock/"]'));
+        allLinks.forEach(link => {
+          if (items.length >= 30) return;
+          const href = link.getAttribute('href') || '';
+          const match = href.match(/\/stock\/(\d{4,6})/);
+          if (match) {
+            const symbol = match[1];
+            if (!seenSymbols.has(symbol)) {
+              seenSymbols.add(symbol);
+              items.push({
+                symbol: symbol,
+                name: link.innerText.replace(symbol, '').trim() || symbol,
+                category: '熱門排行',
+                price: 0
+              });
+            }
+          }
+        });
+      }
 
       return items;
     });
 
-    console.log(`✅ 成功擷取到 ${stocks.length} 筆資料`);
+    console.log(`✅ 成功擷取到 ${stocks.length} 筆排行榜資料`);
 
-    // 防呆：如果完全沒抓到資料，拋出錯誤避免覆蓋原本正常的 JSON
+    // 防呆驗證
     if (stocks.length === 0) {
       throw new Error('未成功解析到任何股票資料，請檢查頁面 DOM 結構或反爬蟲機制。');
     }
 
-    // 3. 寫入 JSON 檔
+    // 3. 寫入 JSON 檔 (包含分類資訊與更新時間)
     const outputData = {
       status: 'success',
       updatedAt: new Date().toISOString(),
@@ -82,7 +129,7 @@ const fs = require('fs');
 
   } catch (error) {
     console.error('❌ 爬蟲執行失敗：', error.message);
-    process.exit(1); // 讓 GitHub Actions 標記為 Fail 以便收到通知
+    process.exit(1);
   } finally {
     if (browser) await browser.close();
   }
