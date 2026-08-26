@@ -1,13 +1,13 @@
 {
   "status": "success",
-  "updatedAt": "2026-08-26T16:24:42.278Z",
+  "updatedAt": "2026-08-26T23:48:08.410Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "6668",
-      "name": "中揚光",
+      "symbol": "4991",
+      "name": "環宇-KY",
       "category": "漲幅排行",
-      "price": 39.05,
+      "price": 489.5,
       "rank": 1
     },
     {
@@ -18,52 +18,52 @@
       "rank": 2
     },
     {
-      "symbol": "6213",
-      "name": "聯茂",
-      "category": "漲幅排行",
-      "price": 583,
-      "rank": 3
-    },
-    {
-      "symbol": "3543",
-      "name": "州巧",
-      "category": "漲幅排行",
-      "price": 45.1,
-      "rank": 4
-    },
-    {
       "symbol": "8077",
       "name": "洛碁",
       "category": "漲幅排行",
       "price": 44,
-      "rank": 5
-    },
-    {
-      "symbol": "3313",
-      "name": "斐成",
-      "category": "漲幅排行",
-      "price": 11.55,
-      "rank": 6
+      "rank": 3
     },
     {
       "symbol": "4977",
       "name": "眾達-KY",
       "category": "漲幅排行",
       "price": 170.5,
-      "rank": 7
+      "rank": 4
     },
     {
-      "symbol": "4991",
-      "name": "環宇-KY",
+      "symbol": "3313",
+      "name": "斐成",
       "category": "漲幅排行",
-      "price": 489.5,
-      "rank": 8
+      "price": 11.55,
+      "rank": 5
     },
     {
       "symbol": "4609",
       "name": "唐鋒",
       "category": "漲幅排行",
       "price": 4.62,
+      "rank": 6
+    },
+    {
+      "symbol": "3543",
+      "name": "州巧",
+      "category": "漲幅排行",
+      "price": 45.1,
+      "rank": 7
+    },
+    {
+      "symbol": "6668",
+      "name": "中揚光",
+      "category": "漲幅排行",
+      "price": 39.05,
+      "rank": 8
+    },
+    {
+      "symbol": "6213",
+      "name": "聯茂",
+      "category": "漲幅排行",
+      "price": 583,
       "rank": 9
     },
     {
