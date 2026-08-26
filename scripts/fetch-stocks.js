@@ -20,90 +20,65 @@ const fs = require('fs');
 
     console.log('🌐 正在前往 CMoney 排行榜頁面...');
     await page.goto('https://www.cmoney.tw/forum/stock/rank', {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle', // 改為等待網路空閒，確保 Vue/React 組件完全渲染
       timeout: 60000
     });
 
-    // 1. 等待頁面與 DOM 元素渲染完成
+    // 1. 等待表格主體渲染完成
     console.log('⏳ 等待 DOM 元素渲染...');
-    await page.waitForTimeout(5000); // 等待 SPA 腳本與資料載入
+    await page.waitForSelector('tbody tr', { timeout: 15000 });
 
-    // 2. 在瀏覽器環境中解析三個關鍵 Section 的前 10 名
+    // 2. 在瀏覽器環境中解析資料
     const stocks = await page.evaluate(() => {
       const items = [];
       const seenSymbols = new Set();
 
-      // 定義通用解析輔助函式
       function parseSection(sectionId, categoryName) {
-        const section = document.querySelector(`section#${sectionId}`);
-        if (!section) return;
+        // 若有指定的 sectionId 則限縮範圍，否則對全頁表格進行尋找
+        const root = sectionId ? document.querySelector(`section#${sectionId}`) : document;
+        if (!root) return;
 
-        // 搜尋區塊內的表格列或列表項目 (支援常見表格 tr 或 flex 列表)
-        const rows = section.querySelectorAll('tbody tr, table tr, a[href*="/stock/"]');
+        const rows = root.querySelectorAll('tbody tr');
         let count = 0;
 
         rows.forEach(row => {
-          if (count >= 10) return; // 嚴格限制只取前 10 名
+          if (count >= 10) return; // 每個區塊只抓前 10 名
 
-          // 抓取包含股票代號的連結與文字
-          const link = row.tagName === 'A' ? row : row.querySelector('a[href*="/stock/"], a[href*="/forum/stock/"]');
-          if (!link) return;
+          // 直接利用網頁專屬的 Class 精準抓取
+          const nameEl = row.querySelector('.table__stockName');
+          const idEl = row.querySelector('.table__stockId');
+          // 股價位於第 3 個 td (index 2)
+          const priceTd = row.querySelectorAll('td')[2];
 
-          const href = link.getAttribute('href') || '';
-          const match = href.match(/\/stock\/(\d{4,6})/);
+          if (idEl && nameEl) {
+            const symbol = idEl.innerText.trim();
+            const name = nameEl.innerText.trim();
+            const priceText = priceTd ? priceTd.innerText.trim().replace(/,/g, '') : '0';
+            const price = parseFloat(priceText) || 0;
 
-          if (match) {
-            const symbol = match[1];
-            // 取得名稱文字（濾除數字代號）
-            const text = row.innerText || link.innerText || '';
-            const nameMatch = text.replace(symbol, '').split('\n')[0].trim();
-            
-            // 提取股價 (若有顯示)
-            const priceEl = row.querySelector('.price, td:nth-child(3), span[class*="price"]');
-            const price = priceEl ? parseFloat(priceEl.innerText.replace(/,/g, '')) || 0 : 0;
-
-            items.push({
-              symbol: symbol,
-              name: nameMatch || symbol,
-              category: categoryName,
-              price: price,
-              rank: count + 1
-            });
-
-            count++;
+            if (symbol && !seenSymbols.has(symbol)) {
+              seenSymbols.add(symbol);
+              items.push({
+                symbol: symbol,         // 例: "4609"
+                name: name,             // 例: "唐鋒" (不會再抓成數字了)
+                category: categoryName,
+                price: price,
+                rank: count + 1
+              });
+              count++;
+            }
           }
         });
       }
 
-      // 1. 上市櫃行情排行：成交量前十名
-      parseSection('ChangeUp', '成交量');
-
-      // 2. 上市櫃法人排行：買超前十名
+      // 嘗試依序解析各個 section，若無識別 sectionId 則作為整體表格解析
+      parseSection('ChangeUp', '漲幅排行');
+      parseSection('Volume', '成交量排行');
       parseSection('InstitutionalInvestorBuy', '法人買超');
 
-      // 3. 上市櫃基本面排行：營收月增/年增/EPS前十名
-      parseSection('RevenueGrowthMom', '基本面');
-
-      // 備用防呆：如果精準 ID 沒對應到，自動退回搜尋頁面上所有股票連結
+      // 備用機制：若指定 Section 找不到，直接解析頁面現有的主要表格
       if (items.length === 0) {
-        const allLinks = Array.from(document.querySelectorAll('a[href*="/stock/"]'));
-        allLinks.forEach(link => {
-          if (items.length >= 30) return;
-          const href = link.getAttribute('href') || '';
-          const match = href.match(/\/stock\/(\d{4,6})/);
-          if (match) {
-            const symbol = match[1];
-            if (!seenSymbols.has(symbol)) {
-              seenSymbols.add(symbol);
-              items.push({
-                symbol: symbol,
-                name: link.innerText.replace(symbol, '').trim() || symbol,
-                category: '熱門排行',
-                price: 0
-              });
-            }
-          }
-        });
+        parseSection(null, '熱門排行');
       }
 
       return items;
@@ -116,7 +91,7 @@ const fs = require('fs');
       throw new Error('未成功解析到任何股票資料，請檢查頁面 DOM 結構或反爬蟲機制。');
     }
 
-    // 3. 寫入 JSON 檔 (包含分類資訊與更新時間)
+    // 3. 寫入 JSON 檔
     const outputData = {
       status: 'success',
       updatedAt: new Date().toISOString(),
