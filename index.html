@@ -958,42 +958,49 @@
     </div>
   </div>
   <!-- 潛力股票 Modal -->
-<div id="potentialStocksModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1050;">
-  <div class="modal-dialog modal-lg" style="margin: 30px auto; max-width: 900px; background: #fff; border-radius: 12px; overflow: hidden;">
-    
+<div id="potentialStocksModal" class="modal">
+  <div class="modal-content" style="max-width: 850px;">
     <!-- Header -->
-    <div class="modal-header" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
-      <h4 style="margin: 0; font-weight: bold;">🔥 上市櫃潛力股票排行榜 & 動能分析</h4>
-      <button type="button" class="close-btn" onclick="closePotentialStocksModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 12px;">
+      <h3 style="margin: 0; color: #FF6B6B; display: flex; align-items: center; gap: 8px;">
+        🔥 上市櫃潛力股票排行榜 & 動能分析
+      </h3>
     </div>
 
     <!-- Body -->
-    <div class="modal-body" style="padding: 20px; max-height: 75vh; overflow-y: auto;">
-      
+    <div class="modal-body-scroll">
       <!-- 排行榜分類頁籤 -->
       <div class="tab-buttons" style="display: flex; gap: 10px; margin-bottom: 15px;">
-        <button class="btn btn-outline-danger active" onclick="switchPotentialTab('volume')">📊 成交量前10</button>
-        <button class="btn btn-outline-danger" onclick="switchPotentialTab('institutional')">🏛️ 法人買超前10</button>
-        <button class="btn btn-outline-danger" onclick="switchPotentialTab('fundamental')">📈 基本面績優前10</button>
+        <button class="btn btn-outline-danger active" onclick="switchPotentialTab('volume')" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #FF6B6B; background: #FF6B6B; color: white; cursor: pointer; font-weight: bold;">📊 成交量前10</button>
+        <button class="btn btn-outline-danger" onclick="switchPotentialTab('institutional')" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #CBD5E0; background: #EDF2F7; color: #4A5568; cursor: pointer; font-weight: bold;">🏛️ 法人買超前10</button>
+        <button class="btn btn-outline-danger" onclick="switchPotentialTab('fundamental')" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #CBD5E0; background: #EDF2F7; color: #4A5568; cursor: pointer; font-weight: bold;">📈 基本面績優前10</button>
       </div>
 
       <!-- 排行與動能整合表格 -->
-      <table class="table" style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr style="border-bottom: 2px solid #ddd; text-align: left;">
-            <th>排名</th>
-            <th>代號 / 名稱</th>
-            <th>即時股價</th>
-            <th>排行數據/指標</th>
-            <th>最新近期動能走勢</th>
-            <th>均線狀態</th>
-          </tr>
-        </thead>
-        <tbody id="potential-stocks-list">
-          <!-- 動態載入 CMoney 抓取的 Top 10 資料與動能計算結果 -->
-        </tbody>
-      </table>
+      <div style="overflow-x: auto;">
+        <table class="table" style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+          <thead>
+            <tr style="background: #EDF2F7; color: #4A5568; border-bottom: 2px solid #CBD5E0;">
+              <th style="padding: 10px;">排名</th>
+              <th style="padding: 10px;">代號 / 名稱</th>
+              <th style="padding: 10px;">即時股價</th>
+              <th style="padding: 10px;">排行數據/指標</th>
+              <th style="padding: 10px;">最新近期動能走勢</th>
+              <th style="padding: 10px;">均線狀態</th>
+            </tr>
+          </thead>
+          <tbody id="potential-stocks-list">
+            <!-- 動態載入 Top 10 資料與動能計算結果 -->
+          </tbody>
+        </table>
+      </div>
+    </div>
 
+    <!-- Footer -->
+    <div class="modal-footer" style="margin-top: 15px; border-top: 1px solid #E2E8F0; padding-top: 12px;">
+      <button onclick="closePotentialStocksModal()" style="width: 100%; background-color: #718096; color: white; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+        關閉視窗
+      </button>
     </div>
   </div>
 </div>
