@@ -2,9 +2,8 @@ name: Auto Update Potential Stocks Data
 
 on:
   schedule:
-    # 股市開盤時段排程 (可依需求調整 CRON 時間，預設每 30 分鐘或每小時更新)
     - cron: '0 * * * *'
-  workflow_dispatch: # 支援手動在 GitHub 頁面點選觸發
+  workflow_dispatch:
 
 jobs:
   build-and-commit:
@@ -20,9 +19,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install Dependencies
-        run: npm install puppeteer
-        
+
+      - name: Install Playwright & Browsers
+        run: |
+          npm install playwright
+          npx playwright install chromium --with-deps
+
       - name: Run Fetch Script
         run: node scripts/fetch-stocks.js
 
