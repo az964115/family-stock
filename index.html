@@ -3694,6 +3694,7 @@ function closePotentialStocksModal() {
   }
 }
 
+// 保留第一段 (並包含內部宣告變數與安全檢查機制)
 async function loadPotentialStocksData() {
   // 💡 將 DATA_JSON_URL 宣告在函式內部，避免與全域變數產生 redeclare 衝突
   const DATA_JSON_URL = 'https://raw.githubusercontent.com/az964115/family-stock/main/potential-stocks.json';
@@ -3916,66 +3917,6 @@ function switchPotentialTab(tabName, event) {
   const targetContent = document.getElementById(`potentialTab-${tabName}`);
   if (targetContent) {
     targetContent.classList.remove('hidden');
-  }
-}
-
-// ==========================================
-// 2. 潛力股票資料載入 (改讀取 GitHub 自動更新檔)
-// ==========================================
-const DATA_JSON_URL = 'https://raw.githubusercontent.com/az964115/family-stock/main/potential-stocks.json';
-
-async function loadPotentialStocksData() {
-  const container = document.getElementById('potentialStocksContainer') || document.getElementById('potentialStocksList');
-  if (container) {
-    container.innerHTML = `<div style="text-align:center; padding: 20px; color: #666;">⏳ 正在載入潛力股票資料並分析動能...</div>`;
-  }
-
-  try {
-    // 1. 直接讀取 GitHub Raw JSON（加上 ?t= 避免瀏覽器快取舊資料）
-    const response = await fetch(`${DATA_JSON_URL}?t=${Date.now()}`);
-    if (!response.ok) throw new Error(`資料庫檔案讀取失敗 (HTTP ${response.status})`);
-    
-    const data = await response.json();
-    if (!data.htmlContent) throw new Error('JSON 檔案中找不到 HTML 內容');
-
-    // 2. 解析由 GitHub Actions 抓取到的完整渲染 HTML
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(data.htmlContent, 'text/html');
-
-    // 3. 提取區塊 (加上容錯保護)
-    const volumeSection = doc.querySelector('section#ChangeUp') || doc.querySelectorAll('section')[0] || null;
-    const investorSection = doc.querySelector('section#InstitutionalInvestorBuy') || doc.querySelectorAll('section')[1] || null;
-    const fundamentalSection = doc.querySelector('section#RevenueGrowthMom') || doc.querySelectorAll('section')[2] || null;
-
-    const volumeList = volumeSection ? parseCMoneySection(volumeSection, 10) : [];
-    const investorList = investorSection ? parseCMoneySection(investorSection, 10) : [];
-    const fundamentalList = fundamentalSection ? parseCMoneySection(fundamentalSection, 10) : [];
-
-    // 4. 合併資料並去重
-    const combinedMap = new Map();
-    [...volumeList, ...investorList, ...fundamentalList].forEach(stock => {
-      if (stock && stock.symbol && !combinedMap.has(stock.symbol)) {
-        combinedMap.set(stock.symbol, stock);
-      }
-    });
-
-    const combinedList = Array.from(combinedMap.values());
-    if (combinedList.length === 0) {
-      throw new Error('未能解析出股票資料，請確認 Actions 抓取的 DOM 結構。');
-    }
-
-    // 5. 動能分析與渲染
-    const analyzedStocks = combinedList.map(stock => analyzeStockMomentum(stock));
-    renderPotentialStocksUI(analyzedStocks, container);
-
-  } catch (error) {
-    console.error('載入潛力股票失敗:', error);
-    if (container) {
-      container.innerHTML = `<div style="color: #dc2626; padding: 20px; text-align: center;">
-        ❌ 載入失敗：${error.message}<br/>
-        <small style="color: #6b7280;">請確認 GitHub Actions 是否已順利推播 potential-stocks.json 檔案。</small>
-      </div>`;
-    }
   }
 }
 
