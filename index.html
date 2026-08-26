@@ -977,21 +977,14 @@
     <div class="modal-body-scroll">
       <!-- 排行榜分類頁籤 -->
       <div class="tab-buttons" style="display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 4px;">
-        <button class="btn btn-outline-danger active" onclick="switchPotentialTab('volume')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #FF6B6B; background: #FF6B6B; color: white; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;">📊 成交量</button>
-        <button class="btn btn-outline-danger" onclick="switchPotentialTab('institutional')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #CBD5E0; background: #EDF2F7; color: #4A5568; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;">🏛️ 法人買超</button>
+        <button class="btn btn-outline-danger active" onclick="switchPotentialTab('volume')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #FF6B6B; background: #FF6B6B; color: white; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;">📊 漲幅</button>
+        <button class="btn btn-outline-danger" onclick="switchPotentialTab('institutional')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #CBD5E0; background: #EDF2F7; color: #4A5568; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;">🏛️ 三大法人買超</button>
         <button class="btn btn-outline-danger" onclick="switchPotentialTab('fundamental')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #CBD5E0; background: #EDF2F7; color: #4A5568; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;">📈 基本面</button>
       </div>
 
       <!-- 排行與動能整合表格 -->
       <div style="overflow-x: auto;">
         <table class="table" style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
-          <thead>
-            <tr style="background: #edf2f7; color: #4a5568;">
-              <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">代號</th>
-              <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">名稱</th>
-              <th style="padding: 8px; border-bottom: 2px solid #cbd5e0;">即時狀態 / 數值</th>
-            </tr>
-          </thead>
           <tbody id="potential-stocks-list">
             <!-- 動態載入資料 -->
           </tbody>
