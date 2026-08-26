@@ -3835,42 +3835,6 @@ async function loadPotentialStocksData() {
 }
 
 /**
- * 解析 CMoney 各 Section 中的前 N 名股票數據 (舊版 HTML 解析備用 - 完整保留)
- */
-function parseCMoneySection(sectionElement, limit = 10) {
-  if (!sectionElement) return [];
-  const results = [];
-  
-  const rows = sectionElement.querySelectorAll('table tbody tr, .rank-item, tr, div[class*="rank"]');
-  
-  rows.forEach((row) => {
-    if (results.length >= limit) return;
-    
-    const symbolEl = row.querySelector('.stock-symbol, .code, a[href*="/stock/"], a[href*="/kt/"]');
-    const nameEl = row.querySelector('.stock-name, .name');
-    const priceEl = row.querySelector('.price, .close-price, td:nth-child(3)');
-
-    if (symbolEl || nameEl) {
-      const rawSymbolText = symbolEl ? symbolEl.textContent.trim() : '';
-      const symbolMatch = rawSymbolText.match(/\d{4,6}/) || (nameEl ? nameEl.textContent.match(/\d{4,6}/) : null);
-      const symbol = symbolMatch ? symbolMatch[0] : '';
-
-      let name = nameEl ? nameEl.textContent.trim() : rawSymbolText;
-      name = name.replace(/\d{4,6}/g, '').replace(/[()（）]/g, '').trim() || '未知';
-
-      const priceText = priceEl ? priceEl.textContent.trim().replace(/,/g, '') : '0';
-      const price = parseFloat(priceText) || 0;
-
-      if (symbol) {
-        results.push({ symbol, name, price });
-      }
-    }
-  });
-
-  return results;
-}
-
-/**
  * 預設表格渲染機制（防止缺少 renderPotentialStocksUI 函式時畫面空白 - 強化相容性）
  */
 function renderDefaultUI(stocks, container) {
@@ -3900,12 +3864,41 @@ function renderDefaultUI(stocks, container) {
 }
 
 /**
- * 動能監控系統：帶入並計算動能走勢與均線狀態
+ * 開啟潛力股票 Modal
  */
+function openPotentialStocksModal() {
+  // 1. 載入並計算數據
+  loadPotentialStocksData();
+  
+  // 2. 顯示對應 Modal
+  if (typeof openModal === 'function') {
+    openModal('potentialStocksModal');
+  } else {
+    const modal = document.getElementById('potentialStocksModal');
+    if (modal) modal.style.display = 'block';
+  }
+}
+function switchPotentialTab(tabName, event) {
+  // 切換按鈕 active 樣式
+  const buttons = document.querySelectorAll('.potential-tab-btn');
+  buttons.forEach(btn => btn.classList.remove('active', 'bg-blue-600', 'text-white'));
+  
+  if (event && event.currentTarget) {
+    event.currentTarget.classList.add('active', 'bg-blue-600', 'text-white');
+  }
+
+  // 切換內容顯示
+  const tabContents = document.querySelectorAll('.potential-tab-content');
+  tabContents.forEach(content => content.classList.add('hidden'));
+
+  const targetContent = document.getElementById(`potentialTab-${tabName}`);
+  if (targetContent) {
+    targetContent.classList.remove('hidden');
+  }
+}
+
 function analyzeStockMomentum(stock) {
-  // 模擬/對接動能監控核心演算法
-  // 此處可替換為你既有的計算 logic (如 MA5, MA20, Volume Change 等)
-  const fakeScore = Math.floor(Math.random() * 40) + 60; // 範例動能量能分數
+  const fakeScore = Math.floor(Math.random() * 40) + 60; 
   
   let trend = '持平';
   let maStatus = '多頭排列 (MA5 > MA20 > MA60)';
@@ -3929,138 +3922,6 @@ function analyzeStockMomentum(stock) {
   };
 }
 
-/**
- * 渲染潛力股票清單至 Modal 畫面
- */
-function renderPotentialStocksUI(stocks, container) {
-  if (!container) return;
-
-  if (stocks.length === 0) {
-    container.innerHTML = `<div style="padding: 20px; text-align: center;">查無排行榜資料</div>`;
-    return;
-  }
-
-  let html = `
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
-        <thead>
-          <tr style="background-color: #f4f6f9; border-bottom: 2px solid #e5e7eb;">
-            <th style="padding: 10px;">代號 / 名稱</th>
-            <th style="padding: 10px;">最新近期動能走勢</th>
-            <th style="padding: 10px;">均線狀態</th>
-          </tr>
-        </thead>
-        <tbody>
-  `;
-
-  stocks.forEach(s => {
-    html += `
-      <tr style="border-bottom: 1px solid #f0f0f0;">
-        <td style="padding: 10px; font-weight: bold;">
-          ${s.symbol} ${s.name}
-        </td>
-        <td style="padding: 10px;">
-          <span style="background: #ef444415; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
-            ${s.trend} (${s.momentumScore}分)
-          </span>
-        </td>
-        <td style="padding: 10px; color: #059669;">
-          ${s.maStatus}
-        </td>
-      </tr>
-    `;
-  });
-
-  html += `
-        </tbody>
-      </table>
-    </div>
-  `;
-
-  container.innerHTML = html;
-}
-
-/**
- * 開啟潛力股票 Modal
- */
-function openPotentialStocksModal() {
-  // 1. 載入並計算數據
-  loadPotentialStocksData();
-  
-  // 2. 顯示對應 Modal
-  if (typeof openModal === 'function') {
-    openModal('potentialStocksModal');
-  } else {
-    const modal = document.getElementById('potentialStocksModal');
-    if (modal) modal.style.display = 'block';
-  }
-}
-// ==========================================
-// 1. 頁籤切換函式 (解決 switchPotentialTab is not defined)
-// ==========================================
-function switchPotentialTab(tabName, event) {
-  // 切換按鈕 active 樣式
-  const buttons = document.querySelectorAll('.potential-tab-btn');
-  buttons.forEach(btn => btn.classList.remove('active', 'bg-blue-600', 'text-white'));
-  
-  if (event && event.currentTarget) {
-    event.currentTarget.classList.add('active', 'bg-blue-600', 'text-white');
-  }
-
-  // 切換內容顯示
-  const tabContents = document.querySelectorAll('.potential-tab-content');
-  tabContents.forEach(content => content.classList.add('hidden'));
-
-  const targetContent = document.getElementById(`potentialTab-${tabName}`);
-  if (targetContent) {
-    targetContent.classList.remove('hidden');
-  }
-}
-
-function parseCMoneySection(sectionElement, limit = 10) {
-  if (!sectionElement) return [];
-  const results = [];
-  const rows = sectionElement.querySelectorAll('table tbody tr, .rank-item, div[data-v-5b77f4bf]');
-  
-  rows.forEach(row => {
-    if (results.length >= limit) return;
-    const symbolEl = row.querySelector('.stock-symbol, .code, a[href*="/kt/"]');
-    const nameEl = row.querySelector('.stock-name, .name');
-    const priceEl = row.querySelector('.price, .close-price, td:nth-child(3)');
-
-    if (symbolEl || nameEl) {
-      const symbol = symbolEl ? symbolEl.textContent.trim().replace(/[^\d]/g, '') : '';
-      const name = nameEl ? nameEl.textContent.trim() : (symbolEl ? symbolEl.textContent.trim() : '未知');
-      const price = priceEl ? parseFloat(priceEl.textContent.trim().replace(/,/g, '')) || 0 : 0;
-
-      if (symbol) {
-        results.push({ symbol, name, price });
-      }
-    }
-  });
-  return results;
-}
-
-function analyzeStockMomentum(stock) {
-  const fakeScore = Math.floor(Math.random() * 40) + 60;
-  let trend = '⚡ 高檔震盪';
-  let maStatus = '均線糾結';
-  
-  if (fakeScore >= 80) {
-    trend = '🔥 強勢噴發';
-    maStatus = '強勢多頭 (突破上軌)';
-  } else if (fakeScore >= 70) {
-    trend = '📈 穩定向上';
-    maStatus = '多頭排列 (站穩 MA20)';
-  }
-
-  return {
-    ...stock,
-    momentumScore: fakeScore,
-    trend,
-    maStatus
-  };
-}
 
 function renderPotentialStocksUI(stocks, container) {
   if (!container) return;
@@ -4075,7 +3936,6 @@ function renderPotentialStocksUI(stocks, container) {
         <thead>
           <tr style="background-color: #f4f6f9; border-bottom: 2px solid #e5e7eb;">
             <th style="padding: 10px;">代號 / 名稱</th>
-            <th style="padding: 10px;">即時股價</th>
             <th style="padding: 10px;">最新近期動能走勢</th>
             <th style="padding: 10px;">均線狀態</th>
           </tr>
@@ -4087,7 +3947,6 @@ function renderPotentialStocksUI(stocks, container) {
     html += `
       <tr style="border-bottom: 1px solid #f0f0f0;">
         <td style="padding: 10px; font-weight: bold;">${s.symbol} ${s.name}</td>
-        <td style="padding: 10px; color: #d97706; font-weight: bold;">${s.price > 0 ? '$' + s.price : '查無報價'}</td>
         <td style="padding: 10px;">
           <span style="background: #ef444415; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
             ${s.trend} (${s.momentumScore}分)
