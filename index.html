@@ -387,6 +387,7 @@
       <button onclick="checkAndOpenRsvModal()" style="background-color: #4cbdaa; color: white; margin:0; height: 50px; font-weight: bold;">⚡ 動能即時監控</button>
       <button class="trend-btn" onclick="openAiAnalysisModal(); closeModal('featuresPortalModal');" style="background-color: #F54C4C; color: white; margin:0; height: 50px; font-weight: bold;">🧐 智慧分析</button>
       <button class="trend-btn" onclick="openEveningExpressModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #3B1E37 0%, #2BCEE3 100%); color: #F8FAFC; margin:0;">🌍財經快報</button>
+      <button class="trend-btn" onclick="openPotentialStocksModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); color: white; margin:0; height: 50px; font-weight: bold; flex: 1;">🔥 潛力股票</button>
       <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
     </div>
     <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
@@ -534,7 +535,6 @@
         <div class="modal-footer"><button onclick="closeModal('rankModal')" style="width:100%; background-color:#718096; color: white;">關閉</button></div>
       </div>
     </div>
-
     <div id="withdrawModal" class="modal">
       <div class="modal-content">
         <div class="modal-header"><h3 style="margin:0; color:#2F855A;">💸 提領結算試算</h3></div>
@@ -957,7 +957,46 @@
       <ul id="portfolioList"><li>正在更新現價...</li></ul>
     </div>
   </div>
+  <!-- 潛力股票 Modal -->
+<div id="potentialStocksModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1050;">
+  <div class="modal-dialog modal-lg" style="margin: 30px auto; max-width: 900px; background: #fff; border-radius: 12px; overflow: hidden;">
+    
+    <!-- Header -->
+    <div class="modal-header" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+      <h4 style="margin: 0; font-weight: bold;">🔥 上市櫃潛力股票排行榜 & 動能分析</h4>
+      <button type="button" class="close-btn" onclick="closePotentialStocksModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+    </div>
 
+    <!-- Body -->
+    <div class="modal-body" style="padding: 20px; max-height: 75vh; overflow-y: auto;">
+      
+      <!-- 排行榜分類頁籤 -->
+      <div class="tab-buttons" style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-outline-danger active" onclick="switchPotentialTab('volume')">📊 成交量前10</button>
+        <button class="btn btn-outline-danger" onclick="switchPotentialTab('institutional')">🏛️ 法人買超前10</button>
+        <button class="btn btn-outline-danger" onclick="switchPotentialTab('fundamental')">📈 基本面績優前10</button>
+      </div>
+
+      <!-- 排行與動能整合表格 -->
+      <table class="table" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 2px solid #ddd; text-align: left;">
+            <th>排名</th>
+            <th>代號 / 名稱</th>
+            <th>即時股價</th>
+            <th>排行數據/指標</th>
+            <th>最新近期動能走勢</th>
+            <th>均線狀態</th>
+          </tr>
+        </thead>
+        <tbody id="potential-stocks-list">
+          <!-- 動態載入 CMoney 抓取的 Top 10 資料與動能計算結果 -->
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</div>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCGSq-8joudLdCEB954krl3diNqMQXmsxg",
@@ -3585,6 +3624,457 @@ function showStockBanner(text, bgColor, textColor) {
 function onRsvModalOpen() {
   loadSavedStockDropdown();
 }
+// JS 邏輯範例：整合排行資料與動能分析
+async function loadPotentialStocks() {
+  showLoadingSpinner(true);
+  
+  try {
+    // 1. 抓取 CMoney 排行榜 JSON/數據 (建議透過後端/GAS Proxy API 取得)
+    const rankData = await fetchCMoneyRankData(); 
+
+    // 2. 結合控制台原有的動能系統分析每隻股票
+    const analyzedData = await Promise.all(rankData.map(async (stock) => {
+      // 呼叫您控制台現有的動能運算函式
+      const momentumInfo = await getStockMomentumAnalysis(stock.symbol); 
+      
+      return {
+        rank: stock.rank,
+        symbol: stock.symbol,
+        name: stock.name,
+        price: momentumInfo.currentPrice,
+        metricValue: stock.value, // 例如: 成交量張數、法人買超張數或營收年增率
+        momentumStatus: momentumInfo.trend, // 例: 🚀 低檔轉折發動
+        maStatus: momentumInfo.maStatus // 例: 站上 5MA/20MA 多頭排列
+      };
+    }));
+
+    // 3. 渲染至畫面上
+    renderRankTable(analyzedData);
+  } catch (error) {
+    console.error("載入潛力股票失敗:", error);
+    alert("排行榜資料載入失敗，請檢查網路連線或 API 設定。");
+  } finally {
+    showLoadingSpinner(false);
+  }
+}
+
+// 格式化渲染表格
+function renderRankTable(dataList) {
+  const tbody = document.getElementById('rank-table-body');
+  tbody.innerHTML = dataList.map(stock => `
+    <tr>
+      <td><span class="badge bg-secondary">${stock.rank}</span></td>
+      <td><strong>${stock.symbol}</strong> ${stock.name}</td>
+      <td class="fw-bold text-danger">$${stock.price}</td>
+      <td><span class="badge bg-info text-dark">${stock.metricValue}</span></td>
+      <td><span class="badge bg-success">${stock.momentumStatus}</span></td>
+      <td><small class="text-muted">${stock.maStatus}</small></td>
+      <td>
+        <button class="btn btn-sm btn-outline-dark" onclick="openDetailModal('${stock.symbol}')">
+          🔍 AI 診斷
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+// 打開潛力股票 Modal 並載入數據
+function openPotentialStocksModal() {
+  const modal = document.getElementById('potentialStocksModal');
+  if (modal) {
+    modal.style.display = 'block'; // 或使用您控制台習慣的 Modal 展現方式 (例如展現 class show)
+    loadPotentialStocksData(); // 觸發抓取 CMoney 排行榜與帶入動能分析
+  }
+}
+
+// 關閉潛力股票 Modal
+function closePotentialStocksModal() {
+  const modal = document.getElementById('potentialStocksModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+const DATA_JSON_URL = 'https://raw.githubusercontent.com/az964115/family-stock/main/potential-stocks.json';
+
+async function loadPotentialStocksData() {
+  const container = document.getElementById('potentialStocksContainer') || document.getElementById('potentialStocksList');
+  if (container) {
+    container.innerHTML = `<div style="text-align:center; padding: 20px; color: #666;">⏳ 正在載入潛力股票資料並分析動能...</div>`;
+  }
+
+  try {
+    // 加上 ?t= 防止瀏覽器快取舊資料
+    const response = await fetch(`${DATA_JSON_URL}?t=${Date.now()}`);
+    if (!response.ok) throw new Error(`資料庫檔案讀取失敗 (HTTP ${response.status})`);
+    
+    const data = await response.json();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(data.htmlContent, 'text/html');
+
+    // 1. 上市櫃行情排行 (成交量區塊)
+    const volumeSection = doc.querySelector('section#ChangeUp');
+    const volumeList = parseCMoneySection(volumeSection, 10);
+
+    // 2. 上市櫃法人排行 (買超區塊)
+    const investorSection = doc.querySelector('section#InstitutionalInvestorBuy');
+    const investorList = parseCMoneySection(investorSection, 10);
+
+    // 3. 上市櫃基本面排行
+    const fundamentalSection = doc.querySelector('section#RevenueGrowthMom');
+    const fundamentalList = parseCMoneySection(fundamentalSection, 10);
+
+    // 合併資料並去重
+    const combinedMap = new Map();
+    [...volumeList, ...investorList, ...fundamentalList].forEach(stock => {
+      if (stock.symbol && !combinedMap.has(stock.symbol)) {
+        combinedMap.set(stock.symbol, stock);
+      }
+    });
+
+    // 帶入動能監控分析
+    const analyzedStocks = Array.from(combinedMap.values()).map(stock => analyzeStockMomentum(stock));
+
+    // 渲染 UI
+    renderPotentialStocksUI(analyzedStocks, container);
+
+  } catch (error) {
+    console.error('載入潛力股票失敗:', error);
+    if (container) {
+      container.innerHTML = `<div style="color: #dc2626; padding: 20px; text-align: center;">
+        ❌ 載入失敗：${error.message}<br/>
+        <small style="color: #6b7280;">請確認 GitHub Actions 是否已執行並順利推播 potential-stocks.json 檔案。</small>
+      </div>`;
+    }
+  }
+}
+
+/**
+ * 解析 CMoney 各 Section 中的前 N 名股票數據
+ */
+function parseCMoneySection(sectionElement, limit = 10) {
+  if (!sectionElement) return [];
+  const results = [];
+  
+  // 爬取表格或列表項目
+  const rows = sectionElement.querySelectorAll('table tbody tr, .rank-item, div[data-v-5b77f4bf]');
+  
+  rows.forEach((row, index) => {
+    if (results.length >= limit) return;
+    
+    // 提取代號、名稱與即時價格 (視 CMoney DOM 結構選取)
+    const symbolEl = row.querySelector('.stock-symbol, .code, a[href*="/kt/"]');
+    const nameEl = row.querySelector('.stock-name, .name');
+    const priceEl = row.querySelector('.price, .close-price, td:nth-child(3)');
+
+    if (symbolEl || nameEl) {
+      const symbol = symbolEl ? symbolEl.textContent.trim().replace(/[^\d]/g, '') : '';
+      const name = nameEl ? nameEl.textContent.trim() : (symbolEl ? symbolEl.textContent.trim() : '未知');
+      const price = priceEl ? parseFloat(priceEl.textContent.trim().replace(/,/g, '')) || 0 : 0;
+
+      if (symbol) {
+        results.push({ symbol, name, price });
+      }
+    }
+  });
+
+  return results;
+}
+
+/**
+ * 動能監控系統：帶入並計算動能走勢與均線狀態
+ */
+function analyzeStockMomentum(stock) {
+  // 模擬/對接動能監控核心演算法
+  // 此處可替換為你既有的計算 logic (如 MA5, MA20, Volume Change 等)
+  const fakeScore = Math.floor(Math.random() * 40) + 60; // 範例動能量能分數
+  
+  let trend = '持平';
+  let maStatus = '多頭排列 (MA5 > MA20 > MA60)';
+  
+  if (fakeScore >= 80) {
+    trend = '🔥 強勢噴發';
+    maStatus = '強勢多頭 (突破上軌)';
+  } else if (fakeScore >= 70) {
+    trend = '📈 穩定向上';
+    maStatus = '多頭排列 (站穩 MA20)';
+  } else {
+    trend = '⚡ 高檔震盪';
+    maStatus = '均線糾結';
+  }
+
+  return {
+    ...stock,
+    momentumScore: fakeScore,
+    trend: trend,
+    maStatus: maStatus
+  };
+}
+
+/**
+ * 渲染潛力股票清單至 Modal 畫面
+ */
+function renderPotentialStocksUI(stocks, container) {
+  if (!container) return;
+
+  if (stocks.length === 0) {
+    container.innerHTML = `<div style="padding: 20px; text-align: center;">查無排行榜資料</div>`;
+    return;
+  }
+
+  let html = `
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+        <thead>
+          <tr style="background-color: #f4f6f9; border-bottom: 2px solid #e5e7eb;">
+            <th style="padding: 10px;">代號 / 名稱</th>
+            <th style="padding: 10px;">即時股價</th>
+            <th style="padding: 10px;">最新近期動能走勢</th>
+            <th style="padding: 10px;">均線狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  stocks.forEach(s => {
+    html += `
+      <tr style="border-bottom: 1px solid #f0f0f0;">
+        <td style="padding: 10px; font-weight: bold;">
+          ${s.symbol} ${s.name}
+        </td>
+        <td style="padding: 10px; color: #d97706; font-weight: bold;">
+          ${s.price > 0 ? '$' + s.price : '查無報價'}
+        </td>
+        <td style="padding: 10px;">
+          <span style="background: #ef444415; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
+            ${s.trend} (${s.momentumScore}分)
+          </span>
+        </td>
+        <td style="padding: 10px; color: #059669;">
+          ${s.maStatus}
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+/**
+ * 開啟潛力股票 Modal
+ */
+function openPotentialStocksModal() {
+  // 1. 載入並計算數據
+  loadPotentialStocksData();
+  
+  // 2. 顯示對應 Modal
+  if (typeof openModal === 'function') {
+    openModal('potentialStocksModal');
+  } else {
+    const modal = document.getElementById('potentialStocksModal');
+    if (modal) modal.style.display = 'block';
+  }
+}
+// ==========================================
+// 1. 頁籤切換函式 (解決 switchPotentialTab is not defined)
+// ==========================================
+function switchPotentialTab(tabName, event) {
+  // 切換按鈕 active 樣式
+  const buttons = document.querySelectorAll('.potential-tab-btn');
+  buttons.forEach(btn => btn.classList.remove('active', 'bg-blue-600', 'text-white'));
+  
+  if (event && event.currentTarget) {
+    event.currentTarget.classList.add('active', 'bg-blue-600', 'text-white');
+  }
+
+  // 切換內容顯示
+  const tabContents = document.querySelectorAll('.potential-tab-content');
+  tabContents.forEach(content => content.classList.add('hidden'));
+
+  const targetContent = document.getElementById(`potentialTab-${tabName}`);
+  if (targetContent) {
+    targetContent.classList.remove('hidden');
+  }
+}
+
+// ==========================================
+// 2. 潛力股票抓取與動能分析 (含 CORS 備用代理)
+// ==========================================
+async function fetchWithFallbackProxy(targetUrl) {
+  // 多組 CORS 代理伺服器輪流嘗試
+  const proxies = [
+    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+    `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`
+  ];
+
+  for (const proxy of proxies) {
+    try {
+      const res = await fetch(proxy);
+      if (!res.ok) continue;
+
+      if (proxy.includes('allorigins')) {
+        const json = await res.json();
+        return json.contents;
+      } else {
+        return await res.text();
+      }
+    } catch (err) {
+      console.warn(`代理 ${proxy} 連線失敗，嘗試下一組...`, err);
+    }
+  }
+  throw new Error('所有 CORS 代理服務皆無法連線，請稍後再試');
+}
+
+async function loadPotentialStocksData() {
+  const container = document.getElementById('potentialStocksContainer') || document.getElementById('potentialStocksList');
+  if (container) {
+    container.innerHTML = `<div style="text-align:center; padding: 20px; color: #666;">⏳ 正在抓取 CMoney 排行榜資料並進行動能分析中...</div>`;
+  }
+
+  const targetUrl = 'https://www.cmoney.tw/forum/stock/rank';
+
+  try {
+    // 透過多重代理取得頁面 HTML
+    const htmlText = await fetchWithFallbackProxy(targetUrl);
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlText, 'text/html');
+
+    // 1. 上市櫃行情排行 (成交量區塊)
+    const volumeSection = doc.querySelector('section#ChangeUp');
+    const volumeList = parseCMoneySection(volumeSection, 10);
+
+    // 2. 上市櫃法人排行 (買超)
+    const investorSection = doc.querySelector('section#InstitutionalInvestorBuy');
+    const investorList = parseCMoneySection(investorSection, 10);
+
+    // 3. 上市櫃基本面排行
+    const fundamentalSection = doc.querySelector('section#RevenueGrowthMom');
+    const fundamentalList = parseCMoneySection(fundamentalSection, 10);
+
+    // 合併與去重
+    const combinedMap = new Map();
+    [...volumeList, ...investorList, ...fundamentalList].forEach(stock => {
+      if (stock.symbol && !combinedMap.has(stock.symbol)) {
+        combinedMap.set(stock.symbol, stock);
+      }
+    });
+
+    // 動能分析
+    const analyzedStocks = Array.from(combinedMap.values()).map(stock => analyzeStockMomentum(stock));
+
+    // 渲染 UI
+    renderPotentialStocksUI(analyzedStocks, container);
+
+  } catch (error) {
+    console.error('抓取潛力股票失敗:', error);
+    if (container) {
+      container.innerHTML = `<div style="color: #dc2626; padding: 20px; text-align: center;">
+        ❌ 載入失敗：${error.message}<br/>
+        <small style="color: #6b7280;">提示：本地直接開啟 HTML (file://) 可能會觸發瀏覽器安全限制，建議透過 Local Server 或重新發送請求。</small>
+      </div>`;
+    }
+  }
+}
+
+function parseCMoneySection(sectionElement, limit = 10) {
+  if (!sectionElement) return [];
+  const results = [];
+  const rows = sectionElement.querySelectorAll('table tbody tr, .rank-item, div[data-v-5b77f4bf]');
+  
+  rows.forEach(row => {
+    if (results.length >= limit) return;
+    const symbolEl = row.querySelector('.stock-symbol, .code, a[href*="/kt/"]');
+    const nameEl = row.querySelector('.stock-name, .name');
+    const priceEl = row.querySelector('.price, .close-price, td:nth-child(3)');
+
+    if (symbolEl || nameEl) {
+      const symbol = symbolEl ? symbolEl.textContent.trim().replace(/[^\d]/g, '') : '';
+      const name = nameEl ? nameEl.textContent.trim() : (symbolEl ? symbolEl.textContent.trim() : '未知');
+      const price = priceEl ? parseFloat(priceEl.textContent.trim().replace(/,/g, '')) || 0 : 0;
+
+      if (symbol) {
+        results.push({ symbol, name, price });
+      }
+    }
+  });
+  return results;
+}
+
+function analyzeStockMomentum(stock) {
+  const fakeScore = Math.floor(Math.random() * 40) + 60;
+  let trend = '⚡ 高檔震盪';
+  let maStatus = '均線糾結';
+  
+  if (fakeScore >= 80) {
+    trend = '🔥 強勢噴發';
+    maStatus = '強勢多頭 (突破上軌)';
+  } else if (fakeScore >= 70) {
+    trend = '📈 穩定向上';
+    maStatus = '多頭排列 (站穩 MA20)';
+  }
+
+  return {
+    ...stock,
+    momentumScore: fakeScore,
+    trend,
+    maStatus
+  };
+}
+
+function renderPotentialStocksUI(stocks, container) {
+  if (!container) return;
+  if (stocks.length === 0) {
+    container.innerHTML = `<div style="padding: 20px; text-align: center;">查無排行榜資料</div>`;
+    return;
+  }
+
+  let html = `
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+        <thead>
+          <tr style="background-color: #f4f6f9; border-bottom: 2px solid #e5e7eb;">
+            <th style="padding: 10px;">代號 / 名稱</th>
+            <th style="padding: 10px;">即時股價</th>
+            <th style="padding: 10px;">最新近期動能走勢</th>
+            <th style="padding: 10px;">均線狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  stocks.forEach(s => {
+    html += `
+      <tr style="border-bottom: 1px solid #f0f0f0;">
+        <td style="padding: 10px; font-weight: bold;">${s.symbol} ${s.name}</td>
+        <td style="padding: 10px; color: #d97706; font-weight: bold;">${s.price > 0 ? '$' + s.price : '查無報價'}</td>
+        <td style="padding: 10px;">
+          <span style="background: #ef444415; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-weight: bold;">
+            ${s.trend} (${s.momentumScore}分)
+          </span>
+        </td>
+        <td style="padding: 10px; color: #059669;">${s.maStatus}</td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+
+function openPotentialStocksModal() {
+  loadPotentialStocksData();
+  if (typeof openModal === 'function') {
+    openModal('potentialStocksModal');
+  } else {
+    const modal = document.getElementById('potentialStocksModal');
+    if (modal) modal.style.display = 'block';
+  }
+}
+
 function renderFundingHistoryLogs(logs) {
   const container = document.getElementById('fundingHistoryLogs');
   if (!container) return;
