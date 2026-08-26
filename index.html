@@ -3420,10 +3420,10 @@ function calculateMACDAndEMASignals(prices) {
 
   let warnings = [];
   if (currentPrice < currentEma12) {
-    warnings.push("跌破 EMA12");
+    warnings.push("跌破 12均線");
   }
   if (currentPrice < currentEma26) {
-    warnings.push("跌破 EMA26");
+    warnings.push("跌破 支撐");
   }
 
   const isCrossDownEma12 = (prevPrice >= ema12Arr[ema12Arr.length - 2]) && (currentPrice < currentEma12);
@@ -3457,11 +3457,11 @@ function processRsvAndMacdData(stockList) {
 
     let alertBadgeHtml = "";
     if (price < macdInfo.ema12 && price < macdInfo.ema26) {
-      alertBadgeHtml = `<span style="color:#e53e3e; font-size:11px; font-weight:bold; background:#fff5f5; padding:2px 6px; border-radius:4px; border:1px solid #feb2b2;">⚠️ 跌破 EMA12/26</span>`;
+      alertBadgeHtml = `<span style="color:#e53e3e; font-size:11px; font-weight:bold; background:#fff5f5; padding:2px 6px; border-radius:4px; border:1px solid #feb2b2;">⚠️ 跌破 均線/支撐</span>`;
     } else if (price < macdInfo.ema12) {
-      alertBadgeHtml = `<span style="color:#dd6b20; font-size:11px; font-weight:bold; background:#fffaf0; padding:2px 6px; border-radius:4px; border:1px solid #fbd38d;">⚠️ 跌破 EMA12</span>`;
+      alertBadgeHtml = `<span style="color:#dd6b20; font-size:11px; font-weight:bold; background:#fffaf0; padding:2px 6px; border-radius:4px; border:1px solid #fbd38d;">⚠️ 跌破 均線</span>`;
     } else if (price < macdInfo.ema26) {
-      alertBadgeHtml = `<span style="color:#dd6b20; font-size:11px; font-weight:bold; background:#fffaf0; padding:2px 6px; border-radius:4px; border:1px solid #fbd38d;">⚠️ 跌破 EMA26</span>`;
+      alertBadgeHtml = `<span style="color:#dd6b20; font-size:11px; font-weight:bold; background:#fffaf0; padding:2px 6px; border-radius:4px; border:1px solid #fbd38d;">⚠️ 跌破 支撐</span>`;
     }
 
   });
@@ -3483,15 +3483,15 @@ function renderRsvTableRow(item) {
 
   // 1. 跌破警告：現價 < EMA12 或 現價 < EMA26
   if (price < ema26) {
-    warningBadge = `<span style="background: #FED7D7; color: #9B2C2C; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #E53E3E;">🚨 跌破EMA26</span>`;
+    warningBadge = `<span style="background: #FED7D7; color: #9B2C2C; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #E53E3E;">🚨 跌破支撐</span>`;
   } else if (price < ema12) {
-    warningBadge = `<span style="background: #FEEBC8; color: #9C4221; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #DD6B20;">⚠️ 跌破EMA12</span>`;
+    warningBadge = `<span style="background: #FEEBC8; color: #9C4221; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #DD6B20;">⚠️ 跌破均線</span>`;
   } 
   // 2. 接近/貼近警告：價格離 EMA12 或 EMA26 差距在 1% 以內
   else if (Math.abs(price - ema12) / price <= 0.01) {
-    warningBadge = `<span style="background: #FEFCBF; color: #744210; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #D69E2E;">👀 逼近EMA12</span>`;
+    warningBadge = `<span style="background: #FEFCBF; color: #744210; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #D69E2E;">👀 逼近均線</span>`;
   } else if (Math.abs(price - ema26) / price <= 0.01) {
-    warningBadge = `<span style="background: #FEFCBF; color: #744210; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #D69E2E;">👀 逼近EMA26</span>`;
+    warningBadge = `<span style="background: #FEFCBF; color: #744210; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #D69E2E;">👀 逼近支撐</span>`;
   } else {
     warningBadge = `<span style="background: #C6F6D5; color: #22543D; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px;">✨ 站穩均線上</span>`;
   }
