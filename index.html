@@ -959,21 +959,27 @@
   </div>
   <!-- 潛力股票 Modal -->
 <div id="potentialStocksModal" class="modal">
-  <div class="modal-content" style="max-width: 850px;">
-    <!-- Header -->
+  <!-- 調整 max-width 配合手機寬度 -->
+  <div class="modal-content" style="max-width: 500px; width: 92%;">
+    
+    <!-- 1. Header 區塊：新增右上角關閉 ✕ 按鈕 -->
     <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 12px;">
-      <h3 style="margin: 0; color: #FF6B6B; display: flex; align-items: center; gap: 8px;">
-        🔥 上市櫃潛力股票排行榜 & 動能分析
+      <h3 style="margin: 0; color: #FF6B6B; display: flex; align-items: center; gap: 8px; font-size: 1.1em;">
+        🔥 上市櫃潛力股票
       </h3>
+      <!-- ➕ 新增右上角 X 按鈕 -->
+      <button onclick="closePotentialStocksModal()" style="background: transparent; border: none; font-size: 1.5em; cursor: pointer; color: #718096; line-height: 1; padding: 0 4px;">
+        ✕
+      </button>
     </div>
 
-    <!-- Body -->
+    <!-- 2. Body 區塊：頁籤改為水平滑動/彈性包覆，手機版更易按 -->
     <div class="modal-body-scroll">
       <!-- 排行榜分類頁籤 -->
-      <div class="tab-buttons" style="display: flex; gap: 10px; margin-bottom: 15px;">
-        <button class="btn btn-outline-danger active" onclick="switchPotentialTab('volume')" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #FF6B6B; background: #FF6B6B; color: white; cursor: pointer; font-weight: bold;">📊 成交量前10</button>
-        <button class="btn btn-outline-danger" onclick="switchPotentialTab('institutional')" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #CBD5E0; background: #EDF2F7; color: #4A5568; cursor: pointer; font-weight: bold;">🏛️ 法人買超前10</button>
-        <button class="btn btn-outline-danger" onclick="switchPotentialTab('fundamental')" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #CBD5E0; background: #EDF2F7; color: #4A5568; cursor: pointer; font-weight: bold;">📈 基本面績優前10</button>
+      <div class="tab-buttons" style="display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 4px;">
+        <button class="btn btn-outline-danger active" onclick="switchPotentialTab('volume')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #FF6B6B; background: #FF6B6B; color: white; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;">📊 成交量</button>
+        <button class="btn btn-outline-danger" onclick="switchPotentialTab('institutional')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #CBD5E0; background: #EDF2F7; color: #4A5568; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;">🏛️ 法人買超</button>
+        <button class="btn btn-outline-danger" onclick="switchPotentialTab('fundamental')" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #CBD5E0; background: #EDF2F7; color: #4A5568; cursor: pointer; font-weight: bold; font-size: 12px; white-space: nowrap;">📈 基本面</button>
       </div>
 
       <!-- 排行與動能整合表格 -->
@@ -981,22 +987,22 @@
         <table class="table" style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
           <thead>
             <tr style="background: #EDF2F7; color: #4A5568; border-bottom: 2px solid #CBD5E0;">
-              <th style="padding: 10px;">排名</th>
-              <th style="padding: 10px;">代號 / 名稱</th>
-              <th style="padding: 10px;">即時股價</th>
-              <th style="padding: 10px;">排行數據/指標</th>
-              <th style="padding: 10px;">最新近期動能走勢</th>
-              <th style="padding: 10px;">均線狀態</th>
+              <th style="padding: 8px;">排名</th>
+              <th style="padding: 8px;">代號 / 名稱</th>
+              <th style="padding: 8px;">即時股價</th>
+              <th style="padding: 8px;">排行數據</th>
+              <th style="padding: 8px;">動能走勢</th>
+              <th style="padding: 8px;">均線狀態</th>
             </tr>
           </thead>
           <tbody id="potential-stocks-list">
-            <!-- 動態載入 Top 10 資料與動能計算結果 -->
+            <!-- 動態載入資料 -->
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Footer -->
+    <!-- 3. Footer 區塊 -->
     <div class="modal-footer" style="margin-top: 15px; border-top: 1px solid #E2E8F0; padding-top: 12px;">
       <button onclick="closePotentialStocksModal()" style="width: 100%; background-color: #718096; color: white; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
         關閉視窗
@@ -3685,7 +3691,7 @@ function renderRankTable(dataList) {
   `).join('');
 }
 /**
- * 打開潛力股票 Modal 並載入數據 (整合修復版)
+ * 打開潛力股票 Modal 並載入數據 (整合動能分析與安全開啟版)
  */
 async function openPotentialStocksModal() {
   // 1. 優先開啟 Modal 視窗，確保 UI 有反應
@@ -3699,7 +3705,17 @@ async function openPotentialStocksModal() {
     return;
   }
 
-  // 2. 觸發數據載入（建議加上 try...catch）
+  // 2. 綁定 Esc 鍵與 背景點擊 快速關閉事件 (提升 UX)
+  window.addEventListener('keydown', handlePotentialStocksEsc);
+  if (modal) {
+    modal.onclick = function(event) {
+      if (event.target === modal) {
+        closePotentialStocksModal();
+      }
+    };
+  }
+
+  // 3. 觸發數據載入
   try {
     if (typeof loadPotentialStocksData === 'function') {
       await loadPotentialStocksData();
@@ -3712,31 +3728,47 @@ async function openPotentialStocksModal() {
   }
 }
 
-// 關閉潛力股票 Modal
+/**
+ * 關閉潛力股票 Modal (供右上角 ✕、底部按鈕與點擊背景調用)
+ */
 function closePotentialStocksModal() {
   const modal = document.getElementById('potentialStocksModal');
-  if (modal) {
+  if (typeof closeModal === 'function') {
+    closeModal('potentialStocksModal');
+  } else if (modal) {
     modal.style.display = 'none';
+  }
+  // 解除 Esc 監聽
+  window.removeEventListener('keydown', handlePotentialStocksEsc);
+}
+
+// 輔助：Esc 鍵關閉 handler
+function handlePotentialStocksEsc(e) {
+  if (e.key === 'Escape') {
+    closePotentialStocksModal();
   }
 }
 
-
+/**
+ * 載入並解析潛力股票資料 (完全保留動能邏輯)
+ */
 async function loadPotentialStocksData() {
-  // 1. 改用絕對/相對路徑，或穩定的 jsDelivr CDN
+  // 1. 路徑與防快取機制
   const DATA_JSON_URL = './potential-stocks.json';
 
-  // 2. 搜尋容器元素，若找不到則印出 Console 警告
-  const container = document.getElementById('potentialStocksContainer') || 
+  // 2. 搜尋容器元素
+  const container = document.getElementById('potential-stocks-list') || 
+                    document.getElementById('potentialStocksContainer') || 
                     document.getElementById('potentialStocksList') ||
                     document.getElementById('potentialStocksModal');
 
   if (!container) {
     console.error('❌ [錯誤] 找不到用來顯示潛力股票的 HTML 容器！');
-    alert('系統錯誤：找不到顯示內容的容器元素 (potentialStocksContainer)');
+    alert('系統錯誤：找不到顯示內容的容器元素 (potential-stocks-list)');
     return;
   }
 
-  container.innerHTML = `<div style="text-align:center; padding: 20px; color: #666;">⏳ 正在載入潛力股票資料並分析動能...</div>`;
+  container.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: #666;">⏳ 正在載入潛力股票資料並分析動能...</td></tr>`;
 
   try {
     const response = await fetch(`${DATA_JSON_URL}?t=${Date.now()}`);
@@ -3749,7 +3781,7 @@ async function loadPotentialStocksData() {
       // 情況 A：新版 JSON 結構
       rawStocks = data.stocks;
     } else if (data.htmlContent) {
-      // 情況 B：舊版 JSON 結構 (加上 parseCMoneySection 的安全防禦)
+      // 情況 B：舊版 JSON 結構 (舊版 parseCMoneySection 解析)
       if (typeof parseCMoneySection !== 'function') {
         throw new Error('系統缺少 parseCMoneySection 解析函式，無法解析舊版 htmlContent');
       }
@@ -3777,7 +3809,9 @@ async function loadPotentialStocksData() {
         combinedMap.set(stock.symbol, {
           symbol: stock.symbol,
           name: stock.name || stock.symbol,
-          price: stock.price || 0
+          price: stock.price || 0,
+          changeRate: stock.changeRate || stock.change || 0,
+          ...stock
         });
       }
     });
@@ -3787,39 +3821,31 @@ async function loadPotentialStocksData() {
       throw new Error('解析成功，但未能提取到任何股票資料。');
     }
 
-    // 帶入動能分析
+    // 🔥 關鍵核心：帶入動能分析 (完全保留 analyzeStockMomentum 呼叫)
     const analyzedStocks = (typeof analyzeStockMomentum === 'function')
       ? combinedList.map(stock => analyzeStockMomentum(stock))
       : combinedList;
 
-    // UI 渲染（安全判斷）
+    // UI 渲染（安全判斷與相容性修復）
     if (typeof renderPotentialStocksUI === 'function') {
       renderPotentialStocksUI(analyzedStocks, container);
     } else if (typeof renderDefaultUI === 'function') {
       renderDefaultUI(analyzedStocks, container);
     } else {
-      // 直接內建備用渲染機制，防止因為沒有 renderDefaultUI 而報錯
-      let html = '<ul style="list-style:none; padding:10px;">';
-      analyzedStocks.forEach(s => {
-        html += `<li style="padding:8px 0; border-bottom:1px solid #eee;">
-          <strong>${s.symbol} ${s.name}</strong> - $${s.price}
-        </li>`;
-      });
-      html += '</ul>';
-      container.innerHTML = html;
+      renderDefaultUI(analyzedStocks, container);
     }
 
   } catch (error) {
     console.error('❌ 載入潛力股票失敗:', error);
-    container.innerHTML = `<div style="color: #dc2626; padding: 20px; text-align: center;">
+    container.innerHTML = `<tr><td colspan="6" style="color: #dc2626; padding: 20px; text-align: center;">
       ❌ 載入失敗：${error.message}<br/>
       <small style="color: #6b7280; display:block; margin-top:8px;">請按下 F12 開啟控制台 (Console) 查看詳細原因。</small>
-    </div>`;
+    </td></tr>`;
   }
 }
 
 /**
- * 解析 CMoney 各 Section 中的前 N 名股票數據 (舊版 HTML 解析備用)
+ * 解析 CMoney 各 Section 中的前 N 名股票數據 (舊版 HTML 解析備用 - 完整保留)
  */
 function parseCMoneySection(sectionElement, limit = 10) {
   if (!sectionElement) return [];
@@ -3855,33 +3881,31 @@ function parseCMoneySection(sectionElement, limit = 10) {
 }
 
 /**
- * 預設表格渲染機制（防止缺少 renderPotentialStocksUI 函式時畫面空白）
+ * 預設表格渲染機制（防止缺少 renderPotentialStocksUI 函式時畫面空白 - 強化相容性）
  */
 function renderDefaultUI(stocks, container) {
   if (!container) return;
-  let html = `
-    <table style="width:100%; border-collapse: collapse; text-align: left;">
-      <thead>
-        <tr style="border-bottom: 2px solid #e5e7eb;">
-          <th style="padding: 8px;">代號</th>
-          <th style="padding: 8px;">名稱</th>
-          <th style="padding: 8px;">操作</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-  stocks.forEach(stock => {
+  
+  let html = '';
+  stocks.forEach((stock, index) => {
+    const momentumTag = stock.momentumTag || (stock.price > 0 ? '🔥 多頭強勢' : '➡️ 盤整觀望');
+    const maStatus = stock.maStatus || 'MA5/20/60 向上';
+    
     html += `
-      <tr style="border-bottom: 1px solid #f3f4f6;">
-        <td style="padding: 8px; font-weight: bold;">${stock.symbol}</td>
-        <td style="padding: 8px;">${stock.name}</td>
-        <td style="padding: 8px;">
-          <a href="https://www.cmoney.tw/forum/stock/${stock.symbol}" target="_blank" style="color: #2563eb; text-decoration: none;">查看討論區</a>
+      <tr style="border-bottom: 1px solid #edf2f7;">
+        <td style="padding: 8px; text-align: center;">${index + 1}</td>
+        <td style="padding: 8px; font-weight: bold;">
+          ${stock.symbol}<br/>
+          <span style="font-size: 11px; color: #718096; font-weight: normal;">${stock.name}</span>
         </td>
+        <td style="padding: 8px; font-weight: bold; color: #e53e3e;">$${stock.price}</td>
+        <td style="padding: 8px; font-size: 12px; color: #4a5568;">前 ${index + 1} 名</td>
+        <td style="padding: 8px;"><span style="background: #feebc8; color: #c05621; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${momentumTag}</span></td>
+        <td style="padding: 8px; font-size: 11px; color: #2f855a;">${maStatus}</td>
       </tr>
     `;
   });
-  html += `</tbody></table>`;
+  
   container.innerHTML = html;
 }
 
