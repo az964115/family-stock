@@ -3677,12 +3677,31 @@ function renderRankTable(dataList) {
     </tr>
   `).join('');
 }
-// 打開潛力股票 Modal 並載入數據
-function openPotentialStocksModal() {
+/**
+ * 打開潛力股票 Modal 並載入數據 (整合修復版)
+ */
+async function openPotentialStocksModal() {
+  // 1. 優先開啟 Modal 視窗，確保 UI 有反應
   const modal = document.getElementById('potentialStocksModal');
-  if (modal) {
+  if (typeof openModal === 'function') {
+    openModal('potentialStocksModal');
+  } else if (modal) {
     modal.style.display = 'block';
-    loadPotentialStocksData(); // 觸發抓取 CMoney 排行榜與帶入動能分析
+  } else {
+    console.error("❌ 找不到 ID 為 'potentialStocksModal' 的 Modal 元素！");
+    return;
+  }
+
+  // 2. 觸發數據載入（建議加上 try...catch）
+  try {
+    if (typeof loadPotentialStocksData === 'function') {
+      await loadPotentialStocksData();
+    } else {
+      console.error("❌ 找不到 loadPotentialStocksData 函數！");
+    }
+  } catch (error) {
+    console.error("❌ 載入潛力股票資料時發生錯誤:", error);
+    alert("載入資料失敗，請檢查網路或主機端 JSON 檔案路徑！");
   }
 }
 
@@ -3694,31 +3713,40 @@ function closePotentialStocksModal() {
   }
 }
 
-// 修改後的 loadPotentialStocksData 函式
-async function loadPotentialStocksData() {
-  // 💡 將 DATA_JSON_URL 宣告在函式內部，避免與全域變數產生 redeclare 衝突
-  const DATA_JSON_URL = 'https://raw.githubusercontent.com/az964115/family-stock/main/potential-stocks.json';
 
-  const container = document.getElementById('potentialStocksContainer') || document.getElementById('potentialStocksList');
-  if (container) {
-    container.innerHTML = `<div style="text-align:center; padding: 20px; color: #666;">⏳ 正在載入潛力股票資料並分析動能...</div>`;
+async function loadPotentialStocksData() {
+  // 1. 改用絕對/相對路徑，或穩定的 jsDelivr CDN
+  const DATA_JSON_URL = './potential-stocks.json';
+
+  // 2. 搜尋容器元素，若找不到則印出 Console 警告
+  const container = document.getElementById('potentialStocksContainer') || 
+                    document.getElementById('potentialStocksList') ||
+                    document.getElementById('potentialStocksModal');
+
+  if (!container) {
+    console.error('❌ [錯誤] 找不到用來顯示潛力股票的 HTML 容器！');
+    alert('系統錯誤：找不到顯示內容的容器元素 (potentialStocksContainer)');
+    return;
   }
 
+  container.innerHTML = `<div style="text-align:center; padding: 20px; color: #666;">⏳ 正在載入潛力股票資料並分析動能...</div>`;
+
   try {
-    // 加上 ?t= 防止瀏覽器快取舊資料
     const response = await fetch(`${DATA_JSON_URL}?t=${Date.now()}`);
-    if (!response.ok) throw new Error(`資料庫檔案讀取失敗 (HTTP ${response.status})`);
+    if (!response.ok) throw new Error(`檔案讀取失敗 (HTTP ${response.status})`);
     
     const data = await response.json();
-
-    // 💡 支援新版 Playwright 直接輸出的 stocks 陣列，同時向下相容原有的 htmlContent 格式
     let rawStocks = [];
 
     if (Array.isArray(data.stocks) && data.stocks.length > 0) {
-      // 情況 A：新版 JSON 結構 (純 JSON 陣列)
+      // 情況 A：新版 JSON 結構
       rawStocks = data.stocks;
     } else if (data.htmlContent) {
-      // 情況 B：舊版 JSON 結構 (含 htmlContent 字串)
+      // 情況 B：舊版 JSON 結構 (加上 parseCMoneySection 的安全防禦)
+      if (typeof parseCMoneySection !== 'function') {
+        throw new Error('系統缺少 parseCMoneySection 解析函式，無法解析舊版 htmlContent');
+      }
+
       const parser = new DOMParser();
       const doc = parser.parseFromString(data.htmlContent, 'text/html');
 
@@ -3735,7 +3763,7 @@ async function loadPotentialStocksData() {
       throw new Error('JSON 檔案格式無效（找不到 stocks 陣列或 htmlContent）');
     }
 
-    // 合併資料並進行不重複 (De-duplicate) 處理
+    // 去重處理
     const combinedMap = new Map();
     rawStocks.forEach(stock => {
       if (stock && stock.symbol && !combinedMap.has(stock.symbol)) {
@@ -3749,30 +3777,37 @@ async function loadPotentialStocksData() {
 
     const combinedList = Array.from(combinedMap.values());
     if (combinedList.length === 0) {
-      throw new Error('解析失敗，未能提取到任何股票資料。');
+      throw new Error('解析成功，但未能提取到任何股票資料。');
     }
 
-    // 帶入動能監控分析 (若專案中有此函式則調用)
-    const analyzedStocks = typeof analyzeStockMomentum === 'function' 
+    // 帶入動能分析
+    const analyzedStocks = (typeof analyzeStockMomentum === 'function')
       ? combinedList.map(stock => analyzeStockMomentum(stock))
       : combinedList;
 
-    // 渲染 UI (若專案中有此函式則調用)
+    // UI 渲染（安全判斷）
     if (typeof renderPotentialStocksUI === 'function') {
       renderPotentialStocksUI(analyzedStocks, container);
-    } else {
-      // 備用 UI 渲染：當未定義 renderPotentialStocksUI 時自動渲染簡單表格
+    } else if (typeof renderDefaultUI === 'function') {
       renderDefaultUI(analyzedStocks, container);
+    } else {
+      // 直接內建備用渲染機制，防止因為沒有 renderDefaultUI 而報錯
+      let html = '<ul style="list-style:none; padding:10px;">';
+      analyzedStocks.forEach(s => {
+        html += `<li style="padding:8px 0; border-bottom:1px solid #eee;">
+          <strong>${s.symbol} ${s.name}</strong> - $${s.price}
+        </li>`;
+      });
+      html += '</ul>';
+      container.innerHTML = html;
     }
 
   } catch (error) {
-    console.error('載入潛力股票失敗:', error);
-    if (container) {
-      container.innerHTML = `<div style="color: #dc2626; padding: 20px; text-align: center;">
-        ❌ 載入失敗：${error.message}<br/>
-        <small style="color: #6b7280;">請確認 GitHub Actions 是否已順利推播 potential-stocks.json 檔案。</small>
-      </div>`;
-    }
+    console.error('❌ 載入潛力股票失敗:', error);
+    container.innerHTML = `<div style="color: #dc2626; padding: 20px; text-align: center;">
+      ❌ 載入失敗：${error.message}<br/>
+      <small style="color: #6b7280; display:block; margin-top:8px;">請按下 F12 開啟控制台 (Console) 查看詳細原因。</small>
+    </div>`;
   }
 }
 
