@@ -1,62 +1,62 @@
 {
   "status": "success",
-  "updatedAt": "2026-08-27T06:30:48.709Z",
+  "updatedAt": "2026-08-27T14:35:54.518Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "5543",
-      "name": "桓鼎-KY",
-      "category": "漲幅排行",
-      "price": 28.6,
-      "rank": 1
-    },
-    {
-      "symbol": "1312",
-      "name": "國喬",
-      "category": "漲幅排行",
-      "price": 14.3,
-      "rank": 2
-    },
-    {
-      "symbol": "7835",
-      "name": "永悅健康-創",
-      "category": "漲幅排行",
-      "price": 23.1,
-      "rank": 3
-    },
     {
       "symbol": "4909",
       "name": "新復興",
       "category": "漲幅排行",
       "price": 42.9,
-      "rank": 4
-    },
-    {
-      "symbol": "3105",
-      "name": "穩懋",
-      "category": "漲幅排行",
-      "price": 445.5,
-      "rank": 5
-    },
-    {
-      "symbol": "3441",
-      "name": "聯一光",
-      "category": "漲幅排行",
-      "price": 137.5,
-      "rank": 6
+      "rank": 1
     },
     {
       "symbol": "6187",
       "name": "萬潤",
       "category": "漲幅排行",
       "price": 1430,
-      "rank": 7
+      "rank": 2
+    },
+    {
+      "symbol": "5543",
+      "name": "桓鼎-KY",
+      "category": "漲幅排行",
+      "price": 28.6,
+      "rank": 3
     },
     {
       "symbol": "6933",
       "name": "AMAX-KY",
       "category": "漲幅排行",
       "price": 236.5,
+      "rank": 4
+    },
+    {
+      "symbol": "7835",
+      "name": "永悅健康-創",
+      "category": "漲幅排行",
+      "price": 23.1,
+      "rank": 5
+    },
+    {
+      "symbol": "1312",
+      "name": "國喬",
+      "category": "漲幅排行",
+      "price": 14.3,
+      "rank": 6
+    },
+    {
+      "symbol": "3441",
+      "name": "聯一光",
+      "category": "漲幅排行",
+      "price": 137.5,
+      "rank": 7
+    },
+    {
+      "symbol": "3105",
+      "name": "穩懋",
+      "category": "漲幅排行",
+      "price": 445.5,
       "rank": 8
     },
     {
@@ -74,73 +74,73 @@
       "rank": 10
     },
     {
-      "symbol": "6770",
-      "name": "力積電",
+      "symbol": "2408",
+      "name": "南亞科",
       "category": "法人買超",
-      "price": 69.6,
+      "price": 541,
       "rank": 1
-    },
-    {
-      "symbol": "2883",
-      "name": "凱基金",
-      "category": "法人買超",
-      "price": 32.15,
-      "rank": 2
-    },
-    {
-      "symbol": "1815",
-      "name": "富喬",
-      "category": "法人買超",
-      "price": 116.5,
-      "rank": 3
-    },
-    {
-      "symbol": "2610",
-      "name": "華航",
-      "category": "法人買超",
-      "price": 20.8,
-      "rank": 4
-    },
-    {
-      "symbol": "1301",
-      "name": "台塑",
-      "category": "法人買超",
-      "price": 63.1,
-      "rank": 5
-    },
-    {
-      "symbol": "1802",
-      "name": "台玻",
-      "category": "法人買超",
-      "price": 59.2,
-      "rank": 6
-    },
-    {
-      "symbol": "1326",
-      "name": "台化",
-      "category": "法人買超",
-      "price": 63.2,
-      "rank": 7
     },
     {
       "symbol": "2344",
       "name": "華邦電",
       "category": "法人買超",
       "price": 186,
+      "rank": 2
+    },
+    {
+      "symbol": "1301",
+      "name": "台塑",
+      "category": "法人買超",
+      "price": 63.1,
+      "rank": 3
+    },
+    {
+      "symbol": "2889",
+      "name": "國票金",
+      "category": "法人買超",
+      "price": 16.2,
+      "rank": 4
+    },
+    {
+      "symbol": "2317",
+      "name": "鴻海",
+      "category": "法人買超",
+      "price": 252,
+      "rank": 5
+    },
+    {
+      "symbol": "1314",
+      "name": "中石化",
+      "category": "法人買超",
+      "price": 8.16,
+      "rank": 6
+    },
+    {
+      "symbol": "2634",
+      "name": "漢翔",
+      "category": "法人買超",
+      "price": 70.3,
+      "rank": 7
+    },
+    {
+      "symbol": "1717",
+      "name": "長興",
+      "category": "法人買超",
+      "price": 75.8,
       "rank": 8
     },
     {
-      "symbol": "1303",
-      "name": "南亞",
+      "symbol": "2371",
+      "name": "大同",
       "category": "法人買超",
-      "price": 227.5,
+      "price": 29.2,
       "rank": 9
     },
     {
-      "symbol": "1605",
-      "name": "華新",
+      "symbol": "2801",
+      "name": "彰銀",
       "category": "法人買超",
-      "price": 38.9,
+      "price": 24.7,
       "rank": 10
     }
   ]
