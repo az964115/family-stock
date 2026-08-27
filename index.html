@@ -4022,27 +4022,54 @@ function openTodayBriefModal() {
 
 // 解析 Tide 頁面 DOM 並帶入 Modal
 function fetchTodayBriefData() {
-  console.log("開始解析 #today-brief 區塊資料...");
+  console.log("開始解析今日重點資料...");
 
-  const briefContainer = document.getElementById('today-brief');
+  let briefContainer = document.getElementById('today-brief');
+
+  // 若 DOM 尚未生成，自動模擬點擊 #brief-toggle 按鈕觸發選單出現
   if (!briefContainer) {
-    console.warn("找不到 #today-brief 區塊");
-    return;
+    const toggleBtn = document.getElementById('brief-toggle');
+    if (toggleBtn) {
+      console.log("觸發 #brief-toggle 點擊事件...");
+      toggleBtn.click(); // 自動點擊展開
+      
+      // 稍等 100ms 待 DOM 生成後再次解析
+      setTimeout(() => {
+        briefContainer = document.getElementById('today-brief');
+        if (briefContainer) {
+          parseAndRenderBriefData(briefContainer);
+          // 抓完資料後，自動模擬點擊關閉按鈕收回原浮層，維持畫面乾淨
+          const closeBtn = document.getElementById('tb-close');
+          if (closeBtn) closeBtn.click();
+        } else {
+          showBriefError();
+        }
+      }, 100);
+      return;
+    } else {
+      showBriefError();
+      return;
+    }
   }
 
-  // 1. 抓取標題（例如：今日重點（08/26））
+  // 若 DOM 已經存在，直接解析
+  parseAndRenderBriefData(briefContainer);
+}
+
+// 實際解析內容並渲染至 Modal
+function parseAndRenderBriefData(briefContainer) {
+  // 1. 抓取標題
   const titleEl = briefContainer.querySelector('.tb-title');
   const todayTitle = titleEl ? titleEl.textContent.trim() : "今日重點";
 
   const titleTarget = document.getElementById('tb-date-title');
   if (titleTarget) titleTarget.innerText = todayTitle;
 
-  // 2. 抓取多個重點列（.tb-row）
+  // 2. 抓取重點列 (.tb-row)
   const rows = briefContainer.querySelectorAll('.tb-row');
   let rowsHtml = '';
 
   rows.forEach(r => {
-    // 複製 HTML 結構以保留原本的顏色標示與文字
     const rowContent = r.innerHTML.trim();
     if (rowContent) {
       rowsHtml += `<div style="margin-bottom: 6px; line-height: 1.5;">• ${rowContent}</div>`;
@@ -4054,9 +4081,8 @@ function fetchTodayBriefData() {
     summaryTarget.innerHTML = rowsHtml || '<div>暫無重點資料</div>';
   }
 
-  // 3. 抓取 AI 盤後總結（#tb-ai-body）
+  // 3. 抓取 AI 盤後總結 (#tb-ai-body)
   const aiBodyEl = briefContainer.querySelector('#tb-ai-body');
-  // 使用 textContent 避免因為 CSS 隱藏而抓不到文字
   const aiBodyText = aiBodyEl ? (aiBodyEl.textContent || aiBodyEl.innerText).trim() : "暫無 AI 總結資料";
 
   const aiSummaryTarget = document.getElementById('tb-ai-summary');
@@ -4064,7 +4090,7 @@ function fetchTodayBriefData() {
     aiSummaryTarget.innerHTML = `<b>🤖 AI 盤後總結：</b><br><span style="line-height:1.6; display:block; margin-top:4px;">${aiBodyText}</span>`;
   }
 
-  // 4. 解析重點中的買超板塊 (補充帶入下方板塊資金區塊)
+  // 4. 解析重點中的買超/賣超板塊 (.tb-sec)
   const inflowContainer = document.getElementById('inflow-sectors-list');
   const outflowContainer = document.getElementById('outflow-sectors-list');
 
@@ -4079,7 +4105,6 @@ function fetchTodayBriefData() {
     const chip = document.createElement('span');
     chip.style.cssText = 'padding:4px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; margin:2px;';
 
-    // 依據上下文判斷流入或賣超
     if (parentText.includes('買最多') || parentText.includes('最佳')) {
       chip.style.background = '#FEE2E2';
       chip.style.color = '#991B1B';
@@ -4092,6 +4117,13 @@ function fetchTodayBriefData() {
       if (outflowContainer) outflowContainer.appendChild(chip);
     }
   });
+}
+
+function showBriefError() {
+  const summaryTarget = document.getElementById('tb-summary-rows');
+  if (summaryTarget) {
+    summaryTarget.innerHTML = '<div style="color:#a0aec0;">無法抓取今日重點數據（請確認 #brief-toggle 按鈕存在）</div>';
+  }
 }
 
 
