@@ -388,6 +388,7 @@
       <button class="trend-btn" onclick="openAiAnalysisModal(); closeModal('featuresPortalModal');" style="background-color: #F54C4C; color: white; margin:0; height: 50px; font-weight: bold;">🧐 智慧分析</button>
       <button class="trend-btn" onclick="openEveningExpressModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #3B1E37 0%, #2BCEE3 100%); color: #F8FAFC; margin:0;">🌍財經快報</button>
       <button class="trend-btn" onclick="openPotentialStocksModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); color: white; margin:0; height: 50px; font-weight: bold; flex: 1;">🔥 潛力股票</button>
+      <button class="trend-btn" onclick="openTodayBriefModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #20B2AA 0%, #008B8B 100%); color: white; margin:0; height: 50px; font-weight: bold; flex: 1;">📌 今日重點</button></div>
       <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
     </div>
     <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
@@ -535,6 +536,50 @@
         <div class="modal-footer"><button onclick="closeModal('rankModal')" style="width:100%; background-color:#718096; color: white;">關閉</button></div>
       </div>
     </div>
+
+    <div id="todayBriefModal" class="modal">
+  <div class="modal-content" style="max-width: 650px;">
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin:0; color:#008B8B; display: flex; align-items: center; gap: 8px;">📌 盤面今日重點與資金動向</h3>
+      <button onclick="fetchTodayBriefData()" style="background-color: #008B8B; color: white; padding: 4px 10px; font-size: 12px; margin:0;">🔄 重新整理</button>
+    </div>
+    
+    <div class="modal-body-scroll" id="todayBriefContent">
+      <!-- 區塊 A：今日大盤重點 -->
+      <div style="background: rgba(0, 139, 139, 0.08); padding: 14px; border-radius: 10px; border-left: 4px solid #008B8B; margin-bottom: 15px;">
+        <div style="font-weight: bold; font-size: 1.05em; color: var(--text-main); margin-bottom: 8px;" id="tb-date-title">
+          今日重點（--/--）
+        </div>
+        <div style="font-size: 0.9em; line-height: 1.6;" id="tb-summary-rows">
+          <!-- JS 動態帶入市場情緒、法人買超板塊、大戶異常等 -->
+        </div>
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(0,0,0,0.15); font-size: 0.88em; color: var(--text-muted);" id="tb-ai-summary">
+          <!-- JS 動態帶入 AI 盤後總結 -->
+        </div>
+      </div>
+
+      <!-- 區塊 B：板塊資金流入 / 流出分類 (由原本 SVG 與 Ranking 解析組裝) -->
+      <h4 style="margin-bottom: 10px; color: var(--primary);">📊 板塊資金淨動向分類</h4>
+      
+      <!-- 資金流入板塊 -->
+      <div style="margin-bottom: 12px; background: rgba(216, 90, 48, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(216, 90, 48, 0.2);">
+        <div style="font-weight: bold; color: #D85A30; font-size: 0.9em; margin-bottom: 6px;">🚀 資金大幅流入板塊</div>
+        <div id="inflow-sectors-list" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+      </div>
+
+      <!-- 資金流出板塊 -->
+      <div style="margin-bottom: 12px; background: rgba(29, 158, 117, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(29, 158, 117, 0.2);">
+        <div style="font-weight: bold; color: #1D9E75; font-size: 0.9em; margin-bottom: 6px;">📉 資金持續流出板塊</div>
+        <div id="outflow-sectors-list" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+      </div>
+    </div>
+
+    <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
+      <button onclick="closeModal('todayBriefModal')" style="width:100%; background-color:#718096; color: white;">關閉</button>
+    </div>
+  </div>
+</div>
+
     <div id="withdrawModal" class="modal">
       <div class="modal-content">
         <div class="modal-header"><h3 style="margin:0; color:#2F855A;">💸 提領結算試算</h3></div>
@@ -883,7 +928,7 @@
         <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: stretch; margin-bottom: 15px;">
           <div style="flex: 1; min-width: 250px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
             <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">今日收益</small><div id="profitDiffDisplay" style="font-size: 1.15em; font-weight: 700;">--</div></div>
-            <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">總收益</small><div id="autoTotalNetWorth" style="font-size: 1.15em; font-weight: 700; color: #2B6CB0;">--</div></div>
+            <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">不含息收益</small><div id="autoTotalNetWorth" style="font-size: 1.15em; font-weight: 700; color: #2B6CB0;">--</div></div>
             <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">本月幅度</small><div id="monthPerformance" style="font-size: 1.15em; font-weight: 700;">--</div></div>
             <div style="padding: 8px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;"><small style="color:#718096;">歷史最大回撤</small><div id="maxDrawdownDisplay" style="font-size: 1.15em; font-weight: 700; color: #35C530;">--</div></div>
           </div>
@@ -3420,10 +3465,10 @@ function calculateMACDAndEMASignals(prices) {
 
   let warnings = [];
   if (currentPrice < currentEma12) {
-    warnings.push("跌破 12均線");
+    warnings.push("跌破 EMA12");
   }
   if (currentPrice < currentEma26) {
-    warnings.push("跌破 支撐");
+    warnings.push("跌破 EMA26");
   }
 
   const isCrossDownEma12 = (prevPrice >= ema12Arr[ema12Arr.length - 2]) && (currentPrice < currentEma12);
@@ -3457,11 +3502,11 @@ function processRsvAndMacdData(stockList) {
 
     let alertBadgeHtml = "";
     if (price < macdInfo.ema12 && price < macdInfo.ema26) {
-      alertBadgeHtml = `<span style="color:#e53e3e; font-size:11px; font-weight:bold; background:#fff5f5; padding:2px 6px; border-radius:4px; border:1px solid #feb2b2;">⚠️ 跌破 均線/支撐</span>`;
+      alertBadgeHtml = `<span style="color:#e53e3e; font-size:11px; font-weight:bold; background:#fff5f5; padding:2px 6px; border-radius:4px; border:1px solid #feb2b2;">⚠️ 跌破 EMA12/26</span>`;
     } else if (price < macdInfo.ema12) {
-      alertBadgeHtml = `<span style="color:#dd6b20; font-size:11px; font-weight:bold; background:#fffaf0; padding:2px 6px; border-radius:4px; border:1px solid #fbd38d;">⚠️ 跌破 均線</span>`;
+      alertBadgeHtml = `<span style="color:#dd6b20; font-size:11px; font-weight:bold; background:#fffaf0; padding:2px 6px; border-radius:4px; border:1px solid #fbd38d;">⚠️ 跌破 EMA12</span>`;
     } else if (price < macdInfo.ema26) {
-      alertBadgeHtml = `<span style="color:#dd6b20; font-size:11px; font-weight:bold; background:#fffaf0; padding:2px 6px; border-radius:4px; border:1px solid #fbd38d;">⚠️ 跌破 支撐</span>`;
+      alertBadgeHtml = `<span style="color:#dd6b20; font-size:11px; font-weight:bold; background:#fffaf0; padding:2px 6px; border-radius:4px; border:1px solid #fbd38d;">⚠️ 跌破 EMA26</span>`;
     }
 
   });
@@ -3483,15 +3528,15 @@ function renderRsvTableRow(item) {
 
   // 1. 跌破警告：現價 < EMA12 或 現價 < EMA26
   if (price < ema26) {
-    warningBadge = `<span style="background: #FED7D7; color: #9B2C2C; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #E53E3E;">🚨 跌破支撐</span>`;
+    warningBadge = `<span style="background: #FED7D7; color: #9B2C2C; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #E53E3E;">🚨 跌破EMA26</span>`;
   } else if (price < ema12) {
-    warningBadge = `<span style="background: #FEEBC8; color: #9C4221; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #DD6B20;">⚠️ 跌破均線</span>`;
+    warningBadge = `<span style="background: #FEEBC8; color: #9C4221; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #DD6B20;">⚠️ 跌破EMA12</span>`;
   } 
   // 2. 接近/貼近警告：價格離 EMA12 或 EMA26 差距在 1% 以內
   else if (Math.abs(price - ema12) / price <= 0.01) {
-    warningBadge = `<span style="background: #FEFCBF; color: #744210; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #D69E2E;">👀 逼近均線</span>`;
+    warningBadge = `<span style="background: #FEFCBF; color: #744210; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #D69E2E;">👀 逼近EMA12</span>`;
   } else if (Math.abs(price - ema26) / price <= 0.01) {
-    warningBadge = `<span style="background: #FEFCBF; color: #744210; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #D69E2E;">👀 逼近支撐</span>`;
+    warningBadge = `<span style="background: #FEFCBF; color: #744210; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px; border: 1px solid #D69E2E;">👀 逼近EMA26</span>`;
   } else {
     warningBadge = `<span style="background: #C6F6D5; color: #22543D; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 6px;">✨ 站穩均線上</span>`;
   }
@@ -3969,7 +4014,87 @@ function openPotentialStocksModal() {
     if (modal) modal.style.display = 'block';
   }
 }
+// 開啟「今日重點」Modal 觀看資料
+function openTodayBriefModal() {
+  openModal('todayBriefModal');
+  fetchTodayBriefData();
+}
 
+// 解析 Tide 頁面 DOM 並帶入 Modal
+function fetchTodayBriefData() {
+  console.log("開始解析今日重點資料...");
+
+  // 1. 解析今日標題與 AI 總結（支援多重選擇器備案）
+  const todayTitleEl = document.querySelector('#today-brief .tb-title') || document.querySelector('.tb-title');
+  const rows = document.querySelectorAll('#today-brief .tb-row, .tb-row');
+  const aiBodyEl = document.querySelector('#tb-ai-body') || document.querySelector('.tb-ai-body');
+
+  const todayTitle = todayTitleEl ? todayTitleEl.innerText.trim() : "今日重點";
+  const aiBody = aiBodyEl ? aiBodyEl.innerText.trim() : "暫無 AI 總結資料";
+
+  const titleTarget = document.getElementById('tb-date-title');
+  if (titleTarget) titleTarget.innerText = todayTitle;
+  
+  // 組合內文
+  let rowsHtml = '';
+  if (rows.length > 0) {
+    rows.forEach(r => {
+      rowsHtml += `<div style="margin-bottom:4px;">• ${r.innerHTML}</div>`;
+    });
+  } else {
+    rowsHtml = '<div style="color:#a0aec0;">尚無今日大盤重點資料</div>';
+  }
+  
+  const summaryTarget = document.getElementById('tb-summary-rows');
+  const aiSummaryTarget = document.getElementById('tb-ai-summary');
+  
+  if (summaryTarget) summaryTarget.innerHTML = rowsHtml;
+  if (aiSummaryTarget) aiSummaryTarget.innerHTML = `<b>🤖 AI 盤後總結：</b><br>${aiBody}`;
+
+  // 2. 解析泡泡圖與板塊流入 / 流出
+  const bubbles = document.querySelectorAll('#chart-wrap .bubble, .bubble');
+  const inflowContainer = document.getElementById('inflow-sectors-list');
+  const outflowContainer = document.getElementById('outflow-sectors-list');
+  
+  if (inflowContainer) inflowContainer.innerHTML = '';
+  if (outflowContainer) outflowContainer.innerHTML = '';
+
+  let hasInflow = false;
+  let hasOutflow = false;
+
+  bubbles.forEach(b => {
+    const label = (b.querySelector('.bubble-label') || b.querySelector('.label'))?.textContent.trim() || '';
+    const flowText = (b.querySelector('.bubble-pct') || b.querySelector('.pct'))?.textContent.trim() || '';
+    const chgText = (b.querySelector('.bubble-chg') || b.querySelector('.chg'))?.textContent.trim() || '';
+    
+    if (!label) return; // 沒名稱就跳過
+
+    const chip = document.createElement('span');
+    chip.style.cssText = 'padding:4px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; margin:2px;';
+
+    if (flowText.includes('+')) {
+      hasInflow = true;
+      chip.style.background = '#FEE2E2';
+      chip.style.color = '#991B1B';
+      chip.innerText = `${label} (${flowText} ${chgText ? '| ' + chgText : ''})`;
+      if (inflowContainer) inflowContainer.appendChild(chip);
+    } else {
+      hasOutflow = true;
+      chip.style.background = '#D1FAE5';
+      chip.style.color = '#065F46';
+      chip.innerText = `${label} (${flowText} ${chgText ? '| ' + chgText : ''})`;
+      if (outflowContainer) outflowContainer.appendChild(chip);
+    }
+  });
+
+  // 無資料時的空狀態提示
+  if (!hasInflow && inflowContainer) {
+    inflowContainer.innerHTML = '<span style="font-size:12px; color:#a0aec0;">未偵測到流入板塊數據</span>';
+  }
+  if (!hasOutflow && outflowContainer) {
+    outflowContainer.innerHTML = '<span style="font-size:12px; color:#a0aec0;">未偵測到流出板塊數據</span>';
+  }
+}
 function renderFundingHistoryLogs(logs) {
   const container = document.getElementById('fundingHistoryLogs');
   if (!container) return;
