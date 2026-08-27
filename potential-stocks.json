@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-08-27T14:35:54.518Z",
+  "updatedAt": "2026-08-27T19:23:21.819Z",
   "count": 20,
   "stocks": [
     {
@@ -11,17 +11,17 @@
       "rank": 1
     },
     {
-      "symbol": "6187",
-      "name": "萬潤",
+      "symbol": "3105",
+      "name": "穩懋",
       "category": "漲幅排行",
-      "price": 1430,
+      "price": 445.5,
       "rank": 2
     },
     {
-      "symbol": "5543",
-      "name": "桓鼎-KY",
+      "symbol": "3441",
+      "name": "聯一光",
       "category": "漲幅排行",
-      "price": 28.6,
+      "price": 137.5,
       "rank": 3
     },
     {
@@ -32,45 +32,45 @@
       "rank": 4
     },
     {
+      "symbol": "6187",
+      "name": "萬潤",
+      "category": "漲幅排行",
+      "price": 1430,
+      "rank": 5
+    },
+    {
       "symbol": "7835",
       "name": "永悅健康-創",
       "category": "漲幅排行",
       "price": 23.1,
-      "rank": 5
+      "rank": 6
+    },
+    {
+      "symbol": "5543",
+      "name": "桓鼎-KY",
+      "category": "漲幅排行",
+      "price": 28.6,
+      "rank": 7
     },
     {
       "symbol": "1312",
       "name": "國喬",
       "category": "漲幅排行",
       "price": 14.3,
-      "rank": 6
-    },
-    {
-      "symbol": "3441",
-      "name": "聯一光",
-      "category": "漲幅排行",
-      "price": 137.5,
-      "rank": 7
-    },
-    {
-      "symbol": "3105",
-      "name": "穩懋",
-      "category": "漲幅排行",
-      "price": 445.5,
       "rank": 8
-    },
-    {
-      "symbol": "3230",
-      "name": "錦明",
-      "category": "漲幅排行",
-      "price": 47.35,
-      "rank": 9
     },
     {
       "symbol": "6668",
       "name": "中揚光",
       "category": "漲幅排行",
       "price": 42.95,
+      "rank": 9
+    },
+    {
+      "symbol": "3230",
+      "name": "錦明",
+      "category": "漲幅排行",
+      "price": 47.35,
       "rank": 10
     },
     {
