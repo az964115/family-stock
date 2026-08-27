@@ -4028,80 +4028,76 @@ function openTodayBriefModal() {
 
 // 解析 Tide 頁面 DOM 並帶入 Modal
 function fetchTodayBriefData() {
-  console.log("開始解析 Tide 頁面資料...");
+  console.log("開始解析 #today-brief 區塊資料...");
 
-  // 1. 抓取 Tide 頂部的更新日期與大盤動態 (#update-info)
-  const updateInfo = document.getElementById('update-info');
-  const mktChip = updateInfo?.querySelector('.mkt-chip')?.innerText.trim() || '大盤動態整理中';
-  const updDate = updateInfo?.querySelector('.upd-date')?.innerText.replace('方案', '').trim() || '最新交易日';
-  const updNote = updateInfo?.querySelector('.upd-note')?.innerText.trim() || '';
-
-  // 更新 Modal 標題與摘要
-  const titleTarget = document.getElementById('tb-date-title');
-  if (titleTarget) {
-    titleTarget.innerText = `📌 今日重點（${updDate}）`;
+  const briefContainer = document.getElementById('today-brief');
+  if (!briefContainer) {
+    console.warn("找不到 #today-brief 區塊");
+    return;
   }
 
-  let rowsHtml = `
-    <div style="margin-bottom:6px; font-weight:bold; color:#D85A30;">• 市場表現：${mktChip}</div>
-    <div style="margin-bottom:4px; color:var(--text-muted); font-size:0.85em;">• ${updNote}</div>
-    <div style="margin-bottom:4px;">• 熱門板塊維持輪動，資金持續關注成交量放大之焦點類股。</div>
-  `;
+  // 1. 抓取標題（例如：今日重點（08/26））
+  const titleEl = briefContainer.querySelector('.tb-title');
+  const todayTitle = titleEl ? titleEl.textContent.trim() : "今日重點";
+
+  const titleTarget = document.getElementById('tb-date-title');
+  if (titleTarget) titleTarget.innerText = todayTitle;
+
+  // 2. 抓取多個重點列（.tb-row）
+  const rows = briefContainer.querySelectorAll('.tb-row');
+  let rowsHtml = '';
+
+  rows.forEach(r => {
+    // 複製 HTML 結構以保留原本的顏色標示與文字
+    const rowContent = r.innerHTML.trim();
+    if (rowContent) {
+      rowsHtml += `<div style="margin-bottom: 6px; line-height: 1.5;">• ${rowContent}</div>`;
+    }
+  });
 
   const summaryTarget = document.getElementById('tb-summary-rows');
-  const aiSummaryTarget = document.getElementById('tb-ai-summary');
-
-  if (summaryTarget) summaryTarget.innerHTML = rowsHtml;
-  if (aiSummaryTarget) {
-    aiSummaryTarget.innerHTML = `<b>🤖 AI 盤後總結：</b><br>大盤今日呈現 ${mktChip} 態勢，市場資金偏好明確，建議密切觀察強勢板塊之續航力與法人籌碼歸屬。`;
+  if (summaryTarget) {
+    summaryTarget.innerHTML = rowsHtml || '<div>暫無重點資料</div>';
   }
 
-  // 2. 解析板塊資料 (抓取 .filter-btn 與 .bubble 節點)
-  const filterBtns = document.querySelectorAll('.filter-btn, .bubble');
+  // 3. 抓取 AI 盤後總結（#tb-ai-body）
+  const aiBodyEl = briefContainer.querySelector('#tb-ai-body');
+  // 使用 textContent 避免因為 CSS 隱藏而抓不到文字
+  const aiBodyText = aiBodyEl ? (aiBodyEl.textContent || aiBodyEl.innerText).trim() : "暫無 AI 總結資料";
+
+  const aiSummaryTarget = document.getElementById('tb-ai-summary');
+  if (aiSummaryTarget) {
+    aiSummaryTarget.innerHTML = `<b>🤖 AI 盤後總結：</b><br><span style="line-height:1.6; display:block; margin-top:4px;">${aiBodyText}</span>`;
+  }
+
+  // 4. 解析重點中的買超板塊 (補充帶入下方板塊資金區塊)
   const inflowContainer = document.getElementById('inflow-sectors-list');
   const outflowContainer = document.getElementById('outflow-sectors-list');
 
   if (inflowContainer) inflowContainer.innerHTML = '';
   if (outflowContainer) outflowContainer.innerHTML = '';
 
-  let hasInflow = false;
-  let hasOutflow = false;
-
-  filterBtns.forEach(el => {
-    const text = el.innerText.trim();
-    if (!text || text.includes('全部') || text.length > 15) return;
+  const sectors = briefContainer.querySelectorAll('.tb-sec');
+  sectors.forEach(sec => {
+    const secName = sec.textContent.trim();
+    const parentText = sec.parentElement ? sec.parentElement.textContent : '';
 
     const chip = document.createElement('span');
-    chip.style.cssText = 'padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; margin:2px;';
+    chip.style.cssText = 'padding:4px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; margin:2px;';
 
-    // 依據類別或文字判定流入/流出
-    if (el.classList.contains('active') || text.includes('+') || text.includes('強') || text.includes('綠')) {
-      hasInflow = true;
+    // 依據上下文判斷流入或賣超
+    if (parentText.includes('買最多') || parentText.includes('最佳')) {
       chip.style.background = '#FEE2E2';
       chip.style.color = '#991B1B';
-      chip.innerText = text;
+      chip.innerText = secName;
       if (inflowContainer) inflowContainer.appendChild(chip);
-    } else {
-      hasOutflow = true;
+    } else if (parentText.includes('賣超') || parentText.includes('被倒')) {
       chip.style.background = '#D1FAE5';
       chip.style.color = '#065F46';
-      chip.innerText = text;
+      chip.innerText = secName;
       if (outflowContainer) outflowContainer.appendChild(chip);
     }
   });
-
-  // 若沒抓到個別板塊按鈕時的呈現預設值
-  if (!hasInflow && inflowContainer) {
-    inflowContainer.innerHTML = `
-      <span style="padding:4px 8px; border-radius:12px; font-size:12px; font-weight:bold; background:#FEE2E2; color:#991B1B;">電子半導體 (+1.8%)</span>
-      <span style="padding:4px 8px; border-radius:12px; font-size:12px; font-weight:bold; background:#FEE2E2; color:#991B1B;">AI 供應鏈 (+2.3%)</span>
-    `;
-  }
-  if (!hasOutflow && outflowContainer) {
-    outflowContainer.innerHTML = `
-      <span style="padding:4px 8px; border-radius:12px; font-size:12px; font-weight:bold; background:#D1FAE5; color:#065F46;">傳產航運 (-0.5%)</span>
-    `;
-  }
 }
 
 
