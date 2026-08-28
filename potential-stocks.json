@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-08-28T06:07:12.682Z",
+  "updatedAt": "2026-08-28T12:35:46.545Z",
   "count": 20,
   "stocks": [
     {
@@ -74,73 +74,73 @@
       "rank": 10
     },
     {
-      "symbol": "2408",
-      "name": "南亞科",
+      "symbol": "2303",
+      "name": "聯電",
       "category": "法人買超",
-      "price": 541,
+      "price": 130,
       "rank": 1
     },
     {
-      "symbol": "2344",
-      "name": "華邦電",
+      "symbol": "2892",
+      "name": "第一金",
       "category": "法人買超",
-      "price": 186,
+      "price": 34.4,
       "rank": 2
     },
     {
-      "symbol": "1301",
-      "name": "台塑",
+      "symbol": "2886",
+      "name": "兆豐金",
       "category": "法人買超",
-      "price": 63.1,
+      "price": 48.2,
       "rank": 3
     },
     {
-      "symbol": "2889",
-      "name": "國票金",
+      "symbol": "3481",
+      "name": "群創",
       "category": "法人買超",
-      "price": 16.2,
+      "price": 48.6,
       "rank": 4
     },
     {
-      "symbol": "2317",
-      "name": "鴻海",
+      "symbol": "1815",
+      "name": "富喬",
       "category": "法人買超",
-      "price": 252,
+      "price": 125.5,
       "rank": 5
     },
     {
-      "symbol": "1314",
-      "name": "中石化",
+      "symbol": "1303",
+      "name": "南亞",
       "category": "法人買超",
-      "price": 8.16,
+      "price": 220.5,
       "rank": 6
     },
     {
-      "symbol": "2634",
-      "name": "漢翔",
+      "symbol": "2409",
+      "name": "友達",
       "category": "法人買超",
-      "price": 70.3,
+      "price": 25.85,
       "rank": 7
     },
     {
-      "symbol": "1717",
-      "name": "長興",
+      "symbol": "2449",
+      "name": "京元電子",
       "category": "法人買超",
-      "price": 75.8,
+      "price": 270,
       "rank": 8
     },
     {
-      "symbol": "2371",
-      "name": "大同",
+      "symbol": "1802",
+      "name": "台玻",
       "category": "法人買超",
-      "price": 29.2,
+      "price": 60.8,
       "rank": 9
     },
     {
-      "symbol": "2801",
-      "name": "彰銀",
+      "symbol": "2834",
+      "name": "臺企銀",
       "category": "法人買超",
-      "price": 24.7,
+      "price": 16.45,
       "rank": 10
     }
   ]
