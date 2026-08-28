@@ -2,7 +2,7 @@ name: Auto Update Potential Stocks Data
 
 on:
   schedule:
-    - cron: '0 1-17/2 * * *'
+    - cron: '0 1-7/2 * * *'
   workflow_dispatch:
 
 jobs:
