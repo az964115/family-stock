@@ -20,21 +20,18 @@ const fs = require('fs');
 
     console.log('🌐 正在前往 CMoney 排行榜頁面...');
     await page.goto('https://www.cmoney.tw/forum/stock/rank', {
-      waitUntil: 'networkidle', // 改為等待網路空閒，確保 Vue/React 組件完全渲染
+      waitUntil: 'networkidle', 
       timeout: 60000
     });
 
-    // 1. 等待表格主體渲染完成
     console.log('⏳ 等待 DOM 元素渲染...');
     await page.waitForSelector('tbody tr', { timeout: 15000 });
 
-    // 2. 在瀏覽器環境中解析資料
     const stocks = await page.evaluate(() => {
       const items = [];
       const seenSymbols = new Set();
 
       function parseSection(sectionId, categoryName) {
-        // 若有指定的 sectionId 則限縮範圍，否則對全頁表格進行尋找
         const root = sectionId ? document.querySelector(`section#${sectionId}`) : document;
         if (!root) return;
 
@@ -42,12 +39,10 @@ const fs = require('fs');
         let count = 0;
 
         rows.forEach(row => {
-          if (count >= 10) return; // 每個區塊只抓前 10 名
+          if (count >= 10) return; 
 
-          // 直接利用網頁專屬的 Class 精準抓取
           const nameEl = row.querySelector('.table__stockName');
           const idEl = row.querySelector('.table__stockId');
-          // 股價位於第 3 個 td (index 2)
           const priceTd = row.querySelectorAll('td')[2];
 
           if (idEl && nameEl) {
@@ -59,8 +54,8 @@ const fs = require('fs');
             if (symbol && !seenSymbols.has(symbol)) {
               seenSymbols.add(symbol);
               items.push({
-                symbol: symbol,         // 例: "4609"
-                name: name,             // 例: "唐鋒" (不會再抓成數字了)
+                symbol: symbol,         
+                name: name,             
                 category: categoryName,
                 price: price,
                 rank: count + 1
@@ -71,12 +66,10 @@ const fs = require('fs');
         });
       }
 
-      // 嘗試依序解析各個 section，若無識別 sectionId 則作為整體表格解析
       parseSection('ChangeUp', '漲幅排行');
       parseSection('Volume', '成交量排行');
       parseSection('InstitutionalInvestorBuy', '法人買超');
 
-      // 備用機制：若指定 Section 找不到，直接解析頁面現有的主要表格
       if (items.length === 0) {
         parseSection(null, '熱門排行');
       }
@@ -86,12 +79,10 @@ const fs = require('fs');
 
     console.log(`✅ 成功擷取到 ${stocks.length} 筆排行榜資料`);
 
-    // 防呆驗證
     if (stocks.length === 0) {
       throw new Error('未成功解析到任何股票資料，請檢查頁面 DOM 結構或反爬蟲機制。');
     }
 
-    // 3. 寫入 JSON 檔
     const outputData = {
       status: 'success',
       updatedAt: new Date().toISOString(),
