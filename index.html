@@ -4231,7 +4231,7 @@ function openSimTradeModal() {
   openModal('simTradeModal');
 }
 
-// 🌐 直接連線 Yahoo Finance API (使用穩定的 AllOrigins 代理)
+// 🌐 透過 FinMind API 自動帶入個股與大盤歷史價格 (免 CORS Proxy，極度穩定)
 async function fetchSimMarketData() {
   let symbolInput = document.getElementById('simSymbol').value.trim();
   const buyDateStr = document.getElementById('simBuyDate').value;
@@ -4246,76 +4246,57 @@ async function fetchSimMarketData() {
     return;
   }
 
-  // 自動處理台股格式 (.TW)
-  let stockTicker = symbolInput.toUpperCase();
-  if (/^\d{4}$/.test(stockTicker)) {
-    stockTicker += '.TW';
-  }
+  // 整理代號 (去除 .TW 尾綴)
+  const stockId = symbolInput.toUpperCase().replace('.TW', '').replace('.TWO', '');
 
   const btn = event.target;
   const originalText = btn.innerHTML;
-  btn.innerText = "⏳ 連線 Yahoo Finance 抓取中...";
+  btn.innerText = "⏳ 連線 FinMind 抓取中...";
   btn.disabled = true;
 
   try {
-    // 轉換日期為 Unix Timestamp (秒)
-    const period1 = Math.floor(new Date(buyDateStr).getTime() / 1000);
-    // 賣出日加一日以涵蓋當天數據
-    const period2 = Math.floor(new Date(sellDateStr).getTime() / 1000) + 86400;
-
-    async function getYahooPrice(ticker) {
-      const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?period1=${period1}&period2=${period2}&interval=1d`;
+    // Helper 函式：打 FinMind TaiwanStockPrice API
+    async function getFinMindPrice(targetId) {
+      const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${encodeURIComponent(targetId)}&start_date=${buyDateStr}&end_date=${sellDateStr}`;
       
-      // 💡 改用 AllOrigins 免費代理，解決 403 問題
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-
-      const res = await fetch(proxyUrl);
-      if (!res.ok) throw new Error(`HTTP 錯誤: ${res.status}`);
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP 錯誤 ${res.status}`);
       
-      const proxyData = await res.json();
-      // AllOrigins 會把目標內容放在 contents 字串裡面
-      const data = JSON.parse(proxyData.contents);
+      const result = await res.json();
       
-      if (!data.chart || !data.chart.result || data.chart.result.length === 0) {
-        throw new Error(`無法取得 ${ticker} 數據`);
+      if (!result.data || result.data.length === 0) {
+        throw new Error(`標的 ${targetId} 在此區間無數據 (可能為非交易日或代號錯誤)`);
       }
 
-      const result = data.chart.result[0];
-      const quotes = result.indicators.quote[0].close || [];
-
-      // 過濾掉休市日或無效數據 (null)
-      const validQuotes = quotes.filter(p => p !== null && p !== undefined);
-
-      if (validQuotes.length === 0) {
-        throw new Error(`${ticker} 在該區間內無交易數據 (可能為休市日)`);
-      }
-
-      const buyPrice = validQuotes[0];
-      const sellPrice = validQuotes[validQuotes.length - 1];
+      // 取出範圍內的第一筆 (購入日) 與最後一筆 (賣出日)
+      const buyItem = result.data[0];
+      const sellItem = result.data[result.data.length - 1];
 
       return {
-        buy: buyPrice ? buyPrice.toFixed(2) : null,
-        sell: sellPrice ? sellPrice.toFixed(2) : null
+        buy: buyItem.close,
+        sell: sellItem.close,
+        actualBuyDate: buyItem.date,
+        actualSellDate: sellItem.date
       };
     }
 
-    // 同時並行抓取「個股」與「加權指數 (^TWII)」
+    // 同時抓取「個股」與「加權指數 (TAIEX)」
     const [stockData, taiexData] = await Promise.all([
-      getYahooPrice(stockTicker),
-      getYahooPrice('^TWII')
+      getFinMindPrice(stockId),
+      getFinMindPrice('TAIEX')
     ]);
 
-    // 帶入 HTML 表單
-    if (stockData.buy) document.getElementById('simBuyPrice').value = stockData.buy;
-    if (stockData.sell) document.getElementById('simSellPrice').value = stockData.sell;
-    if (taiexData.buy) document.getElementById('simTaiexBuy').value = taiexData.buy;
-    if (taiexData.sell) document.getElementById('simTaiexSell').value = taiexData.sell;
+    // 自動帶入 HTML 表單
+    document.getElementById('simBuyPrice').value = stockData.buy;
+    document.getElementById('simSellPrice').value = stockData.sell;
+    document.getElementById('simTaiexBuy').value = taiexData.buy;
+    document.getElementById('simTaiexSell').value = taiexData.sell;
 
-    alert(`✅ 抓取成功！\n【${stockTicker}】買: $${stockData.buy} / 賣: $${stockData.sell}\n【加權指數】買: ${taiexData.buy} / 賣: ${taiexData.sell}`);
+    alert(`✅ 資料自動帶入成功！\n\n【${stockId}】\n買入 (${stockData.actualBuyDate}): $${stockData.buy}\n賣出 (${stockData.actualSellDate}): $${stockData.sell}\n\n【加權指數 TAIEX】\n買入: ${taiexData.buy}\n賣出: ${taiexData.sell}`);
 
   } catch (error) {
-    console.error("Yahoo API 抓取失敗:", error);
-    alert(`抓取失敗: ${error.message}\n💡 請確認選擇的日期是否為台股開盤日（非六日或國定假日）。`);
+    console.error("FinMind API 抓取失敗:", error);
+    alert(`抓取失敗: ${error.message}\n💡 請確認選取的日期是否包含開盤日（避開六日與國定假日）。`);
   } finally {
     btn.innerHTML = originalText;
     btn.disabled = false;
