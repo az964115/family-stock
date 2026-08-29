@@ -4231,7 +4231,7 @@ function openSimTradeModal() {
   openModal('simTradeModal');
 }
 
-// 🌐 直接連線 Yahoo Finance API 抓取個股與大盤歷史價格
+// 🌐 直接連線 Yahoo Finance API (使用穩定的 AllOrigins 代理)
 async function fetchSimMarketData() {
   let symbolInput = document.getElementById('simSymbol').value.trim();
   const buyDateStr = document.getElementById('simBuyDate').value;
@@ -4246,7 +4246,7 @@ async function fetchSimMarketData() {
     return;
   }
 
-  // 自動加上台股附檔名 (.TW)
+  // 自動處理台股格式 (.TW)
   let stockTicker = symbolInput.toUpperCase();
   if (/^\d{4}$/.test(stockTicker)) {
     stockTicker += '.TW';
@@ -4260,30 +4260,38 @@ async function fetchSimMarketData() {
   try {
     // 轉換日期為 Unix Timestamp (秒)
     const period1 = Math.floor(new Date(buyDateStr).getTime() / 1000);
-    // 賣出日往後加 1 天以確保包含當日數據
+    // 賣出日加一日以涵蓋當天數據
     const period2 = Math.floor(new Date(sellDateStr).getTime() / 1000) + 86400;
 
-    // Helper 函式：透過 CORS Proxy 打 Yahoo Finance Chart API
     async function getYahooPrice(ticker) {
       const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?period1=${period1}&period2=${period2}&interval=1d`;
-      // 使用免費 CORS 轉發服務
-      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+      
+      // 💡 改用 AllOrigins 免費代理，解決 403 問題
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
 
       const res = await fetch(proxyUrl);
-      if (!res.ok) throw new Error(`無法取得 ${ticker} 的數據`);
-      const data = await res.json();
+      if (!res.ok) throw new Error(`HTTP 錯誤: ${res.status}`);
       
-      const result = data.chart.result[0];
-      const timestamps = result.timestamp || [];
-      const quotes = result.indicators.quote[0].close || [];
-
-      if (timestamps.length === 0) {
-        throw new Error(`${ticker} 在指定區間內無交易數據 (可能為非交易日)`);
+      const proxyData = await res.json();
+      // AllOrigins 會把目標內容放在 contents 字串裡面
+      const data = JSON.parse(proxyData.contents);
+      
+      if (!data.chart || !data.chart.result || data.chart.result.length === 0) {
+        throw new Error(`無法取得 ${ticker} 數據`);
       }
 
-      // 取出最接近買入日(第一筆)與賣出日(最後一筆)的收盤價
-      const buyPrice = quotes[0];
-      const sellPrice = quotes[quotes.length - 1];
+      const result = data.chart.result[0];
+      const quotes = result.indicators.quote[0].close || [];
+
+      // 過濾掉休市日或無效數據 (null)
+      const validQuotes = quotes.filter(p => p !== null && p !== undefined);
+
+      if (validQuotes.length === 0) {
+        throw new Error(`${ticker} 在該區間內無交易數據 (可能為休市日)`);
+      }
+
+      const buyPrice = validQuotes[0];
+      const sellPrice = validQuotes[validQuotes.length - 1];
 
       return {
         buy: buyPrice ? buyPrice.toFixed(2) : null,
@@ -4291,23 +4299,23 @@ async function fetchSimMarketData() {
       };
     }
 
-    // 1. 同時並行抓取「個股」與「台灣加權指數 (^TWII)」
+    // 同時並行抓取「個股」與「加權指數 (^TWII)」
     const [stockData, taiexData] = await Promise.all([
       getYahooPrice(stockTicker),
       getYahooPrice('^TWII')
     ]);
 
-    // 2. 將數值自動帶入 HTML 表單中
+    // 帶入 HTML 表單
     if (stockData.buy) document.getElementById('simBuyPrice').value = stockData.buy;
     if (stockData.sell) document.getElementById('simSellPrice').value = stockData.sell;
     if (taiexData.buy) document.getElementById('simTaiexBuy').value = taiexData.buy;
     if (taiexData.sell) document.getElementById('simTaiexSell').value = taiexData.sell;
 
-    alert(`✅ 已成功自動抓取！\n標的 (${stockTicker}): 買入 $${stockData.buy} / 賣出 $${stockData.sell}\n加權指數 (^TWII): 買入 ${taiexData.buy} / 賣出 ${taiexData.sell}`);
+    alert(`✅ 抓取成功！\n【${stockTicker}】買: $${stockData.buy} / 賣: $${stockData.sell}\n【加權指數】買: ${taiexData.buy} / 賣: ${taiexData.sell}`);
 
   } catch (error) {
     console.error("Yahoo API 抓取失敗:", error);
-    alert(`抓取失敗: ${error.message}\n💡 請確認日期是否為交易日，或手動輸入金額。`);
+    alert(`抓取失敗: ${error.message}\n💡 請確認選擇的日期是否為台股開盤日（非六日或國定假日）。`);
   } finally {
     btn.innerHTML = originalText;
     btn.disabled = false;
