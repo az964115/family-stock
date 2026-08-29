@@ -388,7 +388,7 @@
       <button class="trend-btn" onclick="openAiAnalysisModal(); closeModal('featuresPortalModal');" style="background-color: #F54C4C; color: white; margin:0; height: 50px; font-weight: bold;">🧐 智慧分析</button>
       <button class="trend-btn" onclick="openEveningExpressModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #3B1E37 0%, #2BCEE3 100%); color: #F8FAFC; margin:0;">🌍財經快報</button>
       <button class="trend-btn" onclick="openPotentialStocksModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); color: white; margin:0; height: 50px; font-weight: bold; flex: 1;">🔥 潛力股票</button>
-      <button class="trend-btn" onclick="openTodayBriefModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #A6B220 0%, #8B3100 100%); color: white; margin:0; height: 50px; font-weight: bold; flex: 1;">📌 今日重點</button>
+      <button class="trend-btn" onclick="openSimTradeModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%); color: white; margin:0; height: 50px; font-weight: bold; flex: 1; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">🎮 模擬交易</button>
       <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
     </div>
     <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
@@ -544,7 +544,7 @@
       <button onclick="closeModal('rsvMonitoringModal')" style="width:100%; background-color:#718096; color: white;">關閉視窗</button>
     </div>
   </div>
-</div>
+
   <div id="aiLoading" style="display:none; margin-top: 8px; color: #4f46e5; font-size: 12px; font-weight: bold;">
     ⏳ AI 正在檢視市場數據與基本面分析中...
   </div>
@@ -629,7 +629,85 @@
       </div>
     </div>
 
-    
+    <!-- 🎮 模擬交易與大盤對比 Modal -->
+<div id="simTradeModal" class="modal">
+  <div class="modal-content" style="max-width: 520px;">
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin:0; color:#7C3AED; display: flex; align-items: center; gap: 8px;">🎮 模擬交易與大盤對比</h3>
+      <button onclick="closeModal('simTradeModal')" style="background: transparent; border: none; font-size: 1.5em; cursor: pointer; color: #718096; margin: 0;">✕</button>
+    </div>
+
+    <div class="modal-body-scroll">
+      <div style="background: rgba(124, 58, 237, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(124, 58, 237, 0.2); margin-bottom: 15px; font-size: 0.85em; color: #4C1D95; line-height: 1.5;">
+        💡 選擇<b>買入/賣出日期</b>與<b>股票代號</b>後，點擊下方「連線 Yahoo Finance」即可自動抓取歷史股價與同期大盤指數，幫您計算<b>持股天數</b>、<b>年化報酬率 (CAGR)</b> 以及是否擊敗大盤！
+      </div>
+
+      <!-- 表單輸入區 -->
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        
+        <!-- 股票代號 -->
+        <div>
+          <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">📈 股票代號 / 名稱</label>
+          <input type="text" id="simSymbol" placeholder="例如: 2330 或 0050" value="2330" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+        </div>
+
+        <!-- 買賣日期 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">📅 購入日期</label>
+            <input type="date" id="simBuyDate" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+          </div>
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">📅 賣出日期</label>
+            <input type="date" id="simSellDate" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+          </div>
+        </div>
+
+        <!-- 自動抓取 API 按鈕 -->
+        <button onclick="fetchSimMarketData()" style="background: #4C1D95; color: white; font-size: 0.85em; padding: 10px; margin: 0; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;">
+          🌐 連線 Yahoo Finance 自動帶入個股與大盤歷史股價
+        </button>
+
+        <!-- 個股買賣價格 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">💵 購入價格 ($)</label>
+            <input type="number" id="simBuyPrice" placeholder="如: 580" step="0.1" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+          </div>
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">💵 賣出價格 ($)</label>
+            <input type="number" id="simSellPrice" placeholder="如: 650" step="0.1" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+          </div>
+        </div>
+
+        <!-- 同期大盤價格 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">🏛️ 買入日大盤收盤</label>
+            <input type="number" id="simTaiexBuy" placeholder="如: 17500" step="1" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+          </div>
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">🏛️ 賣出日大盤收盤</label>
+            <input type="number" id="simTaiexSell" placeholder="如: 18200" step="1" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+          </div>
+        </div>
+
+        <!-- 計算按鈕 -->
+        <button onclick="calculateSimTrade()" style="background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%); color: white; padding: 12px; margin-top: 5px; font-weight: bold; width: 100%; border: none; border-radius: 6px; cursor: pointer; font-size: 0.95em;">
+          ⚡ 計算報酬率、年化CAGR與大盤回測
+        </button>
+
+      </div>
+
+      <!-- 計算結果顯示區域 -->
+      <div id="simResultArea" class="calc-result" style="display:none; margin-top: 15px; padding: 12px; background: #F8FAFC; border-radius: 8px; border-left: 5px solid #7C3AED;"></div>
+    </div>
+
+    <div class="modal-footer" style="margin-top: 15px;">
+      <button onclick="closeModal('simTradeModal')" style="width:100%; background-color:#718096; color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer;">關閉</button>
+    </div>
+  </div>
+</div>
     
     <div id="compoundModal" class="modal">
       <div class="modal-content">
@@ -4148,6 +4226,172 @@ function showBriefError() {
   }
 }
 
+// 🎮 開啟模擬交易 Modal
+function openSimTradeModal() {
+  openModal('simTradeModal');
+}
+
+// 🌐 直接連線 Yahoo Finance API 抓取個股與大盤歷史價格
+async function fetchSimMarketData() {
+  let symbolInput = document.getElementById('simSymbol').value.trim();
+  const buyDateStr = document.getElementById('simBuyDate').value;
+  const sellDateStr = document.getElementById('simSellDate').value;
+
+  if (!symbolInput) {
+    alert("請輸入股票代號（例如: 2330）！");
+    return;
+  }
+  if (!buyDateStr || !sellDateStr) {
+    alert("請選擇買入與賣出日期！");
+    return;
+  }
+
+  // 自動加上台股附檔名 (.TW)
+  let stockTicker = symbolInput.toUpperCase();
+  if (/^\d{4}$/.test(stockTicker)) {
+    stockTicker += '.TW';
+  }
+
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.innerText = "⏳ 連線 Yahoo Finance 抓取中...";
+  btn.disabled = true;
+
+  try {
+    // 轉換日期為 Unix Timestamp (秒)
+    const period1 = Math.floor(new Date(buyDateStr).getTime() / 1000);
+    // 賣出日往後加 1 天以確保包含當日數據
+    const period2 = Math.floor(new Date(sellDateStr).getTime() / 1000) + 86400;
+
+    // Helper 函式：透過 CORS Proxy 打 Yahoo Finance Chart API
+    async function getYahooPrice(ticker) {
+      const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?period1=${period1}&period2=${period2}&interval=1d`;
+      // 使用免費 CORS 轉發服務
+      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+
+      const res = await fetch(proxyUrl);
+      if (!res.ok) throw new Error(`無法取得 ${ticker} 的數據`);
+      const data = await res.json();
+      
+      const result = data.chart.result[0];
+      const timestamps = result.timestamp || [];
+      const quotes = result.indicators.quote[0].close || [];
+
+      if (timestamps.length === 0) {
+        throw new Error(`${ticker} 在指定區間內無交易數據 (可能為非交易日)`);
+      }
+
+      // 取出最接近買入日(第一筆)與賣出日(最後一筆)的收盤價
+      const buyPrice = quotes[0];
+      const sellPrice = quotes[quotes.length - 1];
+
+      return {
+        buy: buyPrice ? buyPrice.toFixed(2) : null,
+        sell: sellPrice ? sellPrice.toFixed(2) : null
+      };
+    }
+
+    // 1. 同時並行抓取「個股」與「台灣加權指數 (^TWII)」
+    const [stockData, taiexData] = await Promise.all([
+      getYahooPrice(stockTicker),
+      getYahooPrice('^TWII')
+    ]);
+
+    // 2. 將數值自動帶入 HTML 表單中
+    if (stockData.buy) document.getElementById('simBuyPrice').value = stockData.buy;
+    if (stockData.sell) document.getElementById('simSellPrice').value = stockData.sell;
+    if (taiexData.buy) document.getElementById('simTaiexBuy').value = taiexData.buy;
+    if (taiexData.sell) document.getElementById('simTaiexSell').value = taiexData.sell;
+
+    alert(`✅ 已成功自動抓取！\n標的 (${stockTicker}): 買入 $${stockData.buy} / 賣出 $${stockData.sell}\n加權指數 (^TWII): 買入 ${taiexData.buy} / 賣出 ${taiexData.sell}`);
+
+  } catch (error) {
+    console.error("Yahoo API 抓取失敗:", error);
+    alert(`抓取失敗: ${error.message}\n💡 請確認日期是否為交易日，或手動輸入金額。`);
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+// 📊 計算模擬交易報酬率、年化報酬率(CAGR)與大盤對比
+function calculateSimTrade() {
+  const symbol = document.getElementById('simSymbol').value.trim() || "未命名標的";
+  const buyPrice = parseFloat(document.getElementById('simBuyPrice').value);
+  const sellPrice = parseFloat(document.getElementById('simSellPrice').value);
+  const buyDateStr = document.getElementById('simBuyDate').value;
+  const sellDateStr = document.getElementById('simSellDate').value;
+
+  const taiexBuy = parseFloat(document.getElementById('simTaiexBuy').value);
+  const taiexSell = parseFloat(document.getElementById('simTaiexSell').value);
+
+  const resultDiv = document.getElementById('simResultArea');
+
+  if (isNaN(buyPrice) || isNaN(sellPrice) || buyPrice <= 0 || sellPrice <= 0) {
+    alert("請輸入有效的買入與賣出價格！");
+    return;
+  }
+
+  // 1. 累積報酬率計算
+  const totalReturn = ((sellPrice - buyPrice) / buyPrice);
+  const totalReturnPct = totalReturn * 100;
+  const stockMultiple = (sellPrice / buyPrice).toFixed(3);
+
+  // 2. 計算持股天數與年化報酬率 (CAGR)
+  let cagrText = "未指定完整日期";
+  let holdingDays = 0;
+
+  if (buyDateStr && sellDateStr) {
+    const buyDate = new Date(buyDateStr);
+    const sellDate = new Date(sellDateStr);
+    const timeDiff = sellDate.getTime() - buyDate.getTime();
+    holdingDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    if (holdingDays > 0) {
+      // CAGR 公式: (賣出價 / 購入價) ^ (365 / 天數) - 1
+      const cagr = (Math.pow(sellPrice / buyPrice, 365 / holdingDays) - 1) * 100;
+      cagrText = `<b style="color:#7C3AED; font-size:1.05em;">${cagr >= 0 ? '+' : ''}${cagr.toFixed(2)}%</b> (持股 ${holdingDays} 天)`;
+    } else if (holdingDays === 0) {
+      cagrText = "當日沖銷 (無法計算年化)";
+    } else {
+      alert("賣出日期不能早於買入日期！");
+      return;
+    }
+  }
+
+  let html = `
+    <div style="font-weight:bold; font-size:1.1em; color:#4C1D95; margin-bottom:8px; border-bottom:1px solid #E2E8F0; padding-bottom:5px;">
+      📊 【${symbol}】模擬交易績效報告
+    </div>
+    📍 買賣價格: <b>$${buyPrice}</b> ➡️ <b>$${sellPrice}</b><br>
+    📍 累積總報酬率: <b style="color:${totalReturnPct >= 0 ? '#C53030' : '#22543D'}; font-size:1.1em;">${totalReturnPct >= 0 ? '+' : ''}${totalReturnPct.toFixed(2)}%</b> (價格倍數: ${stockMultiple} 倍)<br>
+    ⏳ 持股天數與年化 (CAGR): ${cagrText}<br>
+  `;
+
+  // 3. 對比大盤與 Alpha 超額報酬
+  if (!isNaN(taiexBuy) && !isNaN(taiexSell) && taiexBuy > 0 && taiexSell > 0) {
+    const taiexReturnPct = ((taiexSell - taiexBuy) / taiexBuy) * 100;
+    const alpha = totalReturnPct - taiexReturnPct;
+
+    const isSuccess = alpha > 0;
+    const cardBg = isSuccess ? '#F0FDF4' : '#FEF2F2';
+    const cardBorder = isSuccess ? '#22C55E' : '#EF4444';
+    const statusText = isSuccess ? '🎉 成功擊敗大盤！' : '⚠️ 落後大盤 (未達市場基準)';
+
+    html += `
+      <div style="margin-top:12px; padding:12px; background:${cardBg}; border-radius:8px; border:1px solid ${cardBorder};">
+        <div style="font-weight:bold; color:${isSuccess ? '#15803D' : '#B91C1C'}; font-size:1em; margin-bottom:4px;">
+          ${statusText}
+        </div>
+        🏛️ 大盤同期漲跌幅 (${buyDateStr || '買入日'} ~ ${sellDateStr || '賣出日'}): <b>${taiexReturnPct >= 0 ? '+' : ''}${taiexReturnPct.toFixed(2)}%</b><br>
+        ⚡ 超額報酬 (Alpha): <b style="color:${alpha >= 0 ? '#C53030' : '#22543D'};">${alpha >= 0 ? '+' : ''}${alpha.toFixed(2)}%</b>
+      </div>
+    `;
+  }
+
+  resultDiv.innerHTML = html;
+  resultDiv.style.display = 'block';
+}
 
 function renderFundingHistoryLogs(logs) {
   const container = document.getElementById('fundingHistoryLogs');
