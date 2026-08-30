@@ -4259,7 +4259,7 @@ function calculateSimTrade() {
     const isSuccess = alpha > 0;
 
     html += `
-      <div style="margin-top:10px; padding:8px 10px; background:${isSuccess ? '#F0FDF4' : '#FEF2F2'}; border-radius:6px; font-size:0.9em;">
+      <div style="margin-top:10px; padding:8px 10px; background:${isSuccess ? '#FEF2F2' : '#F0FDF4'}; border-radius:6px; font-size:0.9em;">
         ${isSuccess ? '🎉 <b>成功擊敗大盤！</b>' : '⚠️ <b>落後大盤</b>'}<br>
         🏛️ 大盤漲跌: <b>${taiexReturnPct >= 0 ? '+' : ''}${taiexReturnPct.toFixed(2)}%</b> | 超額報酬 (Alpha): <b>${alpha >= 0 ? '+' : ''}${alpha.toFixed(2)}%</b>
       </div>
