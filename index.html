@@ -2,6 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <!--<link rel="manifest" href="manifest.json">-->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <meta name="theme-color" content="#4A5568">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -337,6 +338,7 @@
       background-image: linear-gradient(120deg, #3182CE 30%, #EBF8FF 45%, #3182CE 60%);
       border: 1px solid #4299E1; color: #EBF8FF;
     }
+    
   </style>
 </head>
 <body>
@@ -388,7 +390,7 @@
       <button class="trend-btn" onclick="openAiAnalysisModal(); closeModal('featuresPortalModal');" style="background-color: #F54C4C; color: white; margin:0; height: 50px; font-weight: bold;">🧐 智慧分析</button>
       <button class="trend-btn" onclick="openEveningExpressModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #3B1E37 0%, #2BCEE3 100%); color: #F8FAFC; margin:0;">🌍財經快報</button>
       <button class="trend-btn" onclick="openPotentialStocksModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); color: white; margin:0; height: 50px; font-weight: bold; flex: 1;">🔥 潛力股票</button>
-      <button class="trend-btn" onclick="openSimTradeModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%); color: white; margin:0; height: 50px; font-weight: bold; flex: 1; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">🎮 模擬交易</button>
+      <button class="trend-btn" onclick="openSimTradeModal(); closeModal('featuresPortalModal');" style="background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%); color: white; margin:0; height: 50px; font-weight: bold; flex: 1; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">🎮 回測交易</button>
       <input type="file" id="bgInput" hidden accept="image/*" onchange="updateBackground(this)">
     </div>
     <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
@@ -559,49 +561,6 @@
       </div>
     </div>
 
-    <div id="todayBriefModal" class="modal">
-  <div class="modal-content" style="max-width: 650px;">
-    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="margin:0; color:#008B8B; display: flex; align-items: center; gap: 8px;">📌 盤面今日重點與資金動向</h3>
-      <button onclick="fetchTodayBriefData()" style="background-color: #008B8B; color: white; padding: 4px 10px; font-size: 12px; margin:0;">🔄 重新整理</button>
-    </div>
-    
-    <div class="modal-body-scroll" id="todayBriefContent">
-      <!-- 區塊 A：今日大盤重點 -->
-      <div style="background: rgba(0, 139, 139, 0.08); padding: 14px; border-radius: 10px; border-left: 4px solid #008B8B; margin-bottom: 15px;">
-        <div style="font-weight: bold; font-size: 1.05em; color: var(--text-main); margin-bottom: 8px;" id="tb-date-title">
-          今日重點（--/--）
-        </div>
-        <div style="font-size: 0.9em; line-height: 1.6;" id="tb-summary-rows">
-          <!-- JS 動態帶入市場情緒、法人買超板塊、大戶異常等 -->
-        </div>
-        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(0,0,0,0.15); font-size: 0.88em; color: var(--text-muted);" id="tb-ai-summary">
-          <!-- JS 動態帶入 AI 盤後總結 -->
-        </div>
-      </div>
-
-      <!-- 區塊 B：板塊資金流入 / 流出分類 (由原本 SVG 與 Ranking 解析組裝) -->
-      <h4 style="margin-bottom: 10px; color: var(--primary);">📊 板塊資金淨動向分類</h4>
-      
-      <!-- 資金流入板塊 -->
-      <div style="margin-bottom: 12px; background: rgba(216, 90, 48, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(216, 90, 48, 0.2);">
-        <div style="font-weight: bold; color: #D85A30; font-size: 0.9em; margin-bottom: 6px;">🚀 資金大幅流入板塊</div>
-        <div id="inflow-sectors-list" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
-      </div>
-
-      <!-- 資金流出板塊 -->
-      <div style="margin-bottom: 12px; background: rgba(29, 158, 117, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(29, 158, 117, 0.2);">
-        <div style="font-weight: bold; color: #1D9E75; font-size: 0.9em; margin-bottom: 6px;">📉 資金持續流出板塊</div>
-        <div id="outflow-sectors-list" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
-      </div>
-    </div>
-
-    <div class="modal-footer" style="margin-top: 10px; padding-top: 10px;">
-      <button onclick="closeModal('todayBriefModal')" style="width:100%; background-color:#718096; color: white;">關閉</button>
-    </div>
-  </div>
-</div>
-
     <div id="withdrawModal" class="modal">
       <div class="modal-content">
         <div class="modal-header"><h3 style="margin:0; color:#2F855A;">💸 提領結算試算</h3></div>
@@ -631,7 +590,7 @@
 
     <!-- 🎮 模擬交易與大盤對比 Modal -->
 <div id="simTradeModal" class="modal">
-  <div class="modal-content" style="max-width: 520px;">
+  <div class="modal-content" style="max-width: 600px;">
     <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
       <h3 style="margin:0; color:#7C3AED; display: flex; align-items: center; gap: 8px;">🎮 模擬交易與大盤對比</h3>
       <button onclick="closeModal('simTradeModal')" style="background: transparent; border: none; font-size: 1.5em; cursor: pointer; color: #718096; margin: 0;">✕</button>
@@ -639,19 +598,16 @@
 
     <div class="modal-body-scroll">
       <div style="background: rgba(124, 58, 237, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(124, 58, 237, 0.2); margin-bottom: 15px; font-size: 0.85em; color: #4C1D95; line-height: 1.5;">
-        💡 選擇<b>買入/賣出日期</b>與<b>股票代號</b>後，點擊下方「自動帶入個股與大盤歷史股價」即可自動抓取歷史股價與同期大盤指數，幫您計算<b>持股天數</b>、<b>年化報酬率 (CAGR)</b> 以及是否擊敗大盤！
+        💡 點擊「自動帶入歷史股價與圖表」後，系統會自動處理<b>非交易日校正</b>、生成<b>個股 vs 大盤雙線走勢圖</b>，並將計算結果儲存至歷史紀錄！
       </div>
 
       <!-- 表單輸入區 -->
       <div style="display: flex; flex-direction: column; gap: 12px;">
-        
-        <!-- 股票代號 -->
         <div>
           <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">📈 股票代號 / 名稱</label>
-          <input type="text" id="simSymbol" placeholder="例如: 2330" value="" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
+          <input type="text" id="simSymbol" placeholder="例如: 2330 或 0050" value="2330" style="width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box;">
         </div>
 
-        <!-- 買賣日期 -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div>
             <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">📅 購入日期</label>
@@ -663,12 +619,10 @@
           </div>
         </div>
 
-        <!-- 自動抓取 API 按鈕 -->
-        <button onclick="fetchSimMarketData()" style="background: #4C1D95; color: white; font-size: 0.85em; padding: 10px; margin: 0; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;">
-          🌐 自動帶入個股與大盤歷史股價
+        <button onclick="fetchSimMarketData()" style="background: #4C1D95; color: white; font-size: 0.85em; padding: 10px; margin: 0; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;">
+          🌐 自動帶入歷史股價與圖表
         </button>
 
-        <!-- 個股買賣價格 -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div>
             <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">💵 購入價格 ($)</label>
@@ -680,7 +634,6 @@
           </div>
         </div>
 
-        <!-- 同期大盤價格 -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div>
             <label style="font-size:0.85em; font-weight:bold; color:var(--text-main);">🏛️ 買入日大盤收盤</label>
@@ -692,15 +645,27 @@
           </div>
         </div>
 
-        <!-- 計算按鈕 -->
         <button onclick="calculateSimTrade()" style="background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%); color: white; padding: 12px; margin-top: 5px; font-weight: bold; width: 100%; border: none; border-radius: 6px; cursor: pointer; font-size: 0.95em;">
-          ⚡ 計算報酬率、年化CAGR與大盤回測
+          ⚡ 計算報酬率、CAGR與繪製圖表
         </button>
-
       </div>
 
-      <!-- 計算結果顯示區域 -->
+      <!-- 計算結果與走勢圖顯示區 -->
       <div id="simResultArea" class="calc-result" style="display:none; margin-top: 15px; padding: 12px; background: #F8FAFC; border-radius: 8px; border-left: 5px solid #7C3AED;"></div>
+
+      <!-- 圖表畫布容器 (需求 3) -->
+      <div id="simChartContainer" style="display:none; margin-top: 15px; background: #FFF; padding: 10px; border-radius: 8px; border: 1px solid #E2E8F0;">
+        <canvas id="simChart"></canvas>
+      </div>
+
+      <!-- 模擬紀錄 (需求 2) -->
+      <div style="margin-top: 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-weight:bold; font-size:0.9em; color:#4A5568;">📜 近期模擬歷史紀錄</span>
+          <button onclick="clearSimHistory()" style="background:none; border:none; color:#E53E3E; font-size:0.8em; cursor:pointer; padding:0;">🗑️ 清空紀錄</button>
+        </div>
+        <div id="simHistoryList" style="display:flex; flex-direction:column; gap:6px; font-size:0.85em;"></div>
+      </div>
     </div>
 
     <div class="modal-footer" style="margin-top: 15px;">
@@ -974,7 +939,12 @@
 
     <!-- ⚙️ 管理員控制台 (只有 Jason 登入才會顯示) -->
     <div id="adminPanel" class="container" style="display:none;">
-      <h3>⚙️ 管理員控制台 (Jason Only)</h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="margin: 0;">⚙️ 管理員控制台 (Jason Only)</h3>
+        <button onclick="openModal('loginHistoryModal'); renderLoginHistory();" style="background-color: #4A5568; color: white; padding: 6px 14px; font-size: 0.85em; margin: 0;">
+          📜 登入歷史紀錄
+        </button>
+      </div>
       
       <div class="card" style="margin-bottom: 20px; border-left: 5px solid #4A5568;">
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -1141,6 +1111,24 @@
       <button onclick="closePotentialStocksModal()" style="width: 100%; background-color: #718096; color: white; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
         關閉視窗
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- 📜 登入歷史紀錄 Modal (Jason Only) -->
+<div id="loginHistoryModal" class="modal">
+  <div class="modal-content" style="max-width: 750px;">
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin:0; color:#4A5568;">📜 系統登入與操作歷史紀錄</h3>
+      <button onclick="closeModal('loginHistoryModal')" style="background: transparent; border: none; font-size: 1.5em; cursor: pointer; color: #718096; margin: 0;">✕</button>
+    </div>
+    <div class="modal-body-scroll">
+      <div id="loginHistoryList" class="log-container" style="max-height: 400px; font-size: 0.82em;">
+        讀取紀錄中...
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('loginHistoryModal')" style="width:100%; background-color:#718096; color: white;">關閉</button>
     </div>
   </div>
 </div>
@@ -2398,87 +2386,118 @@ if (type === 'buy') {
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPassword').value.trim();
       const snap = await db.ref(`users/${user}/password`).get();
-      if (snap.val() === pass) { localStorage.setItem('currentUser', user); location.reload(); }
-      else alert("密碼錯誤");
+
+      if (snap.val() === pass) {
+        localStorage.setItem('currentUser', user);
+
+        // 建立 Firebase 登入歷史紀錄
+        const newSessionRef = db.ref('loginHistory').push();
+        currentSessionId = newSessionRef.key;
+        const now = new Date().toLocaleString('zh-TW');
+
+        await newSessionRef.set({
+          user: user,
+          ip: userIpAddress,
+          device: navigator.userAgent,
+          loginTime: now,
+          logoutTime: '在線中...',
+          featuresUsed: ['登入系統']
+        });
+
+        location.reload();
+      } else {
+        alert("密碼錯誤");
+      }
     }
-    function logout() { localStorage.removeItem('currentUser'); location.reload(); }
-    function toggleGlobalPermission(isOpen) { db.ref('settings/global/showPortfolioToAll').set(isOpen); }
+    function logout() {
+      if (currentSessionId) {
+        const now = new Date().toLocaleString('zh-TW');
+        db.ref(`loginHistory/${currentSessionId}/logoutTime`).set(now);
+      }
+      localStorage.removeItem('currentUser');
+      location.reload();
+    }
+
+    function toggleGlobalPermission(isOpen) { 
+      db.ref('settings/global/showPortfolioToAll').set(isOpen); 
+      logFeatureUse(isOpen ? "開啟全體查看權限" : "關閉全體查看權限");
+    }
 
     window.onload = () => {
-      if ('Notification' in window) {
-        if (Notification.permission !== 'granted') {
-          Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-              setupPushSubscription();
-            }
-          });
-        } else {
+  if ('Notification' in window) {
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
           setupPushSubscription();
         }
+      });
+    } else {
+      setupPushSubscription();
+    }
+  }
+
+  const user = localStorage.getItem('currentUser');
+  if (user) {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
+
+    const darkModeStatus = localStorage.getItem(`dark_mode_${user}`);
+    if (darkModeStatus === 'enabled') {
+      document.body.classList.add('dark-theme');
+      updateDarkModeButton(true);
+    } else {
+      updateDarkModeButton(false);
+    }
+
+    const bg = localStorage.getItem(`bg_${user}`);
+    if(bg) document.body.style.backgroundImage = `url(${bg})`;
+    
+    db.ref(`settings/admins/${user.toLowerCase()}`).once('value').then(snap => {
+      if (snap.exists() && snap.val() === true) {
+        document.getElementById('adminPanel').style.display = 'block';
+        loadStockListFromGas(); 
+        loadRsvUsersList(); // 載入權限清單
+      } else {
+        document.getElementById('adminPanel').style.display = 'none';
       }
+    });
+    
+    initAnnouncementAndMemo(user);
 
-      const user = localStorage.getItem('currentUser');
-      if (user) {
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
-        document.getElementById('userNameDisplay').textContent = `Hi, ${user}`;
-
-        const darkModeStatus = localStorage.getItem(`dark_mode_${user}`);
-        if (darkModeStatus === 'enabled') {
-          document.body.classList.add('dark-theme');
-          updateDarkModeButton(true);
-        } else {
-          updateDarkModeButton(false);
-        }
-
-        const bg = localStorage.getItem(`bg_${user}`);
-        if(bg) document.body.style.backgroundImage = `url(${bg})`;
-        
-        db.ref(`settings/admins/${user.toLowerCase()}`).once('value').then(snap => {
-          if (snap.exists() && snap.val() === true) {
-            document.getElementById('adminPanel').style.display = 'block';
-            loadStockListFromGas(); 
-            loadRsvUsersList(); // 載入權限清單
-          } else {
-            document.getElementById('adminPanel').style.display = 'none';
-          }
-        });
-        
-        initAnnouncementAndMemo(user);
-
-        db.ref('settings/global/showPortfolioToAll').on('value', snap => {
-          globalCanSeeDetails = snap.val() || false;
-          if(document.getElementById("permissionStatus")) {
-            document.getElementById("permissionStatus").textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏標的";
-          }
-          db.ref(`users/${user}/portfolio`).on("value", s => {
-            renderPortfolio(s.val(), user, globalCanSeeDetails);
-          });
-        });
-
-        db.ref(`users/${user}/targetAmount`).on('value', snap => {
-          userTargetAmount = snap.val() || 0;
-          updateProgressBarVisual(); 
-        });
-
-        db.ref(`family/investSnapshot/${user}`).on("value", snap => {
-          const val = snap.val() || {};
-          const entries = Object.entries(val).map(([d, v]) => ({ date: d, profit: v.profit })).sort((a,b)=>new Date(a.date)-new Date(b.date));
-          if(entries.length){
-            window.globalHistoryEntries = entries; 
-            const todayStr = new Date().toISOString().split('T')[0];
-            const past = entries.filter(e => e.date !== todayStr);
-            lastRecordedProfit = past.length ? past[past.length-1].profit : entries[0].profit;
-            const max = entries.reduce((p, c) => c.profit > p.profit ? c : p);
-            const min = entries.reduce((p, c) => c.profit < p.profit ? c : p);
-            document.getElementById("maxGainDay").innerHTML = `${max.date}<br><span class="profit-positive">$${max.profit.toLocaleString()}</span>`;
-            document.getElementById("maxLossDay").innerHTML = `${min.date}<br><span class="profit-negative">$${min.profit.toLocaleString()}</span>`;
-            renderChart(entries.slice(-30));
-            updateDynamicMetrics();
-          }
-        });
+    db.ref('settings/global/showPortfolioToAll').on('value', snap => {
+      globalCanSeeDetails = snap.val() || false;
+      if(document.getElementById("permissionStatus")) {
+        document.getElementById("permissionStatus").textContent = globalCanSeeDetails ? "已開放全體查看" : "已隱藏標的";
       }
-    };
+      db.ref(`users/${user}/portfolio`).on("value", s => {
+        renderPortfolio(s.val(), user, globalCanSeeDetails);
+      });
+    });
+
+    db.ref(`users/${user}/targetAmount`).on('value', snap => {
+      userTargetAmount = snap.val() || 0;
+      updateProgressBarVisual(); 
+    });
+
+    db.ref(`family/investSnapshot/${user}`).on("value", snap => {
+      const val = snap.val() || {};
+      const entries = Object.entries(val).map(([d, v]) => ({ date: d, profit: v.profit })).sort((a,b)=>new Date(a.date)-new Date(b.date));
+      if(entries.length){
+        window.globalHistoryEntries = entries; 
+        const todayStr = new Date().toISOString().split('T')[0];
+        const past = entries.filter(e => e.date !== todayStr);
+        lastRecordedProfit = past.length ? past[past.length-1].profit : entries[0].profit;
+        const max = entries.reduce((p, c) => c.profit > p.profit ? c : p);
+        const min = entries.reduce((p, c) => c.profit < p.profit ? c : p);
+        document.getElementById("maxGainDay").innerHTML = `${max.date}<br><span class="profit-positive">$${max.profit.toLocaleString()}</span>`;
+        document.getElementById("maxLossDay").innerHTML = `${min.date}<br><span class="profit-negative">$${min.profit.toLocaleString()}</span>`;
+        renderChart(entries.slice(-30));
+        updateDynamicMetrics();
+      }
+    });
+  }
+};
 
     function setupPushSubscription() {
       if ('serviceWorker' in navigator) {
@@ -4114,196 +4133,87 @@ function openPotentialStocksModal() {
     if (modal) modal.style.display = 'block';
   }
 }
-// 開啟「今日重點」Modal 觀看資料
-function openTodayBriefModal() {
-  openModal('todayBriefModal');
-  fetchTodayBriefData();
-}
 
-// 解析 Tide 頁面 DOM 並帶入 Modal
-function fetchTodayBriefData() {
-  console.log("開始解析今日重點資料...");
+let simChartInstance = null; // 全域圖表變數
+let rawStockSeries = [];     // 暫存持股期間每日序列
+let rawTaiexSeries = [];
 
-  let briefContainer = document.getElementById('today-brief');
-
-  // 若 DOM 尚未生成，自動模擬點擊 #brief-toggle 按鈕觸發選單出現
-  if (!briefContainer) {
-    const toggleBtn = document.getElementById('brief-toggle');
-    if (toggleBtn) {
-      console.log("觸發 #brief-toggle 點擊事件...");
-      toggleBtn.click(); // 自動點擊展開
-      
-      // 稍等 100ms 待 DOM 生成後再次解析
-      setTimeout(() => {
-        briefContainer = document.getElementById('today-brief');
-        if (briefContainer) {
-          parseAndRenderBriefData(briefContainer);
-          // 抓完資料後，自動模擬點擊關閉按鈕收回原浮層，維持畫面乾淨
-          const closeBtn = document.getElementById('tb-close');
-          if (closeBtn) closeBtn.click();
-        } else {
-          showBriefError();
-        }
-      }, 100);
-      return;
-    } else {
-      showBriefError();
-      return;
-    }
-  }
-
-  // 若 DOM 已經存在，直接解析
-  parseAndRenderBriefData(briefContainer);
-}
-
-// 實際解析內容並渲染至 Modal
-function parseAndRenderBriefData(briefContainer) {
-  // 1. 抓取標題
-  const titleEl = briefContainer.querySelector('.tb-title');
-  const todayTitle = titleEl ? titleEl.textContent.trim() : "今日重點";
-
-  const titleTarget = document.getElementById('tb-date-title');
-  if (titleTarget) titleTarget.innerText = todayTitle;
-
-  // 2. 抓取重點列 (.tb-row)
-  const rows = briefContainer.querySelectorAll('.tb-row');
-  let rowsHtml = '';
-
-  rows.forEach(r => {
-    const rowContent = r.innerHTML.trim();
-    if (rowContent) {
-      rowsHtml += `<div style="margin-bottom: 6px; line-height: 1.5;">• ${rowContent}</div>`;
-    }
-  });
-
-  const summaryTarget = document.getElementById('tb-summary-rows');
-  if (summaryTarget) {
-    summaryTarget.innerHTML = rowsHtml || '<div>暫無重點資料</div>';
-  }
-
-  // 3. 抓取 AI 盤後總結 (#tb-ai-body)
-  const aiBodyEl = briefContainer.querySelector('#tb-ai-body');
-  const aiBodyText = aiBodyEl ? (aiBodyEl.textContent || aiBodyEl.innerText).trim() : "暫無 AI 總結資料";
-
-  const aiSummaryTarget = document.getElementById('tb-ai-summary');
-  if (aiSummaryTarget) {
-    aiSummaryTarget.innerHTML = `<b>🤖 AI 盤後總結：</b><br><span style="line-height:1.6; display:block; margin-top:4px;">${aiBodyText}</span>`;
-  }
-
-  // 4. 解析重點中的買超/賣超板塊 (.tb-sec)
-  const inflowContainer = document.getElementById('inflow-sectors-list');
-  const outflowContainer = document.getElementById('outflow-sectors-list');
-
-  if (inflowContainer) inflowContainer.innerHTML = '';
-  if (outflowContainer) outflowContainer.innerHTML = '';
-
-  const sectors = briefContainer.querySelectorAll('.tb-sec');
-  sectors.forEach(sec => {
-    const secName = sec.textContent.trim();
-    const parentText = sec.parentElement ? sec.parentElement.textContent : '';
-
-    const chip = document.createElement('span');
-    chip.style.cssText = 'padding:4px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-block; margin:2px;';
-
-    if (parentText.includes('買最多') || parentText.includes('最佳')) {
-      chip.style.background = '#FEE2E2';
-      chip.style.color = '#991B1B';
-      chip.innerText = secName;
-      if (inflowContainer) inflowContainer.appendChild(chip);
-    } else if (parentText.includes('賣超') || parentText.includes('被倒')) {
-      chip.style.background = '#D1FAE5';
-      chip.style.color = '#065F46';
-      chip.innerText = secName;
-      if (outflowContainer) outflowContainer.appendChild(chip);
-    }
-  });
-}
-
-function showBriefError() {
-  const summaryTarget = document.getElementById('tb-summary-rows');
-  if (summaryTarget) {
-    summaryTarget.innerHTML = '<div style="color:#a0aec0;">無法抓取今日重點數據（請確認 #brief-toggle 按鈕存在）</div>';
-  }
-}
-
-// 🎮 開啟模擬交易 Modal
+// 🎮 打開 Modal 並載入歷史紀錄
 function openSimTradeModal() {
   openModal('simTradeModal');
+  renderSimHistory();
 }
 
-// 🌐 透過 FinMind API 自動帶入個股與大盤歷史價格 (免 CORS Proxy，極度穩定)
+// 🌐 1. FinMind 抓取資料 + 假日自動提示 (需求 4) + 圖表資料準備
 async function fetchSimMarketData() {
   let symbolInput = document.getElementById('simSymbol').value.trim();
   const buyDateStr = document.getElementById('simBuyDate').value;
   const sellDateStr = document.getElementById('simSellDate').value;
 
-  if (!symbolInput) {
-    alert("請輸入股票代號（例如: 2330）！");
-    return;
-  }
-  if (!buyDateStr || !sellDateStr) {
-    alert("請選擇買入與賣出日期！");
+  if (!symbolInput || !buyDateStr || !sellDateStr) {
+    alert("請完整輸入股票代號、買入日期與賣出日期！");
     return;
   }
 
-  // 整理代號 (去除 .TW 尾綴)
   const stockId = symbolInput.toUpperCase().replace('.TW', '').replace('.TWO', '');
-
   const btn = event.target;
   const originalText = btn.innerHTML;
-  btn.innerText = "⏳ 連線 FinMind 抓取中...";
+  btn.innerText = "⏳ 讀取全區間走勢資料中...";
   btn.disabled = true;
 
   try {
-    // Helper 函式：打 FinMind TaiwanStockPrice API
-    async function getFinMindPrice(targetId) {
+    async function getFinMindSeries(targetId) {
       const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${encodeURIComponent(targetId)}&start_date=${buyDateStr}&end_date=${sellDateStr}`;
-      
       const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP 錯誤 ${res.status}`);
-      
       const result = await res.json();
-      
+
       if (!result.data || result.data.length === 0) {
-        throw new Error(`標的 ${targetId} 在此區間無數據 (可能為非交易日或代號錯誤)`);
+        throw new Error(`標的 ${targetId} 無資料，請檢查日期範圍`);
       }
-
-      // 取出範圍內的第一筆 (購入日) 與最後一筆 (賣出日)
-      const buyItem = result.data[0];
-      const sellItem = result.data[result.data.length - 1];
-
-      return {
-        buy: buyItem.close,
-        sell: sellItem.close,
-        actualBuyDate: buyItem.date,
-        actualSellDate: sellItem.date
-      };
+      return result.data;
     }
 
-    // 同時抓取「個股」與「加權指數 (TAIEX)」
-    const [stockData, taiexData] = await Promise.all([
-      getFinMindPrice(stockId),
-      getFinMindPrice('TAIEX')
+    // 並行取得完整歷史序列
+    const [stockSeries, taiexSeries] = await Promise.all([
+      getFinMindSeries(stockId),
+      getFinMindSeries('TAIEX')
     ]);
 
-    // 自動帶入 HTML 表單
-    document.getElementById('simBuyPrice').value = stockData.buy;
-    document.getElementById('simSellPrice').value = stockData.sell;
-    document.getElementById('simTaiexBuy').value = taiexData.buy;
-    document.getElementById('simTaiexSell').value = taiexData.sell;
+    rawStockSeries = stockSeries;
+    rawTaiexSeries = taiexSeries;
 
-    alert(`✅ 資料自動帶入成功！\n\n【${stockId}】\n買入 (${stockData.actualBuyDate}): $${stockData.buy}\n賣出 (${stockData.actualSellDate}): $${stockData.sell}\n\n【加權指數 TAIEX】\n買入: ${taiexData.buy}\n賣出: ${taiexData.sell}`);
+    const stockBuy = stockSeries[0];
+    const stockSell = stockSeries[stockSeries.length - 1];
+    const taiexBuy = taiexSeries[0];
+    const taiexSell = taiexSeries[taiexSeries.length - 1];
+
+    // 帶入價格表單
+    document.getElementById('simBuyPrice').value = stockBuy.close;
+    document.getElementById('simSellPrice').value = stockSell.close;
+    document.getElementById('simTaiexBuy').value = taiexBuy.close;
+    document.getElementById('simTaiexSell').value = taiexSell.close;
+
+    // 需求 4: 檢查與提示假日校正
+    let noticeText = "";
+    if (stockBuy.date !== buyDateStr) {
+      noticeText += `\n⚠️ 買入日 (${buyDateStr}) 為非交易日，已自動校正為開盤日: ${stockBuy.date}`;
+    }
+    if (stockSell.date !== sellDateStr) {
+      noticeText += `\n⚠️ 賣出日 (${sellDateStr}) 為非交易日，已自動校正為開盤日: ${stockSell.date}`;
+    }
+
+    alert(`✅ 資料取得成功！${noticeText}`);
 
   } catch (error) {
-    console.error("FinMind API 抓取失敗:", error);
-    alert(`抓取失敗: ${error.message}\n💡 請確認選取的日期是否包含開盤日（避開六日與國定假日）。`);
+    console.error("抓取失敗:", error);
+    alert(`抓取失敗: ${error.message}`);
   } finally {
     btn.innerHTML = originalText;
     btn.disabled = false;
   }
 }
 
-// 📊 計算模擬交易報酬率、年化報酬率(CAGR)與大盤對比
+// 📊 2. 計算績效 + 畫雙線走勢圖 (需求 3) + 儲存紀錄 (需求 2)
 function calculateSimTrade() {
   const symbol = document.getElementById('simSymbol').value.trim() || "未命名標的";
   const buyPrice = parseFloat(document.getElementById('simBuyPrice').value);
@@ -4317,70 +4227,235 @@ function calculateSimTrade() {
   const resultDiv = document.getElementById('simResultArea');
 
   if (isNaN(buyPrice) || isNaN(sellPrice) || buyPrice <= 0 || sellPrice <= 0) {
-    alert("請輸入有效的買入與賣出價格！");
+    alert("請輸入有效的價格！");
     return;
   }
 
-  // 1. 累積報酬率計算
-  const totalReturn = ((sellPrice - buyPrice) / buyPrice);
-  const totalReturnPct = totalReturn * 100;
-  const stockMultiple = (sellPrice / buyPrice).toFixed(3);
-
-  // 2. 計算持股天數與年化報酬率 (CAGR)
+  // 報酬率與 CAGR 計算
+  const totalReturnPct = ((sellPrice - buyPrice) / buyPrice) * 100;
   let cagrText = "未指定完整日期";
   let holdingDays = 0;
 
   if (buyDateStr && sellDateStr) {
-    const buyDate = new Date(buyDateStr);
-    const sellDate = new Date(sellDateStr);
-    const timeDiff = sellDate.getTime() - buyDate.getTime();
+    const timeDiff = new Date(sellDateStr).getTime() - new Date(buyDateStr).getTime();
     holdingDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
     if (holdingDays > 0) {
-      // CAGR 公式: (賣出價 / 購入價) ^ (365 / 天數) - 1
       const cagr = (Math.pow(sellPrice / buyPrice, 365 / holdingDays) - 1) * 100;
-      cagrText = `<b style="color:#7C3AED; font-size:1.05em;">${cagr >= 0 ? '+' : ''}${cagr.toFixed(2)}%</b> (持股 ${holdingDays} 天)`;
-    } else if (holdingDays === 0) {
-      cagrText = "當日沖銷 (無法計算年化)";
-    } else {
-      alert("賣出日期不能早於買入日期！");
-      return;
+      cagrText = `<b style="color:#7C3AED;">${cagr >= 0 ? '+' : ''}${cagr.toFixed(2)}%</b> (持股 ${holdingDays} 天)`;
     }
   }
 
   let html = `
-    <div style="font-weight:bold; font-size:1.1em; color:#4C1D95; margin-bottom:8px; border-bottom:1px solid #E2E8F0; padding-bottom:5px;">
-      📊 【${symbol}】模擬交易績效報告
-    </div>
+    <div style="font-weight:bold; font-size:1.05em; color:#4C1D95; margin-bottom:6px;">📊 【${symbol}】模擬交易績效</div>
     📍 買賣價格: <b>$${buyPrice}</b> ➡️ <b>$${sellPrice}</b><br>
-    📍 累積總報酬率: <b style="color:${totalReturnPct >= 0 ? '#C53030' : '#22543D'}; font-size:1.1em;">${totalReturnPct >= 0 ? '+' : ''}${totalReturnPct.toFixed(2)}%</b> (價格倍數: ${stockMultiple} 倍)<br>
-    ⏳ 持股天數與年化 (CAGR): ${cagrText}<br>
+    📍 累積總報酬: <b style="color:${totalReturnPct >= 0 ? '#C53030' : '#22543D'};">${totalReturnPct >= 0 ? '+' : ''}${totalReturnPct.toFixed(2)}%</b><br>
+    ⏳ 年化報酬 (CAGR): ${cagrText}<br>
   `;
 
-  // 3. 對比大盤與 Alpha 超額報酬
-  if (!isNaN(taiexBuy) && !isNaN(taiexSell) && taiexBuy > 0 && taiexSell > 0) {
+  let alpha = 0;
+  if (!isNaN(taiexBuy) && !isNaN(taiexSell)) {
     const taiexReturnPct = ((taiexSell - taiexBuy) / taiexBuy) * 100;
-    const alpha = totalReturnPct - taiexReturnPct;
-
+    alpha = totalReturnPct - taiexReturnPct;
     const isSuccess = alpha > 0;
-    const cardBg = isSuccess ? '#F0FDF4' : '#FEF2F2';
-    const cardBorder = isSuccess ? '#22C55E' : '#EF4444';
-    const statusText = isSuccess ? '🎉 成功擊敗大盤！' : '⚠️ 落後大盤 (未達市場基準)';
 
     html += `
-      <div style="margin-top:12px; padding:12px; background:${cardBg}; border-radius:8px; border:1px solid ${cardBorder};">
-        <div style="font-weight:bold; color:${isSuccess ? '#15803D' : '#B91C1C'}; font-size:1em; margin-bottom:4px;">
-          ${statusText}
-        </div>
-        🏛️ 大盤同期漲跌幅 (${buyDateStr || '買入日'} ~ ${sellDateStr || '賣出日'}): <b>${taiexReturnPct >= 0 ? '+' : ''}${taiexReturnPct.toFixed(2)}%</b><br>
-        ⚡ 超額報酬 (Alpha): <b style="color:${alpha >= 0 ? '#C53030' : '#22543D'};">${alpha >= 0 ? '+' : ''}${alpha.toFixed(2)}%</b>
+      <div style="margin-top:10px; padding:8px 10px; background:${isSuccess ? '#F0FDF4' : '#FEF2F2'}; border-radius:6px; font-size:0.9em;">
+        ${isSuccess ? '🎉 <b>成功擊敗大盤！</b>' : '⚠️ <b>落後大盤</b>'}<br>
+        🏛️ 大盤漲跌: <b>${taiexReturnPct >= 0 ? '+' : ''}${taiexReturnPct.toFixed(2)}%</b> | 超額報酬 (Alpha): <b>${alpha >= 0 ? '+' : ''}${alpha.toFixed(2)}%</b>
       </div>
     `;
   }
 
   resultDiv.innerHTML = html;
   resultDiv.style.display = 'block';
+
+  // 需求 3: 渲染 Chart.js 雙線走勢圖
+  if (rawStockSeries.length > 0 && rawTaiexSeries.length > 0) {
+    renderSimChart(symbol);
+  }
+
+  // 需求 2: 儲存至 LocalStorage
+  saveSimHistory({
+    symbol,
+    totalReturnPct: totalReturnPct.toFixed(2),
+    alpha: alpha.toFixed(2),
+    dateRange: `${buyDateStr.slice(5)}~${sellDateStr.slice(5)}`
+  });
 }
+
+// 📈 3. 畫出「個股 vs 大盤」漲跌幅% 對比圖表 (Chart.js)
+function renderSimChart(symbol) {
+  const container = document.getElementById('simChartContainer');
+  container.style.display = 'block';
+
+  const labels = rawStockSeries.map(item => item.date.slice(5)); // MM-DD
+  const baseStock = rawStockSeries[0].close;
+  const baseTaiex = rawTaiexSeries[0].close;
+
+  // 計算每日累積報酬率 (%)
+  const stockPctSeries = rawStockSeries.map(item => (((item.close - baseStock) / baseStock) * 100).toFixed(2));
+  const taiexPctSeries = rawTaiexSeries.map((item, idx) => {
+    const taiexVal = rawTaiexSeries[idx] ? rawTaiexSeries[idx].close : baseTaiex;
+    return (((taiexVal - baseTaiex) / baseTaiex) * 100).toFixed(2);
+  });
+
+  if (simChartInstance) {
+    simChartInstance.destroy(); // 避免圖表重複重疊
+  }
+
+  const ctx = document.getElementById('simChart').getContext('2d');
+  simChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: `${symbol} (%)`,
+          data: stockPctSeries,
+          borderColor: '#7C3AED',
+          backgroundColor: 'rgba(124, 58, 237, 0.1)',
+          borderWidth: 2,
+          pointRadius: 2,
+          fill: true
+        },
+        {
+          label: '大盤加權指數 (%)',
+          data: taiexPctSeries,
+          borderColor: '#E2E8F0',
+          borderDash: [5, 5],
+          borderWidth: 2,
+          pointRadius: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw}%` } }
+      },
+      scales: {
+        y: { ticks: { callback: (val) => `${val}%` } }
+      }
+    }
+  });
+}
+
+// 💾 4. LocalStorage 歷史紀錄維護 (需求 2)
+function saveSimHistory(data) {
+  let history = JSON.parse(localStorage.getItem('sim_trade_history') || '[]');
+  history.unshift(data); // 最新擺前面
+  if (history.length > 5) history = history.slice(0, 5); // 僅留近 5 筆
+  localStorage.setItem('sim_trade_history', JSON.stringify(history));
+  renderSimHistory();
+}
+
+function renderSimHistory() {
+  const historyList = document.getElementById('simHistoryList');
+  const history = JSON.parse(localStorage.getItem('sim_trade_history') || '[]');
+
+  if (history.length === 0) {
+    historyList.innerHTML = `<span style="color:#A0AEC0;">尚無模擬紀錄</span>`;
+    return;
+  }
+
+  historyList.innerHTML = history.map(item => `
+    <div style="background:#EDF2F7; padding:8px 10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <b>${item.symbol}</b> <span style="color:#718096; font-size:0.8em;">(${item.dateRange})</span>
+      </div>
+      <div>
+        報酬: <b style="color:${item.totalReturnPct >= 0 ? '#C53030' : '#22543D'};">${item.totalReturnPct >= 0 ? '+' : ''}${item.totalReturnPct}%</b>
+        <span style="font-size:0.8em; color:${item.alpha >= 0 ? '#2F855A' : '#C53030'}; margin-left:5px;">(Alpha: ${item.alpha}%)</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderLoginHistory() {
+  const container = document.getElementById('loginHistoryList');
+  if (!container) return;
+  container.innerHTML = '載入紀錄中...';
+
+  db.ref('loginHistory').orderByKey().limitToLast(50).once('value', snapshot => {
+    if (!snapshot.exists()) {
+      container.innerHTML = '尚無登入紀錄';
+      return;
+    }
+
+    let html = `<table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left;">
+      <thead>
+        <tr style="background:#EDF2F7; border-bottom:2px solid #CBD5E0;">
+          <th style="padding:6px;">使用者</th>
+          <th style="padding:6px;">IP</th>
+          <th style="padding:6px;">登入時間</th>
+          <th style="padding:6px;">關閉/登出時間</th>
+          <th style="padding:6px;">使用功能</th>
+          <th style="padding:6px;">裝置</th>
+        </tr>
+      </thead><tbody>`;
+
+    const data = snapshot.val();
+    Object.keys(data).reverse().forEach(key => {
+      const log = data[key];
+      const features = log.featuresUsed ? log.featuresUsed.join(', ') : '無';
+      
+      let deviceSimple = '電腦/其他';
+      if (log.device.includes('iPhone')) deviceSimple = 'iPhone';
+      else if (log.device.includes('Android')) deviceSimple = 'Android';
+      else if (log.device.includes('Windows')) deviceSimple = 'Windows PC';
+      else if (log.device.includes('Macintosh')) deviceSimple = 'Mac';
+
+      html += `<tr style="border-bottom:1px solid #E2E8F0;">
+        <td style="padding:6px; font-weight:bold;">${log.user}</td>
+        <td style="padding:6px;">${log.ip}</td>
+        <td style="padding:6px;">${log.loginTime}</td>
+        <td style="padding:6px;">${log.logoutTime}</td>
+        <td style="padding:6px;">${features}</td>
+        <td style="padding:6px;" title="${log.device}">${deviceSimple}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  });
+}
+
+function logFeatureUse(featureName) {
+  if (!currentSessionId) return;
+  const ref = firebase.database().ref(`loginHistory/${currentSessionId}/featuresUsed`);
+  ref.transaction(features => {
+    features = features || [];
+    if (!features.includes(featureName)) {
+      features.push(featureName);
+    }
+    return features;
+  });
+}
+
+// 關閉或重載頁面時記錄關閉時間
+window.addEventListener('beforeunload', () => {
+  if (currentSessionId) {
+    const now = new Date().toLocaleString('zh-TW');
+    db.ref(`loginHistory/${currentSessionId}/logoutTime`).set(now);
+  }
+});
+
+// 範例：當開啟選單或點擊智慧功能按鈕時呼叫 logFeatureUse('提領試算');
+
+function clearSimHistory() {
+  localStorage.removeItem('sim_trade_history');
+  renderSimHistory();
+}
+
+let currentSessionId = null; // 本次登入 Session ID
+let userIpAddress = '未知 IP';
+
+// 頁面載入時先非同步抓取 IP (使用免費的 ipify API)
+fetch('https://api.ipify.org?format=json')
+  .then(res => res.json())
+  .then(data => { userIpAddress = data.ip; })
+  .catch(() => { userIpAddress = '無法取得 IP'; });
 
 function renderFundingHistoryLogs(logs) {
   const container = document.getElementById('fundingHistoryLogs');
