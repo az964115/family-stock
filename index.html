@@ -1183,6 +1183,7 @@
       if (user.toLowerCase() === 'jason') {
         closeModal('featuresPortalModal');
         openModal('rsvMonitoringModal');
+        loadRsvMarketData();
         return;
       }
 
@@ -1191,6 +1192,7 @@
         if (snap.exists() && snap.val() === true) {
           closeModal('featuresPortalModal');
           openModal('rsvMonitoringModal');
+          loadRsvMarketData();
         } else {
           alert("無權限，請洽Jason(付費會員專用,購買前可試用3天)");
         }
@@ -4605,6 +4607,52 @@ function renderTopVolumeTable(data) {
 
   html += '</tbody></table>';
   document.getElementById('marketDataContent').innerHTML = html;
+}
+// 1. 撈取後端動能 API 資料並繪製表格
+async function loadRsvMarketData() {
+  const container = document.getElementById('rsv-data-container'); // 假設你的 Modal 表格容器 ID
+  if (!container) return;
+
+  container.innerHTML = '<tr><td colspan="6" style="text-align:center;">⏳ 正在透過 Shioaji 運算 60分K 指標中...</td></tr>';
+
+  try {
+    const response = await fetch('http://localhost:5000/api/market-top-volume');
+    const resData = await response.json();
+
+    if (resData.status === 'success') {
+      let htmlRows = '';
+      resData.data.forEach(item => {
+        // 依據 signal 給予不同的顯示顏色與標籤
+        let badgeAttr = { color: '#718096', bg: '#EDF2F7', text: '觀望' };
+        if (item.signal === 'BUY') {
+          badgeAttr = { color: '#ffffff', bg: '#e53e3e', text: '🚀 買進訊號' };
+        } else if (item.signal === 'SELL') {
+          badgeAttr = { color: '#ffffff', bg: '#38a169', text: '⚠️ 賣出訊號' };
+        } else if (item.signal === 'WARN_SELL') {
+          badgeAttr = { color: '#2b6cb0', bg: '#bee3f8', text: '⚡ 賣出預警' };
+        }
+
+        htmlRows += `
+          <tr style="border-bottom: 1px solid #E2E8F0;">
+            <td style="padding: 8px;"><b>${item.code}</b> ${item.name}</td>
+            <td style="padding: 8px;">$${item.price} (${item.change_rate}%)</td>
+            <td style="padding: 8px;">K: ${item.k_val} | D: ${item.d_val}</td>
+            <td style="padding: 8px;">${item.ema26}</td>
+            <td style="padding: 8px;">
+              <span style="background:${badgeAttr.bg}; color:${badgeAttr.color}; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">
+                ${badgeAttr.text}
+              </span>
+            </td>
+            <td style="padding: 8px; font-size: 12px; color: #4A5568;">${item.reason}</td>
+          </tr>
+        `;
+      });
+
+      container.innerHTML = htmlRows;
+    }
+  } catch (error) {
+    container.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">連線失敗：${error.message}</td></tr>`;
+  }
 }
 function renderFundingHistoryLogs(logs) {
   const container = document.getElementById('fundingHistoryLogs');
