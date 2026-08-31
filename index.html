@@ -4546,6 +4546,66 @@ function emitRsvSignal(stock, action, reason) {
     });
   }
 }
+// 抓取全市場成交量最大股票並渲染
+function fetchMarketDataFromPython() {
+  const PYTHON_API_URL = "http://localhost:5000/api/market-top-volume";
+
+  fetch(PYTHON_API_URL)
+    .then(response => response.json())
+    .then(res => {
+      if(res.status === 'success') {
+        renderTopVolumeTable(res.data);
+      }
+    })
+    .catch(err => {
+      document.getElementById('marketDataContent').innerHTML = 
+        `<div style="color:#e53e3e;">無法連線至永豐金行情引擎 (Python Backend)</div>`;
+    });
+}
+
+function renderTopVolumeTable(data) {
+  let html = `
+    <table style="width:100%; text-align:left; border-collapse:collapse; font-size:14px;">
+      <thead>
+        <tr style="border-bottom:1px solid #4a5568; color:#a0aec0;">
+          <th style="padding:8px;">標的</th>
+          <th>現價</th>
+          <th>成交量 (張)</th>
+          <th>漲跌幅</th>
+          <th>觸發訊號</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  data.forEach(item => {
+    let signalBadge = '<span style="color:#a0aec0;">觀望</span>';
+    
+    // 達買賣點時，觸發我們先前寫好的瀏覽器桌面跳窗推播
+    if (item.signal === 'BUY') {
+      signalBadge = '<span style="background:#e53e3e; color:#fff; padding:2px 8px; border-radius:4px; font-weight:bold;">🚀 達買點</span>';
+      emitRsvSignal({name: item.name, symbol: item.code, currentPrice: item.price}, 'BUY', `成交量暴增 (${item.volume}張) + 達拉回買點 $${item.buy_target}`);
+    } else if (item.signal === 'SELL') {
+      signalBadge = '<span style="background:#38a169; color:#fff; padding:2px 8px; border-radius:4px; font-weight:bold;">⚠️ 達賣点</span>';
+      emitRsvSignal({name: item.name, symbol: item.code, currentPrice: item.price}, 'SELL', `爆量高衝 (${item.volume}張) + 達目標賣點 $${item.sell_target}`);
+    }
+
+    const priceColor = item.change_rate > 0 ? '#fc8181' : (item.change_rate < 0 ? '#68d391' : '#fff');
+
+    html += `
+      <tr style="border-bottom:1px solid #2d3748;">
+        <td style="padding:10px 8px;"><strong>${item.name}</strong> (${item.code})</td>
+        <td style="font-size:15px; font-weight:bold; color:${priceColor};">$${item.price}</td>
+        <td>${(item.volume / 1000).toFixed(0)} 千張</td>
+        <td style="color:${priceColor};">${item.change_rate}%</td>
+        <td>${signalBadge}</td>
+      </tr>
+    `;
+  });
+
+  html += '</tbody></table>';
+  document.getElementById('marketDataContent').innerHTML = html;
+}
 function renderFundingHistoryLogs(logs) {
   const container = document.getElementById('fundingHistoryLogs');
   if (!container) return;
