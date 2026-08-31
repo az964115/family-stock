@@ -1183,7 +1183,6 @@
       if (user.toLowerCase() === 'jason') {
         closeModal('featuresPortalModal');
         openModal('rsvMonitoringModal');
-        loadRsvMarketData();
         return;
       }
 
@@ -1192,7 +1191,6 @@
         if (snap.exists() && snap.val() === true) {
           closeModal('featuresPortalModal');
           openModal('rsvMonitoringModal');
-          loadRsvMarketData();
         } else {
           alert("無權限，請洽Jason(付費會員專用,購買前可試用3天)");
         }
@@ -4458,202 +4456,7 @@ fetch('https://api.ipify.org?format=json')
   .then(res => res.json())
   .then(data => { userIpAddress = data.ip; })
   .catch(() => { userIpAddress = '無法取得 IP'; });
-// ==========================================
-// 即時動能模組 (RSV / 買賣訊號) 增強整合
-// ==========================================
 
-// 1. 頁面初始化時請求系統桌面通知權限
-document.addEventListener('DOMContentLoaded', () => {
-  if ("Notification" in window && Notification.permission !== "granted") {
-    Notification.requestPermission();
-  }
-});
-
-/**
- * 核心監控邏輯：計算與觸發買賣訊號
- * @param {Array} stockDataList - 傳入包含全大盤電子與半導體股的即時陣列
- */
-function processRsvMonitoring(stockDataList) {
-  const modalContainer = document.getElementById('rsvMonitoringModal');
-  let alertLogContainer = document.getElementById('rsvAlertLogSection');
-
-  // 若 Modal 內尚未建立警報日誌區，自動動態插入 UI 頂部
-  if (modalContainer && !alertLogContainer) {
-    alertLogContainer = document.createElement('div');
-    alertLogContainer.id = 'rsvAlertLogSection';
-    alertLogContainer.style.cssText = 'margin-bottom: 15px; padding: 12px; background: #1a202c; border-radius: 8px; border-left: 4px solid #4299e1;';
-    alertLogContainer.innerHTML = `
-      <div style="font-weight:bold; color:#e2e8f0; margin-bottom:8px; display:flex; justify-shadow:space-between;">
-        <span>🔔 觸發買賣訊號即時動態</span>
-        <span style="font-size:12px; color:#a0aec0;">即時自動刷新</span>
-      </div>
-      <div id="rsvAlertItems" style="max-height:150px; overflow-y:auto; font-size:13px; color:#cbd5e0;">
-        <div style="color:#718096; font-style:italic;">暫無最新觸發訊號...</div>
-      </div>
-    `;
-    modalContainer.insertBefore(alertLogContainer, modalContainer.firstChild);
-  }
-
-  // 遍歷股票陣列進行指標判斷
-  stockDataList.forEach(stock => {
-    // 鎖定半導體與電子類股
-    const isTechSector = ['半導體', '電子零組件', '電腦週邊'].some(cat => stock.category?.includes(cat));
-    
-    if (isTechSector) {
-      // 買入條件範例：低檔超賣 (RSV < 20) 且最新價起漲
-      if (stock.rsv < 20 && stock.priceChange > 0) {
-        emitRsvSignal(stock, 'BUY', `RSV低檔打底 (${stock.rsv}) + 動能轉折`);
-      } 
-      // 賣出條件範例：高檔過熱 (RSV > 80) 且最新價下跌
-      else if (stock.rsv > 80 && stock.priceChange < 0) {
-        emitRsvSignal(stock, 'SELL', `RSV高檔背離 (${stock.rsv}) + 動能轉弱`);
-      }
-    }
-  });
-}
-
-/**
- * 觸發訊號並執行 (網頁UI卡片 + 系統桌面跳窗)
- */
-function emitRsvSignal(stock, action, reason) {
-  const isBuy = action === 'BUY';
-  const tagColor = isBuy ? '#f56565' : '#48bb78';
-  const actionText = isBuy ? '買入訊號' : '賣出訊號';
-  const timeStr = new Date().toLocaleTimeString();
-  
-  // (A) 渲染至 rsvMonitoringModal 內部的警報日誌區
-  const alertItemsDiv = document.getElementById('rsvAlertItems');
-  if (alertItemsDiv) {
-    if (alertItemsDiv.querySelector('div')?.textContent.includes('暫無最新')) {
-      alertItemsDiv.innerHTML = '';
-    }
-    const item = document.createElement('div');
-    item.style.cssText = 'padding: 6px 0; border-bottom: 1px dashed #2d3748; display:flex; justify-content:space-between; align-items:center;';
-    item.innerHTML = `
-      <div>
-        <span style="background:${tagColor}; color:#fff; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:11px; margin-right:6px;">${actionText}</span>
-        <strong>${stock.name} (${stock.symbol})</strong> - $${stock.currentPrice}
-        <span style="color:#a0aec0; font-size:12px; margin-left:8px;">${reason}</span>
-      </div>
-      <span style="color:#718096; font-size:11px;">${timeStr}</span>
-    `;
-    alertItemsDiv.insertBefore(item, alertItemsDiv.firstChild);
-  }
-
-  // (B) 彈出桌面/手機系統推播
-  if ("Notification" in window && Notification.permission === "granted") {
-    new Notification(`【${actionText}】${stock.name} (${stock.symbol})`, {
-      body: `最新價：$${stock.currentPrice}\n觸發理由：${reason}\n時間：${timeStr}`,
-      silent: false
-    });
-  }
-}
-// 抓取全市場成交量最大股票並渲染
-function fetchMarketDataFromPython() {
-  const PYTHON_API_URL = "http://localhost:5000/api/market-top-volume";
-
-  fetch(PYTHON_API_URL)
-    .then(response => response.json())
-    .then(res => {
-      if(res.status === 'success') {
-        renderTopVolumeTable(res.data);
-      }
-    })
-    .catch(err => {
-      document.getElementById('marketDataContent').innerHTML = 
-        `<div style="color:#e53e3e;">無法連線至永豐金行情引擎 (Python Backend)</div>`;
-    });
-}
-
-function renderTopVolumeTable(data) {
-  let html = `
-    <table style="width:100%; text-align:left; border-collapse:collapse; font-size:14px;">
-      <thead>
-        <tr style="border-bottom:1px solid #4a5568; color:#a0aec0;">
-          <th style="padding:8px;">標的</th>
-          <th>現價</th>
-          <th>成交量 (張)</th>
-          <th>漲跌幅</th>
-          <th>觸發訊號</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-  data.forEach(item => {
-    let signalBadge = '<span style="color:#a0aec0;">觀望</span>';
-    
-    // 達買賣點時，觸發我們先前寫好的瀏覽器桌面跳窗推播
-    if (item.signal === 'BUY') {
-      signalBadge = '<span style="background:#e53e3e; color:#fff; padding:2px 8px; border-radius:4px; font-weight:bold;">🚀 達買點</span>';
-      emitRsvSignal({name: item.name, symbol: item.code, currentPrice: item.price}, 'BUY', `成交量暴增 (${item.volume}張) + 達拉回買點 $${item.buy_target}`);
-    } else if (item.signal === 'SELL') {
-      signalBadge = '<span style="background:#38a169; color:#fff; padding:2px 8px; border-radius:4px; font-weight:bold;">⚠️ 達賣点</span>';
-      emitRsvSignal({name: item.name, symbol: item.code, currentPrice: item.price}, 'SELL', `爆量高衝 (${item.volume}張) + 達目標賣點 $${item.sell_target}`);
-    }
-
-    const priceColor = item.change_rate > 0 ? '#fc8181' : (item.change_rate < 0 ? '#68d391' : '#fff');
-
-    html += `
-      <tr style="border-bottom:1px solid #2d3748;">
-        <td style="padding:10px 8px;"><strong>${item.name}</strong> (${item.code})</td>
-        <td style="font-size:15px; font-weight:bold; color:${priceColor};">$${item.price}</td>
-        <td>${(item.volume / 1000).toFixed(0)} 千張</td>
-        <td style="color:${priceColor};">${item.change_rate}%</td>
-        <td>${signalBadge}</td>
-      </tr>
-    `;
-  });
-
-  html += '</tbody></table>';
-  document.getElementById('marketDataContent').innerHTML = html;
-}
-// 1. 撈取後端動能 API 資料並繪製表格
-async function loadRsvMarketData() {
-  const container = document.getElementById('rsv-data-container'); // 假設你的 Modal 表格容器 ID
-  if (!container) return;
-
-  container.innerHTML = '<tr><td colspan="6" style="text-align:center;">⏳ 正在透過 Shioaji 運算 60分K 指標中...</td></tr>';
-
-  try {
-    const response = await fetch('http://localhost:5000/api/market-top-volume');
-    const resData = await response.json();
-
-    if (resData.status === 'success') {
-      let htmlRows = '';
-      resData.data.forEach(item => {
-        // 依據 signal 給予不同的顯示顏色與標籤
-        let badgeAttr = { color: '#718096', bg: '#EDF2F7', text: '觀望' };
-        if (item.signal === 'BUY') {
-          badgeAttr = { color: '#ffffff', bg: '#e53e3e', text: '🚀 買進訊號' };
-        } else if (item.signal === 'SELL') {
-          badgeAttr = { color: '#ffffff', bg: '#38a169', text: '⚠️ 賣出訊號' };
-        } else if (item.signal === 'WARN_SELL') {
-          badgeAttr = { color: '#2b6cb0', bg: '#bee3f8', text: '⚡ 賣出預警' };
-        }
-
-        htmlRows += `
-          <tr style="border-bottom: 1px solid #E2E8F0;">
-            <td style="padding: 8px;"><b>${item.code}</b> ${item.name}</td>
-            <td style="padding: 8px;">$${item.price} (${item.change_rate}%)</td>
-            <td style="padding: 8px;">K: ${item.k_val} | D: ${item.d_val}</td>
-            <td style="padding: 8px;">${item.ema26}</td>
-            <td style="padding: 8px;">
-              <span style="background:${badgeAttr.bg}; color:${badgeAttr.color}; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">
-                ${badgeAttr.text}
-              </span>
-            </td>
-            <td style="padding: 8px; font-size: 12px; color: #4A5568;">${item.reason}</td>
-          </tr>
-        `;
-      });
-
-      container.innerHTML = htmlRows;
-    }
-  } catch (error) {
-    container.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">連線失敗：${error.message}</td></tr>`;
-  }
-}
 function renderFundingHistoryLogs(logs) {
   const container = document.getElementById('fundingHistoryLogs');
   if (!container) return;
