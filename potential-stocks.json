@@ -1,34 +1,34 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-01T06:08:18.771Z",
+  "updatedAt": "2026-09-01T12:27:52.634Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "6830",
-      "name": "汎銓",
-      "category": "漲幅排行",
-      "price": 572,
-      "rank": 1
-    },
     {
       "symbol": "2243",
       "name": "宏旭-KY",
       "category": "漲幅排行",
       "price": 46.2,
+      "rank": 1
+    },
+    {
+      "symbol": "3664",
+      "name": "安瑞-KY",
+      "category": "漲幅排行",
+      "price": 7.59,
       "rank": 2
+    },
+    {
+      "symbol": "6830",
+      "name": "汎銓",
+      "category": "漲幅排行",
+      "price": 572,
+      "rank": 3
     },
     {
       "symbol": "3324",
       "name": "雙鴻",
       "category": "漲幅排行",
       "price": 1375,
-      "rank": 3
-    },
-    {
-      "symbol": "3529",
-      "name": "力旺",
-      "category": "漲幅排行",
-      "price": 2640,
       "rank": 4
     },
     {
@@ -39,10 +39,10 @@
       "rank": 5
     },
     {
-      "symbol": "3664",
-      "name": "安瑞-KY",
+      "symbol": "3529",
+      "name": "力旺",
       "category": "漲幅排行",
-      "price": 7.59,
+      "price": 2640,
       "rank": 6
     },
     {
@@ -60,87 +60,87 @@
       "rank": 8
     },
     {
-      "symbol": "3518",
-      "name": "柏騰",
-      "category": "漲幅排行",
-      "price": 31.4,
-      "rank": 9
-    },
-    {
       "symbol": "6538",
       "name": "倉和",
       "category": "漲幅排行",
       "price": 226,
+      "rank": 9
+    },
+    {
+      "symbol": "3518",
+      "name": "柏騰",
+      "category": "漲幅排行",
+      "price": 31.4,
       "rank": 10
     },
     {
-      "symbol": "6770",
-      "name": "力積電",
+      "symbol": "1326",
+      "name": "台化",
       "category": "法人買超",
-      "price": 73,
+      "price": 74.3,
       "rank": 1
-    },
-    {
-      "symbol": "2409",
-      "name": "友達",
-      "category": "法人買超",
-      "price": 26.65,
-      "rank": 2
     },
     {
       "symbol": "2887",
       "name": "台新新光金",
       "category": "法人買超",
-      "price": 38.55,
+      "price": 40.3,
+      "rank": 2
+    },
+    {
+      "symbol": "1101",
+      "name": "台泥",
+      "category": "法人買超",
+      "price": 25.3,
       "rank": 3
     },
     {
       "symbol": "2883",
       "name": "凱基金",
       "category": "法人買超",
-      "price": 33.85,
+      "price": 34.95,
       "rank": 4
     },
     {
-      "symbol": "2834",
-      "name": "臺企銀",
+      "symbol": "8150",
+      "name": "南茂",
       "category": "法人買超",
-      "price": 16.95,
+      "price": 93.2,
       "rank": 5
-    },
-    {
-      "symbol": "2892",
-      "name": "第一金",
-      "category": "法人買超",
-      "price": 35.3,
-      "rank": 6
     },
     {
       "symbol": "1301",
       "name": "台塑",
       "category": "法人買超",
-      "price": 66.2,
+      "price": 67.8,
+      "rank": 6
+    },
+    {
+      "symbol": "2892",
+      "name": "第一金",
+      "category": "法人買超",
+      "price": 35.9,
       "rank": 7
     },
     {
-      "symbol": "2890",
-      "name": "永豐金",
+      "symbol": "2317",
+      "name": "鴻海",
       "category": "法人買超",
-      "price": 41.1,
+      "price": 256,
       "rank": 8
     },
     {
-      "symbol": "1326",
-      "name": "台化",
+      "symbol": "2886",
+      "name": "兆豐金",
       "category": "法人買超",
-      "price": 68.3,
+      "price": 48.5,
       "rank": 9
     },
     {
-      "symbol": "1717",
-      "name": "長興",
+      "symbol": "1815",
+      "name": "富喬",
       "category": "法人買超",
-      "price": 82.5,
+      "price": 129,
       "rank": 10
     }
   ]
