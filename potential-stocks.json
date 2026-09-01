@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-08-31T14:56:51.515Z",
-  "count": 19,
+  "updatedAt": "2026-09-01T06:08:18.771Z",
+  "count": 20,
   "stocks": [
     {
-      "symbol": "6240",
-      "name": "松崗",
+      "symbol": "6830",
+      "name": "汎銓",
       "category": "漲幅排行",
-      "price": 25.3,
+      "price": 572,
       "rank": 1
     },
     {
-      "symbol": "4908",
-      "name": "前鼎",
+      "symbol": "2243",
+      "name": "宏旭-KY",
       "category": "漲幅排行",
-      "price": 209,
+      "price": 46.2,
       "rank": 2
     },
     {
-      "symbol": "3086",
-      "name": "華義*",
+      "symbol": "3324",
+      "name": "雙鴻",
       "category": "漲幅排行",
-      "price": 30.25,
+      "price": 1375,
       "rank": 3
     },
     {
-      "symbol": "6933",
-      "name": "AMAX-KY",
+      "symbol": "3529",
+      "name": "力旺",
       "category": "漲幅排行",
-      "price": 286,
+      "price": 2640,
       "rank": 4
-    },
-    {
-      "symbol": "1326",
-      "name": "台化",
-      "category": "漲幅排行",
-      "price": 68.3,
-      "rank": 5
-    },
-    {
-      "symbol": "1303",
-      "name": "南亞",
-      "category": "漲幅排行",
-      "price": 242.5,
-      "rank": 6
-    },
-    {
-      "symbol": "8111",
-      "name": "立碁",
-      "category": "漲幅排行",
-      "price": 68.6,
-      "rank": 7
-    },
-    {
-      "symbol": "6620",
-      "name": "漢達",
-      "category": "漲幅排行",
-      "price": 92.9,
-      "rank": 8
     },
     {
       "symbol": "2434",
       "name": "統懋",
       "category": "漲幅排行",
-      "price": 62,
+      "price": 68.2,
+      "rank": 5
+    },
+    {
+      "symbol": "3664",
+      "name": "安瑞-KY",
+      "category": "漲幅排行",
+      "price": 7.59,
+      "rank": 6
+    },
+    {
+      "symbol": "4971",
+      "name": "IET-KY",
+      "category": "漲幅排行",
+      "price": 660,
+      "rank": 7
+    },
+    {
+      "symbol": "4580",
+      "name": "捷流閥業",
+      "category": "漲幅排行",
+      "price": 87,
+      "rank": 8
+    },
+    {
+      "symbol": "3518",
+      "name": "柏騰",
+      "category": "漲幅排行",
+      "price": 31.4,
       "rank": 9
     },
     {
-      "symbol": "6654",
-      "name": "天正國際",
+      "symbol": "6538",
+      "name": "倉和",
       "category": "漲幅排行",
-      "price": 194,
+      "price": 226,
       "rank": 10
     },
     {
@@ -130,11 +130,18 @@
       "rank": 8
     },
     {
+      "symbol": "1326",
+      "name": "台化",
+      "category": "法人買超",
+      "price": 68.3,
+      "rank": 9
+    },
+    {
       "symbol": "1717",
       "name": "長興",
       "category": "法人買超",
       "price": 82.5,
-      "rank": 9
+      "rank": 10
     }
   ]
 }
