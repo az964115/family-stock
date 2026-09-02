@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-01T12:27:52.634Z",
+  "updatedAt": "2026-09-02T03:39:28.105Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "2243",
-      "name": "宏旭-KY",
+      "symbol": "6872",
+      "name": "浩宇生醫",
       "category": "漲幅排行",
-      "price": 46.2,
+      "price": 15.4,
       "rank": 1
-    },
-    {
-      "symbol": "3664",
-      "name": "安瑞-KY",
-      "category": "漲幅排行",
-      "price": 7.59,
-      "rank": 2
-    },
-    {
-      "symbol": "6830",
-      "name": "汎銓",
-      "category": "漲幅排行",
-      "price": 572,
-      "rank": 3
-    },
-    {
-      "symbol": "3324",
-      "name": "雙鴻",
-      "category": "漲幅排行",
-      "price": 1375,
-      "rank": 4
-    },
-    {
-      "symbol": "2434",
-      "name": "統懋",
-      "category": "漲幅排行",
-      "price": 68.2,
-      "rank": 5
-    },
-    {
-      "symbol": "3529",
-      "name": "力旺",
-      "category": "漲幅排行",
-      "price": 2640,
-      "rank": 6
-    },
-    {
-      "symbol": "4971",
-      "name": "IET-KY",
-      "category": "漲幅排行",
-      "price": 660,
-      "rank": 7
-    },
-    {
-      "symbol": "4580",
-      "name": "捷流閥業",
-      "category": "漲幅排行",
-      "price": 87,
-      "rank": 8
     },
     {
       "symbol": "6538",
       "name": "倉和",
       "category": "漲幅排行",
-      "price": 226,
+      "price": 248.5,
+      "rank": 2
+    },
+    {
+      "symbol": "8040",
+      "name": "九暘",
+      "category": "漲幅排行",
+      "price": 82.9,
+      "rank": 3
+    },
+    {
+      "symbol": "6272",
+      "name": "驊陞",
+      "category": "漲幅排行",
+      "price": 27.65,
+      "rank": 4
+    },
+    {
+      "symbol": "5285",
+      "name": "界霖",
+      "category": "漲幅排行",
+      "price": 89.6,
+      "rank": 5
+    },
+    {
+      "symbol": "1595",
+      "name": "川寶",
+      "category": "漲幅排行",
+      "price": 73,
+      "rank": 6
+    },
+    {
+      "symbol": "4976",
+      "name": "佳凌",
+      "category": "漲幅排行",
+      "price": 41.55,
+      "rank": 7
+    },
+    {
+      "symbol": "6486",
+      "name": "互動",
+      "category": "漲幅排行",
+      "price": 84.2,
+      "rank": 8
+    },
+    {
+      "symbol": "6510",
+      "name": "精測",
+      "category": "漲幅排行",
+      "price": 3435,
       "rank": 9
     },
     {
-      "symbol": "3518",
-      "name": "柏騰",
+      "symbol": "3354",
+      "name": "律勝",
       "category": "漲幅排行",
-      "price": 31.4,
+      "price": 26.05,
       "rank": 10
     },
     {
