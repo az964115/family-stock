@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-02T03:39:28.105Z",
+  "updatedAt": "2026-09-02T05:33:50.762Z",
   "count": 20,
   "stocks": [
     {
@@ -11,66 +11,66 @@
       "rank": 1
     },
     {
+      "symbol": "6224",
+      "name": "聚鼎",
+      "category": "漲幅排行",
+      "price": 85,
+      "rank": 2
+    },
+    {
       "symbol": "6538",
       "name": "倉和",
       "category": "漲幅排行",
       "price": 248.5,
-      "rank": 2
+      "rank": 3
     },
     {
       "symbol": "8040",
       "name": "九暘",
       "category": "漲幅排行",
       "price": 82.9,
-      "rank": 3
+      "rank": 4
+    },
+    {
+      "symbol": "3141",
+      "name": "晶宏",
+      "category": "漲幅排行",
+      "price": 99.5,
+      "rank": 5
     },
     {
       "symbol": "6272",
       "name": "驊陞",
       "category": "漲幅排行",
       "price": 27.65,
-      "rank": 4
+      "rank": 6
     },
     {
       "symbol": "5285",
       "name": "界霖",
       "category": "漲幅排行",
       "price": 89.6,
-      "rank": 5
+      "rank": 7
     },
     {
       "symbol": "1595",
       "name": "川寶",
       "category": "漲幅排行",
       "price": 73,
-      "rank": 6
-    },
-    {
-      "symbol": "4976",
-      "name": "佳凌",
-      "category": "漲幅排行",
-      "price": 41.55,
-      "rank": 7
-    },
-    {
-      "symbol": "6486",
-      "name": "互動",
-      "category": "漲幅排行",
-      "price": 84.2,
       "rank": 8
+    },
+    {
+      "symbol": "8431",
+      "name": "匯鑽科",
+      "category": "漲幅排行",
+      "price": 59.8,
+      "rank": 9
     },
     {
       "symbol": "6510",
       "name": "精測",
       "category": "漲幅排行",
       "price": 3435,
-      "rank": 9
-    },
-    {
-      "symbol": "3354",
-      "name": "律勝",
-      "category": "漲幅排行",
-      "price": 26.05,
       "rank": 10
     },
     {
