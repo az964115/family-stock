@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-02T05:33:50.762Z",
+  "updatedAt": "2026-09-02T06:39:58.833Z",
   "count": 20,
   "stocks": [
     {
@@ -77,70 +77,70 @@
       "symbol": "1326",
       "name": "台化",
       "category": "法人買超",
-      "price": 74.3,
+      "price": 72.8,
       "rank": 1
     },
     {
       "symbol": "2887",
       "name": "台新新光金",
       "category": "法人買超",
-      "price": 40.3,
+      "price": 41.2,
       "rank": 2
     },
     {
       "symbol": "1101",
       "name": "台泥",
       "category": "法人買超",
-      "price": 25.3,
+      "price": 24.8,
       "rank": 3
     },
     {
       "symbol": "2883",
       "name": "凱基金",
       "category": "法人買超",
-      "price": 34.95,
+      "price": 35.5,
       "rank": 4
     },
     {
       "symbol": "8150",
       "name": "南茂",
       "category": "法人買超",
-      "price": 93.2,
+      "price": 90.2,
       "rank": 5
     },
     {
       "symbol": "1301",
       "name": "台塑",
       "category": "法人買超",
-      "price": 67.8,
+      "price": 66.8,
       "rank": 6
     },
     {
       "symbol": "2892",
       "name": "第一金",
       "category": "法人買超",
-      "price": 35.9,
+      "price": 36.25,
       "rank": 7
     },
     {
       "symbol": "2317",
       "name": "鴻海",
       "category": "法人買超",
-      "price": 256,
+      "price": 251,
       "rank": 8
     },
     {
       "symbol": "2886",
       "name": "兆豐金",
       "category": "法人買超",
-      "price": 48.5,
+      "price": 49,
       "rank": 9
     },
     {
       "symbol": "1815",
       "name": "富喬",
       "category": "法人買超",
-      "price": 129,
+      "price": 131,
       "rank": 10
     }
   ]
