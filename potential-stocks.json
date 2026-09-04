@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-04T05:39:59.528Z",
+  "updatedAt": "2026-09-04T05:54:07.282Z",
   "count": 20,
   "stocks": [
     {
@@ -11,38 +11,38 @@
       "rank": 1
     },
     {
-      "symbol": "3324",
-      "name": "雙鴻",
-      "category": "漲幅排行",
-      "price": 1485,
-      "rank": 2
-    },
-    {
       "symbol": "3167",
       "name": "大量",
       "category": "漲幅排行",
       "price": 803,
-      "rank": 3
+      "rank": 2
     },
     {
       "symbol": "3441",
       "name": "聯一光",
       "category": "漲幅排行",
       "price": 143,
+      "rank": 3
+    },
+    {
+      "symbol": "3324",
+      "name": "雙鴻",
+      "category": "漲幅排行",
+      "price": 1485,
       "rank": 4
+    },
+    {
+      "symbol": "3022",
+      "name": "威強電",
+      "category": "漲幅排行",
+      "price": 95.9,
+      "rank": 5
     },
     {
       "symbol": "2327",
       "name": "國巨*",
       "category": "漲幅排行",
       "price": 562,
-      "rank": 5
-    },
-    {
-      "symbol": "6290",
-      "name": "良維",
-      "category": "漲幅排行",
-      "price": 270,
       "rank": 6
     },
     {
@@ -53,17 +53,17 @@
       "rank": 7
     },
     {
-      "symbol": "3022",
-      "name": "威強電",
+      "symbol": "6290",
+      "name": "良維",
       "category": "漲幅排行",
-      "price": 95.9,
+      "price": 270,
       "rank": 8
     },
     {
-      "symbol": "7610",
-      "name": "聯友金屬-創",
+      "symbol": "4979",
+      "name": "華星光",
       "category": "漲幅排行",
-      "price": 1820,
+      "price": 629,
       "rank": 9
     },
     {
