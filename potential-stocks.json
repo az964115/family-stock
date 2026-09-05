@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-05T05:25:04.244Z",
+  "updatedAt": "2026-09-05T11:11:58.027Z",
   "count": 19,
   "stocks": [
     {
@@ -11,24 +11,24 @@
       "rank": 1
     },
     {
+      "symbol": "3167",
+      "name": "大量",
+      "category": "漲幅排行",
+      "price": 803,
+      "rank": 2
+    },
+    {
       "symbol": "2426",
       "name": "鼎元",
       "category": "漲幅排行",
       "price": 104.5,
-      "rank": 2
+      "rank": 3
     },
     {
       "symbol": "3441",
       "name": "聯一光",
       "category": "漲幅排行",
       "price": 143,
-      "rank": 3
-    },
-    {
-      "symbol": "3167",
-      "name": "大量",
-      "category": "漲幅排行",
-      "price": 803,
       "rank": 4
     },
     {
@@ -39,10 +39,10 @@
       "rank": 5
     },
     {
-      "symbol": "6290",
-      "name": "良維",
+      "symbol": "3022",
+      "name": "威強電",
       "category": "漲幅排行",
-      "price": 270,
+      "price": 95.9,
       "rank": 6
     },
     {
@@ -53,10 +53,10 @@
       "rank": 7
     },
     {
-      "symbol": "3022",
-      "name": "威強電",
+      "symbol": "6290",
+      "name": "良維",
       "category": "漲幅排行",
-      "price": 95.9,
+      "price": 270,
       "rank": 8
     },
     {
