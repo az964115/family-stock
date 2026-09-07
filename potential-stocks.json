@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-06T11:34:55.358Z",
+  "updatedAt": "2026-09-07T05:41:43.378Z",
   "count": 19,
   "stocks": [
     {
-      "symbol": "2426",
-      "name": "鼎元",
+      "symbol": "3354",
+      "name": "律勝",
       "category": "漲幅排行",
-      "price": 104.5,
+      "price": 26.4,
       "rank": 1
     },
     {
-      "symbol": "3324",
-      "name": "雙鴻",
+      "symbol": "5314",
+      "name": "世紀*",
       "category": "漲幅排行",
-      "price": 1485,
+      "price": 35.2,
       "rank": 2
     },
     {
-      "symbol": "3441",
-      "name": "聯一光",
+      "symbol": "6441",
+      "name": "廣錠",
       "category": "漲幅排行",
-      "price": 143,
+      "price": 23.1,
       "rank": 3
     },
     {
-      "symbol": "3167",
-      "name": "大量",
+      "symbol": "8021",
+      "name": "尖點",
       "category": "漲幅排行",
-      "price": 803,
+      "price": 462,
       "rank": 4
     },
     {
-      "symbol": "3022",
-      "name": "威強電",
+      "symbol": "8040",
+      "name": "九暘",
       "category": "漲幅排行",
-      "price": 95.9,
+      "price": 82.5,
       "rank": 5
     },
     {
-      "symbol": "6271",
-      "name": "同欣電",
+      "symbol": "2303",
+      "name": "聯電",
       "category": "漲幅排行",
-      "price": 237,
+      "price": 143,
       "rank": 6
     },
     {
-      "symbol": "6290",
-      "name": "良維",
+      "symbol": "8472",
+      "name": "夠麻吉",
       "category": "漲幅排行",
-      "price": 270,
+      "price": 78.2,
       "rank": 7
     },
     {
-      "symbol": "2327",
-      "name": "國巨*",
+      "symbol": "3026",
+      "name": "禾伸堂",
       "category": "漲幅排行",
-      "price": 562,
+      "price": 771,
       "rank": 8
     },
     {
-      "symbol": "7828",
-      "name": "創新服務",
+      "symbol": "5274",
+      "name": "信驊",
       "category": "漲幅排行",
-      "price": 1930,
+      "price": 19215,
       "rank": 9
     },
     {
-      "symbol": "7610",
-      "name": "聯友金屬-創",
+      "symbol": "6173",
+      "name": "信昌電",
       "category": "漲幅排行",
-      "price": 1820,
+      "price": 286.5,
       "rank": 10
     },
     {
@@ -88,17 +88,17 @@
       "rank": 2
     },
     {
-      "symbol": "2303",
-      "name": "聯電",
-      "category": "法人買超",
-      "price": 130,
-      "rank": 3
-    },
-    {
       "symbol": "3231",
       "name": "緯創",
       "category": "法人買超",
       "price": 198,
+      "rank": 3
+    },
+    {
+      "symbol": "2327",
+      "name": "國巨*",
+      "category": "法人買超",
+      "price": 562,
       "rank": 4
     },
     {
