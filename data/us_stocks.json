@@ -35,18 +35,18 @@
     "changeRate": "-0.38%"
   },
   "twTAIEX": {
-    "price": "47,297.25",
-    "change": "+702.09",
-    "changeRate": "+1.51%"
+    "price": "47,326.27",
+    "change": "+731.11",
+    "changeRate": "+1.57%"
   },
   "krKOSPI": {
-    "price": "6,961.40",
-    "change": "+254.84",
-    "changeRate": "+3.80%"
+    "price": "6,968.25",
+    "change": "+261.69",
+    "changeRate": "+3.90%"
   },
   "BTC": {
-    "price": "79,849.96",
-    "change": "-489.17",
-    "changeRate": "-0.61%"
+    "price": "79,734.01",
+    "change": "-605.31",
+    "changeRate": "-0.75%"
   }
 }
