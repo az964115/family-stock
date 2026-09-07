@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-07T05:41:43.378Z",
+  "updatedAt": "2026-09-07T05:51:03.506Z",
   "count": 19,
   "stocks": [
     {
@@ -11,31 +11,31 @@
       "rank": 1
     },
     {
-      "symbol": "5314",
-      "name": "世紀*",
-      "category": "漲幅排行",
-      "price": 35.2,
-      "rank": 2
-    },
-    {
-      "symbol": "6441",
-      "name": "廣錠",
-      "category": "漲幅排行",
-      "price": 23.1,
-      "rank": 3
-    },
-    {
       "symbol": "8021",
       "name": "尖點",
       "category": "漲幅排行",
       "price": 462,
-      "rank": 4
+      "rank": 2
     },
     {
       "symbol": "8040",
       "name": "九暘",
       "category": "漲幅排行",
       "price": 82.5,
+      "rank": 3
+    },
+    {
+      "symbol": "6441",
+      "name": "廣錠",
+      "category": "漲幅排行",
+      "price": 23.1,
+      "rank": 4
+    },
+    {
+      "symbol": "5314",
+      "name": "世紀*",
+      "category": "漲幅排行",
+      "price": 35.2,
       "rank": 5
     },
     {
@@ -46,24 +46,24 @@
       "rank": 6
     },
     {
+      "symbol": "5274",
+      "name": "信驊",
+      "category": "漲幅排行",
+      "price": 19215,
+      "rank": 7
+    },
+    {
       "symbol": "8472",
       "name": "夠麻吉",
       "category": "漲幅排行",
       "price": 78.2,
-      "rank": 7
+      "rank": 8
     },
     {
       "symbol": "3026",
       "name": "禾伸堂",
       "category": "漲幅排行",
       "price": 771,
-      "rank": 8
-    },
-    {
-      "symbol": "5274",
-      "name": "信驊",
-      "category": "漲幅排行",
-      "price": 19215,
       "rank": 9
     },
     {
