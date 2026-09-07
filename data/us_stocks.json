@@ -1,8 +1,8 @@
 {
   "wtx_night": {
-    "price": "47286",
-    "change": "-176",
-    "changeRate": "--0.37%"
+    "price": "47291",
+    "change": "-171",
+    "changeRate": "--0.36%"
   },
   "usSOX": {
     "price": "11,735.26",
@@ -15,9 +15,9 @@
     "changeRate": "+0.29%"
   },
   "vix": {
-    "price": "15.25",
-    "change": "+0.73",
-    "changeRate": "+5.03%"
+    "price": "15.21",
+    "change": "+0.69",
+    "changeRate": "+4.75%"
   },
   "usDJI": {
     "price": "53,414.25",
@@ -45,8 +45,8 @@
     "changeRate": "+4.61%"
   },
   "BTC": {
-    "price": "79,489.99",
-    "change": "-849.14",
-    "changeRate": "-1.06%"
+    "price": "79,196.40",
+    "change": "-1142.92",
+    "changeRate": "-1.42%"
   }
 }
