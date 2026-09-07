@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-07T05:51:03.506Z",
+  "updatedAt": "2026-09-07T13:22:53.962Z",
   "count": 19,
   "stocks": [
     {
@@ -74,66 +74,66 @@
       "rank": 10
     },
     {
-      "symbol": "2324",
-      "name": "仁寶",
+      "symbol": "2409",
+      "name": "友達",
       "category": "法人買超",
-      "price": 41.6,
+      "price": 28.7,
       "rank": 1
     },
     {
-      "symbol": "2317",
-      "name": "鴻海",
+      "symbol": "6770",
+      "name": "力積電",
       "category": "法人買超",
-      "price": 256,
+      "price": 72.9,
       "rank": 2
     },
     {
-      "symbol": "3231",
-      "name": "緯創",
+      "symbol": "2344",
+      "name": "華邦電",
       "category": "法人買超",
-      "price": 198,
+      "price": 180,
       "rank": 3
     },
     {
-      "symbol": "2327",
-      "name": "國巨*",
+      "symbol": "3481",
+      "name": "群創",
       "category": "法人買超",
-      "price": 562,
+      "price": 49.95,
       "rank": 4
     },
     {
-      "symbol": "2886",
-      "name": "兆豐金",
+      "symbol": "1815",
+      "name": "富喬",
       "category": "法人買超",
-      "price": 49.55,
+      "price": 130,
       "rank": 5
     },
     {
-      "symbol": "2892",
-      "name": "第一金",
+      "symbol": "3711",
+      "name": "日月光投控",
       "category": "法人買超",
-      "price": 37.3,
+      "price": 621,
       "rank": 6
     },
     {
-      "symbol": "2353",
-      "name": "宏碁",
+      "symbol": "2330",
+      "name": "台積電",
       "category": "法人買超",
-      "price": 32.7,
+      "price": 2460,
       "rank": 7
     },
     {
-      "symbol": "2356",
-      "name": "英業達",
+      "symbol": "2408",
+      "name": "南亞科",
       "category": "法人買超",
-      "price": 67.5,
+      "price": 517,
       "rank": 8
     },
     {
-      "symbol": "2377",
-      "name": "微星",
+      "symbol": "4958",
+      "name": "臻鼎-KY",
       "category": "法人買超",
-      "price": 161.5,
+      "price": 501,
       "rank": 9
     }
   ]
