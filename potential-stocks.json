@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-08T12:03:06.398Z",
+  "updatedAt": "2026-09-09T05:36:00.474Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "6515",
-      "name": "穎崴",
+      "symbol": "8227",
+      "name": "巨有科技",
       "category": "漲幅排行",
-      "price": 7700,
+      "price": 198,
       "rank": 1
-    },
-    {
-      "symbol": "1591",
-      "name": "駿吉-KY",
-      "category": "漲幅排行",
-      "price": 39.1,
-      "rank": 2
     },
     {
       "symbol": "6179",
       "name": "亞通",
       "category": "漲幅排行",
-      "price": 33.1,
+      "price": 36.4,
+      "rank": 2
+    },
+    {
+      "symbol": "5464",
+      "name": "霖宏",
+      "category": "漲幅排行",
+      "price": 82.8,
       "rank": 3
     },
     {
-      "symbol": "6441",
-      "name": "廣錠",
+      "symbol": "3229",
+      "name": "晟鈦",
       "category": "漲幅排行",
-      "price": 25.4,
+      "price": 60.7,
       "rank": 4
+    },
+    {
+      "symbol": "2460",
+      "name": "建通",
+      "category": "漲幅排行",
+      "price": 30.9,
+      "rank": 5
     },
     {
       "symbol": "5314",
       "name": "世紀*",
       "category": "漲幅排行",
-      "price": 38.7,
-      "rank": 5
-    },
-    {
-      "symbol": "4556",
-      "name": "旭然",
-      "category": "漲幅排行",
-      "price": 77.5,
+      "price": 42.55,
       "rank": 6
     },
     {
-      "symbol": "1528",
-      "name": "恩德",
+      "symbol": "7788",
+      "name": "松川精密",
       "category": "漲幅排行",
-      "price": 21.05,
+      "price": 320.5,
       "rank": 7
     },
     {
-      "symbol": "3529",
-      "name": "力旺",
+      "symbol": "2338",
+      "name": "光罩",
       "category": "漲幅排行",
-      "price": 2825,
+      "price": 41.5,
       "rank": 8
     },
     {
-      "symbol": "5484",
-      "name": "慧友",
+      "symbol": "8937",
+      "name": "合騏*",
       "category": "漲幅排行",
-      "price": 43.3,
+      "price": 30.45,
       "rank": 9
     },
     {
-      "symbol": "4609",
-      "name": "唐鋒",
+      "symbol": "6225",
+      "name": "天瀚",
       "category": "漲幅排行",
-      "price": 4.45,
+      "price": 67.6,
       "rank": 10
     },
     {
@@ -137,10 +137,10 @@
       "rank": 9
     },
     {
-      "symbol": "2610",
-      "name": "華航",
+      "symbol": "1815",
+      "name": "富喬",
       "category": "法人買超",
-      "price": 20.6,
+      "price": 135,
       "rank": 10
     }
   ]
