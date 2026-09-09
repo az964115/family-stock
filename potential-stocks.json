@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-09T05:49:08.668Z",
+  "updatedAt": "2026-09-09T12:13:33.367Z",
   "count": 20,
   "stocks": [
     {
@@ -74,73 +74,73 @@
       "rank": 10
     },
     {
-      "symbol": "2344",
-      "name": "華邦電",
+      "symbol": "3481",
+      "name": "群創",
       "category": "法人買超",
-      "price": 188,
+      "price": 50.1,
       "rank": 1
     },
     {
       "symbol": "2409",
       "name": "友達",
       "category": "法人買超",
-      "price": 29.6,
+      "price": 30.5,
       "rank": 2
     },
     {
-      "symbol": "2408",
-      "name": "南亞科",
+      "symbol": "2303",
+      "name": "聯電",
       "category": "法人買超",
-      "price": 531,
+      "price": 141.5,
       "rank": 3
+    },
+    {
+      "symbol": "1409",
+      "name": "新纖",
+      "category": "法人買超",
+      "price": 26.85,
+      "rank": 4
+    },
+    {
+      "symbol": "1101",
+      "name": "台泥",
+      "category": "法人買超",
+      "price": 24.75,
+      "rank": 5
+    },
+    {
+      "symbol": "6147",
+      "name": "頎邦",
+      "category": "法人買超",
+      "price": 198,
+      "rank": 6
+    },
+    {
+      "symbol": "6505",
+      "name": "台塑化",
+      "category": "法人買超",
+      "price": 87.5,
+      "rank": 7
+    },
+    {
+      "symbol": "2002",
+      "name": "中鋼",
+      "category": "法人買超",
+      "price": 19.25,
+      "rank": 8
+    },
+    {
+      "symbol": "2382",
+      "name": "廣達",
+      "category": "法人買超",
+      "price": 342,
+      "rank": 9
     },
     {
       "symbol": "2834",
       "name": "臺企銀",
       "category": "法人買超",
-      "price": 17.7,
-      "rank": 4
-    },
-    {
-      "symbol": "2887",
-      "name": "台新新光金",
-      "category": "法人買超",
-      "price": 42.8,
-      "rank": 5
-    },
-    {
-      "symbol": "2884",
-      "name": "玉山金",
-      "category": "法人買超",
-      "price": 45.55,
-      "rank": 6
-    },
-    {
-      "symbol": "2892",
-      "name": "第一金",
-      "category": "法人買超",
-      "price": 37.85,
-      "rank": 7
-    },
-    {
-      "symbol": "2886",
-      "name": "兆豐金",
-      "category": "法人買超",
-      "price": 50.6,
-      "rank": 8
-    },
-    {
-      "symbol": "5876",
-      "name": "上海商銀",
-      "category": "法人買超",
-      "price": 48.75,
-      "rank": 9
-    },
-    {
-      "symbol": "1815",
-      "name": "富喬",
-      "category": "法人買超",
-      "price": 135,
+      "price": 17.95,
       "rank": 10
     }
   ]
