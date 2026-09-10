@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-09T12:13:33.367Z",
+  "updatedAt": "2026-09-10T05:43:23.938Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "8227",
-      "name": "巨有科技",
+      "symbol": "3346",
+      "name": "麗清",
       "category": "漲幅排行",
-      "price": 198,
+      "price": 20.35,
       "rank": 1
     },
     {
-      "symbol": "6179",
-      "name": "亞通",
+      "symbol": "2305",
+      "name": "全友",
       "category": "漲幅排行",
-      "price": 36.4,
+      "price": 38.5,
       "rank": 2
     },
     {
-      "symbol": "5464",
-      "name": "霖宏",
+      "symbol": "3016",
+      "name": "嘉晶",
       "category": "漲幅排行",
-      "price": 82.8,
+      "price": 110,
       "rank": 3
     },
     {
-      "symbol": "3229",
-      "name": "晟鈦",
+      "symbol": "2338",
+      "name": "光罩",
       "category": "漲幅排行",
-      "price": 60.7,
+      "price": 45.65,
       "rank": 4
     },
     {
-      "symbol": "2460",
-      "name": "建通",
+      "symbol": "6739",
+      "name": "竹陞科技",
       "category": "漲幅排行",
-      "price": 30.9,
+      "price": 1320,
       "rank": 5
     },
     {
       "symbol": "5314",
       "name": "世紀*",
       "category": "漲幅排行",
-      "price": 42.55,
+      "price": 46.8,
       "rank": 6
     },
     {
-      "symbol": "7788",
-      "name": "松川精密",
+      "symbol": "4556",
+      "name": "旭然",
       "category": "漲幅排行",
-      "price": 320.5,
+      "price": 86,
       "rank": 7
     },
     {
-      "symbol": "2338",
-      "name": "光罩",
+      "symbol": "6861",
+      "name": "睿生光電",
       "category": "漲幅排行",
-      "price": 41.5,
+      "price": 204,
       "rank": 8
     },
     {
-      "symbol": "8937",
-      "name": "合騏*",
+      "symbol": "7799",
+      "name": "禾榮科",
       "category": "漲幅排行",
-      "price": 30.45,
+      "price": 425,
       "rank": 9
     },
     {
-      "symbol": "6225",
-      "name": "天瀚",
+      "symbol": "4188",
+      "name": "安克",
       "category": "漲幅排行",
-      "price": 67.6,
+      "price": 15.45,
       "rank": 10
     },
     {
