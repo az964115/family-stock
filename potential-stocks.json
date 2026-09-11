@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-10T12:07:45.109Z",
+  "updatedAt": "2026-09-11T05:42:54.749Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "2338",
-      "name": "光罩",
+      "symbol": "6706",
+      "name": "惠特",
       "category": "漲幅排行",
-      "price": 45.65,
+      "price": 137.5,
       "rank": 1
-    },
-    {
-      "symbol": "3016",
-      "name": "嘉晶",
-      "category": "漲幅排行",
-      "price": 110,
-      "rank": 2
-    },
-    {
-      "symbol": "2305",
-      "name": "全友",
-      "category": "漲幅排行",
-      "price": 38.5,
-      "rank": 3
-    },
-    {
-      "symbol": "6739",
-      "name": "竹陞科技",
-      "category": "漲幅排行",
-      "price": 1320,
-      "rank": 4
-    },
-    {
-      "symbol": "3346",
-      "name": "麗清",
-      "category": "漲幅排行",
-      "price": 20.35,
-      "rank": 5
-    },
-    {
-      "symbol": "5314",
-      "name": "世紀*",
-      "category": "漲幅排行",
-      "price": 46.8,
-      "rank": 6
     },
     {
       "symbol": "4556",
       "name": "旭然",
       "category": "漲幅排行",
-      "price": 86,
+      "price": 94.6,
+      "rank": 2
+    },
+    {
+      "symbol": "2468",
+      "name": "華經",
+      "category": "漲幅排行",
+      "price": 35.8,
+      "rank": 3
+    },
+    {
+      "symbol": "3467",
+      "name": "台灣精材",
+      "category": "漲幅排行",
+      "price": 58.6,
+      "rank": 4
+    },
+    {
+      "symbol": "3296",
+      "name": "勝德",
+      "category": "漲幅排行",
+      "price": 26,
+      "rank": 5
+    },
+    {
+      "symbol": "6148",
+      "name": "驊宏資",
+      "category": "漲幅排行",
+      "price": 31,
+      "rank": 6
+    },
+    {
+      "symbol": "3441",
+      "name": "聯一光",
+      "category": "漲幅排行",
+      "price": 166,
       "rank": 7
     },
     {
-      "symbol": "6861",
-      "name": "睿生光電",
+      "symbol": "3229",
+      "name": "晟鈦",
       "category": "漲幅排行",
-      "price": 204,
+      "price": 67.5,
       "rank": 8
     },
     {
-      "symbol": "4188",
-      "name": "安克",
+      "symbol": "6221",
+      "name": "晉泰",
       "category": "漲幅排行",
-      "price": 15.45,
+      "price": 23.3,
       "rank": 9
     },
     {
-      "symbol": "7799",
-      "name": "禾榮科",
+      "symbol": "6227",
+      "name": "茂綸",
       "category": "漲幅排行",
-      "price": 425,
+      "price": 127.5,
       "rank": 10
     },
     {
@@ -116,17 +116,17 @@
       "rank": 6
     },
     {
-      "symbol": "2812",
-      "name": "台中銀",
-      "category": "法人買超",
-      "price": 19.1,
-      "rank": 7
-    },
-    {
       "symbol": "2884",
       "name": "玉山金",
       "category": "法人買超",
       "price": 44.95,
+      "rank": 7
+    },
+    {
+      "symbol": "2812",
+      "name": "台中銀",
+      "category": "法人買超",
+      "price": 19.1,
       "rank": 8
     },
     {
