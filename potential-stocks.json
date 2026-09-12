@@ -1,20 +1,20 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-12T05:29:43.361Z",
+  "updatedAt": "2026-09-12T11:32:30.289Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "6706",
-      "name": "惠特",
-      "category": "漲幅排行",
-      "price": 137.5,
-      "rank": 1
-    },
     {
       "symbol": "4556",
       "name": "旭然",
       "category": "漲幅排行",
       "price": 94.6,
+      "rank": 1
+    },
+    {
+      "symbol": "6706",
+      "name": "惠特",
+      "category": "漲幅排行",
+      "price": 137.5,
       "rank": 2
     },
     {
@@ -39,38 +39,38 @@
       "rank": 5
     },
     {
+      "symbol": "3441",
+      "name": "聯一光",
+      "category": "漲幅排行",
+      "price": 166,
+      "rank": 6
+    },
+    {
       "symbol": "3229",
       "name": "晟鈦",
       "category": "漲幅排行",
       "price": 67.5,
-      "rank": 6
+      "rank": 7
     },
     {
       "symbol": "6148",
       "name": "驊宏資",
       "category": "漲幅排行",
       "price": 31,
-      "rank": 7
-    },
-    {
-      "symbol": "3441",
-      "name": "聯一光",
-      "category": "漲幅排行",
-      "price": 166,
       "rank": 8
-    },
-    {
-      "symbol": "6221",
-      "name": "晉泰",
-      "category": "漲幅排行",
-      "price": 23.3,
-      "rank": 9
     },
     {
       "symbol": "6227",
       "name": "茂綸",
       "category": "漲幅排行",
       "price": 127.5,
+      "rank": 9
+    },
+    {
+      "symbol": "6221",
+      "name": "晉泰",
+      "category": "漲幅排行",
+      "price": 23.3,
       "rank": 10
     },
     {
