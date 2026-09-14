@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-14T05:56:54.922Z",
+  "updatedAt": "2026-09-14T13:46:22.554Z",
   "count": 20,
   "stocks": [
     {
@@ -74,73 +74,73 @@
       "rank": 10
     },
     {
-      "symbol": "2609",
-      "name": "陽明",
+      "symbol": "2834",
+      "name": "臺企銀",
       "category": "法人買超",
-      "price": 59.4,
+      "price": 18.35,
       "rank": 1
     },
     {
-      "symbol": "2812",
-      "name": "台中銀",
+      "symbol": "2303",
+      "name": "聯電",
       "category": "法人買超",
-      "price": 19.5,
+      "price": 142.5,
       "rank": 2
+    },
+    {
+      "symbol": "2481",
+      "name": "強茂",
+      "category": "法人買超",
+      "price": 159,
+      "rank": 3
     },
     {
       "symbol": "2892",
       "name": "第一金",
       "category": "法人買超",
-      "price": 38.9,
-      "rank": 3
-    },
-    {
-      "symbol": "2801",
-      "name": "彰銀",
-      "category": "法人買超",
-      "price": 27.9,
+      "price": 39.85,
       "rank": 4
-    },
-    {
-      "symbol": "2883",
-      "name": "凱基金",
-      "category": "法人買超",
-      "price": 37.85,
-      "rank": 5
-    },
-    {
-      "symbol": "2886",
-      "name": "兆豐金",
-      "category": "法人買超",
-      "price": 51.7,
-      "rank": 6
-    },
-    {
-      "symbol": "5880",
-      "name": "合庫金",
-      "category": "法人買超",
-      "price": 27.2,
-      "rank": 7
     },
     {
       "symbol": "2887",
       "name": "台新新光金",
       "category": "法人買超",
-      "price": 42.65,
-      "rank": 8
-    },
-    {
-      "symbol": "2884",
-      "name": "玉山金",
-      "category": "法人買超",
-      "price": 46.3,
-      "rank": 9
+      "price": 43.55,
+      "rank": 5
     },
     {
       "symbol": "2412",
       "name": "中華電",
       "category": "法人買超",
-      "price": 140.5,
+      "price": 142.5,
+      "rank": 6
+    },
+    {
+      "symbol": "6147",
+      "name": "頎邦",
+      "category": "法人買超",
+      "price": 189,
+      "rank": 7
+    },
+    {
+      "symbol": "2891",
+      "name": "中信金",
+      "category": "法人買超",
+      "price": 68.1,
+      "rank": 8
+    },
+    {
+      "symbol": "2889",
+      "name": "國票金",
+      "category": "法人買超",
+      "price": 17.05,
+      "rank": 9
+    },
+    {
+      "symbol": "5880",
+      "name": "合庫金",
+      "category": "法人買超",
+      "price": 27.45,
       "rank": 10
     }
   ]
