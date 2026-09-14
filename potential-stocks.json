@@ -1,13 +1,13 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-14T05:39:06.073Z",
+  "updatedAt": "2026-09-14T05:56:54.922Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "6148",
-      "name": "驊宏資",
+      "symbol": "1591",
+      "name": "駿吉-KY",
       "category": "漲幅排行",
-      "price": 34.1,
+      "price": 41.25,
       "rank": 1
     },
     {
@@ -18,10 +18,10 @@
       "rank": 2
     },
     {
-      "symbol": "1591",
-      "name": "駿吉-KY",
+      "symbol": "6148",
+      "name": "驊宏資",
       "category": "漲幅排行",
-      "price": 41.25,
+      "price": 34.1,
       "rank": 3
     },
     {
