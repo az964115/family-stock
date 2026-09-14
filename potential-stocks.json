@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-13T12:38:00.122Z",
+  "updatedAt": "2026-09-14T05:39:06.073Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "6706",
-      "name": "惠特",
-      "category": "漲幅排行",
-      "price": 137.5,
-      "rank": 1
-    },
-    {
-      "symbol": "4556",
-      "name": "旭然",
-      "category": "漲幅排行",
-      "price": 94.6,
-      "rank": 2
-    },
-    {
-      "symbol": "2468",
-      "name": "華經",
-      "category": "漲幅排行",
-      "price": 35.8,
-      "rank": 3
-    },
-    {
-      "symbol": "3467",
-      "name": "台灣精材",
-      "category": "漲幅排行",
-      "price": 58.6,
-      "rank": 4
-    },
-    {
-      "symbol": "3296",
-      "name": "勝德",
-      "category": "漲幅排行",
-      "price": 26,
-      "rank": 5
-    },
     {
       "symbol": "6148",
       "name": "驊宏資",
       "category": "漲幅排行",
-      "price": 31,
+      "price": 34.1,
+      "rank": 1
+    },
+    {
+      "symbol": "6226",
+      "name": "光鼎",
+      "category": "漲幅排行",
+      "price": 33,
+      "rank": 2
+    },
+    {
+      "symbol": "1591",
+      "name": "駿吉-KY",
+      "category": "漲幅排行",
+      "price": 41.25,
+      "rank": 3
+    },
+    {
+      "symbol": "2305",
+      "name": "全友",
+      "category": "漲幅排行",
+      "price": 45.15,
+      "rank": 4
+    },
+    {
+      "symbol": "6811",
+      "name": "宏碁資訊",
+      "category": "漲幅排行",
+      "price": 248,
+      "rank": 5
+    },
+    {
+      "symbol": "6689",
+      "name": "伊雲谷",
+      "category": "漲幅排行",
+      "price": 70.5,
       "rank": 6
     },
     {
-      "symbol": "3229",
-      "name": "晟鈦",
+      "symbol": "3609",
+      "name": "三一東林",
       "category": "漲幅排行",
-      "price": 67.5,
+      "price": 19.85,
       "rank": 7
     },
     {
-      "symbol": "3441",
-      "name": "聯一光",
+      "symbol": "6925",
+      "name": "意藍",
       "category": "漲幅排行",
-      "price": 166,
+      "price": 55.2,
       "rank": 8
     },
     {
-      "symbol": "6221",
-      "name": "晉泰",
+      "symbol": "6690",
+      "name": "安碁資訊",
       "category": "漲幅排行",
-      "price": 23.3,
+      "price": 188,
       "rank": 9
     },
     {
-      "symbol": "6227",
-      "name": "茂綸",
+      "symbol": "6140",
+      "name": "訊達",
       "category": "漲幅排行",
-      "price": 127.5,
+      "price": 18.25,
       "rank": 10
     },
     {
