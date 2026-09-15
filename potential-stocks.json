@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-14T13:46:22.554Z",
+  "updatedAt": "2026-09-15T05:33:51.308Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "1591",
-      "name": "駿吉-KY",
+      "symbol": "5251",
+      "name": "天鉞電",
       "category": "漲幅排行",
-      "price": 41.25,
+      "price": 29.15,
       "rank": 1
+    },
+    {
+      "symbol": "4807",
+      "name": "日成-KY",
+      "category": "漲幅排行",
+      "price": 30.8,
+      "rank": 2
     },
     {
       "symbol": "6226",
       "name": "光鼎",
       "category": "漲幅排行",
+      "price": 36.3,
+      "rank": 3
+    },
+    {
+      "symbol": "8038",
+      "name": "長園科",
+      "category": "漲幅排行",
       "price": 33,
-      "rank": 2
+      "rank": 4
+    },
+    {
+      "symbol": "3297",
+      "name": "杭特",
+      "category": "漲幅排行",
+      "price": 30.85,
+      "rank": 5
+    },
+    {
+      "symbol": "3434",
+      "name": "哲固",
+      "category": "漲幅排行",
+      "price": 32.5,
+      "rank": 6
     },
     {
       "symbol": "6148",
       "name": "驊宏資",
       "category": "漲幅排行",
-      "price": 34.1,
-      "rank": 3
-    },
-    {
-      "symbol": "2305",
-      "name": "全友",
-      "category": "漲幅排行",
-      "price": 45.15,
-      "rank": 4
-    },
-    {
-      "symbol": "6811",
-      "name": "宏碁資訊",
-      "category": "漲幅排行",
-      "price": 248,
-      "rank": 5
-    },
-    {
-      "symbol": "6689",
-      "name": "伊雲谷",
-      "category": "漲幅排行",
-      "price": 70.5,
-      "rank": 6
-    },
-    {
-      "symbol": "3609",
-      "name": "三一東林",
-      "category": "漲幅排行",
-      "price": 19.85,
+      "price": 37.5,
       "rank": 7
     },
     {
       "symbol": "6925",
       "name": "意藍",
       "category": "漲幅排行",
-      "price": 55.2,
+      "price": 60.7,
       "rank": 8
     },
     {
-      "symbol": "6690",
-      "name": "安碁資訊",
+      "symbol": "6221",
+      "name": "晉泰",
       "category": "漲幅排行",
-      "price": 188,
+      "price": 28.15,
       "rank": 9
     },
     {
-      "symbol": "6140",
-      "name": "訊達",
+      "symbol": "3232",
+      "name": "昱捷",
       "category": "漲幅排行",
-      "price": 18.25,
+      "price": 21.55,
       "rank": 10
     },
     {
