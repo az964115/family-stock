@@ -1,20 +1,20 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-16T05:36:24.814Z",
+  "updatedAt": "2026-09-16T05:47:11.328Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "6588",
-      "name": "東典光電",
+      "symbol": "2489",
+      "name": "瑞軒",
       "category": "漲幅排行",
-      "price": 110,
+      "price": 41.25,
       "rank": 1
     },
     {
-      "symbol": "6426",
-      "name": "統新",
+      "symbol": "6683",
+      "name": "雍智科技",
       "category": "漲幅排行",
-      "price": 330,
+      "price": 1595,
       "rank": 2
     },
     {
@@ -25,24 +25,24 @@
       "rank": 3
     },
     {
+      "symbol": "6588",
+      "name": "東典光電",
+      "category": "漲幅排行",
+      "price": 110,
+      "rank": 4
+    },
+    {
       "symbol": "2033",
       "name": "佳大",
       "category": "漲幅排行",
       "price": 28.05,
-      "rank": 4
-    },
-    {
-      "symbol": "6683",
-      "name": "雍智科技",
-      "category": "漲幅排行",
-      "price": 1595,
       "rank": 5
     },
     {
-      "symbol": "2489",
-      "name": "瑞軒",
+      "symbol": "6426",
+      "name": "統新",
       "category": "漲幅排行",
-      "price": 41.25,
+      "price": 330,
       "rank": 6
     },
     {
