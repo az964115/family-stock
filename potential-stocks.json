@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-15T12:32:48.580Z",
-  "count": 19,
+  "updatedAt": "2026-09-16T05:36:24.814Z",
+  "count": 20,
   "stocks": [
     {
-      "symbol": "8038",
-      "name": "長園科",
+      "symbol": "6588",
+      "name": "東典光電",
       "category": "漲幅排行",
-      "price": 33,
+      "price": 110,
       "rank": 1
     },
     {
-      "symbol": "5251",
-      "name": "天鉞電",
+      "symbol": "6426",
+      "name": "統新",
       "category": "漲幅排行",
-      "price": 29.15,
+      "price": 330,
       "rank": 2
     },
     {
-      "symbol": "4807",
-      "name": "日成-KY",
+      "symbol": "1709",
+      "name": "和益",
       "category": "漲幅排行",
-      "price": 30.8,
+      "price": 39.05,
       "rank": 3
     },
     {
-      "symbol": "6226",
-      "name": "光鼎",
+      "symbol": "2033",
+      "name": "佳大",
       "category": "漲幅排行",
-      "price": 36.3,
+      "price": 28.05,
       "rank": 4
     },
     {
-      "symbol": "3297",
-      "name": "杭特",
+      "symbol": "6683",
+      "name": "雍智科技",
       "category": "漲幅排行",
-      "price": 30.85,
+      "price": 1595,
       "rank": 5
     },
     {
-      "symbol": "3434",
-      "name": "哲固",
+      "symbol": "2489",
+      "name": "瑞軒",
       "category": "漲幅排行",
-      "price": 32.5,
+      "price": 41.25,
       "rank": 6
     },
     {
-      "symbol": "6148",
-      "name": "驊宏資",
+      "symbol": "7799",
+      "name": "禾榮科",
       "category": "漲幅排行",
-      "price": 37.5,
+      "price": 457,
       "rank": 7
     },
     {
-      "symbol": "6925",
-      "name": "意藍",
+      "symbol": "5464",
+      "name": "霖宏",
       "category": "漲幅排行",
-      "price": 60.7,
+      "price": 93.7,
       "rank": 8
     },
     {
-      "symbol": "6221",
-      "name": "晉泰",
+      "symbol": "6291",
+      "name": "沛亨",
       "category": "漲幅排行",
-      "price": 28.15,
+      "price": 490.5,
       "rank": 9
     },
     {
-      "symbol": "3232",
-      "name": "昱捷",
+      "symbol": "4956",
+      "name": "光鋐",
       "category": "漲幅排行",
-      "price": 21.55,
+      "price": 35.25,
       "rank": 10
     },
     {
@@ -95,17 +95,17 @@
       "rank": 3
     },
     {
+      "symbol": "6226",
+      "name": "光鼎",
+      "category": "法人買超",
+      "price": 36.3,
+      "rank": 4
+    },
+    {
       "symbol": "3105",
       "name": "穩懋",
       "category": "法人買超",
       "price": 454,
-      "rank": 4
-    },
-    {
-      "symbol": "1815",
-      "name": "富喬",
-      "category": "法人買超",
-      "price": 114.5,
       "rank": 5
     },
     {
@@ -135,6 +135,13 @@
       "category": "法人買超",
       "price": 176,
       "rank": 9
+    },
+    {
+      "symbol": "3045",
+      "name": "台灣大",
+      "category": "法人買超",
+      "price": 124,
+      "rank": 10
     }
   ]
 }
