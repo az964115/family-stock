@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-16T05:47:11.328Z",
+  "updatedAt": "2026-09-16T12:30:10.126Z",
   "count": 20,
   "stocks": [
     {
@@ -74,73 +74,73 @@
       "rank": 10
     },
     {
-      "symbol": "6147",
-      "name": "頎邦",
+      "symbol": "2409",
+      "name": "友達",
       "category": "法人買超",
-      "price": 200,
+      "price": 29.4,
       "rank": 1
     },
     {
-      "symbol": "2891",
-      "name": "中信金",
+      "symbol": "6770",
+      "name": "力積電",
       "category": "法人買超",
-      "price": 69.7,
+      "price": 69.9,
       "rank": 2
     },
     {
-      "symbol": "2412",
-      "name": "中華電",
+      "symbol": "3481",
+      "name": "群創",
       "category": "法人買超",
-      "price": 143.5,
+      "price": 48.7,
       "rank": 3
     },
     {
-      "symbol": "6226",
-      "name": "光鼎",
+      "symbol": "2344",
+      "name": "華邦電",
       "category": "法人買超",
-      "price": 36.3,
+      "price": 169,
       "rank": 4
-    },
-    {
-      "symbol": "3105",
-      "name": "穩懋",
-      "category": "法人買超",
-      "price": 454,
-      "rank": 5
     },
     {
       "symbol": "2887",
       "name": "台新新光金",
       "category": "法人買超",
-      "price": 43.4,
+      "price": 44.4,
+      "rank": 5
+    },
+    {
+      "symbol": "2884",
+      "name": "玉山金",
+      "category": "法人買超",
+      "price": 46.45,
       "rank": 6
     },
     {
-      "symbol": "2880",
-      "name": "華南金",
+      "symbol": "2481",
+      "name": "強茂",
       "category": "法人買超",
-      "price": 46.9,
+      "price": 168.5,
       "rank": 7
+    },
+    {
+      "symbol": "2891",
+      "name": "中信金",
+      "category": "法人買超",
+      "price": 70.8,
+      "rank": 8
     },
     {
       "symbol": "2609",
       "name": "陽明",
       "category": "法人買超",
-      "price": 58.8,
-      "rank": 8
-    },
-    {
-      "symbol": "5483",
-      "name": "中美晶",
-      "category": "法人買超",
-      "price": 176,
+      "price": 60.2,
       "rank": 9
     },
     {
-      "symbol": "3045",
-      "name": "台灣大",
+      "symbol": "2883",
+      "name": "凱基金",
       "category": "法人買超",
-      "price": 124,
+      "price": 39.15,
       "rank": 10
     }
   ]
