@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-16T12:30:10.126Z",
+  "updatedAt": "2026-09-17T05:54:19.292Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "2489",
-      "name": "瑞軒",
+      "symbol": "8103",
+      "name": "瀚荃",
       "category": "漲幅排行",
-      "price": 41.25,
+      "price": 132,
       "rank": 1
     },
     {
-      "symbol": "6683",
-      "name": "雍智科技",
+      "symbol": "3287",
+      "name": "廣寰科",
       "category": "漲幅排行",
-      "price": 1595,
+      "price": 38.5,
       "rank": 2
     },
     {
-      "symbol": "1709",
-      "name": "和益",
+      "symbol": "4960",
+      "name": "誠美材",
       "category": "漲幅排行",
-      "price": 39.05,
+      "price": 22,
       "rank": 3
-    },
-    {
-      "symbol": "6588",
-      "name": "東典光電",
-      "category": "漲幅排行",
-      "price": 110,
-      "rank": 4
-    },
-    {
-      "symbol": "2033",
-      "name": "佳大",
-      "category": "漲幅排行",
-      "price": 28.05,
-      "rank": 5
     },
     {
       "symbol": "6426",
       "name": "統新",
       "category": "漲幅排行",
-      "price": 330,
+      "price": 363,
+      "rank": 4
+    },
+    {
+      "symbol": "3437",
+      "name": "榮創",
+      "category": "漲幅排行",
+      "price": 20.35,
+      "rank": 5
+    },
+    {
+      "symbol": "1560",
+      "name": "中砂",
+      "category": "漲幅排行",
+      "price": 815,
       "rank": 6
     },
     {
-      "symbol": "7799",
-      "name": "禾榮科",
+      "symbol": "1709",
+      "name": "和益",
       "category": "漲幅排行",
-      "price": 457,
+      "price": 42.95,
       "rank": 7
     },
     {
-      "symbol": "5464",
-      "name": "霖宏",
+      "symbol": "2033",
+      "name": "佳大",
       "category": "漲幅排行",
-      "price": 93.7,
+      "price": 30.85,
       "rank": 8
     },
     {
-      "symbol": "6291",
-      "name": "沛亨",
+      "symbol": "6405",
+      "name": "悅城",
       "category": "漲幅排行",
-      "price": 490.5,
+      "price": 41.35,
       "rank": 9
     },
     {
-      "symbol": "4956",
-      "name": "光鋐",
+      "symbol": "6179",
+      "name": "亞通",
       "category": "漲幅排行",
-      "price": 35.25,
+      "price": 41.45,
       "rank": 10
     },
     {
