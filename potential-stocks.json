@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-17T05:54:19.292Z",
+  "updatedAt": "2026-09-17T12:29:49.645Z",
   "count": 20,
   "stocks": [
     {
@@ -11,31 +11,31 @@
       "rank": 1
     },
     {
-      "symbol": "3287",
-      "name": "廣寰科",
-      "category": "漲幅排行",
-      "price": 38.5,
-      "rank": 2
-    },
-    {
-      "symbol": "4960",
-      "name": "誠美材",
-      "category": "漲幅排行",
-      "price": 22,
-      "rank": 3
-    },
-    {
       "symbol": "6426",
       "name": "統新",
       "category": "漲幅排行",
       "price": 363,
-      "rank": 4
+      "rank": 2
     },
     {
       "symbol": "3437",
       "name": "榮創",
       "category": "漲幅排行",
       "price": 20.35,
+      "rank": 3
+    },
+    {
+      "symbol": "3287",
+      "name": "廣寰科",
+      "category": "漲幅排行",
+      "price": 38.5,
+      "rank": 4
+    },
+    {
+      "symbol": "4960",
+      "name": "誠美材",
+      "category": "漲幅排行",
+      "price": 22,
       "rank": 5
     },
     {
@@ -77,70 +77,70 @@
       "symbol": "2409",
       "name": "友達",
       "category": "法人買超",
-      "price": 29.4,
+      "price": 30,
       "rank": 1
     },
     {
       "symbol": "6770",
       "name": "力積電",
       "category": "法人買超",
-      "price": 69.9,
+      "price": 71.2,
       "rank": 2
     },
     {
-      "symbol": "3481",
-      "name": "群創",
+      "symbol": "2303",
+      "name": "聯電",
       "category": "法人買超",
-      "price": 48.7,
+      "price": 147.5,
       "rank": 3
     },
     {
-      "symbol": "2344",
-      "name": "華邦電",
+      "symbol": "2834",
+      "name": "臺企銀",
       "category": "法人買超",
-      "price": 169,
+      "price": 18.75,
       "rank": 4
     },
     {
-      "symbol": "2887",
-      "name": "台新新光金",
+      "symbol": "1314",
+      "name": "中石化",
       "category": "法人買超",
-      "price": 44.4,
+      "price": 8.96,
       "rank": 5
-    },
-    {
-      "symbol": "2884",
-      "name": "玉山金",
-      "category": "法人買超",
-      "price": 46.45,
-      "rank": 6
-    },
-    {
-      "symbol": "2481",
-      "name": "強茂",
-      "category": "法人買超",
-      "price": 168.5,
-      "rank": 7
-    },
-    {
-      "symbol": "2891",
-      "name": "中信金",
-      "category": "法人買超",
-      "price": 70.8,
-      "rank": 8
     },
     {
       "symbol": "2609",
       "name": "陽明",
       "category": "法人買超",
-      "price": 60.2,
+      "price": 62,
+      "rank": 6
+    },
+    {
+      "symbol": "1303",
+      "name": "南亞",
+      "category": "法人買超",
+      "price": 236,
+      "rank": 7
+    },
+    {
+      "symbol": "6505",
+      "name": "台塑化",
+      "category": "法人買超",
+      "price": 86.2,
+      "rank": 8
+    },
+    {
+      "symbol": "2371",
+      "name": "大同",
+      "category": "法人買超",
+      "price": 29.7,
       "rank": 9
     },
     {
-      "symbol": "2883",
-      "name": "凱基金",
+      "symbol": "1718",
+      "name": "中纖",
       "category": "法人買超",
-      "price": 39.15,
+      "price": 10.9,
       "rank": 10
     }
   ]
