@@ -1,27 +1,27 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-18T06:38:38.084Z",
-  "count": 20,
+  "updatedAt": "2026-09-18T12:08:46.529Z",
+  "count": 19,
   "stocks": [
     {
-      "symbol": "3094",
-      "name": "聯傑",
+      "symbol": "6218",
+      "name": "豪勉",
       "category": "漲幅排行",
-      "price": 51.7,
+      "price": 61.6,
       "rank": 1
     },
     {
-      "symbol": "5202",
-      "name": "力新",
+      "symbol": "3287",
+      "name": "廣寰科",
       "category": "漲幅排行",
-      "price": 15.4,
+      "price": 42.35,
       "rank": 2
     },
     {
-      "symbol": "3443",
-      "name": "創意",
+      "symbol": "6510",
+      "name": "精測",
       "category": "漲幅排行",
-      "price": 7150,
+      "price": 3520,
       "rank": 3
     },
     {
@@ -32,116 +32,109 @@
       "rank": 4
     },
     {
-      "symbol": "3605",
-      "name": "宏致",
-      "category": "漲幅排行",
-      "price": 154,
-      "rank": 5
-    },
-    {
       "symbol": "6234",
       "name": "高僑",
       "category": "漲幅排行",
       "price": 38.5,
+      "rank": 5
+    },
+    {
+      "symbol": "5202",
+      "name": "力新",
+      "category": "漲幅排行",
+      "price": 15.4,
       "rank": 6
     },
     {
-      "symbol": "6218",
-      "name": "豪勉",
+      "symbol": "6204",
+      "name": "艾華",
       "category": "漲幅排行",
-      "price": 61.6,
+      "price": 110,
       "rank": 7
     },
     {
-      "symbol": "3287",
-      "name": "廣寰科",
+      "symbol": "3094",
+      "name": "聯傑",
       "category": "漲幅排行",
-      "price": 42.35,
+      "price": 51.7,
       "rank": 8
     },
     {
-      "symbol": "6510",
-      "name": "精測",
+      "symbol": "3443",
+      "name": "創意",
       "category": "漲幅排行",
-      "price": 3520,
+      "price": 7150,
       "rank": 9
     },
     {
-      "symbol": "4919",
-      "name": "新唐",
+      "symbol": "8996",
+      "name": "高力",
       "category": "漲幅排行",
-      "price": 126.5,
+      "price": 1430,
       "rank": 10
-    },
-    {
-      "symbol": "2409",
-      "name": "友達",
-      "category": "法人買超",
-      "price": 30.35,
-      "rank": 1
-    },
-    {
-      "symbol": "2303",
-      "name": "聯電",
-      "category": "法人買超",
-      "price": 156,
-      "rank": 2
     },
     {
       "symbol": "6770",
       "name": "力積電",
       "category": "法人買超",
       "price": 74,
+      "rank": 1
+    },
+    {
+      "symbol": "2344",
+      "name": "華邦電",
+      "category": "法人買超",
+      "price": 179.5,
+      "rank": 2
+    },
+    {
+      "symbol": "2303",
+      "name": "聯電",
+      "category": "法人買超",
+      "price": 156,
       "rank": 3
     },
     {
-      "symbol": "2834",
-      "name": "臺企銀",
+      "symbol": "2408",
+      "name": "南亞科",
       "category": "法人買超",
-      "price": 18.35,
+      "price": 525,
       "rank": 4
     },
     {
-      "symbol": "1314",
-      "name": "中石化",
+      "symbol": "6182",
+      "name": "合晶",
       "category": "法人買超",
-      "price": 8.96,
+      "price": 116,
       "rank": 5
     },
     {
-      "symbol": "2609",
-      "name": "陽明",
+      "symbol": "8150",
+      "name": "南茂",
       "category": "法人買超",
-      "price": 61,
+      "price": 94,
       "rank": 6
     },
     {
-      "symbol": "1303",
-      "name": "南亞",
+      "symbol": "6257",
+      "name": "矽格",
       "category": "法人買超",
-      "price": 238,
+      "price": 244.5,
       "rank": 7
     },
     {
-      "symbol": "6505",
-      "name": "台塑化",
+      "symbol": "1815",
+      "name": "富喬",
       "category": "法人買超",
-      "price": 86.5,
+      "price": 119.5,
       "rank": 8
     },
     {
-      "symbol": "2371",
-      "name": "大同",
+      "symbol": "6147",
+      "name": "頎邦",
       "category": "法人買超",
-      "price": 29.2,
+      "price": 229,
       "rank": 9
-    },
-    {
-      "symbol": "2884",
-      "name": "玉山金",
-      "category": "法人買超",
-      "price": 46.4,
-      "rank": 10
     }
   ]
 }
