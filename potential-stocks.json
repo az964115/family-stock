@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-17T12:29:49.645Z",
+  "updatedAt": "2026-09-18T05:39:51.444Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "8103",
-      "name": "瀚荃",
+      "symbol": "3094",
+      "name": "聯傑",
       "category": "漲幅排行",
-      "price": 132,
+      "price": 51.7,
       "rank": 1
     },
     {
-      "symbol": "6426",
-      "name": "統新",
+      "symbol": "5202",
+      "name": "力新",
       "category": "漲幅排行",
-      "price": 363,
+      "price": 15.4,
       "rank": 2
     },
     {
-      "symbol": "3437",
-      "name": "榮創",
+      "symbol": "3443",
+      "name": "創意",
       "category": "漲幅排行",
-      "price": 20.35,
+      "price": 7150,
       "rank": 3
+    },
+    {
+      "symbol": "2449",
+      "name": "京元電子",
+      "category": "漲幅排行",
+      "price": 291.5,
+      "rank": 4
+    },
+    {
+      "symbol": "3605",
+      "name": "宏致",
+      "category": "漲幅排行",
+      "price": 154,
+      "rank": 5
+    },
+    {
+      "symbol": "6234",
+      "name": "高僑",
+      "category": "漲幅排行",
+      "price": 38.5,
+      "rank": 6
+    },
+    {
+      "symbol": "6218",
+      "name": "豪勉",
+      "category": "漲幅排行",
+      "price": 61.6,
+      "rank": 7
     },
     {
       "symbol": "3287",
       "name": "廣寰科",
       "category": "漲幅排行",
-      "price": 38.5,
-      "rank": 4
-    },
-    {
-      "symbol": "4960",
-      "name": "誠美材",
-      "category": "漲幅排行",
-      "price": 22,
-      "rank": 5
-    },
-    {
-      "symbol": "1560",
-      "name": "中砂",
-      "category": "漲幅排行",
-      "price": 815,
-      "rank": 6
-    },
-    {
-      "symbol": "1709",
-      "name": "和益",
-      "category": "漲幅排行",
-      "price": 42.95,
-      "rank": 7
-    },
-    {
-      "symbol": "2033",
-      "name": "佳大",
-      "category": "漲幅排行",
-      "price": 30.85,
+      "price": 42.35,
       "rank": 8
     },
     {
-      "symbol": "6405",
-      "name": "悅城",
+      "symbol": "6510",
+      "name": "精測",
       "category": "漲幅排行",
-      "price": 41.35,
+      "price": 3520,
       "rank": 9
     },
     {
-      "symbol": "6179",
-      "name": "亞通",
+      "symbol": "4919",
+      "name": "新唐",
       "category": "漲幅排行",
-      "price": 41.45,
+      "price": 126.5,
       "rank": 10
     },
     {
@@ -81,17 +81,17 @@
       "rank": 1
     },
     {
-      "symbol": "6770",
-      "name": "力積電",
-      "category": "法人買超",
-      "price": 71.2,
-      "rank": 2
-    },
-    {
       "symbol": "2303",
       "name": "聯電",
       "category": "法人買超",
       "price": 147.5,
+      "rank": 2
+    },
+    {
+      "symbol": "6770",
+      "name": "力積電",
+      "category": "法人買超",
+      "price": 71.2,
       "rank": 3
     },
     {
@@ -137,10 +137,10 @@
       "rank": 9
     },
     {
-      "symbol": "1718",
-      "name": "中纖",
+      "symbol": "2884",
+      "name": "玉山金",
       "category": "法人買超",
-      "price": 10.9,
+      "price": 47.3,
       "rank": 10
     }
   ]
