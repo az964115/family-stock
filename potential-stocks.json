@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-18T05:39:51.444Z",
+  "updatedAt": "2026-09-18T06:38:38.084Z",
   "count": 20,
   "stocks": [
     {
@@ -77,28 +77,28 @@
       "symbol": "2409",
       "name": "友達",
       "category": "法人買超",
-      "price": 30,
+      "price": 30.35,
       "rank": 1
     },
     {
       "symbol": "2303",
       "name": "聯電",
       "category": "法人買超",
-      "price": 147.5,
+      "price": 156,
       "rank": 2
     },
     {
       "symbol": "6770",
       "name": "力積電",
       "category": "法人買超",
-      "price": 71.2,
+      "price": 74,
       "rank": 3
     },
     {
       "symbol": "2834",
       "name": "臺企銀",
       "category": "法人買超",
-      "price": 18.75,
+      "price": 18.35,
       "rank": 4
     },
     {
@@ -112,35 +112,35 @@
       "symbol": "2609",
       "name": "陽明",
       "category": "法人買超",
-      "price": 62,
+      "price": 61,
       "rank": 6
     },
     {
       "symbol": "1303",
       "name": "南亞",
       "category": "法人買超",
-      "price": 236,
+      "price": 238,
       "rank": 7
     },
     {
       "symbol": "6505",
       "name": "台塑化",
       "category": "法人買超",
-      "price": 86.2,
+      "price": 86.5,
       "rank": 8
     },
     {
       "symbol": "2371",
       "name": "大同",
       "category": "法人買超",
-      "price": 29.7,
+      "price": 29.2,
       "rank": 9
     },
     {
       "symbol": "2884",
       "name": "玉山金",
       "category": "法人買超",
-      "price": 47.3,
+      "price": 46.4,
       "rank": 10
     }
   ]
