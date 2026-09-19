@@ -1,13 +1,13 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-18T12:08:46.529Z",
+  "updatedAt": "2026-09-19T05:34:50.898Z",
   "count": 19,
   "stocks": [
     {
-      "symbol": "6218",
-      "name": "豪勉",
+      "symbol": "6510",
+      "name": "精測",
       "category": "漲幅排行",
-      "price": 61.6,
+      "price": 3520,
       "rank": 1
     },
     {
@@ -18,59 +18,59 @@
       "rank": 2
     },
     {
-      "symbol": "6510",
-      "name": "精測",
+      "symbol": "3443",
+      "name": "創意",
       "category": "漲幅排行",
-      "price": 3520,
+      "price": 7150,
       "rank": 3
-    },
-    {
-      "symbol": "2449",
-      "name": "京元電子",
-      "category": "漲幅排行",
-      "price": 291.5,
-      "rank": 4
-    },
-    {
-      "symbol": "6234",
-      "name": "高僑",
-      "category": "漲幅排行",
-      "price": 38.5,
-      "rank": 5
-    },
-    {
-      "symbol": "5202",
-      "name": "力新",
-      "category": "漲幅排行",
-      "price": 15.4,
-      "rank": 6
     },
     {
       "symbol": "6204",
       "name": "艾華",
       "category": "漲幅排行",
       "price": 110,
+      "rank": 4
+    },
+    {
+      "symbol": "6218",
+      "name": "豪勉",
+      "category": "漲幅排行",
+      "price": 61.6,
+      "rank": 5
+    },
+    {
+      "symbol": "6234",
+      "name": "高僑",
+      "category": "漲幅排行",
+      "price": 38.5,
+      "rank": 6
+    },
+    {
+      "symbol": "3605",
+      "name": "宏致",
+      "category": "漲幅排行",
+      "price": 154,
       "rank": 7
-    },
-    {
-      "symbol": "3094",
-      "name": "聯傑",
-      "category": "漲幅排行",
-      "price": 51.7,
-      "rank": 8
-    },
-    {
-      "symbol": "3443",
-      "name": "創意",
-      "category": "漲幅排行",
-      "price": 7150,
-      "rank": 9
     },
     {
       "symbol": "8996",
       "name": "高力",
       "category": "漲幅排行",
       "price": 1430,
+      "rank": 8
+    },
+    {
+      "symbol": "5202",
+      "name": "力新",
+      "category": "漲幅排行",
+      "price": 15.4,
+      "rank": 9
+    },
+    {
+      "symbol": "2449",
+      "name": "京元電子",
+      "category": "漲幅排行",
+      "price": 291.5,
       "rank": 10
     },
     {
