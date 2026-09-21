@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-20T12:07:23.472Z",
+  "updatedAt": "2026-09-21T06:00:53.688Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "4919",
-      "name": "新唐",
-      "category": "漲幅排行",
-      "price": 126.5,
-      "rank": 1
-    },
-    {
-      "symbol": "3605",
-      "name": "宏致",
-      "category": "漲幅排行",
-      "price": 154,
-      "rank": 2
-    },
-    {
-      "symbol": "6204",
-      "name": "艾華",
-      "category": "漲幅排行",
-      "price": 110,
-      "rank": 3
-    },
-    {
-      "symbol": "6218",
-      "name": "豪勉",
-      "category": "漲幅排行",
-      "price": 61.6,
-      "rank": 4
-    },
     {
       "symbol": "6234",
       "name": "高僑",
       "category": "漲幅排行",
-      "price": 38.5,
+      "price": 42.35,
+      "rank": 1
+    },
+    {
+      "symbol": "3178",
+      "name": "公準",
+      "category": "漲幅排行",
+      "price": 75.9,
+      "rank": 2
+    },
+    {
+      "symbol": "4924",
+      "name": "欣厚-KY",
+      "category": "漲幅排行",
+      "price": 17.05,
+      "rank": 3
+    },
+    {
+      "symbol": "6508",
+      "name": "惠光",
+      "category": "漲幅排行",
+      "price": 29.15,
+      "rank": 4
+    },
+    {
+      "symbol": "6443",
+      "name": "元晶",
+      "category": "漲幅排行",
+      "price": 28.05,
       "rank": 5
     },
     {
-      "symbol": "5202",
-      "name": "力新",
+      "symbol": "1721",
+      "name": "國慶科技",
       "category": "漲幅排行",
-      "price": 15.4,
+      "price": 24.2,
       "rank": 6
     },
     {
-      "symbol": "8996",
-      "name": "高力",
+      "symbol": "4542",
+      "name": "科嶠",
       "category": "漲幅排行",
-      "price": 1430,
+      "price": 302.5,
       "rank": 7
     },
     {
-      "symbol": "3094",
-      "name": "聯傑",
+      "symbol": "2243",
+      "name": "宏旭-KY",
       "category": "漲幅排行",
-      "price": 51.7,
+      "price": 54,
       "rank": 8
     },
     {
-      "symbol": "3287",
-      "name": "廣寰科",
+      "symbol": "3062",
+      "name": "建漢",
       "category": "漲幅排行",
-      "price": 42.35,
+      "price": 23.15,
       "rank": 9
     },
     {
-      "symbol": "6510",
-      "name": "精測",
+      "symbol": "4956",
+      "name": "光鋐",
       "category": "漲幅排行",
-      "price": 3520,
+      "price": 46.85,
       "rank": 10
     },
     {
