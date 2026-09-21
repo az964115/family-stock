@@ -1,55 +1,55 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-21T06:00:53.688Z",
+  "updatedAt": "2026-09-21T13:46:31.261Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "6234",
-      "name": "高僑",
-      "category": "漲幅排行",
-      "price": 42.35,
-      "rank": 1
-    },
-    {
-      "symbol": "3178",
-      "name": "公準",
-      "category": "漲幅排行",
-      "price": 75.9,
-      "rank": 2
-    },
-    {
-      "symbol": "4924",
-      "name": "欣厚-KY",
-      "category": "漲幅排行",
-      "price": 17.05,
-      "rank": 3
-    },
-    {
-      "symbol": "6508",
-      "name": "惠光",
-      "category": "漲幅排行",
-      "price": 29.15,
-      "rank": 4
-    },
-    {
-      "symbol": "6443",
-      "name": "元晶",
-      "category": "漲幅排行",
-      "price": 28.05,
-      "rank": 5
-    },
     {
       "symbol": "1721",
       "name": "國慶科技",
       "category": "漲幅排行",
       "price": 24.2,
-      "rank": 6
+      "rank": 1
+    },
+    {
+      "symbol": "6234",
+      "name": "高僑",
+      "category": "漲幅排行",
+      "price": 42.35,
+      "rank": 2
     },
     {
       "symbol": "4542",
       "name": "科嶠",
       "category": "漲幅排行",
       "price": 302.5,
+      "rank": 3
+    },
+    {
+      "symbol": "6443",
+      "name": "元晶",
+      "category": "漲幅排行",
+      "price": 28.05,
+      "rank": 4
+    },
+    {
+      "symbol": "6508",
+      "name": "惠光",
+      "category": "漲幅排行",
+      "price": 29.15,
+      "rank": 5
+    },
+    {
+      "symbol": "4924",
+      "name": "欣厚-KY",
+      "category": "漲幅排行",
+      "price": 17.05,
+      "rank": 6
+    },
+    {
+      "symbol": "3178",
+      "name": "公準",
+      "category": "漲幅排行",
+      "price": 75.9,
       "rank": 7
     },
     {
@@ -74,73 +74,73 @@
       "rank": 10
     },
     {
-      "symbol": "6770",
-      "name": "力積電",
+      "symbol": "2409",
+      "name": "友達",
       "category": "法人買超",
-      "price": 74,
+      "price": 33.35,
       "rank": 1
     },
     {
-      "symbol": "2344",
-      "name": "華邦電",
+      "symbol": "3481",
+      "name": "群創",
       "category": "法人買超",
-      "price": 179.5,
+      "price": 50.4,
       "rank": 2
     },
     {
-      "symbol": "2303",
-      "name": "聯電",
+      "symbol": "2883",
+      "name": "凱基金",
       "category": "法人買超",
-      "price": 156,
+      "price": 40.45,
       "rank": 3
     },
     {
-      "symbol": "2408",
-      "name": "南亞科",
+      "symbol": "1314",
+      "name": "中石化",
       "category": "法人買超",
-      "price": 525,
+      "price": 9.18,
       "rank": 4
     },
     {
-      "symbol": "2449",
-      "name": "京元電子",
+      "symbol": "6116",
+      "name": "彩晶",
       "category": "法人買超",
-      "price": 291.5,
+      "price": 14.8,
       "rank": 5
-    },
-    {
-      "symbol": "6182",
-      "name": "合晶",
-      "category": "法人買超",
-      "price": 116,
-      "rank": 6
     },
     {
       "symbol": "8150",
       "name": "南茂",
       "category": "法人買超",
-      "price": 94,
+      "price": 103,
+      "rank": 6
+    },
+    {
+      "symbol": "2371",
+      "name": "大同",
+      "category": "法人買超",
+      "price": 30,
       "rank": 7
     },
     {
-      "symbol": "6257",
-      "name": "矽格",
+      "symbol": "2449",
+      "name": "京元電子",
       "category": "法人買超",
-      "price": 244.5,
+      "price": 301.5,
       "rank": 8
     },
     {
-      "symbol": "1815",
-      "name": "富喬",
+      "symbol": "2855",
+      "name": "統一證",
       "category": "法人買超",
-      "price": 119.5,
+      "price": 57.3,
       "rank": 9
     },
     {
-      "symbol": "6147",
-      "name": "頎邦",
+      "symbol": "2891",
+      "name": "中信金",
       "category": "法人買超",
-      "price": 229,
+      "price": 70.4,
       "rank": 10
     }
   ]
