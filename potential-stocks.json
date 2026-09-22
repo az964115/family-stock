@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-22T05:57:00.094Z",
+  "updatedAt": "2026-09-22T12:29:11.298Z",
   "count": 20,
   "stocks": [
     {
@@ -18,24 +18,24 @@
       "rank": 2
     },
     {
+      "symbol": "8068",
+      "name": "全達",
+      "category": "漲幅排行",
+      "price": 17.65,
+      "rank": 3
+    },
+    {
       "symbol": "4924",
       "name": "欣厚-KY",
       "category": "漲幅排行",
       "price": 18.75,
-      "rank": 3
+      "rank": 4
     },
     {
       "symbol": "8996",
       "name": "高力",
       "category": "漲幅排行",
       "price": 1655,
-      "rank": 4
-    },
-    {
-      "symbol": "8068",
-      "name": "全達",
-      "category": "漲幅排行",
-      "price": 17.65,
       "rank": 5
     },
     {
@@ -77,70 +77,70 @@
       "symbol": "2409",
       "name": "友達",
       "category": "法人買超",
-      "price": 33.35,
+      "price": 36.65,
       "rank": 1
+    },
+    {
+      "symbol": "2303",
+      "name": "聯電",
+      "category": "法人買超",
+      "price": 160,
+      "rank": 2
     },
     {
       "symbol": "3481",
       "name": "群創",
       "category": "法人買超",
-      "price": 50.4,
-      "rank": 2
-    },
-    {
-      "symbol": "2883",
-      "name": "凱基金",
-      "category": "法人買超",
-      "price": 40.45,
+      "price": 50.5,
       "rank": 3
-    },
-    {
-      "symbol": "1314",
-      "name": "中石化",
-      "category": "法人買超",
-      "price": 9.18,
-      "rank": 4
-    },
-    {
-      "symbol": "6116",
-      "name": "彩晶",
-      "category": "法人買超",
-      "price": 14.8,
-      "rank": 5
-    },
-    {
-      "symbol": "8150",
-      "name": "南茂",
-      "category": "法人買超",
-      "price": 103,
-      "rank": 6
-    },
-    {
-      "symbol": "2371",
-      "name": "大同",
-      "category": "法人買超",
-      "price": 30,
-      "rank": 7
     },
     {
       "symbol": "2449",
       "name": "京元電子",
       "category": "法人買超",
-      "price": 301.5,
+      "price": 317,
+      "rank": 4
+    },
+    {
+      "symbol": "3264",
+      "name": "欣銓",
+      "category": "法人買超",
+      "price": 276.5,
+      "rank": 5
+    },
+    {
+      "symbol": "1101",
+      "name": "台泥",
+      "category": "法人買超",
+      "price": 24.55,
+      "rank": 6
+    },
+    {
+      "symbol": "8150",
+      "name": "南茂",
+      "category": "法人買超",
+      "price": 105.5,
+      "rank": 7
+    },
+    {
+      "symbol": "5483",
+      "name": "中美晶",
+      "category": "法人買超",
+      "price": 195,
       "rank": 8
     },
     {
-      "symbol": "2855",
-      "name": "統一證",
+      "symbol": "6168",
+      "name": "宏齊",
       "category": "法人買超",
-      "price": 57.3,
+      "price": 44,
       "rank": 9
     },
     {
-      "symbol": "2891",
-      "name": "中信金",
+      "symbol": "4958",
+      "name": "臻鼎-KY",
       "category": "法人買超",
-      "price": 70.4,
+      "price": 489,
       "rank": 10
     }
   ]
