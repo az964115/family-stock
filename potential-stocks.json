@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-22T05:33:16.987Z",
+  "updatedAt": "2026-09-22T05:57:00.094Z",
   "count": 20,
   "stocks": [
     {
@@ -18,24 +18,24 @@
       "rank": 2
     },
     {
-      "symbol": "8068",
-      "name": "全達",
-      "category": "漲幅排行",
-      "price": 17.65,
-      "rank": 3
-    },
-    {
       "symbol": "4924",
       "name": "欣厚-KY",
       "category": "漲幅排行",
       "price": 18.75,
-      "rank": 4
+      "rank": 3
     },
     {
       "symbol": "8996",
       "name": "高力",
       "category": "漲幅排行",
       "price": 1655,
+      "rank": 4
+    },
+    {
+      "symbol": "8068",
+      "name": "全達",
+      "category": "漲幅排行",
+      "price": 17.65,
       "rank": 5
     },
     {
