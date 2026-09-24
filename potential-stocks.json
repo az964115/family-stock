@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-23T12:39:26.446Z",
+  "updatedAt": "2026-09-24T05:41:39.546Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "4770",
-      "name": "上品",
+      "symbol": "6925",
+      "name": "意藍",
       "category": "漲幅排行",
-      "price": 275,
+      "price": 68.2,
       "rank": 1
     },
     {
-      "symbol": "4188",
-      "name": "安克",
+      "symbol": "3021",
+      "name": "鴻名",
       "category": "漲幅排行",
-      "price": 14.85,
+      "price": 26.95,
       "rank": 2
     },
     {
-      "symbol": "6243",
-      "name": "迅杰",
+      "symbol": "6933",
+      "name": "AMAX-KY",
       "category": "漲幅排行",
-      "price": 41.25,
+      "price": 385,
       "rank": 3
     },
     {
-      "symbol": "6237",
-      "name": "驊訊",
+      "symbol": "7547",
+      "name": "碩網",
       "category": "漲幅排行",
-      "price": 37.4,
+      "price": 59.4,
       "rank": 4
     },
     {
-      "symbol": "4556",
-      "name": "旭然",
+      "symbol": "6228",
+      "name": "全譜",
       "category": "漲幅排行",
-      "price": 93.6,
+      "price": 18.7,
       "rank": 5
     },
     {
-      "symbol": "6426",
-      "name": "統新",
+      "symbol": "6213",
+      "name": "聯茂",
       "category": "漲幅排行",
-      "price": 391.5,
+      "price": 595,
       "rank": 6
     },
     {
-      "symbol": "2342",
-      "name": "茂矽",
+      "symbol": "3016",
+      "name": "嘉晶",
       "category": "漲幅排行",
-      "price": 46.35,
+      "price": 160,
       "rank": 7
     },
     {
-      "symbol": "3552",
-      "name": "同致",
+      "symbol": "6533",
+      "name": "晶心科",
       "category": "漲幅排行",
-      "price": 43.05,
+      "price": 276,
       "rank": 8
     },
     {
-      "symbol": "3653",
-      "name": "健策",
+      "symbol": "3114",
+      "name": "好德",
       "category": "漲幅排行",
-      "price": 6410,
+      "price": 34.25,
       "rank": 9
     },
     {
-      "symbol": "4174",
-      "name": "浩鼎",
+      "symbol": "6103",
+      "name": "合邦",
       "category": "漲幅排行",
-      "price": 32.6,
+      "price": 40.9,
       "rank": 10
     },
     {
