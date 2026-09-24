@@ -1,27 +1,27 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-24T05:41:39.546Z",
+  "updatedAt": "2026-09-24T05:56:57.135Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "6925",
-      "name": "意藍",
-      "category": "漲幅排行",
-      "price": 68.2,
-      "rank": 1
-    },
-    {
-      "symbol": "3021",
-      "name": "鴻名",
-      "category": "漲幅排行",
-      "price": 26.95,
-      "rank": 2
-    },
     {
       "symbol": "6933",
       "name": "AMAX-KY",
       "category": "漲幅排行",
       "price": 385,
+      "rank": 1
+    },
+    {
+      "symbol": "6925",
+      "name": "意藍",
+      "category": "漲幅排行",
+      "price": 68.2,
+      "rank": 2
+    },
+    {
+      "symbol": "6228",
+      "name": "全譜",
+      "category": "漲幅排行",
+      "price": 18.7,
       "rank": 3
     },
     {
@@ -32,10 +32,10 @@
       "rank": 4
     },
     {
-      "symbol": "6228",
-      "name": "全譜",
+      "symbol": "3021",
+      "name": "鴻名",
       "category": "漲幅排行",
-      "price": 18.7,
+      "price": 26.95,
       "rank": 5
     },
     {
@@ -77,70 +77,70 @@
       "symbol": "1101",
       "name": "台泥",
       "category": "法人買超",
-      "price": 25.65,
+      "price": 25.25,
       "rank": 1
     },
     {
       "symbol": "2408",
       "name": "南亞科",
       "category": "法人買超",
-      "price": 515,
+      "price": 503,
       "rank": 2
     },
     {
       "symbol": "6770",
       "name": "力積電",
       "category": "法人買超",
-      "price": 73.1,
+      "price": 72,
       "rank": 3
     },
     {
       "symbol": "2610",
       "name": "華航",
       "category": "法人買超",
-      "price": 20.45,
+      "price": 20.3,
       "rank": 4
     },
     {
       "symbol": "2618",
       "name": "長榮航",
       "category": "法人買超",
-      "price": 42.85,
+      "price": 42,
       "rank": 5
     },
     {
       "symbol": "1314",
       "name": "中石化",
       "category": "法人買超",
-      "price": 9.01,
+      "price": 8.86,
       "rank": 6
     },
     {
       "symbol": "8150",
       "name": "南茂",
       "category": "法人買超",
-      "price": 107,
+      "price": 112,
       "rank": 7
     },
     {
       "symbol": "2317",
       "name": "鴻海",
       "category": "法人買超",
-      "price": 256,
+      "price": 250.5,
       "rank": 8
     },
     {
       "symbol": "2344",
       "name": "華邦電",
       "category": "法人買超",
-      "price": 172.5,
+      "price": 171.5,
       "rank": 9
     },
     {
       "symbol": "2104",
       "name": "國際中橡",
       "category": "法人買超",
-      "price": 11.65,
+      "price": 11.15,
       "rank": 10
     }
   ]
