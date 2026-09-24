@@ -2163,7 +2163,7 @@ if (type === 'buy') {
       try {
         const results = await Promise.all(fetchPromises);
         if (!isAllDataAccurate || results.some(r => !r.success)) {
-          listEl.innerHTML = "<li style='color: #9B2C2C; font-weight: bold;'>⚠️ 證交所連線忙碌中，為了保障數據精確度，系統已暫停顯示。請稍後 10 秒再重新整理網頁。</li>";
+          listEl.innerHTML = "<li style='color: #9B2C2C; font-weight: bold;'>⚠️ 證交所連線忙碌中，為了保障數據精確度，系統已暫停顯示。請稍後重試或聯繫Jason排除。</li>";
           document.getElementById("autoTotalNetWorth").innerHTML = "<span style='color:#9B2C2C; font-size:0.6em;'>暫時無法連線</span>";
           return;
         }
