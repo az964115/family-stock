@@ -1,20 +1,20 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-24T12:38:02.702Z",
-  "count": 20,
+  "updatedAt": "2026-09-25T05:58:54.994Z",
+  "count": 19,
   "stocks": [
     {
-      "symbol": "7547",
-      "name": "碩網",
+      "symbol": "6933",
+      "name": "AMAX-KY",
       "category": "漲幅排行",
-      "price": 59.4,
+      "price": 385,
       "rank": 1
     },
     {
-      "symbol": "6228",
-      "name": "全譜",
+      "symbol": "3021",
+      "name": "鴻名",
       "category": "漲幅排行",
-      "price": 18.7,
+      "price": 26.95,
       "rank": 2
     },
     {
@@ -25,17 +25,17 @@
       "rank": 3
     },
     {
-      "symbol": "6933",
-      "name": "AMAX-KY",
+      "symbol": "7547",
+      "name": "碩網",
       "category": "漲幅排行",
-      "price": 385,
+      "price": 59.4,
       "rank": 4
     },
     {
-      "symbol": "3021",
-      "name": "鴻名",
+      "symbol": "6228",
+      "name": "全譜",
       "category": "漲幅排行",
-      "price": 26.95,
+      "price": 18.7,
       "rank": 5
     },
     {
@@ -60,88 +60,81 @@
       "rank": 8
     },
     {
-      "symbol": "3114",
-      "name": "好德",
-      "category": "漲幅排行",
-      "price": 34.25,
-      "rank": 9
-    },
-    {
       "symbol": "6103",
       "name": "合邦",
       "category": "漲幅排行",
       "price": 40.9,
+      "rank": 9
+    },
+    {
+      "symbol": "2030",
+      "name": "彰源",
+      "category": "漲幅排行",
+      "price": 30.4,
       "rank": 10
     },
     {
-      "symbol": "1101",
-      "name": "台泥",
+      "symbol": "6182",
+      "name": "合晶",
       "category": "法人買超",
-      "price": 25.25,
+      "price": 120.5,
       "rank": 1
     },
     {
-      "symbol": "2408",
-      "name": "南亞科",
+      "symbol": "1303",
+      "name": "南亞",
       "category": "法人買超",
-      "price": 503,
+      "price": 238,
       "rank": 2
-    },
-    {
-      "symbol": "6770",
-      "name": "力積電",
-      "category": "法人買超",
-      "price": 72,
-      "rank": 3
-    },
-    {
-      "symbol": "2610",
-      "name": "華航",
-      "category": "法人買超",
-      "price": 20.3,
-      "rank": 4
-    },
-    {
-      "symbol": "2618",
-      "name": "長榮航",
-      "category": "法人買超",
-      "price": 42,
-      "rank": 5
-    },
-    {
-      "symbol": "1314",
-      "name": "中石化",
-      "category": "法人買超",
-      "price": 8.86,
-      "rank": 6
     },
     {
       "symbol": "8150",
       "name": "南茂",
       "category": "法人買超",
       "price": 112,
+      "rank": 3
+    },
+    {
+      "symbol": "3189",
+      "name": "景碩",
+      "category": "法人買超",
+      "price": 962,
+      "rank": 4
+    },
+    {
+      "symbol": "3231",
+      "name": "緯創",
+      "category": "法人買超",
+      "price": 184.5,
+      "rank": 5
+    },
+    {
+      "symbol": "9105",
+      "name": "泰金寶-DR",
+      "category": "法人買超",
+      "price": 8.43,
+      "rank": 6
+    },
+    {
+      "symbol": "2027",
+      "name": "大成鋼",
+      "category": "法人買超",
+      "price": 47.6,
       "rank": 7
     },
     {
-      "symbol": "2317",
-      "name": "鴻海",
+      "symbol": "3105",
+      "name": "穩懋",
       "category": "法人買超",
-      "price": 250.5,
+      "price": 502,
       "rank": 8
     },
     {
-      "symbol": "2344",
-      "name": "華邦電",
+      "symbol": "3702",
+      "name": "大聯大",
       "category": "法人買超",
-      "price": 171.5,
+      "price": 117.5,
       "rank": 9
-    },
-    {
-      "symbol": "2104",
-      "name": "國際中橡",
-      "category": "法人買超",
-      "price": 11.15,
-      "rank": 10
     }
   ]
 }
