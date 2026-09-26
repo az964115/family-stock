@@ -1,20 +1,20 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-25T12:39:24.482Z",
+  "updatedAt": "2026-09-26T05:58:20.843Z",
   "count": 19,
   "stocks": [
     {
-      "symbol": "6933",
-      "name": "AMAX-KY",
+      "symbol": "6228",
+      "name": "全譜",
       "category": "漲幅排行",
-      "price": 385,
+      "price": 18.7,
       "rank": 1
     },
     {
-      "symbol": "3021",
-      "name": "鴻名",
+      "symbol": "7547",
+      "name": "碩網",
       "category": "漲幅排行",
-      "price": 26.95,
+      "price": 59.4,
       "rank": 2
     },
     {
@@ -25,17 +25,17 @@
       "rank": 3
     },
     {
-      "symbol": "7547",
-      "name": "碩網",
+      "symbol": "6933",
+      "name": "AMAX-KY",
       "category": "漲幅排行",
-      "price": 59.4,
+      "price": 385,
       "rank": 4
     },
     {
-      "symbol": "6228",
-      "name": "全譜",
+      "symbol": "3021",
+      "name": "鴻名",
       "category": "漲幅排行",
-      "price": 18.7,
+      "price": 26.95,
       "rank": 5
     },
     {
@@ -60,17 +60,17 @@
       "rank": 8
     },
     {
-      "symbol": "6103",
-      "name": "合邦",
-      "category": "漲幅排行",
-      "price": 40.9,
-      "rank": 9
-    },
-    {
       "symbol": "2030",
       "name": "彰源",
       "category": "漲幅排行",
       "price": 30.4,
+      "rank": 9
+    },
+    {
+      "symbol": "3114",
+      "name": "好德",
+      "category": "漲幅排行",
+      "price": 34.25,
       "rank": 10
     },
     {
