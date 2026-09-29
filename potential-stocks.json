@@ -1,27 +1,27 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-29T05:39:20.541Z",
+  "updatedAt": "2026-09-29T06:41:12.584Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "4768",
-      "name": "晶呈科技",
-      "category": "漲幅排行",
-      "price": 357.5,
-      "rank": 1
-    },
-    {
-      "symbol": "2061",
-      "name": "風青",
-      "category": "漲幅排行",
-      "price": 59.4,
-      "rank": 2
-    },
     {
       "symbol": "6207",
       "name": "雷科",
       "category": "漲幅排行",
       "price": 137.5,
+      "rank": 1
+    },
+    {
+      "symbol": "4768",
+      "name": "晶呈科技",
+      "category": "漲幅排行",
+      "price": 357.5,
+      "rank": 2
+    },
+    {
+      "symbol": "5220",
+      "name": "萬達光電",
+      "category": "漲幅排行",
+      "price": 22,
       "rank": 3
     },
     {
@@ -32,10 +32,10 @@
       "rank": 4
     },
     {
-      "symbol": "5220",
-      "name": "萬達光電",
+      "symbol": "2061",
+      "name": "風青",
       "category": "漲幅排行",
-      "price": 22,
+      "price": 59.4,
       "rank": 5
     },
     {
@@ -53,94 +53,94 @@
       "rank": 7
     },
     {
-      "symbol": "8935",
-      "name": "邦泰",
-      "category": "漲幅排行",
-      "price": 19.3,
-      "rank": 8
-    },
-    {
       "symbol": "6925",
       "name": "意藍",
       "category": "漲幅排行",
       "price": 75,
+      "rank": 8
+    },
+    {
+      "symbol": "8935",
+      "name": "邦泰",
+      "category": "漲幅排行",
+      "price": 19.3,
       "rank": 9
     },
     {
-      "symbol": "6456",
-      "name": "GIS-KY",
+      "symbol": "6533",
+      "name": "晶心科",
       "category": "漲幅排行",
-      "price": 89.4,
+      "price": 303.5,
       "rank": 10
     },
     {
       "symbol": "6182",
       "name": "合晶",
       "category": "法人買超",
-      "price": 120.5,
+      "price": 121,
       "rank": 1
     },
     {
       "symbol": "1303",
       "name": "南亞",
       "category": "法人買超",
-      "price": 238,
+      "price": 247,
       "rank": 2
     },
     {
       "symbol": "8150",
       "name": "南茂",
       "category": "法人買超",
-      "price": 112,
+      "price": 104.5,
       "rank": 3
     },
     {
       "symbol": "3016",
       "name": "嘉晶",
       "category": "法人買超",
-      "price": 160,
+      "price": 172.5,
       "rank": 4
     },
     {
       "symbol": "3189",
       "name": "景碩",
       "category": "法人買超",
-      "price": 962,
+      "price": 955,
       "rank": 5
     },
     {
       "symbol": "3231",
       "name": "緯創",
       "category": "法人買超",
-      "price": 184.5,
+      "price": 185.5,
       "rank": 6
     },
     {
       "symbol": "9105",
       "name": "泰金寶-DR",
       "category": "法人買超",
-      "price": 8.43,
+      "price": 8.66,
       "rank": 7
     },
     {
       "symbol": "2027",
       "name": "大成鋼",
       "category": "法人買超",
-      "price": 47.6,
+      "price": 47.15,
       "rank": 8
     },
     {
       "symbol": "3105",
       "name": "穩懋",
       "category": "法人買超",
-      "price": 502,
+      "price": 493,
       "rank": 9
     },
     {
       "symbol": "3702",
       "name": "大聯大",
       "category": "法人買超",
-      "price": 117.5,
+      "price": 115,
       "rank": 10
     }
   ]
