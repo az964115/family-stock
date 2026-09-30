@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-29T13:52:58.571Z",
+  "updatedAt": "2026-09-30T05:37:06.479Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "4768",
-      "name": "晶呈科技",
+      "symbol": "4577",
+      "name": "達航科技",
       "category": "漲幅排行",
-      "price": 357.5,
+      "price": 92.4,
       "rank": 1
     },
     {
-      "symbol": "2061",
-      "name": "風青",
+      "symbol": "1709",
+      "name": "和益",
       "category": "漲幅排行",
-      "price": 59.4,
+      "price": 48.4,
       "rank": 2
     },
     {
-      "symbol": "6207",
-      "name": "雷科",
+      "symbol": "6861",
+      "name": "睿生光電",
       "category": "漲幅排行",
-      "price": 137.5,
+      "price": 313.5,
       "rank": 3
     },
     {
-      "symbol": "3518",
-      "name": "柏騰",
+      "symbol": "6485",
+      "name": "點序",
       "category": "漲幅排行",
-      "price": 37.4,
+      "price": 77,
       "rank": 4
+    },
+    {
+      "symbol": "2483",
+      "name": "百容",
+      "category": "漲幅排行",
+      "price": 35.75,
+      "rank": 5
+    },
+    {
+      "symbol": "4924",
+      "name": "欣厚-KY",
+      "category": "漲幅排行",
+      "price": 16.5,
+      "rank": 6
+    },
+    {
+      "symbol": "2033",
+      "name": "佳大",
+      "category": "漲幅排行",
+      "price": 42.35,
+      "rank": 7
     },
     {
       "symbol": "5220",
       "name": "萬達光電",
       "category": "漲幅排行",
-      "price": 22,
-      "rank": 5
-    },
-    {
-      "symbol": "2340",
-      "name": "台亞",
-      "category": "漲幅排行",
-      "price": 38,
-      "rank": 6
-    },
-    {
-      "symbol": "5013",
-      "name": "強新",
-      "category": "漲幅排行",
-      "price": 35.25,
-      "rank": 7
-    },
-    {
-      "symbol": "8935",
-      "name": "邦泰",
-      "category": "漲幅排行",
-      "price": 19.3,
+      "price": 24.2,
       "rank": 8
     },
     {
-      "symbol": "6925",
-      "name": "意藍",
+      "symbol": "6672",
+      "name": "騰輝電子-KY",
       "category": "漲幅排行",
-      "price": 75,
+      "price": 369,
       "rank": 9
     },
     {
-      "symbol": "6456",
-      "name": "GIS-KY",
+      "symbol": "6405",
+      "name": "悅城",
       "category": "漲幅排行",
-      "price": 89.4,
+      "price": 50.1,
       "rank": 10
     },
     {
