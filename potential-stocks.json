@@ -1,69 +1,69 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-30T05:37:06.479Z",
+  "updatedAt": "2026-09-30T06:26:26.726Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "4577",
-      "name": "達航科技",
+      "symbol": "5220",
+      "name": "萬達光電",
       "category": "漲幅排行",
-      "price": 92.4,
+      "price": 24.2,
       "rank": 1
-    },
-    {
-      "symbol": "1709",
-      "name": "和益",
-      "category": "漲幅排行",
-      "price": 48.4,
-      "rank": 2
     },
     {
       "symbol": "6861",
       "name": "睿生光電",
       "category": "漲幅排行",
       "price": 313.5,
-      "rank": 3
-    },
-    {
-      "symbol": "6485",
-      "name": "點序",
-      "category": "漲幅排行",
-      "price": 77,
-      "rank": 4
+      "rank": 2
     },
     {
       "symbol": "2483",
       "name": "百容",
       "category": "漲幅排行",
       "price": 35.75,
+      "rank": 3
+    },
+    {
+      "symbol": "1709",
+      "name": "和益",
+      "category": "漲幅排行",
+      "price": 48.4,
+      "rank": 4
+    },
+    {
+      "symbol": "6485",
+      "name": "點序",
+      "category": "漲幅排行",
+      "price": 77,
       "rank": 5
+    },
+    {
+      "symbol": "4577",
+      "name": "達航科技",
+      "category": "漲幅排行",
+      "price": 92.4,
+      "rank": 6
     },
     {
       "symbol": "4924",
       "name": "欣厚-KY",
       "category": "漲幅排行",
       "price": 16.5,
-      "rank": 6
+      "rank": 7
     },
     {
       "symbol": "2033",
       "name": "佳大",
       "category": "漲幅排行",
       "price": 42.35,
-      "rank": 7
-    },
-    {
-      "symbol": "5220",
-      "name": "萬達光電",
-      "category": "漲幅排行",
-      "price": 24.2,
       "rank": 8
     },
     {
-      "symbol": "6672",
-      "name": "騰輝電子-KY",
+      "symbol": "4545",
+      "name": "銘鈺",
       "category": "漲幅排行",
-      "price": 369,
+      "price": 39.1,
       "rank": 9
     },
     {
@@ -77,70 +77,70 @@
       "symbol": "1303",
       "name": "南亞",
       "category": "法人買超",
-      "price": 247,
+      "price": 255.5,
       "rank": 1
     },
     {
       "symbol": "2409",
       "name": "友達",
       "category": "法人買超",
-      "price": 35.05,
+      "price": 38.55,
       "rank": 2
     },
     {
       "symbol": "6505",
       "name": "台塑化",
       "category": "法人買超",
-      "price": 94.3,
+      "price": 97.3,
       "rank": 3
     },
     {
       "symbol": "6770",
       "name": "力積電",
       "category": "法人買超",
-      "price": 72.3,
+      "price": 75.3,
       "rank": 4
     },
     {
       "symbol": "4958",
       "name": "臻鼎-KY",
       "category": "法人買超",
-      "price": 498.5,
+      "price": 507,
       "rank": 5
     },
     {
       "symbol": "2002",
       "name": "中鋼",
       "category": "法人買超",
-      "price": 18.8,
+      "price": 19.2,
       "rank": 6
     },
     {
       "symbol": "3231",
       "name": "緯創",
       "category": "法人買超",
-      "price": 185.5,
+      "price": 184.5,
       "rank": 7
     },
     {
       "symbol": "3481",
       "name": "群創",
       "category": "法人買超",
-      "price": 49.75,
+      "price": 54.7,
       "rank": 8
     },
     {
       "symbol": "2426",
       "name": "鼎元",
       "category": "法人買超",
-      "price": 99.8,
+      "price": 104,
       "rank": 9
     },
     {
       "symbol": "2344",
       "name": "華邦電",
       "category": "法人買超",
-      "price": 174,
+      "price": 179.5,
       "rank": 10
     }
   ]
