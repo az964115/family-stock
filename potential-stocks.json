@@ -1,62 +1,62 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-30T06:26:26.726Z",
-  "count": 20,
+  "updatedAt": "2026-09-30T13:27:38.648Z",
+  "count": 19,
   "stocks": [
-    {
-      "symbol": "5220",
-      "name": "萬達光電",
-      "category": "漲幅排行",
-      "price": 24.2,
-      "rank": 1
-    },
     {
       "symbol": "6861",
       "name": "睿生光電",
       "category": "漲幅排行",
       "price": 313.5,
-      "rank": 2
-    },
-    {
-      "symbol": "2483",
-      "name": "百容",
-      "category": "漲幅排行",
-      "price": 35.75,
-      "rank": 3
-    },
-    {
-      "symbol": "1709",
-      "name": "和益",
-      "category": "漲幅排行",
-      "price": 48.4,
-      "rank": 4
+      "rank": 1
     },
     {
       "symbol": "6485",
       "name": "點序",
       "category": "漲幅排行",
       "price": 77,
-      "rank": 5
-    },
-    {
-      "symbol": "4577",
-      "name": "達航科技",
-      "category": "漲幅排行",
-      "price": 92.4,
-      "rank": 6
-    },
-    {
-      "symbol": "4924",
-      "name": "欣厚-KY",
-      "category": "漲幅排行",
-      "price": 16.5,
-      "rank": 7
+      "rank": 2
     },
     {
       "symbol": "2033",
       "name": "佳大",
       "category": "漲幅排行",
       "price": 42.35,
+      "rank": 3
+    },
+    {
+      "symbol": "4924",
+      "name": "欣厚-KY",
+      "category": "漲幅排行",
+      "price": 16.5,
+      "rank": 4
+    },
+    {
+      "symbol": "2483",
+      "name": "百容",
+      "category": "漲幅排行",
+      "price": 35.75,
+      "rank": 5
+    },
+    {
+      "symbol": "5220",
+      "name": "萬達光電",
+      "category": "漲幅排行",
+      "price": 24.2,
+      "rank": 6
+    },
+    {
+      "symbol": "4577",
+      "name": "達航科技",
+      "category": "漲幅排行",
+      "price": 92.4,
+      "rank": 7
+    },
+    {
+      "symbol": "1709",
+      "name": "和益",
+      "category": "漲幅排行",
+      "price": 48.4,
       "rank": 8
     },
     {
@@ -67,81 +67,74 @@
       "rank": 9
     },
     {
-      "symbol": "6405",
-      "name": "悅城",
-      "category": "漲幅排行",
-      "price": 50.1,
-      "rank": 10
-    },
-    {
-      "symbol": "1303",
-      "name": "南亞",
-      "category": "法人買超",
-      "price": 255.5,
-      "rank": 1
-    },
-    {
       "symbol": "2409",
       "name": "友達",
-      "category": "法人買超",
+      "category": "漲幅排行",
       "price": 38.55,
-      "rank": 2
-    },
-    {
-      "symbol": "6505",
-      "name": "台塑化",
-      "category": "法人買超",
-      "price": 97.3,
-      "rank": 3
-    },
-    {
-      "symbol": "6770",
-      "name": "力積電",
-      "category": "法人買超",
-      "price": 75.3,
-      "rank": 4
-    },
-    {
-      "symbol": "4958",
-      "name": "臻鼎-KY",
-      "category": "法人買超",
-      "price": 507,
-      "rank": 5
-    },
-    {
-      "symbol": "2002",
-      "name": "中鋼",
-      "category": "法人買超",
-      "price": 19.2,
-      "rank": 6
-    },
-    {
-      "symbol": "3231",
-      "name": "緯創",
-      "category": "法人買超",
-      "price": 184.5,
-      "rank": 7
+      "rank": 10
     },
     {
       "symbol": "3481",
       "name": "群創",
       "category": "法人買超",
       "price": 54.7,
-      "rank": 8
+      "rank": 1
     },
     {
-      "symbol": "2426",
-      "name": "鼎元",
+      "symbol": "6770",
+      "name": "力積電",
       "category": "法人買超",
-      "price": 104,
-      "rank": 9
+      "price": 75.3,
+      "rank": 2
+    },
+    {
+      "symbol": "1101",
+      "name": "台泥",
+      "category": "法人買超",
+      "price": 26.3,
+      "rank": 3
+    },
+    {
+      "symbol": "2002",
+      "name": "中鋼",
+      "category": "法人買超",
+      "price": 19.2,
+      "rank": 4
+    },
+    {
+      "symbol": "1314",
+      "name": "中石化",
+      "category": "法人買超",
+      "price": 9,
+      "rank": 5
     },
     {
       "symbol": "2344",
       "name": "華邦電",
       "category": "法人買超",
       "price": 179.5,
-      "rank": 10
+      "rank": 6
+    },
+    {
+      "symbol": "1301",
+      "name": "台塑",
+      "category": "法人買超",
+      "price": 68.1,
+      "rank": 7
+    },
+    {
+      "symbol": "1605",
+      "name": "華新",
+      "category": "法人買超",
+      "price": 38.4,
+      "rank": 8
+    },
+    {
+      "symbol": "8150",
+      "name": "南茂",
+      "category": "法人買超",
+      "price": 114.5,
+      "rank": 9
     }
   ]
 }
