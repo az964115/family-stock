@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-09-30T13:27:38.648Z",
-  "count": 19,
+  "updatedAt": "2026-10-01T06:01:20.677Z",
+  "count": 20,
   "stocks": [
     {
-      "symbol": "6861",
-      "name": "睿生光電",
+      "symbol": "6994",
+      "name": "富威電力",
       "category": "漲幅排行",
-      "price": 313.5,
+      "price": 29.15,
       "rank": 1
+    },
+    {
+      "symbol": "8121",
+      "name": "越峰",
+      "category": "漲幅排行",
+      "price": 34.65,
+      "rank": 2
     },
     {
       "symbol": "6485",
       "name": "點序",
       "category": "漲幅排行",
-      "price": 77,
-      "rank": 2
-    },
-    {
-      "symbol": "2033",
-      "name": "佳大",
-      "category": "漲幅排行",
-      "price": 42.35,
+      "price": 84.7,
       "rank": 3
     },
     {
-      "symbol": "4924",
-      "name": "欣厚-KY",
+      "symbol": "7711",
+      "name": "永擎",
       "category": "漲幅排行",
-      "price": 16.5,
+      "price": 616,
       "rank": 4
     },
     {
-      "symbol": "2483",
-      "name": "百容",
+      "symbol": "3311",
+      "name": "閎暉",
       "category": "漲幅排行",
-      "price": 35.75,
+      "price": 45.15,
       "rank": 5
     },
     {
-      "symbol": "5220",
-      "name": "萬達光電",
+      "symbol": "5328",
+      "name": "華容",
       "category": "漲幅排行",
-      "price": 24.2,
+      "price": 58.4,
       "rank": 6
     },
     {
-      "symbol": "4577",
-      "name": "達航科技",
+      "symbol": "5016",
+      "name": "松和",
       "category": "漲幅排行",
-      "price": 92.4,
+      "price": 28.1,
       "rank": 7
     },
     {
-      "symbol": "1709",
-      "name": "和益",
+      "symbol": "3236",
+      "name": "千如",
       "category": "漲幅排行",
-      "price": 48.4,
+      "price": 48.55,
       "rank": 8
     },
     {
-      "symbol": "4545",
-      "name": "銘鈺",
+      "symbol": "8201",
+      "name": "無敵",
       "category": "漲幅排行",
-      "price": 39.1,
+      "price": 17.65,
       "rank": 9
     },
     {
-      "symbol": "2409",
-      "name": "友達",
+      "symbol": "4722",
+      "name": "國精化",
       "category": "漲幅排行",
-      "price": 38.55,
+      "price": 209.5,
       "rank": 10
     },
     {
@@ -81,60 +81,67 @@
       "rank": 1
     },
     {
+      "symbol": "2409",
+      "name": "友達",
+      "category": "法人買超",
+      "price": 38.55,
+      "rank": 2
+    },
+    {
       "symbol": "6770",
       "name": "力積電",
       "category": "法人買超",
       "price": 75.3,
-      "rank": 2
+      "rank": 3
     },
     {
       "symbol": "1101",
       "name": "台泥",
       "category": "法人買超",
       "price": 26.3,
-      "rank": 3
+      "rank": 4
     },
     {
       "symbol": "2002",
       "name": "中鋼",
       "category": "法人買超",
       "price": 19.2,
-      "rank": 4
+      "rank": 5
     },
     {
       "symbol": "1314",
       "name": "中石化",
       "category": "法人買超",
       "price": 9,
-      "rank": 5
+      "rank": 6
     },
     {
       "symbol": "2344",
       "name": "華邦電",
       "category": "法人買超",
       "price": 179.5,
-      "rank": 6
+      "rank": 7
     },
     {
       "symbol": "1301",
       "name": "台塑",
       "category": "法人買超",
       "price": 68.1,
-      "rank": 7
+      "rank": 8
     },
     {
       "symbol": "1605",
       "name": "華新",
       "category": "法人買超",
       "price": 38.4,
-      "rank": 8
+      "rank": 9
     },
     {
       "symbol": "8150",
       "name": "南茂",
       "category": "法人買超",
       "price": 114.5,
-      "rank": 9
+      "rank": 10
     }
   ]
 }
