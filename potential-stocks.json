@@ -1,48 +1,48 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-02T05:41:12.154Z",
+  "updatedAt": "2026-10-02T06:50:02.287Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "3564",
-      "name": "其陽",
+      "symbol": "4958",
+      "name": "臻鼎-KY",
       "category": "漲幅排行",
-      "price": 56.1,
+      "price": 561,
       "rank": 1
-    },
-    {
-      "symbol": "8111",
-      "name": "立碁",
-      "category": "漲幅排行",
-      "price": 85.8,
-      "rank": 2
-    },
-    {
-      "symbol": "4764",
-      "name": "雙鍵",
-      "category": "漲幅排行",
-      "price": 203.5,
-      "rank": 3
-    },
-    {
-      "symbol": "6174",
-      "name": "安碁",
-      "category": "漲幅排行",
-      "price": 55,
-      "rank": 4
-    },
-    {
-      "symbol": "8289",
-      "name": "泰藝",
-      "category": "漲幅排行",
-      "price": 56.1,
-      "rank": 5
     },
     {
       "symbol": "1459",
       "name": "聯發",
       "category": "漲幅排行",
       "price": 18.7,
+      "rank": 2
+    },
+    {
+      "symbol": "6174",
+      "name": "安碁",
+      "category": "漲幅排行",
+      "price": 55,
+      "rank": 3
+    },
+    {
+      "symbol": "8111",
+      "name": "立碁",
+      "category": "漲幅排行",
+      "price": 85.8,
+      "rank": 4
+    },
+    {
+      "symbol": "3564",
+      "name": "其陽",
+      "category": "漲幅排行",
+      "price": 56.1,
+      "rank": 5
+    },
+    {
+      "symbol": "8289",
+      "name": "泰藝",
+      "category": "漲幅排行",
+      "price": 56.1,
       "rank": 6
     },
     {
@@ -60,24 +60,24 @@
       "rank": 8
     },
     {
-      "symbol": "4958",
-      "name": "臻鼎-KY",
+      "symbol": "4764",
+      "name": "雙鍵",
       "category": "漲幅排行",
-      "price": 561,
+      "price": 203.5,
       "rank": 9
     },
     {
-      "symbol": "4905",
-      "name": "台聯電",
+      "symbol": "3236",
+      "name": "千如",
       "category": "漲幅排行",
-      "price": 92.5,
+      "price": 53.4,
       "rank": 10
     },
     {
       "symbol": "3231",
       "name": "緯創",
       "category": "法人買超",
-      "price": 190.5,
+      "price": 186.5,
       "rank": 1
     },
     {
@@ -91,28 +91,28 @@
       "symbol": "2327",
       "name": "國巨*",
       "category": "法人買超",
-      "price": 602,
+      "price": 626,
       "rank": 3
     },
     {
       "symbol": "2492",
       "name": "華新科",
       "category": "法人買超",
-      "price": 329,
+      "price": 361.5,
       "rank": 4
     },
     {
       "symbol": "2344",
       "name": "華邦電",
       "category": "法人買超",
-      "price": 180,
+      "price": 179,
       "rank": 5
     },
     {
       "symbol": "2340",
       "name": "台亞",
       "category": "法人買超",
-      "price": 43.85,
+      "price": 45.75,
       "rank": 6
     },
     {
@@ -126,7 +126,7 @@
       "symbol": "2481",
       "name": "強茂",
       "category": "法人買超",
-      "price": 177.5,
+      "price": 174.5,
       "rank": 8
     },
     {
@@ -140,7 +140,7 @@
       "symbol": "2317",
       "name": "鴻海",
       "category": "法人買超",
-      "price": 254,
+      "price": 251,
       "rank": 10
     }
   ]
