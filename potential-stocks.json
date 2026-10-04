@@ -1,13 +1,13 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-03T12:20:58.290Z",
+  "updatedAt": "2026-10-04T06:41:09.985Z",
   "count": 19,
   "stocks": [
     {
-      "symbol": "8289",
-      "name": "泰藝",
+      "symbol": "4764",
+      "name": "雙鍵",
       "category": "漲幅排行",
-      "price": 56.1,
+      "price": 203.5,
       "rank": 1
     },
     {
@@ -18,59 +18,59 @@
       "rank": 2
     },
     {
-      "symbol": "1459",
-      "name": "聯發",
-      "category": "漲幅排行",
-      "price": 18.7,
-      "rank": 3
-    },
-    {
-      "symbol": "8111",
-      "name": "立碁",
-      "category": "漲幅排行",
-      "price": 85.8,
-      "rank": 4
-    },
-    {
-      "symbol": "4764",
-      "name": "雙鍵",
-      "category": "漲幅排行",
-      "price": 203.5,
-      "rank": 5
-    },
-    {
-      "symbol": "3564",
-      "name": "其陽",
-      "category": "漲幅排行",
-      "price": 56.1,
-      "rank": 6
-    },
-    {
       "symbol": "4958",
       "name": "臻鼎-KY",
       "category": "漲幅排行",
       "price": 561,
-      "rank": 7
+      "rank": 3
     },
     {
       "symbol": "2321",
       "name": "東訊",
       "category": "漲幅排行",
       "price": 25.85,
-      "rank": 8
+      "rank": 4
+    },
+    {
+      "symbol": "3564",
+      "name": "其陽",
+      "category": "漲幅排行",
+      "price": 56.1,
+      "rank": 5
+    },
+    {
+      "symbol": "8111",
+      "name": "立碁",
+      "category": "漲幅排行",
+      "price": 85.8,
+      "rank": 6
     },
     {
       "symbol": "2444",
       "name": "兆勁",
       "category": "漲幅排行",
       "price": 16.5,
+      "rank": 7
+    },
+    {
+      "symbol": "8289",
+      "name": "泰藝",
+      "category": "漲幅排行",
+      "price": 56.1,
+      "rank": 8
+    },
+    {
+      "symbol": "1459",
+      "name": "聯發",
+      "category": "漲幅排行",
+      "price": 18.7,
       "rank": 9
     },
     {
-      "symbol": "3236",
-      "name": "千如",
+      "symbol": "4991",
+      "name": "環宇-KY",
       "category": "漲幅排行",
-      "price": 53.4,
+      "price": 534,
       "rank": 10
     },
     {
