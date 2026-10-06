@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-05T15:42:08.865Z",
+  "updatedAt": "2026-10-06T05:53:37.129Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "3498",
-      "name": "陽程",
+      "symbol": "6257",
+      "name": "矽格",
       "category": "漲幅排行",
-      "price": 236.5,
+      "price": 286,
       "rank": 1
     },
     {
-      "symbol": "1303",
-      "name": "南亞",
+      "symbol": "4720",
+      "name": "德淵",
       "category": "漲幅排行",
-      "price": 286,
+      "price": 25.3,
       "rank": 2
+    },
+    {
+      "symbol": "2466",
+      "name": "冠西電",
+      "category": "漲幅排行",
+      "price": 170.5,
+      "rank": 3
+    },
+    {
+      "symbol": "5205",
+      "name": "中茂",
+      "category": "漲幅排行",
+      "price": 27.55,
+      "rank": 4
+    },
+    {
+      "symbol": "7723",
+      "name": "築間",
+      "category": "漲幅排行",
+      "price": 19.85,
+      "rank": 5
+    },
+    {
+      "symbol": "3297",
+      "name": "杭特",
+      "category": "漲幅排行",
+      "price": 35.3,
+      "rank": 6
+    },
+    {
+      "symbol": "4716",
+      "name": "大立",
+      "category": "漲幅排行",
+      "price": 20.95,
+      "rank": 7
     },
     {
       "symbol": "4174",
       "name": "浩鼎",
       "category": "漲幅排行",
-      "price": 46.2,
-      "rank": 3
-    },
-    {
-      "symbol": "6174",
-      "name": "安碁",
-      "category": "漲幅排行",
-      "price": 60.5,
-      "rank": 4
-    },
-    {
-      "symbol": "2483",
-      "name": "百容",
-      "category": "漲幅排行",
-      "price": 40.7,
-      "rank": 5
-    },
-    {
-      "symbol": "3564",
-      "name": "其陽",
-      "category": "漲幅排行",
-      "price": 61.7,
-      "rank": 6
-    },
-    {
-      "symbol": "2367",
-      "name": "燿華",
-      "category": "漲幅排行",
-      "price": 49.65,
-      "rank": 7
-    },
-    {
-      "symbol": "2059",
-      "name": "川湖",
-      "category": "漲幅排行",
-      "price": 13355,
+      "price": 50.8,
       "rank": 8
     },
     {
-      "symbol": "6187",
-      "name": "萬潤",
+      "symbol": "1711",
+      "name": "永光",
       "category": "漲幅排行",
-      "price": 1490,
+      "price": 48.6,
       "rank": 9
     },
     {
-      "symbol": "6213",
-      "name": "聯茂",
+      "symbol": "6560",
+      "name": "欣普羅",
       "category": "漲幅排行",
-      "price": 751,
+      "price": 34.3,
       "rank": 10
     },
     {
