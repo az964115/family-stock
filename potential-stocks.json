@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-07T05:41:55.548Z",
+  "updatedAt": "2026-10-07T07:00:53.787Z",
   "count": 20,
   "stocks": [
     {
@@ -77,70 +77,70 @@
       "symbol": "2313",
       "name": "華通",
       "category": "法人買超",
-      "price": 252,
+      "price": 246,
       "rank": 1
     },
     {
       "symbol": "1326",
       "name": "台化",
       "category": "法人買超",
-      "price": 73,
+      "price": 75.8,
       "rank": 2
     },
     {
       "symbol": "5347",
       "name": "世界",
       "category": "法人買超",
-      "price": 191,
+      "price": 190,
       "rank": 3
     },
     {
       "symbol": "1303",
       "name": "南亞",
       "category": "法人買超",
-      "price": 293,
+      "price": 314,
       "rank": 4
     },
     {
       "symbol": "2891",
       "name": "中信金",
       "category": "法人買超",
-      "price": 68.4,
+      "price": 68.7,
       "rank": 5
     },
     {
       "symbol": "2605",
       "name": "新興",
       "category": "法人買超",
-      "price": 36.95,
+      "price": 36.6,
       "rank": 6
     },
     {
       "symbol": "6239",
       "name": "力成",
       "category": "法人買超",
-      "price": 310.5,
+      "price": 307.5,
       "rank": 7
     },
     {
       "symbol": "2885",
       "name": "元大金",
       "category": "法人買超",
-      "price": 69.3,
+      "price": 70,
       "rank": 8
     },
     {
       "symbol": "8150",
       "name": "南茂",
       "category": "法人買超",
-      "price": 127.5,
+      "price": 128.5,
       "rank": 9
     },
     {
       "symbol": "2886",
       "name": "兆豐金",
       "category": "法人買超",
-      "price": 49.3,
+      "price": 49.8,
       "rank": 10
     }
   ]
