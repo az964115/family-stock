@@ -1,146 +1,146 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-06T07:21:57.142Z",
+  "updatedAt": "2026-10-07T05:41:55.548Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "4720",
-      "name": "德淵",
+      "symbol": "4903",
+      "name": "聯光通",
       "category": "漲幅排行",
-      "price": 25.3,
+      "price": 46.75,
       "rank": 1
     },
     {
-      "symbol": "6257",
-      "name": "矽格",
+      "symbol": "6442",
+      "name": "光聖",
       "category": "漲幅排行",
-      "price": 286,
+      "price": 1815,
       "rank": 2
     },
     {
-      "symbol": "2466",
-      "name": "冠西電",
+      "symbol": "5460",
+      "name": "同協",
       "category": "漲幅排行",
-      "price": 170.5,
+      "price": 19.25,
       "rank": 3
+    },
+    {
+      "symbol": "6234",
+      "name": "高僑",
+      "category": "漲幅排行",
+      "price": 41.8,
+      "rank": 4
+    },
+    {
+      "symbol": "3624",
+      "name": "光頡",
+      "category": "漲幅排行",
+      "price": 159.5,
+      "rank": 5
     },
     {
       "symbol": "5205",
       "name": "中茂",
       "category": "漲幅排行",
-      "price": 27.55,
-      "rank": 4
-    },
-    {
-      "symbol": "3297",
-      "name": "杭特",
-      "category": "漲幅排行",
-      "price": 35.3,
-      "rank": 5
-    },
-    {
-      "symbol": "7723",
-      "name": "築間",
-      "category": "漲幅排行",
-      "price": 19.85,
+      "price": 30.3,
       "rank": 6
     },
     {
-      "symbol": "4716",
-      "name": "大立",
+      "symbol": "4908",
+      "name": "前鼎",
       "category": "漲幅排行",
-      "price": 20.95,
+      "price": 254,
       "rank": 7
     },
     {
-      "symbol": "4174",
-      "name": "浩鼎",
+      "symbol": "4706",
+      "name": "大恭",
       "category": "漲幅排行",
-      "price": 50.8,
+      "price": 43.15,
       "rank": 8
     },
     {
-      "symbol": "1711",
-      "name": "永光",
+      "symbol": "6944",
+      "name": "兆聯實業",
       "category": "漲幅排行",
-      "price": 48.6,
+      "price": 908,
       "rank": 9
     },
     {
-      "symbol": "6560",
-      "name": "欣普羅",
+      "symbol": "6538",
+      "name": "倉和",
       "category": "漲幅排行",
-      "price": 34.3,
+      "price": 332,
       "rank": 10
     },
     {
-      "symbol": "3231",
-      "name": "緯創",
+      "symbol": "2313",
+      "name": "華通",
       "category": "法人買超",
-      "price": 189.5,
+      "price": 252,
       "rank": 1
     },
     {
-      "symbol": "2344",
-      "name": "華邦電",
+      "symbol": "1326",
+      "name": "台化",
       "category": "法人買超",
-      "price": 177.5,
+      "price": 73,
       "rank": 2
     },
     {
-      "symbol": "2887",
-      "name": "台新新光金",
+      "symbol": "5347",
+      "name": "世界",
       "category": "法人買超",
-      "price": 41.45,
+      "price": 191,
       "rank": 3
     },
     {
-      "symbol": "2317",
-      "name": "鴻海",
+      "symbol": "1303",
+      "name": "南亞",
       "category": "法人買超",
-      "price": 256,
+      "price": 293,
       "rank": 4
     },
     {
-      "symbol": "2301",
-      "name": "光寶科",
+      "symbol": "2891",
+      "name": "中信金",
       "category": "法人買超",
-      "price": 299,
+      "price": 68.4,
       "rank": 5
     },
     {
-      "symbol": "1815",
-      "name": "富喬",
+      "symbol": "2605",
+      "name": "新興",
       "category": "法人買超",
-      "price": 127,
+      "price": 36.95,
       "rank": 6
     },
     {
-      "symbol": "3105",
-      "name": "穩懋",
+      "symbol": "6239",
+      "name": "力成",
       "category": "法人買超",
-      "price": 592,
+      "price": 310.5,
       "rank": 7
     },
     {
-      "symbol": "2481",
-      "name": "強茂",
+      "symbol": "2885",
+      "name": "元大金",
       "category": "法人買超",
-      "price": 176,
+      "price": 69.3,
       "rank": 8
     },
     {
-      "symbol": "2330",
-      "name": "台積電",
+      "symbol": "8150",
+      "name": "南茂",
       "category": "法人買超",
-      "price": 2585,
+      "price": 127.5,
       "rank": 9
     },
     {
-      "symbol": "2426",
-      "name": "鼎元",
+      "symbol": "2886",
+      "name": "兆豐金",
       "category": "法人買超",
-      "price": 105.5,
+      "price": 49.3,
       "rank": 10
     }
   ]
