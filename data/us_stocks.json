@@ -40,13 +40,13 @@
     "changeRate": "+0.11%"
   },
   "krKOSPI": {
-    "price": "6,803.90",
-    "change": "-137.49",
-    "changeRate": "-1.98%"
+    "price": "6,761.05",
+    "change": "-65.13",
+    "changeRate": "-0.95%"
   },
   "BTC": {
-    "price": "83,315.09",
-    "change": "-2232.68",
-    "changeRate": "-2.61%"
+    "price": "83,227.39",
+    "change": "-110.17",
+    "changeRate": "-0.13%"
   }
 }
