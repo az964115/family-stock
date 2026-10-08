@@ -10,9 +10,9 @@
     "changeRate": "-1.15%"
   },
   "brentOil": {
-    "price": "101.54",
-    "change": "-0.02",
-    "changeRate": "-0.02%"
+    "price": "102.78",
+    "change": "+0.43",
+    "changeRate": "+0.42%"
   },
   "vix": {
     "price": "15.08",
@@ -35,18 +35,18 @@
     "changeRate": "-0.22%"
   },
   "twTAIEX": {
-    "price": "49,806.37",
-    "change": "+52.30",
-    "changeRate": "+0.11%"
+    "price": "49,313.44",
+    "change": "-397.48",
+    "changeRate": "-0.80%"
   },
   "krKOSPI": {
-    "price": "6,749.75",
-    "change": "-76.43",
-    "changeRate": "-1.12%"
+    "price": "6,695.73",
+    "change": "-130.45",
+    "changeRate": "-1.91%"
   },
   "BTC": {
-    "price": "83,454.08",
-    "change": "+173.12",
-    "changeRate": "+0.21%"
+    "price": "82,798.98",
+    "change": "-476.09",
+    "changeRate": "-0.57%"
   }
 }
