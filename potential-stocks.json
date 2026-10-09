@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-08T07:08:40.057Z",
+  "updatedAt": "2026-10-09T07:14:20.349Z",
   "count": 20,
   "stocks": [
     {
@@ -11,45 +11,45 @@
       "rank": 1
     },
     {
-      "symbol": "3287",
-      "name": "廣寰科",
-      "category": "漲幅排行",
-      "price": 43.45,
-      "rank": 2
-    },
-    {
       "symbol": "3447",
       "name": "展達",
       "category": "漲幅排行",
       "price": 30.25,
-      "rank": 3
+      "rank": 2
     },
     {
-      "symbol": "2424",
-      "name": "隴華",
+      "symbol": "3287",
+      "name": "廣寰科",
       "category": "漲幅排行",
-      "price": 9.79,
-      "rank": 4
+      "price": 43.45,
+      "rank": 3
     },
     {
       "symbol": "3713",
       "name": "新晶投控",
       "category": "漲幅排行",
       "price": 14.85,
-      "rank": 5
+      "rank": 4
     },
     {
-      "symbol": "8068",
-      "name": "全達",
+      "symbol": "2424",
+      "name": "隴華",
       "category": "漲幅排行",
-      "price": 18.75,
-      "rank": 6
+      "price": 9.79,
+      "rank": 5
     },
     {
       "symbol": "2466",
       "name": "冠西電",
       "category": "漲幅排行",
       "price": 198.5,
+      "rank": 6
+    },
+    {
+      "symbol": "4934",
+      "name": "太極",
+      "category": "漲幅排行",
+      "price": 17.1,
       "rank": 7
     },
     {
@@ -60,10 +60,10 @@
       "rank": 8
     },
     {
-      "symbol": "4934",
-      "name": "太極",
+      "symbol": "8068",
+      "name": "全達",
       "category": "漲幅排行",
-      "price": 17.1,
+      "price": 18.75,
       "rank": 9
     },
     {
@@ -81,66 +81,66 @@
       "rank": 1
     },
     {
-      "symbol": "1605",
-      "name": "華新",
+      "symbol": "2408",
+      "name": "南亞科",
       "category": "法人買超",
-      "price": 39.1,
+      "price": 532,
       "rank": 2
     },
     {
-      "symbol": "1802",
-      "name": "台玻",
+      "symbol": "1314",
+      "name": "中石化",
       "category": "法人買超",
-      "price": 63.9,
+      "price": 9.06,
       "rank": 3
     },
     {
-      "symbol": "6147",
-      "name": "頎邦",
+      "symbol": "3231",
+      "name": "緯創",
       "category": "法人買超",
-      "price": 226,
+      "price": 188.5,
       "rank": 4
     },
     {
-      "symbol": "9105",
-      "name": "泰金寶-DR",
+      "symbol": "2002",
+      "name": "中鋼",
       "category": "法人買超",
-      "price": 8.63,
+      "price": 18.95,
       "rank": 5
     },
     {
-      "symbol": "1326",
-      "name": "台化",
+      "symbol": "1101",
+      "name": "台泥",
       "category": "法人買超",
-      "price": 77.6,
+      "price": 25.7,
       "rank": 6
     },
     {
-      "symbol": "6182",
-      "name": "合晶",
+      "symbol": "1102",
+      "name": "亞泥",
       "category": "法人買超",
-      "price": 129,
+      "price": 36.35,
       "rank": 7
     },
     {
-      "symbol": "1303",
-      "name": "南亞",
+      "symbol": "1216",
+      "name": "統一",
       "category": "法人買超",
-      "price": 310,
+      "price": 75.6,
       "rank": 8
     },
     {
-      "symbol": "5483",
-      "name": "中美晶",
+      "symbol": "1312",
+      "name": "國喬",
       "category": "法人買超",
-      "price": 216.5,
+      "price": 15.15,
       "rank": 9
     },
     {
-      "symbol": "2344",
-      "name": "華邦電",
+      "symbol": "9904",
+      "name": "寶成",
       "category": "法人買超",
-      "price": 177,
+      "price": 25.05,
       "rank": 10
     }
   ]
