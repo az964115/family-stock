@@ -1,62 +1,62 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-10T13:25:17.439Z",
+  "updatedAt": "2026-10-11T06:55:47.639Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "3287",
-      "name": "廣寰科",
-      "category": "漲幅排行",
-      "price": 43.45,
-      "rank": 1
-    },
     {
       "symbol": "3447",
       "name": "展達",
       "category": "漲幅排行",
       "price": 30.25,
-      "rank": 2
+      "rank": 1
     },
     {
       "symbol": "2424",
       "name": "隴華",
       "category": "漲幅排行",
       "price": 9.79,
-      "rank": 3
-    },
-    {
-      "symbol": "3713",
-      "name": "新晶投控",
-      "category": "漲幅排行",
-      "price": 14.85,
-      "rank": 4
+      "rank": 2
     },
     {
       "symbol": "8086",
       "name": "宏捷科",
       "category": "漲幅排行",
       "price": 154,
+      "rank": 3
+    },
+    {
+      "symbol": "3287",
+      "name": "廣寰科",
+      "category": "漲幅排行",
+      "price": 43.45,
+      "rank": 4
+    },
+    {
+      "symbol": "3713",
+      "name": "新晶投控",
+      "category": "漲幅排行",
+      "price": 14.85,
       "rank": 5
-    },
-    {
-      "symbol": "2466",
-      "name": "冠西電",
-      "category": "漲幅排行",
-      "price": 198.5,
-      "rank": 6
-    },
-    {
-      "symbol": "4934",
-      "name": "太極",
-      "category": "漲幅排行",
-      "price": 17.1,
-      "rank": 7
     },
     {
       "symbol": "6174",
       "name": "安碁",
       "category": "漲幅排行",
       "price": 64,
+      "rank": 6
+    },
+    {
+      "symbol": "2466",
+      "name": "冠西電",
+      "category": "漲幅排行",
+      "price": 198.5,
+      "rank": 7
+    },
+    {
+      "symbol": "4934",
+      "name": "太極",
+      "category": "漲幅排行",
+      "price": 17.1,
       "rank": 8
     },
     {
