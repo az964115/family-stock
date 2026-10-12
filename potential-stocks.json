@@ -1,41 +1,41 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-12T05:55:17.145Z",
+  "updatedAt": "2026-10-12T07:05:51.883Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "1516",
-      "name": "川飛",
-      "category": "漲幅排行",
-      "price": 15.4,
-      "rank": 1
-    },
-    {
-      "symbol": "6640",
-      "name": "均華",
-      "category": "漲幅排行",
-      "price": 1155,
-      "rank": 2
-    },
     {
       "symbol": "6909",
       "name": "創控",
       "category": "漲幅排行",
       "price": 47.85,
-      "rank": 3
-    },
-    {
-      "symbol": "2429",
-      "name": "銘旺科",
-      "category": "漲幅排行",
-      "price": 33,
-      "rank": 4
+      "rank": 1
     },
     {
       "symbol": "6234",
       "name": "高僑",
       "category": "漲幅排行",
       "price": 43.45,
+      "rank": 2
+    },
+    {
+      "symbol": "6640",
+      "name": "均華",
+      "category": "漲幅排行",
+      "price": 1155,
+      "rank": 3
+    },
+    {
+      "symbol": "1516",
+      "name": "川飛",
+      "category": "漲幅排行",
+      "price": 15.4,
+      "rank": 4
+    },
+    {
+      "symbol": "2429",
+      "name": "銘旺科",
+      "category": "漲幅排行",
+      "price": 33,
       "rank": 5
     },
     {
@@ -60,10 +60,10 @@
       "rank": 8
     },
     {
-      "symbol": "6223",
-      "name": "旺矽",
+      "symbol": "6548",
+      "name": "長科*",
       "category": "漲幅排行",
-      "price": 6130,
+      "price": 85,
       "rank": 9
     },
     {
@@ -77,70 +77,70 @@
       "symbol": "1301",
       "name": "台塑",
       "category": "法人買超",
-      "price": 81.3,
+      "price": 80.7,
       "rank": 1
     },
     {
       "symbol": "2408",
       "name": "南亞科",
       "category": "法人買超",
-      "price": 532,
+      "price": 527,
       "rank": 2
     },
     {
       "symbol": "1314",
       "name": "中石化",
       "category": "法人買超",
-      "price": 9.06,
+      "price": 9.04,
       "rank": 3
     },
     {
       "symbol": "3231",
       "name": "緯創",
       "category": "法人買超",
-      "price": 188.5,
+      "price": 189.5,
       "rank": 4
     },
     {
       "symbol": "2002",
       "name": "中鋼",
       "category": "法人買超",
-      "price": 18.95,
+      "price": 19.2,
       "rank": 5
     },
     {
       "symbol": "1101",
       "name": "台泥",
       "category": "法人買超",
-      "price": 25.7,
+      "price": 27,
       "rank": 6
     },
     {
       "symbol": "1102",
       "name": "亞泥",
       "category": "法人買超",
-      "price": 36.35,
+      "price": 36.65,
       "rank": 7
     },
     {
       "symbol": "1216",
       "name": "統一",
       "category": "法人買超",
-      "price": 75.6,
+      "price": 76,
       "rank": 8
     },
     {
       "symbol": "1312",
       "name": "國喬",
       "category": "法人買超",
-      "price": 15.15,
+      "price": 16.05,
       "rank": 9
     },
     {
       "symbol": "9904",
       "name": "寶成",
       "category": "法人買超",
-      "price": 25.05,
+      "price": 25.65,
       "rank": 10
     }
   ]
