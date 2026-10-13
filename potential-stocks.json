@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-13T05:42:33.482Z",
+  "updatedAt": "2026-10-13T07:30:23.534Z",
   "count": 20,
   "stocks": [
     {
@@ -77,7 +77,7 @@
       "symbol": "1101",
       "name": "台泥",
       "category": "法人買超",
-      "price": 27,
+      "price": 26.35,
       "rank": 1
     },
     {
@@ -91,56 +91,56 @@
       "symbol": "2883",
       "name": "凱基金",
       "category": "法人買超",
-      "price": 38.8,
+      "price": 38.75,
       "rank": 3
     },
     {
       "symbol": "2002",
       "name": "中鋼",
       "category": "法人買超",
-      "price": 19.2,
+      "price": 19.15,
       "rank": 4
     },
     {
       "symbol": "2609",
       "name": "陽明",
       "category": "法人買超",
-      "price": 63.6,
+      "price": 64.5,
       "rank": 5
     },
     {
       "symbol": "2891",
       "name": "中信金",
       "category": "法人買超",
-      "price": 69.8,
+      "price": 71.6,
       "rank": 6
     },
     {
       "symbol": "9105",
       "name": "泰金寶-DR",
       "category": "法人買超",
-      "price": 9.05,
+      "price": 8.75,
       "rank": 7
     },
     {
       "symbol": "3481",
       "name": "群創",
       "category": "法人買超",
-      "price": 51.3,
+      "price": 50,
       "rank": 8
     },
     {
       "symbol": "4938",
       "name": "和碩",
       "category": "法人買超",
-      "price": 98.6,
+      "price": 102.5,
       "rank": 9
     },
     {
       "symbol": "2885",
       "name": "元大金",
       "category": "法人買超",
-      "price": 70.1,
+      "price": 70.6,
       "rank": 10
     }
   ]
