@@ -1,132 +1,132 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-13T07:30:23.534Z",
+  "updatedAt": "2026-10-14T05:38:53.793Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "6668",
-      "name": "中揚光",
+      "symbol": "3485",
+      "name": "敘豐",
       "category": "漲幅排行",
-      "price": 60.5,
+      "price": 225.5,
       "rank": 1
     },
     {
-      "symbol": "6834",
-      "name": "天二科技",
+      "symbol": "6885",
+      "name": "全福生技",
       "category": "漲幅排行",
-      "price": 159.5,
+      "price": 31.9,
       "rank": 2
     },
     {
-      "symbol": "6645",
-      "name": "金萬林-創",
+      "symbol": "2478",
+      "name": "大毅",
       "category": "漲幅排行",
-      "price": 14.3,
+      "price": 137.5,
       "rank": 3
     },
     {
-      "symbol": "6517",
-      "name": "保勝光學",
+      "symbol": "2033",
+      "name": "佳大",
       "category": "漲幅排行",
-      "price": 71.5,
+      "price": 49.5,
       "rank": 4
     },
     {
-      "symbol": "6021",
-      "name": "美好證",
+      "symbol": "7772",
+      "name": "耀穎",
       "category": "漲幅排行",
-      "price": 52.3,
+      "price": 137.5,
       "rank": 5
+    },
+    {
+      "symbol": "6590",
+      "name": "普鴻",
+      "category": "漲幅排行",
+      "price": 71.5,
+      "rank": 6
+    },
+    {
+      "symbol": "3114",
+      "name": "好德",
+      "category": "漲幅排行",
+      "price": 41.3,
+      "rank": 7
+    },
+    {
+      "symbol": "6225",
+      "name": "天瀚",
+      "category": "漲幅排行",
+      "price": 88.2,
+      "rank": 8
     },
     {
       "symbol": "5230",
       "name": "雷笛克光學",
       "category": "漲幅排行",
-      "price": 27.55,
-      "rank": 6
-    },
-    {
-      "symbol": "6221",
-      "name": "晉泰",
-      "category": "漲幅排行",
-      "price": 35.85,
-      "rank": 7
-    },
-    {
-      "symbol": "8467",
-      "name": "波力-KY",
-      "category": "漲幅排行",
-      "price": 101.5,
-      "rank": 8
-    },
-    {
-      "symbol": "1312",
-      "name": "國喬",
-      "category": "漲幅排行",
-      "price": 17.65,
+      "price": 30.3,
       "rank": 9
     },
     {
-      "symbol": "3287",
-      "name": "廣寰科",
+      "symbol": "6290",
+      "name": "良維",
       "category": "漲幅排行",
-      "price": 52.5,
+      "price": 292,
       "rank": 10
-    },
-    {
-      "symbol": "1101",
-      "name": "台泥",
-      "category": "法人買超",
-      "price": 26.35,
-      "rank": 1
-    },
-    {
-      "symbol": "2887",
-      "name": "台新新光金",
-      "category": "法人買超",
-      "price": 43,
-      "rank": 2
-    },
-    {
-      "symbol": "2883",
-      "name": "凱基金",
-      "category": "法人買超",
-      "price": 38.75,
-      "rank": 3
-    },
-    {
-      "symbol": "2002",
-      "name": "中鋼",
-      "category": "法人買超",
-      "price": 19.15,
-      "rank": 4
-    },
-    {
-      "symbol": "2609",
-      "name": "陽明",
-      "category": "法人買超",
-      "price": 64.5,
-      "rank": 5
     },
     {
       "symbol": "2891",
       "name": "中信金",
       "category": "法人買超",
       "price": 71.6,
+      "rank": 1
+    },
+    {
+      "symbol": "2885",
+      "name": "元大金",
+      "category": "法人買超",
+      "price": 70.6,
+      "rank": 2
+    },
+    {
+      "symbol": "2887",
+      "name": "台新新光金",
+      "category": "法人買超",
+      "price": 43,
+      "rank": 3
+    },
+    {
+      "symbol": "2609",
+      "name": "陽明",
+      "category": "法人買超",
+      "price": 64.5,
+      "rank": 4
+    },
+    {
+      "symbol": "2603",
+      "name": "長榮",
+      "category": "法人買超",
+      "price": 264,
+      "rank": 5
+    },
+    {
+      "symbol": "5880",
+      "name": "合庫金",
+      "category": "法人買超",
+      "price": 27.2,
       "rank": 6
     },
     {
-      "symbol": "9105",
-      "name": "泰金寶-DR",
+      "symbol": "1312",
+      "name": "國喬",
       "category": "法人買超",
-      "price": 8.75,
+      "price": 17.65,
       "rank": 7
     },
     {
-      "symbol": "3481",
-      "name": "群創",
+      "symbol": "2618",
+      "name": "長榮航",
       "category": "法人買超",
-      "price": 50,
+      "price": 43,
       "rank": 8
     },
     {
@@ -137,10 +137,10 @@
       "rank": 9
     },
     {
-      "symbol": "2885",
-      "name": "元大金",
+      "symbol": "1326",
+      "name": "台化",
       "category": "法人買超",
-      "price": 70.6,
+      "price": 77.8,
       "rank": 10
     }
   ]
