@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-14T12:44:42.731Z",
+  "updatedAt": "2026-10-15T05:34:14.057Z",
   "count": 20,
   "stocks": [
+    {
+      "symbol": "3354",
+      "name": "律勝",
+      "category": "漲幅排行",
+      "price": 38,
+      "rank": 1
+    },
     {
       "symbol": "3485",
       "name": "敘豐",
       "category": "漲幅排行",
-      "price": 225.5,
-      "rank": 1
+      "price": 248,
+      "rank": 2
+    },
+    {
+      "symbol": "2380",
+      "name": "虹光",
+      "category": "漲幅排行",
+      "price": 17.15,
+      "rank": 3
     },
     {
       "symbol": "2033",
       "name": "佳大",
       "category": "漲幅排行",
-      "price": 49.5,
-      "rank": 2
-    },
-    {
-      "symbol": "7772",
-      "name": "耀穎",
-      "category": "漲幅排行",
-      "price": 137.5,
-      "rank": 3
-    },
-    {
-      "symbol": "2478",
-      "name": "大毅",
-      "category": "漲幅排行",
-      "price": 137.5,
+      "price": 54.4,
       "rank": 4
     },
     {
-      "symbol": "6590",
-      "name": "普鴻",
+      "symbol": "6925",
+      "name": "意藍",
       "category": "漲幅排行",
-      "price": 71.5,
+      "price": 82.3,
       "rank": 5
     },
     {
-      "symbol": "6885",
-      "name": "全福生技",
+      "symbol": "6269",
+      "name": "台郡",
       "category": "漲幅排行",
-      "price": 31.9,
+      "price": 74.6,
       "rank": 6
     },
     {
-      "symbol": "3114",
-      "name": "好德",
+      "symbol": "4924",
+      "name": "欣厚-KY",
       "category": "漲幅排行",
-      "price": 41.3,
+      "price": 20.15,
       "rank": 7
     },
     {
-      "symbol": "6290",
-      "name": "良維",
+      "symbol": "8437",
+      "name": "大地-KY",
       "category": "漲幅排行",
-      "price": 292,
+      "price": 13.55,
       "rank": 8
     },
     {
-      "symbol": "5230",
-      "name": "雷笛克光學",
+      "symbol": "2424",
+      "name": "隴華",
       "category": "漲幅排行",
-      "price": 30.3,
+      "price": 14.2,
       "rank": 9
     },
     {
-      "symbol": "6225",
-      "name": "天瀚",
+      "symbol": "2429",
+      "name": "銘旺科",
       "category": "漲幅排行",
-      "price": 88.2,
+      "price": 38.2,
       "rank": 10
     },
     {
