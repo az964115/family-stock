@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-15T12:32:29.848Z",
+  "updatedAt": "2026-10-16T05:33:21.738Z",
   "count": 20,
   "stocks": [
+    {
+      "symbol": "6756",
+      "name": "威鋒電子",
+      "category": "漲幅排行",
+      "price": 110,
+      "rank": 1
+    },
     {
       "symbol": "3354",
       "name": "律勝",
       "category": "漲幅排行",
-      "price": 38,
-      "rank": 1
-    },
-    {
-      "symbol": "3485",
-      "name": "敘豐",
-      "category": "漲幅排行",
-      "price": 248,
+      "price": 41.8,
       "rank": 2
     },
     {
-      "symbol": "2380",
-      "name": "虹光",
+      "symbol": "6517",
+      "name": "保勝光學",
       "category": "漲幅排行",
-      "price": 17.15,
+      "price": 77,
       "rank": 3
     },
     {
-      "symbol": "2033",
-      "name": "佳大",
+      "symbol": "6933",
+      "name": "AMAX-KY",
       "category": "漲幅排行",
-      "price": 54.4,
+      "price": 451.5,
       "rank": 4
     },
     {
-      "symbol": "6925",
-      "name": "意藍",
+      "symbol": "6689",
+      "name": "伊雲谷",
       "category": "漲幅排行",
-      "price": 82.3,
+      "price": 70.5,
       "rank": 5
     },
     {
-      "symbol": "6269",
-      "name": "台郡",
+      "symbol": "4542",
+      "name": "科嶠",
       "category": "漲幅排行",
-      "price": 74.6,
+      "price": 358,
       "rank": 6
     },
     {
-      "symbol": "4924",
-      "name": "欣厚-KY",
+      "symbol": "3701",
+      "name": "大眾控",
       "category": "漲幅排行",
-      "price": 20.15,
+      "price": 66.1,
       "rank": 7
     },
     {
-      "symbol": "8437",
-      "name": "大地-KY",
+      "symbol": "6668",
+      "name": "中揚光",
       "category": "漲幅排行",
-      "price": 13.55,
+      "price": 68.3,
       "rank": 8
     },
     {
-      "symbol": "2424",
-      "name": "隴華",
+      "symbol": "6418",
+      "name": "詠昇",
       "category": "漲幅排行",
-      "price": 14.2,
+      "price": 36.4,
       "rank": 9
     },
     {
-      "symbol": "2429",
-      "name": "銘旺科",
+      "symbol": "6148",
+      "name": "驊宏資",
       "category": "漲幅排行",
-      "price": 38.2,
+      "price": 41.95,
       "rank": 10
     },
     {
