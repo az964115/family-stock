@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-16T05:33:21.738Z",
+  "updatedAt": "2026-10-16T05:37:09.009Z",
   "count": 20,
   "stocks": [
     {
@@ -11,17 +11,17 @@
       "rank": 1
     },
     {
-      "symbol": "3354",
-      "name": "律勝",
-      "category": "漲幅排行",
-      "price": 41.8,
-      "rank": 2
-    },
-    {
       "symbol": "6517",
       "name": "保勝光學",
       "category": "漲幅排行",
       "price": 77,
+      "rank": 2
+    },
+    {
+      "symbol": "3354",
+      "name": "律勝",
+      "category": "漲幅排行",
+      "price": 41.8,
       "rank": 3
     },
     {
