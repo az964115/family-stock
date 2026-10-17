@@ -6,13 +6,13 @@
   },
   "usSOX": {
     "price": "11,137.29",
-    "change": "-443.93",
+    "change": "-443.92",
     "changeRate": "-3.83%"
   },
   "brentOil": {
-    "price": "109.69",
-    "change": "+4.53",
-    "changeRate": "+4.31%"
+    "price": "109.86",
+    "change": "+4.70",
+    "changeRate": "+4.47%"
   },
   "vix": {
     "price": "19.99",
@@ -26,8 +26,8 @@
   },
   "usIXIC": {
     "price": "26,140.03",
-    "change": "-572.99",
-    "changeRate": "-2.14%"
+    "change": "-573.00",
+    "changeRate": "-2.15%"
   },
   "usGSPC": {
     "price": "7,659.44",
@@ -45,8 +45,8 @@
     "changeRate": "+2.05%"
   },
   "BTC": {
-    "price": "81,523.84",
-    "change": "-599.98",
-    "changeRate": "-0.73%"
+    "price": "81,483.10",
+    "change": "-16.94",
+    "changeRate": "-0.02%"
   }
 }
