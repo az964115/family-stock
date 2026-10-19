@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-18T11:59:15.342Z",
-  "count": 20,
+  "updatedAt": "2026-10-19T05:41:42.819Z",
+  "count": 19,
   "stocks": [
     {
-      "symbol": "6517",
-      "name": "保勝光學",
+      "symbol": "1815",
+      "name": "富喬",
       "category": "漲幅排行",
-      "price": 77,
+      "price": 154,
       "rank": 1
+    },
+    {
+      "symbol": "6708",
+      "name": "天擎",
+      "category": "漲幅排行",
+      "price": 60.5,
+      "rank": 2
     },
     {
       "symbol": "6756",
       "name": "威鋒電子",
       "category": "漲幅排行",
-      "price": 110,
-      "rank": 2
+      "price": 121,
+      "rank": 3
+    },
+    {
+      "symbol": "1526",
+      "name": "日馳",
+      "category": "漲幅排行",
+      "price": 16.5,
+      "rank": 4
+    },
+    {
+      "symbol": "6141",
+      "name": "柏承",
+      "category": "漲幅排行",
+      "price": 58.4,
+      "rank": 5
+    },
+    {
+      "symbol": "4706",
+      "name": "大恭",
+      "category": "漲幅排行",
+      "price": 47.45,
+      "rank": 6
+    },
+    {
+      "symbol": "8089",
+      "name": "康全電訊",
+      "category": "漲幅排行",
+      "price": 23.8,
+      "rank": 7
     },
     {
       "symbol": "3354",
       "name": "律勝",
       "category": "漲幅排行",
-      "price": 41.8,
-      "rank": 3
-    },
-    {
-      "symbol": "6933",
-      "name": "AMAX-KY",
-      "category": "漲幅排行",
-      "price": 451.5,
-      "rank": 4
-    },
-    {
-      "symbol": "3701",
-      "name": "大眾控",
-      "category": "漲幅排行",
-      "price": 66.1,
-      "rank": 5
-    },
-    {
-      "symbol": "6689",
-      "name": "伊雲谷",
-      "category": "漲幅排行",
-      "price": 70.5,
-      "rank": 6
-    },
-    {
-      "symbol": "6668",
-      "name": "中揚光",
-      "category": "漲幅排行",
-      "price": 68.3,
-      "rank": 7
+      "price": 45.95,
+      "rank": 8
     },
     {
       "symbol": "4542",
       "name": "科嶠",
       "category": "漲幅排行",
-      "price": 358,
-      "rank": 8
-    },
-    {
-      "symbol": "6418",
-      "name": "詠昇",
-      "category": "漲幅排行",
-      "price": 36.4,
+      "price": 393.5,
       "rank": 9
     },
     {
-      "symbol": "8437",
-      "name": "大地-KY",
+      "symbol": "6609",
+      "name": "瀧澤科",
       "category": "漲幅排行",
-      "price": 14.9,
+      "price": 43.75,
       "rank": 10
     },
     {
@@ -81,67 +81,60 @@
       "rank": 1
     },
     {
-      "symbol": "1815",
-      "name": "富喬",
-      "category": "法人買超",
-      "price": 140,
-      "rank": 2
-    },
-    {
       "symbol": "2610",
       "name": "華航",
       "category": "法人買超",
       "price": 21.05,
-      "rank": 3
+      "rank": 2
     },
     {
       "symbol": "2317",
       "name": "鴻海",
       "category": "法人買超",
       "price": 244,
-      "rank": 4
+      "rank": 3
     },
     {
       "symbol": "5880",
       "name": "合庫金",
       "category": "法人買超",
       "price": 28.15,
-      "rank": 5
+      "rank": 4
     },
     {
       "symbol": "2409",
       "name": "友達",
       "category": "法人買超",
       "price": 35.9,
-      "rank": 6
+      "rank": 5
     },
     {
       "symbol": "2883",
       "name": "凱基金",
       "category": "法人買超",
       "price": 39.1,
-      "rank": 7
+      "rank": 6
     },
     {
       "symbol": "1802",
       "name": "台玻",
       "category": "法人買超",
       "price": 66.9,
-      "rank": 8
+      "rank": 7
     },
     {
       "symbol": "2313",
       "name": "華通",
       "category": "法人買超",
       "price": 248,
-      "rank": 9
+      "rank": 8
     },
     {
       "symbol": "2801",
       "name": "彰銀",
       "category": "法人買超",
       "price": 29.5,
-      "rank": 10
+      "rank": 9
     }
   ]
 }
