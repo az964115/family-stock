@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-20T05:45:06.435Z",
+  "updatedAt": "2026-10-20T12:36:53.717Z",
   "count": 20,
   "stocks": [
     {
@@ -11,24 +11,24 @@
       "rank": 1
     },
     {
-      "symbol": "4741",
-      "name": "泓瀚",
-      "category": "漲幅排行",
-      "price": 44,
-      "rank": 2
-    },
-    {
       "symbol": "3625",
       "name": "西勝",
       "category": "漲幅排行",
       "price": 22,
-      "rank": 3
+      "rank": 2
     },
     {
       "symbol": "6695",
       "name": "芯鼎",
       "category": "漲幅排行",
       "price": 56.1,
+      "rank": 3
+    },
+    {
+      "symbol": "4741",
+      "name": "泓瀚",
+      "category": "漲幅排行",
+      "price": 44,
       "rank": 4
     },
     {
@@ -74,73 +74,73 @@
       "rank": 10
     },
     {
-      "symbol": "1815",
-      "name": "富喬",
+      "symbol": "3231",
+      "name": "緯創",
       "category": "法人買超",
-      "price": 154,
+      "price": 189,
       "rank": 1
-    },
-    {
-      "symbol": "2409",
-      "name": "友達",
-      "category": "法人買超",
-      "price": 36.7,
-      "rank": 2
     },
     {
       "symbol": "2002",
       "name": "中鋼",
       "category": "法人買超",
-      "price": 19.5,
+      "price": 19.6,
+      "rank": 2
+    },
+    {
+      "symbol": "1802",
+      "name": "台玻",
+      "category": "法人買超",
+      "price": 67.4,
       "rank": 3
     },
     {
-      "symbol": "2884",
-      "name": "玉山金",
+      "symbol": "2324",
+      "name": "仁寶",
       "category": "法人買超",
-      "price": 49.35,
+      "price": 36.9,
       "rank": 4
     },
     {
-      "symbol": "2886",
-      "name": "兆豐金",
+      "symbol": "2353",
+      "name": "宏碁",
       "category": "法人買超",
-      "price": 53.9,
+      "price": 32.4,
       "rank": 5
     },
     {
-      "symbol": "9105",
-      "name": "泰金寶-DR",
+      "symbol": "2356",
+      "name": "英業達",
       "category": "法人買超",
-      "price": 9.13,
+      "price": 60,
       "rank": 6
     },
     {
-      "symbol": "5880",
-      "name": "合庫金",
+      "symbol": "4938",
+      "name": "和碩",
       "category": "法人買超",
-      "price": 28.05,
+      "price": 105,
       "rank": 7
     },
     {
-      "symbol": "1216",
-      "name": "統一",
+      "symbol": "2377",
+      "name": "微星",
       "category": "法人買超",
-      "price": 79.6,
+      "price": 164.5,
       "rank": 8
     },
     {
-      "symbol": "2412",
-      "name": "中華電",
+      "symbol": "9904",
+      "name": "寶成",
       "category": "法人買超",
-      "price": 154.5,
+      "price": 26.55,
       "rank": 9
     },
     {
-      "symbol": "2887",
-      "name": "台新新光金",
+      "symbol": "2317",
+      "name": "鴻海",
       "category": "法人買超",
-      "price": 42.35,
+      "price": 241.5,
       "rank": 10
     }
   ]
