@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-20T12:36:53.717Z",
+  "updatedAt": "2026-10-21T05:49:27.126Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "6467",
-      "name": "泰合",
+      "symbol": "8099",
+      "name": "大世科",
       "category": "漲幅排行",
-      "price": 200,
+      "price": 70.4,
       "rank": 1
-    },
-    {
-      "symbol": "3625",
-      "name": "西勝",
-      "category": "漲幅排行",
-      "price": 22,
-      "rank": 2
-    },
-    {
-      "symbol": "6695",
-      "name": "芯鼎",
-      "category": "漲幅排行",
-      "price": 56.1,
-      "rank": 3
     },
     {
       "symbol": "4741",
       "name": "泓瀚",
       "category": "漲幅排行",
-      "price": 44,
-      "rank": 4
+      "price": 48.4,
+      "rank": 2
+    },
+    {
+      "symbol": "8042",
+      "name": "金山電",
+      "category": "漲幅排行",
+      "price": 148.5,
+      "rank": 3
     },
     {
       "symbol": "6418",
       "name": "詠昇",
       "category": "漲幅排行",
-      "price": 44,
+      "price": 48.4,
+      "rank": 4
+    },
+    {
+      "symbol": "4770",
+      "name": "上品",
+      "category": "漲幅排行",
+      "price": 313.5,
       "rank": 5
     },
     {
-      "symbol": "5013",
-      "name": "強新",
+      "symbol": "7584",
+      "name": "樂意",
       "category": "漲幅排行",
-      "price": 49.6,
+      "price": 30.8,
       "rank": 6
     },
     {
-      "symbol": "3114",
-      "name": "好德",
+      "symbol": "4577",
+      "name": "達航科技",
       "category": "漲幅排行",
-      "price": 41.9,
+      "price": 115.5,
       "rank": 7
     },
     {
-      "symbol": "6994",
-      "name": "富威電力",
+      "symbol": "6672",
+      "name": "騰輝電子-KY",
       "category": "漲幅排行",
-      "price": 27.05,
+      "price": 627,
       "rank": 8
     },
     {
-      "symbol": "6269",
-      "name": "台郡",
+      "symbol": "7730",
+      "name": "暉盛-創",
       "category": "漲幅排行",
-      "price": 88.3,
+      "price": 220.5,
       "rank": 9
     },
     {
-      "symbol": "4806",
-      "name": "桂田文創",
+      "symbol": "3229",
+      "name": "晟鈦",
       "category": "漲幅排行",
-      "price": 11.6,
+      "price": 52.9,
       "rank": 10
     },
     {
