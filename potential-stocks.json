@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-21T12:48:27.603Z",
+  "updatedAt": "2026-10-22T05:52:15.791Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "4770",
-      "name": "上品",
+      "symbol": "2468",
+      "name": "華經",
       "category": "漲幅排行",
-      "price": 313.5,
+      "price": 55,
       "rank": 1
     },
     {
-      "symbol": "4741",
-      "name": "泓瀚",
+      "symbol": "4304",
+      "name": "勝昱",
       "category": "漲幅排行",
-      "price": 48.4,
+      "price": 18.15,
       "rank": 2
-    },
-    {
-      "symbol": "4577",
-      "name": "達航科技",
-      "category": "漲幅排行",
-      "price": 115.5,
-      "rank": 3
-    },
-    {
-      "symbol": "8042",
-      "name": "金山電",
-      "category": "漲幅排行",
-      "price": 148.5,
-      "rank": 4
-    },
-    {
-      "symbol": "7584",
-      "name": "樂意",
-      "category": "漲幅排行",
-      "price": 30.8,
-      "rank": 5
-    },
-    {
-      "symbol": "8099",
-      "name": "大世科",
-      "category": "漲幅排行",
-      "price": 70.4,
-      "rank": 6
-    },
-    {
-      "symbol": "6418",
-      "name": "詠昇",
-      "category": "漲幅排行",
-      "price": 48.4,
-      "rank": 7
-    },
-    {
-      "symbol": "6672",
-      "name": "騰輝電子-KY",
-      "category": "漲幅排行",
-      "price": 627,
-      "rank": 8
     },
     {
       "symbol": "7730",
       "name": "暉盛-創",
       "category": "漲幅排行",
-      "price": 220.5,
+      "price": 242.5,
+      "rank": 3
+    },
+    {
+      "symbol": "6221",
+      "name": "晉泰",
+      "category": "漲幅排行",
+      "price": 36.4,
+      "rank": 4
+    },
+    {
+      "symbol": "4577",
+      "name": "達航科技",
+      "category": "漲幅排行",
+      "price": 127,
+      "rank": 5
+    },
+    {
+      "symbol": "8291",
+      "name": "尚茂",
+      "category": "漲幅排行",
+      "price": 23.2,
+      "rank": 6
+    },
+    {
+      "symbol": "6148",
+      "name": "驊宏資",
+      "category": "漲幅排行",
+      "price": 44.2,
+      "rank": 7
+    },
+    {
+      "symbol": "6874",
+      "name": "倍力",
+      "category": "漲幅排行",
+      "price": 77.4,
+      "rank": 8
+    },
+    {
+      "symbol": "6697",
+      "name": "東捷資訊",
+      "category": "漲幅排行",
+      "price": 45.9,
       "rank": 9
     },
     {
-      "symbol": "3229",
-      "name": "晟鈦",
+      "symbol": "4188",
+      "name": "安克",
       "category": "漲幅排行",
-      "price": 52.9,
+      "price": 17.15,
       "rank": 10
     },
     {
