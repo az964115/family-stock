@@ -1,20 +1,20 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-24T05:33:00.964Z",
+  "updatedAt": "2026-10-24T11:54:27.708Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "2468",
-      "name": "華經",
-      "category": "漲幅排行",
-      "price": 55,
-      "rank": 1
-    },
     {
       "symbol": "4304",
       "name": "勝昱",
       "category": "漲幅排行",
       "price": 18.15,
+      "rank": 1
+    },
+    {
+      "symbol": "2468",
+      "name": "華經",
+      "category": "漲幅排行",
+      "price": 55,
       "rank": 2
     },
     {
@@ -53,24 +53,24 @@
       "rank": 7
     },
     {
-      "symbol": "6697",
-      "name": "東捷資訊",
-      "category": "漲幅排行",
-      "price": 45.9,
-      "rank": 8
-    },
-    {
-      "symbol": "6874",
-      "name": "倍力",
-      "category": "漲幅排行",
-      "price": 77.4,
-      "rank": 9
-    },
-    {
       "symbol": "8099",
       "name": "大世科",
       "category": "漲幅排行",
       "price": 77.4,
+      "rank": 8
+    },
+    {
+      "symbol": "6697",
+      "name": "東捷資訊",
+      "category": "漲幅排行",
+      "price": 45.9,
+      "rank": 9
+    },
+    {
+      "symbol": "2465",
+      "name": "麗臺",
+      "category": "漲幅排行",
+      "price": 96.2,
       "rank": 10
     },
     {
