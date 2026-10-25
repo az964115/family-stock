@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-25T05:49:34.687Z",
+  "updatedAt": "2026-10-25T12:25:36.206Z",
   "count": 20,
   "stocks": [
     {
@@ -53,24 +53,24 @@
       "rank": 7
     },
     {
-      "symbol": "8099",
-      "name": "大世科",
-      "category": "漲幅排行",
-      "price": 77.4,
-      "rank": 8
-    },
-    {
       "symbol": "6697",
       "name": "東捷資訊",
       "category": "漲幅排行",
       "price": 45.9,
+      "rank": 8
+    },
+    {
+      "symbol": "6874",
+      "name": "倍力",
+      "category": "漲幅排行",
+      "price": 77.4,
       "rank": 9
     },
     {
-      "symbol": "2465",
-      "name": "麗臺",
+      "symbol": "8099",
+      "name": "大世科",
       "category": "漲幅排行",
-      "price": 96.2,
+      "price": 77.4,
       "rank": 10
     },
     {
