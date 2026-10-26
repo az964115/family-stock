@@ -1,20 +1,20 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-25T12:25:36.206Z",
+  "updatedAt": "2026-10-26T05:52:21.632Z",
   "count": 20,
   "stocks": [
-    {
-      "symbol": "4304",
-      "name": "勝昱",
-      "category": "漲幅排行",
-      "price": 18.15,
-      "rank": 1
-    },
     {
       "symbol": "2468",
       "name": "華經",
       "category": "漲幅排行",
       "price": 55,
+      "rank": 1
+    },
+    {
+      "symbol": "4304",
+      "name": "勝昱",
+      "category": "漲幅排行",
+      "price": 18.15,
       "rank": 2
     },
     {
