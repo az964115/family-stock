@@ -10,14 +10,14 @@
     "changeRate": "+0.42%"
   },
   "brentOil": {
-    "price": "110.02",
-    "change": "+0.70",
-    "changeRate": "+0.64%"
+    "price": "110.14",
+    "change": "+0.62",
+    "changeRate": "+0.57%"
   },
   "vix": {
-    "price": "19.45",
-    "change": "+0.41",
-    "changeRate": "+2.15%"
+    "price": "19.15",
+    "change": "-0.30",
+    "changeRate": "-1.54%"
   },
   "usDJI": {
     "price": "52,215.16",
@@ -45,8 +45,8 @@
     "changeRate": "-1.00%"
   },
   "BTC": {
-    "price": "80,056.19",
-    "change": "+12.37",
-    "changeRate": "+0.02%"
+    "price": "80,237.23",
+    "change": "+193.41",
+    "changeRate": "+0.24%"
   }
 }
