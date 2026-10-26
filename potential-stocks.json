@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-26T05:52:21.632Z",
+  "updatedAt": "2026-10-26T14:09:51.895Z",
   "count": 20,
   "stocks": [
     {
@@ -39,24 +39,24 @@
       "rank": 5
     },
     {
-      "symbol": "8291",
-      "name": "尚茂",
-      "category": "漲幅排行",
-      "price": 23.2,
-      "rank": 6
-    },
-    {
       "symbol": "6148",
       "name": "驊宏資",
       "category": "漲幅排行",
       "price": 44.2,
+      "rank": 6
+    },
+    {
+      "symbol": "8291",
+      "name": "尚茂",
+      "category": "漲幅排行",
+      "price": 23.2,
       "rank": 7
     },
     {
-      "symbol": "6697",
-      "name": "東捷資訊",
+      "symbol": "2465",
+      "name": "麗臺",
       "category": "漲幅排行",
-      "price": 45.9,
+      "price": 96.2,
       "rank": 8
     },
     {
@@ -67,10 +67,10 @@
       "rank": 9
     },
     {
-      "symbol": "8099",
-      "name": "大世科",
+      "symbol": "6697",
+      "name": "東捷資訊",
       "category": "漲幅排行",
-      "price": 77.4,
+      "price": 45.9,
       "rank": 10
     },
     {
