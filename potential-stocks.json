@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-30T05:31:15.724Z",
+  "updatedAt": "2026-10-30T06:54:51.995Z",
   "count": 20,
   "stocks": [
     {
@@ -77,70 +77,70 @@
       "symbol": "3105",
       "name": "穩懋",
       "category": "法人買超",
-      "price": 594,
+      "price": 578,
       "rank": 1
     },
     {
       "symbol": "2887",
       "name": "台新新光金",
       "category": "法人買超",
-      "price": 42.4,
+      "price": 42.25,
       "rank": 2
     },
     {
       "symbol": "2891",
       "name": "中信金",
       "category": "法人買超",
-      "price": 75.3,
+      "price": 75.8,
       "rank": 3
     },
     {
       "symbol": "2344",
       "name": "華邦電",
       "category": "法人買超",
-      "price": 170.5,
+      "price": 164.5,
       "rank": 4
     },
     {
       "symbol": "2801",
       "name": "彰銀",
       "category": "法人買超",
-      "price": 30.5,
+      "price": 30.7,
       "rank": 5
     },
     {
       "symbol": "3035",
       "name": "智原",
       "category": "法人買超",
-      "price": 231.5,
+      "price": 213.5,
       "rank": 6
     },
     {
       "symbol": "9904",
       "name": "寶成",
       "category": "法人買超",
-      "price": 25.65,
+      "price": 25.8,
       "rank": 7
     },
     {
       "symbol": "2890",
       "name": "永豐金",
       "category": "法人買超",
-      "price": 46.45,
+      "price": 46.5,
       "rank": 8
     },
     {
       "symbol": "5880",
       "name": "合庫金",
       "category": "法人買超",
-      "price": 28.9,
+      "price": 29,
       "rank": 9
     },
     {
       "symbol": "2408",
       "name": "南亞科",
       "category": "法人買超",
-      "price": 477,
+      "price": 454.5,
       "rank": 10
     }
   ]
