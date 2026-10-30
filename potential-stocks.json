@@ -1,133 +1,147 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-29T14:00:10.859Z",
-  "count": 18,
+  "updatedAt": "2026-10-30T05:31:15.724Z",
+  "count": 20,
   "stocks": [
     {
-      "symbol": "3105",
-      "name": "穩懋",
+      "symbol": "6825",
+      "name": "和暢科技",
       "category": "漲幅排行",
-      "price": 594,
+      "price": 25.95,
       "rank": 1
     },
     {
-      "symbol": "2221",
-      "name": "大甲",
+      "symbol": "8272",
+      "name": "全景軟體",
       "category": "漲幅排行",
-      "price": 159.5,
+      "price": 78.1,
       "rank": 2
     },
     {
-      "symbol": "3321",
-      "name": "同泰",
+      "symbol": "3332",
+      "name": "幸康",
       "category": "漲幅排行",
-      "price": 21.45,
+      "price": 80.4,
       "rank": 3
     },
     {
-      "symbol": "5245",
-      "name": "智晶",
+      "symbol": "6441",
+      "name": "廣錠",
       "category": "漲幅排行",
-      "price": 18.7,
+      "price": 22.05,
       "rank": 4
     },
     {
-      "symbol": "8291",
-      "name": "尚茂",
+      "symbol": "5013",
+      "name": "強新",
       "category": "漲幅排行",
-      "price": 30.85,
+      "price": 55.1,
       "rank": 5
     },
     {
-      "symbol": "3035",
-      "name": "智原",
+      "symbol": "6865",
+      "name": "偉康科技",
       "category": "漲幅排行",
-      "price": 231.5,
+      "price": 29.2,
       "rank": 6
     },
     {
-      "symbol": "6233",
-      "name": "旺玖",
+      "symbol": "7704",
+      "name": "明遠精密",
       "category": "漲幅排行",
-      "price": 30.9,
+      "price": 87.3,
       "rank": 7
     },
     {
-      "symbol": "6240",
-      "name": "松崗",
+      "symbol": "2466",
+      "name": "冠西電",
       "category": "漲幅排行",
-      "price": 37,
+      "price": 354,
       "rank": 8
     },
     {
-      "symbol": "3597",
-      "name": "映興",
+      "symbol": "1786",
+      "name": "科妍",
       "category": "漲幅排行",
-      "price": 44.85,
+      "price": 47.55,
       "rank": 9
     },
     {
-      "symbol": "3691",
-      "name": "碩禾",
+      "symbol": "3432",
+      "name": "台端",
       "category": "漲幅排行",
-      "price": 144,
+      "price": 16.6,
       "rank": 10
+    },
+    {
+      "symbol": "3105",
+      "name": "穩懋",
+      "category": "法人買超",
+      "price": 594,
+      "rank": 1
     },
     {
       "symbol": "2887",
       "name": "台新新光金",
       "category": "法人買超",
       "price": 42.4,
-      "rank": 1
+      "rank": 2
     },
     {
       "symbol": "2891",
       "name": "中信金",
       "category": "法人買超",
       "price": 75.3,
-      "rank": 2
+      "rank": 3
     },
     {
       "symbol": "2344",
       "name": "華邦電",
       "category": "法人買超",
       "price": 170.5,
-      "rank": 3
+      "rank": 4
     },
     {
       "symbol": "2801",
       "name": "彰銀",
       "category": "法人買超",
       "price": 30.5,
-      "rank": 4
+      "rank": 5
+    },
+    {
+      "symbol": "3035",
+      "name": "智原",
+      "category": "法人買超",
+      "price": 231.5,
+      "rank": 6
     },
     {
       "symbol": "9904",
       "name": "寶成",
       "category": "法人買超",
       "price": 25.65,
-      "rank": 5
+      "rank": 7
     },
     {
       "symbol": "2890",
       "name": "永豐金",
       "category": "法人買超",
       "price": 46.45,
-      "rank": 6
+      "rank": 8
     },
     {
       "symbol": "5880",
       "name": "合庫金",
       "category": "法人買超",
       "price": 28.9,
-      "rank": 7
+      "rank": 9
     },
     {
       "symbol": "2408",
       "name": "南亞科",
       "category": "法人買超",
       "price": 477,
-      "rank": 8
+      "rank": 10
     }
   ]
 }
