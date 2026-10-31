@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-30T13:55:39.148Z",
+  "updatedAt": "2026-10-31T06:48:31.642Z",
   "count": 20,
   "stocks": [
     {
@@ -53,24 +53,24 @@
       "rank": 7
     },
     {
-      "symbol": "2466",
-      "name": "冠西電",
-      "category": "漲幅排行",
-      "price": 354,
-      "rank": 8
-    },
-    {
       "symbol": "1786",
       "name": "科妍",
       "category": "漲幅排行",
       "price": 47.55,
+      "rank": 8
+    },
+    {
+      "symbol": "2466",
+      "name": "冠西電",
+      "category": "漲幅排行",
+      "price": 354,
       "rank": 9
     },
     {
-      "symbol": "6140",
-      "name": "訊達",
+      "symbol": "3432",
+      "name": "台端",
       "category": "漲幅排行",
-      "price": 22.7,
+      "price": 16.6,
       "rank": 10
     },
     {
