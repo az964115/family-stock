@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-10-31T13:27:53.980Z",
+  "updatedAt": "2026-11-01T07:14:27.587Z",
   "count": 20,
   "stocks": [
     {
@@ -67,10 +67,10 @@
       "rank": 9
     },
     {
-      "symbol": "3432",
-      "name": "台端",
+      "symbol": "6140",
+      "name": "訊達",
       "category": "漲幅排行",
-      "price": 16.6,
+      "price": 22.7,
       "rank": 10
     },
     {
