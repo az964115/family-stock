@@ -1,8 +1,8 @@
 {
   "wtx_night": {
-    "price": "44433",
-    "change": "-867",
-    "changeRate": "--1.91%"
+    "price": "45158",
+    "change": "-69",
+    "changeRate": "--0.15%"
   },
   "usSOX": {
     "price": "10,688.80",
@@ -10,9 +10,9 @@
     "changeRate": "-7.21%"
   },
   "brentOil": {
-    "price": "111.53",
-    "change": "-1.90",
-    "changeRate": "-1.68%"
+    "price": "110.09",
+    "change": "+0.10",
+    "changeRate": "+0.09%"
   },
   "vix": {
     "price": "19.42",
@@ -35,18 +35,18 @@
     "changeRate": "-1.83%"
   },
   "twTAIEX": {
-    "price": "45,211.83",
-    "change": "-1114.74",
-    "changeRate": "-2.41%"
+    "price": "44,920.14",
+    "change": "-272.94",
+    "changeRate": "-0.60%"
   },
   "krKOSPI": {
-    "price": "5,745.88",
-    "change": "+79.91",
-    "changeRate": "+1.41%"
+    "price": "5,859.08",
+    "change": "+193.11",
+    "changeRate": "+3.41%"
   },
   "BTC": {
-    "price": "78,143.12",
-    "change": "+335.01",
-    "changeRate": "+0.43%"
+    "price": "77,954.12",
+    "change": "-271.30",
+    "changeRate": "-0.35%"
   }
 }
