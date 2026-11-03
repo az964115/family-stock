@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-11-03T05:59:57.424Z",
+  "updatedAt": "2026-11-03T07:43:52.663Z",
   "count": 20,
   "stocks": [
     {
@@ -77,70 +77,70 @@
       "symbol": "3481",
       "name": "群創",
       "category": "法人買超",
-      "price": 44.55,
+      "price": 41.2,
       "rank": 1
     },
     {
       "symbol": "2317",
       "name": "鴻海",
       "category": "法人買超",
-      "price": 251,
+      "price": 245.5,
       "rank": 2
     },
     {
       "symbol": "2610",
       "name": "華航",
       "category": "法人買超",
-      "price": 20.65,
+      "price": 20.7,
       "rank": 3
     },
     {
       "symbol": "2409",
       "name": "友達",
       "category": "法人買超",
-      "price": 30.75,
+      "price": 28.8,
       "rank": 4
     },
     {
       "symbol": "1605",
       "name": "華新",
       "category": "法人買超",
-      "price": 37.6,
+      "price": 35,
       "rank": 5
     },
     {
       "symbol": "2002",
       "name": "中鋼",
       "category": "法人買超",
-      "price": 19.4,
+      "price": 19.35,
       "rank": 6
     },
     {
       "symbol": "2618",
       "name": "長榮航",
       "category": "法人買超",
-      "price": 43.15,
+      "price": 43.7,
       "rank": 7
     },
     {
       "symbol": "5880",
       "name": "合庫金",
       "category": "法人買超",
-      "price": 29.05,
+      "price": 28.45,
       "rank": 8
     },
     {
       "symbol": "2609",
       "name": "陽明",
       "category": "法人買超",
-      "price": 64,
+      "price": 62.1,
       "rank": 9
     },
     {
       "symbol": "2801",
       "name": "彰銀",
       "category": "法人買超",
-      "price": 30.85,
+      "price": 29.7,
       "rank": 10
     }
   ]
