@@ -1,6 +1,6 @@
 {
   "status": "success",
-  "updatedAt": "2026-11-06T05:37:34.675Z",
+  "updatedAt": "2026-11-06T07:47:27.094Z",
   "count": 20,
   "stocks": [
     {
@@ -46,24 +46,24 @@
       "rank": 6
     },
     {
-      "symbol": "5202",
-      "name": "力新",
-      "category": "漲幅排行",
-      "price": 18.3,
-      "rank": 7
-    },
-    {
       "symbol": "5438",
       "name": "東友",
       "category": "漲幅排行",
       "price": 18.85,
+      "rank": 7
+    },
+    {
+      "symbol": "5202",
+      "name": "力新",
+      "category": "漲幅排行",
+      "price": 18.3,
       "rank": 8
     },
     {
-      "symbol": "4924",
-      "name": "欣厚-KY",
+      "symbol": "3287",
+      "name": "廣寰科",
       "category": "漲幅排行",
-      "price": 17.2,
+      "price": 73.3,
       "rank": 9
     },
     {
@@ -77,70 +77,70 @@
       "symbol": "2610",
       "name": "華航",
       "category": "法人買超",
-      "price": 21.65,
+      "price": 21.2,
       "rank": 1
     },
     {
       "symbol": "2618",
       "name": "長榮航",
       "category": "法人買超",
-      "price": 45.1,
+      "price": 43.6,
       "rank": 2
     },
     {
       "symbol": "2891",
       "name": "中信金",
       "category": "法人買超",
-      "price": 74.9,
+      "price": 73.4,
       "rank": 3
     },
     {
       "symbol": "9904",
       "name": "寶成",
       "category": "法人買超",
-      "price": 26,
+      "price": 25.7,
       "rank": 4
     },
     {
       "symbol": "2412",
       "name": "中華電",
       "category": "法人買超",
-      "price": 161.5,
+      "price": 163.5,
       "rank": 5
     },
     {
       "symbol": "2884",
       "name": "玉山金",
       "category": "法人買超",
-      "price": 47.95,
+      "price": 47,
       "rank": 6
     },
     {
       "symbol": "5880",
       "name": "合庫金",
       "category": "法人買超",
-      "price": 28.5,
+      "price": 27.9,
       "rank": 7
     },
     {
       "symbol": "2886",
       "name": "兆豐金",
       "category": "法人買超",
-      "price": 54,
+      "price": 53.5,
       "rank": 8
     },
     {
       "symbol": "2885",
       "name": "元大金",
       "category": "法人買超",
-      "price": 69.1,
+      "price": 66.9,
       "rank": 9
     },
     {
       "symbol": "2887",
       "name": "台新新光金",
       "category": "法人買超",
-      "price": 40.1,
+      "price": 38.45,
       "rank": 10
     }
   ]
