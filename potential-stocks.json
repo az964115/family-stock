@@ -1,104 +1,104 @@
 {
   "status": "success",
-  "updatedAt": "2026-11-05T07:47:31.351Z",
+  "updatedAt": "2026-11-06T05:37:34.675Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "3306",
-      "name": "鼎天",
+      "symbol": "6152",
+      "name": "百一",
       "category": "漲幅排行",
-      "price": 45.65,
+      "price": 18.7,
       "rank": 1
     },
     {
-      "symbol": "8467",
-      "name": "波力-KY",
+      "symbol": "4741",
+      "name": "泓瀚",
       "category": "漲幅排行",
-      "price": 96.8,
+      "price": 57.3,
       "rank": 2
     },
     {
-      "symbol": "6865",
-      "name": "偉康科技",
+      "symbol": "6103",
+      "name": "合邦",
       "category": "漲幅排行",
-      "price": 36.3,
+      "price": 35.3,
       "rank": 3
     },
     {
-      "symbol": "6590",
-      "name": "普鴻",
+      "symbol": "6443",
+      "name": "元晶",
       "category": "漲幅排行",
-      "price": 89.3,
+      "price": 25.95,
       "rank": 4
     },
     {
-      "symbol": "1786",
-      "name": "科妍",
+      "symbol": "3219",
+      "name": "倚強科",
       "category": "漲幅排行",
-      "price": 49.1,
+      "price": 93.9,
       "rank": 5
     },
     {
-      "symbol": "5205",
-      "name": "中茂",
+      "symbol": "7584",
+      "name": "樂意",
       "category": "漲幅排行",
-      "price": 20.95,
+      "price": 27.7,
       "rank": 6
+    },
+    {
+      "symbol": "5202",
+      "name": "力新",
+      "category": "漲幅排行",
+      "price": 18.3,
+      "rank": 7
     },
     {
       "symbol": "5438",
       "name": "東友",
       "category": "漲幅排行",
-      "price": 17.15,
-      "rank": 7
-    },
-    {
-      "symbol": "6919",
-      "name": "康霈*",
-      "category": "漲幅排行",
-      "price": 66.6,
+      "price": 18.85,
       "rank": 8
     },
     {
-      "symbol": "6698",
-      "name": "旭暉應材",
+      "symbol": "4924",
+      "name": "欣厚-KY",
       "category": "漲幅排行",
-      "price": 30.55,
+      "price": 17.2,
       "rank": 9
     },
     {
-      "symbol": "3019",
-      "name": "亞光",
+      "symbol": "8455",
+      "name": "大拓-KY",
       "category": "漲幅排行",
-      "price": 128.5,
+      "price": 31.65,
       "rank": 10
-    },
-    {
-      "symbol": "2886",
-      "name": "兆豐金",
-      "category": "法人買超",
-      "price": 54,
-      "rank": 1
     },
     {
       "symbol": "2610",
       "name": "華航",
       "category": "法人買超",
       "price": 21.65,
+      "rank": 1
+    },
+    {
+      "symbol": "2618",
+      "name": "長榮航",
+      "category": "法人買超",
+      "price": 45.1,
       "rank": 2
     },
     {
-      "symbol": "2615",
-      "name": "萬海",
+      "symbol": "2891",
+      "name": "中信金",
       "category": "法人買超",
-      "price": 113,
+      "price": 74.9,
       "rank": 3
     },
     {
-      "symbol": "2884",
-      "name": "玉山金",
+      "symbol": "9904",
+      "name": "寶成",
       "category": "法人買超",
-      "price": 47.95,
+      "price": 26,
       "rank": 4
     },
     {
@@ -109,38 +109,38 @@
       "rank": 5
     },
     {
-      "symbol": "1785",
-      "name": "光洋科",
+      "symbol": "2884",
+      "name": "玉山金",
       "category": "法人買超",
-      "price": 77.4,
+      "price": 47.95,
       "rank": 6
-    },
-    {
-      "symbol": "6182",
-      "name": "合晶",
-      "category": "法人買超",
-      "price": 74.7,
-      "rank": 7
-    },
-    {
-      "symbol": "2609",
-      "name": "陽明",
-      "category": "法人買超",
-      "price": 60,
-      "rank": 8
     },
     {
       "symbol": "5880",
       "name": "合庫金",
       "category": "法人買超",
       "price": 28.5,
+      "rank": 7
+    },
+    {
+      "symbol": "2886",
+      "name": "兆豐金",
+      "category": "法人買超",
+      "price": 54,
+      "rank": 8
+    },
+    {
+      "symbol": "2885",
+      "name": "元大金",
+      "category": "法人買超",
+      "price": 69.1,
       "rank": 9
     },
     {
-      "symbol": "2618",
-      "name": "長榮航",
+      "symbol": "2887",
+      "name": "台新新光金",
       "category": "法人買超",
-      "price": 45.1,
+      "price": 40.1,
       "rank": 10
     }
   ]
