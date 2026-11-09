@@ -1,76 +1,76 @@
 {
   "status": "success",
-  "updatedAt": "2026-11-08T07:00:49.672Z",
+  "updatedAt": "2026-11-09T05:42:29.382Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "6152",
-      "name": "百一",
+      "symbol": "5347",
+      "name": "世界",
       "category": "漲幅排行",
-      "price": 18.7,
+      "price": 132,
       "rank": 1
     },
     {
-      "symbol": "4741",
-      "name": "泓瀚",
+      "symbol": "8299",
+      "name": "群聯",
       "category": "漲幅排行",
-      "price": 57.3,
+      "price": 1650,
       "rank": 2
     },
     {
-      "symbol": "6103",
-      "name": "合邦",
+      "symbol": "5230",
+      "name": "雷笛克光學",
       "category": "漲幅排行",
-      "price": 35.3,
+      "price": 28.05,
       "rank": 3
     },
     {
-      "symbol": "6443",
-      "name": "元晶",
+      "symbol": "2486",
+      "name": "一詮",
       "category": "漲幅排行",
-      "price": 25.95,
+      "price": 159.5,
       "rank": 4
     },
     {
-      "symbol": "3219",
-      "name": "倚強科",
+      "symbol": "6903",
+      "name": "巨漢",
       "category": "漲幅排行",
-      "price": 93.9,
+      "price": 269.5,
       "rank": 5
     },
     {
-      "symbol": "7584",
-      "name": "樂意",
+      "symbol": "3317",
+      "name": "尼克森",
       "category": "漲幅排行",
-      "price": 27.7,
+      "price": 50.6,
       "rank": 6
     },
     {
-      "symbol": "5438",
-      "name": "東友",
+      "symbol": "6182",
+      "name": "合晶",
       "category": "漲幅排行",
-      "price": 18.85,
+      "price": 75.9,
       "rank": 7
     },
     {
-      "symbol": "5202",
-      "name": "力新",
+      "symbol": "7828",
+      "name": "創新服務",
       "category": "漲幅排行",
-      "price": 18.3,
+      "price": 1155,
       "rank": 8
     },
     {
-      "symbol": "4924",
-      "name": "欣厚-KY",
+      "symbol": "6825",
+      "name": "和暢科技",
       "category": "漲幅排行",
-      "price": 17.2,
+      "price": 22.55,
       "rank": 9
     },
     {
-      "symbol": "3287",
-      "name": "廣寰科",
+      "symbol": "3081",
+      "name": "聯亞",
       "category": "漲幅排行",
-      "price": 73.3,
+      "price": 1925,
       "rank": 10
     },
     {
