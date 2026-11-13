@@ -1,146 +1,146 @@
 {
   "status": "success",
-  "updatedAt": "2026-11-12T05:47:08.706Z",
+  "updatedAt": "2026-11-13T05:40:45.254Z",
   "count": 20,
   "stocks": [
     {
-      "symbol": "6609",
-      "name": "瀧澤科",
+      "symbol": "7584",
+      "name": "樂意",
       "category": "漲幅排行",
-      "price": 59.4,
+      "price": 37.4,
       "rank": 1
     },
     {
-      "symbol": "6152",
-      "name": "百一",
+      "symbol": "4905",
+      "name": "台聯電",
       "category": "漲幅排行",
-      "price": 20.35,
+      "price": 86.9,
       "rank": 2
     },
     {
-      "symbol": "7819",
-      "name": "精誠金融",
+      "symbol": "8155",
+      "name": "博智",
       "category": "漲幅排行",
-      "price": 39.1,
+      "price": 280.5,
       "rank": 3
     },
     {
-      "symbol": "6908",
-      "name": "宏碁遊戲-創",
+      "symbol": "6614",
+      "name": "資拓宏宇",
       "category": "漲幅排行",
-      "price": 22.6,
+      "price": 36.85,
       "rank": 4
     },
     {
-      "symbol": "6229",
-      "name": "研通",
+      "symbol": "7765",
+      "name": "中華資安",
       "category": "漲幅排行",
-      "price": 24.25,
+      "price": 269.5,
       "rank": 5
     },
     {
-      "symbol": "8099",
-      "name": "大世科",
+      "symbol": "7717",
+      "name": "萊德光電-KY",
       "category": "漲幅排行",
-      "price": 165.5,
+      "price": 489.5,
       "rank": 6
     },
     {
-      "symbol": "6928",
-      "name": "攸泰科技",
+      "symbol": "4956",
+      "name": "光鋐",
       "category": "漲幅排行",
-      "price": 49.65,
+      "price": 34.65,
       "rank": 7
     },
     {
-      "symbol": "3701",
-      "name": "大眾控",
+      "symbol": "8472",
+      "name": "納維康",
       "category": "漲幅排行",
-      "price": 69.5,
+      "price": 63.9,
       "rank": 8
     },
     {
-      "symbol": "7772",
-      "name": "耀穎",
+      "symbol": "8227",
+      "name": "巨有科技",
       "category": "漲幅排行",
-      "price": 97.1,
+      "price": 242.5,
       "rank": 9
     },
     {
-      "symbol": "3715",
-      "name": "定穎投控",
+      "symbol": "6234",
+      "name": "高僑",
       "category": "漲幅排行",
-      "price": 143.5,
+      "price": 58.4,
       "rank": 10
-    },
-    {
-      "symbol": "2409",
-      "name": "友達",
-      "category": "法人買超",
-      "price": 28.65,
-      "rank": 1
-    },
-    {
-      "symbol": "2618",
-      "name": "長榮航",
-      "category": "法人買超",
-      "price": 47.6,
-      "rank": 2
-    },
-    {
-      "symbol": "1815",
-      "name": "富喬",
-      "category": "法人買超",
-      "price": 140.5,
-      "rank": 3
-    },
-    {
-      "symbol": "2610",
-      "name": "華航",
-      "category": "法人買超",
-      "price": 23.5,
-      "rank": 4
-    },
-    {
-      "symbol": "3481",
-      "name": "群創",
-      "category": "法人買超",
-      "price": 40.6,
-      "rank": 5
     },
     {
       "symbol": "1802",
       "name": "台玻",
       "category": "法人買超",
-      "price": 76.7,
-      "rank": 6
+      "price": 81.7,
+      "rank": 1
     },
     {
-      "symbol": "9933",
-      "name": "中鼎",
+      "symbol": "6456",
+      "name": "GIS-KY",
       "category": "法人買超",
-      "price": 51.5,
-      "rank": 7
+      "price": 101.5,
+      "rank": 2
     },
     {
-      "symbol": "2303",
-      "name": "聯電",
+      "symbol": "2610",
+      "name": "華航",
       "category": "法人買超",
-      "price": 104,
-      "rank": 8
+      "price": 22.8,
+      "rank": 3
+    },
+    {
+      "symbol": "2409",
+      "name": "友達",
+      "category": "法人買超",
+      "price": 29.2,
+      "rank": 4
     },
     {
       "symbol": "4927",
       "name": "泰鼎-KY",
       "category": "法人買超",
-      "price": 59.5,
+      "price": 58.3,
+      "rank": 5
+    },
+    {
+      "symbol": "2885",
+      "name": "元大金",
+      "category": "法人買超",
+      "price": 71.9,
+      "rank": 6
+    },
+    {
+      "symbol": "2891",
+      "name": "中信金",
+      "category": "法人買超",
+      "price": 75.4,
+      "rank": 7
+    },
+    {
+      "symbol": "2834",
+      "name": "臺企銀",
+      "category": "法人買超",
+      "price": 17.55,
+      "rank": 8
+    },
+    {
+      "symbol": "2317",
+      "name": "鴻海",
+      "category": "法人買超",
+      "price": 240,
       "rank": 9
     },
     {
-      "symbol": "2886",
-      "name": "兆豐金",
+      "symbol": "4960",
+      "name": "誠美材",
       "category": "法人買超",
-      "price": 54.2,
+      "price": 31.6,
       "rank": 10
     }
   ]
