@@ -1,8 +1,8 @@
 {
   "wtx_night": {
-    "price": "43706",
-    "change": "-133",
-    "changeRate": "--0.3%"
+    "price": "--",
+    "change": "0.00",
+    "changeRate": "0.00%"
   },
   "usSOX": {
     "price": "10,146.32",
@@ -45,8 +45,8 @@
     "changeRate": "-0.58%"
   },
   "BTC": {
-    "price": "67,171.88",
-    "change": "-1051.12",
-    "changeRate": "-1.54%"
+    "price": "66,940.45",
+    "change": "-1282.55",
+    "changeRate": "-1.88%"
   }
 }
