@@ -10,9 +10,9 @@
     "changeRate": "+4.68%"
   },
   "brentOil": {
-    "price": "90.79",
-    "change": "-0.38",
-    "changeRate": "-0.42%"
+    "price": "90.84",
+    "change": "-0.33",
+    "changeRate": "-0.36%"
   },
   "vix": {
     "price": "23.81",
@@ -45,8 +45,8 @@
     "changeRate": "+3.70%"
   },
   "BTC": {
-    "price": "59,970.25",
-    "change": "-525.32",
-    "changeRate": "-0.87%"
+    "price": "59,670.47",
+    "change": "-825.10",
+    "changeRate": "-1.36%"
   }
 }
